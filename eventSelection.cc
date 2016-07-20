@@ -891,7 +891,8 @@ std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vecto
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 	
 // Good lumi mask
-lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
+// v1
+//lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
 
 // for new orthogonality [TESTING]
 bool isSingleElectronDataset = !isMC && dtag.Contains ("SingleEle");
@@ -1022,11 +1023,12 @@ if(debug) cout << "DEBUG: xsec: " << xsec << endl;
 // ------------------------------------- jet energy scale and uncertainties 
 TString jecDir = runProcess.getParameter < std::string > ("jecDir");
 gSystem->ExpandPathName (jecDir);
-FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, isMC);
+// v1
+//FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, isMC);
 //TString pf(isMC ? "MC" : "DATA");
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
+//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
 // JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/MC_Uncertainty_AK4PFchs.txt").Data ());
 
 // ------------------------------------- muon energy scale and uncertainties
@@ -1034,18 +1036,20 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 // FIXME: MuScle fit corrections for 13 TeV not available yet (more Zs are needed) getMuonCorrector (jecDir, dtag);
 // TString muscleDir = runProcess.getParameter<std::string>("muscleDir");
 // gSystem->ExpandPathName(muscleDir);
-rochcor2015* muCor = new rochcor2015(); // This replaces the old MusScleFitCorrector that was used at RunI
+// v1
+//rochcor2015* muCor = new rochcor2015(); // This replaces the old MusScleFitCorrector that was used at RunI
 // comes from:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
 // last muon POG talk:
 // https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
 
 // Electron energy scale, based on https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer and adapted to this framework
-string EGammaEnergyCorrectionFile = "EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015";
-EpCombinationTool theEpCombinationTool;
-theEpCombinationTool.init((string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/GBRForest_data_25ns.root").c_str(), "gedelectron_p4combination_25ns");  //got confirmation from Matteo Sani that this works for both data and MC 
-ElectronEnergyCalibratorRun2 ElectronEnCorrector(theEpCombinationTool, isMC, false, EGammaEnergyCorrectionFile);
-ElectronEnCorrector.initPrivateRng(new TRandom(1234));
+// v1
+//string EGammaEnergyCorrectionFile = "EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015";
+//EpCombinationTool theEpCombinationTool;
+//theEpCombinationTool.init((string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/GBRForest_data_25ns.root").c_str(), "gedelectron_p4combination_25ns");  //got confirmation from Matteo Sani that this works for both data and MC 
+//ElectronEnergyCalibratorRun2 ElectronEnCorrector(theEpCombinationTool, isMC, false, EGammaEnergyCorrectionFile);
+//ElectronEnCorrector.initPrivateRng(new TRandom(1234));
 
 
 // --------------------------------------- lepton efficiencies
@@ -1090,7 +1094,8 @@ beff = 0.559;
 
 // Setup calibration readers
 //BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/btagSF_CSVv2.csv");
-BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
+// v1
+//BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
 // TODO: try new llvv_fwk/data/weights/CSVv2_76X.csv
 // and there:
 //The name of the measurements is
@@ -1104,15 +1109,16 @@ BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserC
 // TODO: update btag CSVv2
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Data_MC_Scale_Factors
 // OP_MEDIUM instead of OP_LOOSE?
-BTagCalibrationReader btagCal   (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "central");  // calibration instance, operating point, measurement type, systematics type
-BTagCalibrationReader btagCalUp (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "up"     );  // sys up
-BTagCalibrationReader btagCalDn (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "down"   );  // sys down
+// v1
+//BTagCalibrationReader btagCal   (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "central");  // calibration instance, operating point, measurement type, systematics type
+//BTagCalibrationReader btagCalUp (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "up"     );  // sys up
+//BTagCalibrationReader btagCalDn (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "down"   );  // sys down
 //BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_LOOSE, "comb", "central");  // calibration instance, operating point, measurement type, systematics type
 //BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_LOOSE, "comb", "up"     );  // sys up
 //BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_LOOSE, "comb", "down"   );  // sys down
-BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "incl", "central");  // calibration instance, operating point, measurement type, systematics type
-BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "up"     );  // sys up
-BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
+//BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "incl", "central");  // calibration instance, operating point, measurement type, systematics type
+//BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "up"     );  // sys up
+//BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
 
 
 
@@ -1174,9 +1180,10 @@ if (DoubleUncertainty) {
 
 // --------------------------------------- pileup weighting
 // pile-up is done directly with direct_pileup_reweight
-std::vector<double> direct_pileup_reweight = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct");
-std::vector<double> direct_pileup_reweight_up = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_up");
-std::vector<double> direct_pileup_reweight_down = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_down");
+// v1
+//std::vector<double> direct_pileup_reweight = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct");
+//std::vector<double> direct_pileup_reweight_up = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_up");
+//std::vector<double> direct_pileup_reweight_down = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_down");
 	
 gROOT->cd ();                 //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
 
@@ -1221,11 +1228,13 @@ if(!isMC)
 // (runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins)
 // EGamma doesn't have any, thus there will be 1 on its' place
 
-TString muon_HLTeff_filename(string(std::getenv("CMSSW_BASE")) + "/src/UserCode/llvv_fwk/analysis/hlt-triggers/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root");
+// v1
+//TString muon_HLTeff_filename(string(std::getenv("CMSSW_BASE")) + "/src/UserCode/llvv_fwk/analysis/hlt-triggers/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root");
 // .Data() returns char *
 // c_str as well?
-TFile* muon_HLTeff_file = TFile::Open(muon_HLTeff_filename.Data());
-TH2F* muon_HLTeff_TH2F = (TH2F*) muon_HLTeff_file->Get("runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio");
+//TFile* muon_HLTeff_file = TFile::Open(muon_HLTeff_filename.Data());
+//TH2F* muon_HLTeff_TH2F = (TH2F*) muon_HLTeff_file->Get("runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio");
+
 // I do access the muon_HLTeff_TH2F histo with muon_HLTeff_TH2F->GetBin(eta, pt)
 
 // To USE:
@@ -1728,6 +1737,7 @@ for(size_t f=0; f<urls.size();++f)
 		// why don't use nGoodPV for Pile-Up?
 		unsigned int num_inters = 0, num_inters_raw = 0;
 		double weight_pu_test = weight;
+		/* v1, no pile-up weight
 		if(isMC)
 			{
 			int ngenITpu = 0;
@@ -1783,6 +1793,7 @@ for(size_t f=0; f<urls.size();++f)
 		weight *= puWeight;
 		weight_up *= puWeight_up;
 		weight_down *= puWeight_down;
+		*/
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -1849,9 +1860,8 @@ for(size_t f=0; f<urls.size();++f)
 		// it's not needed with the latest versions of RunB rereconstruction
 		
 		// -------------------------------------------------- Skip bad lumi
-		// people say the new datasets for CMSSW76 don't have it implemented yet
-		// testing if the procedure from 74 works with 76:
-		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
+		// 80X, v1
+		//if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
 		// Notice: it is the first continue in the event loop
 		n_events_pass_lumi += 1;
 		// there is no sum_weights_pass_lumi -- lumi is for data only..
@@ -2552,7 +2562,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
 			// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
-			Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+			//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+			Double_t muon_HLTeff_SF = 1;
 			weight *= muon_HLTeff_SF;
 			}
 
@@ -2674,8 +2685,10 @@ for(size_t f=0; f<urls.size();++f)
 				float l2_eta = fabs(selMuons[1].eta());
 				float l2_pt  = fabs(selMuons[1].pt());
 
-				Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
-				Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+				//Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
+				//Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+				Double_t muon_HLTeff_SF1 = 1;
+				Double_t muon_HLTeff_SF2 = 1;
 				weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
 				}
 			else
@@ -2690,7 +2703,8 @@ for(size_t f=0; f<urls.size();++f)
 				//float el_pt  = fabs(selElectrons[0].pt());
 
 				Double_t electron_HLTeff_SF = 1;
-				Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+				//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+				Double_t muon_HLTeff_SF = 1;
 				weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
 				}
 			}
@@ -3042,6 +3056,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if(debug) cout << "jet eta pt e, e x y z" << endl;
 
+		/* v1, no jet corrections
 		LorentzVector jet_corr(0., 0., 0., 0.);
 		for(size_t ijet=0; ijet<jets.size(); ijet++)
 			{
@@ -3150,6 +3165,7 @@ for(size_t f=0; f<urls.size();++f)
 		//met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
 		//met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
 		//met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
+		*/
 
 
 
@@ -3392,6 +3408,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			//update according to the SF measured by BTV
 			// TODO: new fency procedure with CSV files
+			/* v1, no b-tag scale factor
 			if(isMC){
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
@@ -3410,6 +3427,7 @@ for(size_t f=0; f<urls.size();++f)
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 				}
 			}
+			*/
 
 			/*
 			//update according to the SF measured by BTV
@@ -3425,7 +3443,7 @@ for(size_t f=0; f<urls.size();++f)
 				//      btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				//  --- etc
 
-				/* TODO: for later
+				// TODO: for later
 				if      (abs(flavId)==5) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfb + sfbunc,   beff);
 				else if (abs(flavId)==4) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfb/5 + 2*sfbunc, beff);
 				else                     btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfl + sfbunc,   leff);
@@ -4389,11 +4407,13 @@ ofile->Close();
 if (outTxtFile) fclose (outTxtFile);
 
 // Now that everything is done, dump the list of lumiBlock that we processed in this job
+/*
 if(!isMC){
 	// FIXME: when lumi certificate is ready for rereco data, check that these work
 	goodLumiFilter.FindLumiInFiles(urls);
 	goodLumiFilter.DumpToJson(((outUrl.ReplaceAll(".root",""))+".json").Data());
 	}
+*/
 
 }
 

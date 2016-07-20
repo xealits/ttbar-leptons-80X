@@ -19,6 +19,77 @@ Showing 1-10 out of 4 results, for more results use --idx/--limit options
 /SingleMuon/Run2016D-PromptReco-v2/MINIAOD
 
 
+## Summary
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 2712
+nevents  : 246175191
+nblocks  : 122
+nlumis   : 64160
+file_size: 5887198215922
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1080
+nevents  : 97292079
+nblocks  : 47
+nlumis   : 20569
+file_size: 2464297655709
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1569
+nevents  : 148167727
+nblocks  : 22
+nlumis   : 30885
+file_size: 3670676557558
+
+
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1742
+nevents  : 158188719
+nblocks  : 110
+nlumis   : 60451
+file_size: 3230446774053
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 756
+nevents  : 68492270
+nblocks  : 44
+nlumis   : 20876
+file_size: 1480106482449
+
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1035
+nevents  : 98175265
+nblocks  : 22
+nlumis   : 30696
+file_size: 2098694664622
+
+
+
+
+
+
+
+
 MC
 ---
 
@@ -99,5 +170,7 @@ Showing 1-10 out of 4 results, for more results use --idx/--limit options
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext4-v1/MINIAODSIM
 
 
+
+https://cmsweb.cern.ch/das/request?instance=prod%2Fglobal&view=table&input=dataset+dataset%3D%2FTT%2A_13TeV-powheg%2A%2FRunIISpring16DR80-%2A%2F%2A+status%3D%2A&idx=0&limit=50
 
 
