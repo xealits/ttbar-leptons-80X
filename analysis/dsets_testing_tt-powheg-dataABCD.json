@@ -1,0 +1,38 @@
+{
+  "proc":[
+     {
+      "tag":"t#bar{t} inclusive",
+      "isdata":false,
+      "color":614,
+      "comment":"",
+      "lcolor":1,
+      "data":[
+         { "dtag":"MC13TeV_TTJets_powheg"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
+          "dset":"/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/MINIAODSIM"  }
+      ]
+    },
+
+    { 
+      "tag":"data",
+      "isdata":true,
+      "color":1,
+      "fill":0,
+      "comment":"real split 17",        
+       "data":[        
+
+        { "dtag":"Data13TeV_SingleMuon2015D_16Dec2015v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
+          "dset":"/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD",
+          "lumiMask":"/afs/cern.ch/user/o/otoldaie/work/private/project/CMSSW_7_6_3/src/UserCode/llvv_fwk/data/json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt" },
+        { "dtag":"Data13TeV_SingleElectron2015D_16Dec2015v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
+          "dset":"/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD",
+          "lumiMask":"/afs/cern.ch/user/o/otoldaie/work/private/project/CMSSW_7_6_3/src/UserCode/llvv_fwk/data/json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt" }
+
+      ]             
+    }
+
+  ]
+}
+
+
+
+
