@@ -170,7 +170,7 @@ Showing 1-10 out of 4 results, for more results use --idx/--limit options
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext4-v1/MINIAODSIM
 
 
-
+Powheg TTbar datasets for 80X:
 https://cmsweb.cern.ch/das/request?instance=prod%2Fglobal&view=table&input=dataset+dataset%3D%2FTT%2A_13TeV-powheg%2A%2FRunIISpring16DR80-%2A%2F%2A+status%3D%2A&idx=0&limit=50
-
+dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/* status=*
 
