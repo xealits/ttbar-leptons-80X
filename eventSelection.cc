@@ -1898,9 +1898,15 @@ for(size_t f=0; f<urls.size();++f)
 		// Need either to simulate the HLT (https://twiki.cern.ch/twiki/bin/view/CMS/TopTrigger#How_to_easily_emulate_HLT_paths) to match triggers.
 		// Mara's triggers: HLT_Ele23_WPLoose_Gsf for electrons
 		//                  HLT_IsoMu20 or HLT_IsoTkMu20 for muons
-		bool eTrigger    ( utils::passTriggerPatterns(tr, "HLT_Ele23_WPLoose_Gsf*") );
-		bool muTrigger   (
-			utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
+		//HLT_Iso(Tk)Mu22_v3
+		//HLT_Ele27_WPTight_Gsf_v2
+		bool eTrigger    ( isMC ?
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
+		bool muTrigger   ( isMC ?
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
+			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
 			);
