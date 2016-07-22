@@ -1298,14 +1298,12 @@ TLorentzVector pl, plb, pb, pbb, prest;
 printf ("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
 
 int nMultiChannel(0);
-FILE *csv_out;
-string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
-csv_out = fopen(FileName.c_str(), "w");
 
 // FIXME: it's initialization of a rare control point, make it automatic somehow? initialize all?
 // to check if processing goes well now
 // increment( string("weight_passed_oursel"), 0. );
 
+/*
 fprintf(csv_out, "Headers\n");
 
 // MULTISELECT headers:
@@ -1352,10 +1350,13 @@ for (int i=0; i<MULTISEL_SIZE; i++)
 	}
 fprintf(csv_out, "\n");
 
+*/
+
 
 
 // EVENTOUT
 
+/*
 fprintf(csv_out, "crossel:pu_num_inters,nGoodPV, rawWeight, weight, isElectron, l_px,l_py,l_pz,l_e, b1_px,b1_py,b1_pz,b1_e, j1_px,j1_py,j1_pz,j1_e,j2_px,j2_py,j2_pz,j2_e\n");
 fprintf(csv_out, "oursel: iev, pu_num_inters,nGoodPV, rawWeight, weight, weight_up, weight_down, isElectron,");
 fprintf(csv_out, "met_0, met_1, met_2, met_3, met_4, met_5, met_6,");
@@ -1370,10 +1371,11 @@ fprintf(csv_out, "j2_vz, j2_px,j2_py,j2_pz,j2_e\n");
 fprintf(csv_out, "marasel:pu_num_inters,nGoodPV, rawWeight, weight, isElectron, l_px,l_py,l_pz,l_e, b1_px,b1_py,b1_pz,b1_e,b2_px,b2_py,b2_pz,b2_e, j1_px,j1_py,j1_pz,j1_e,j2_px,j2_py,j2_pz,j2_e,j3_px,j3_py,j3_pz,j3_e,j4_px,j4_py,j4_pz,j4_e\n");
 
 fprintf(csv_out, "\n");
+*/
 
 for(size_t f=0; f<urls.size();++f)
 	{
-	fprintf(csv_out, "Processing file: %s\n", urls[f].c_str());
+	//fprintf(csv_out, "Processing file: %s\n", urls[f].c_str());
 	cout << "Processing file: " << urls[f].c_str() << "\n";
 	TFile* file = TFile::Open(urls[f].c_str());
 	fwlite::Event ev(file);
@@ -4172,6 +4174,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		} // End single file event loop
 
+	/* removing the old output
 	fprintf(csv_out, "acceptances:");
 	fprintf(csv_out, "%s,", urls[f].c_str());
 	fprintf(csv_out, "%d,%d,%g,%g,", iev, n_events_pass_lumi, sum_weights_raw, sum_weights);
@@ -4300,19 +4303,24 @@ for(size_t f=0; f<urls.size();++f)
 	printf("Done processing the file\n");
 	printf("\n");
 
-	delete file;
-
 	fprintf(csv_out, "End of event loop in the file.\n\n");
+	*/
+
+	delete file;
 	} // End loop on files
 
 printf("Done processing the job of files\n");
 
-fprintf(csv_out, "End of (file loop) the job.\n");
+printf("End of (file loop) the job.\n");
 
 // Controls distributions of processed particles
 
 
 // CONTROLINFO
+
+FILE *csv_out;
+string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
+csv_out = fopen(FileName.c_str(), "w");
 
 fprintf(csv_out, "New output (sums per whole job!):\n");
 
