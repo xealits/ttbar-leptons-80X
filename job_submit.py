@@ -161,6 +161,7 @@ print("Proxy is ready.")
 
 
 # finding local computing resourses
+local_tier = "foo"
 hostname = commands.getstatusoutput("hostname -f")[1]
 if "cern.ch" in hostname: local_tier = "T2_CH_CERN"
 
@@ -211,6 +212,7 @@ for dset_group in dsets['proc']:
             file_server = "root://eoscms//eos/cms/"
             print("using " + file_server + " fileserver")
         else:
+            file_server = "root://cms-xrd-global.cern.ch/"
             print("using default " + file_server + " fileserver")
 
         #sites = sites_rows[3:]
