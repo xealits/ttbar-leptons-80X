@@ -891,8 +891,8 @@ std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vecto
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 	
 // Good lumi mask
-// v1
-//lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
+// v2
+lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
 
 // for new orthogonality [TESTING]
 bool isSingleElectronDataset = !isMC && dtag.Contains ("SingleEle");
@@ -1862,8 +1862,8 @@ for(size_t f=0; f<urls.size();++f)
 		// it's not needed with the latest versions of RunB rereconstruction
 		
 		// -------------------------------------------------- Skip bad lumi
-		// 80X, v1
-		//if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
+		// 80X, v2
+		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
 		// Notice: it is the first continue in the event loop
 		n_events_pass_lumi += 1;
 		// there is no sum_weights_pass_lumi -- lumi is for data only..
