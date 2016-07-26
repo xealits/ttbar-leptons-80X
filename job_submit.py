@@ -81,6 +81,7 @@ The dsets.json file structured as:
 from sys import argv, exit
 import json, os
 import commands # for some reason subprocess.check_output does not work with das_client.py
+import shutil
 
 
 
@@ -124,15 +125,15 @@ print("Project dir  is set to:", project_dir)
 # TODO: add SCRAM_ARCH and other parameters
 job_template = """#!/bin/sh
 pwd
-export SCRAM_ARCH=slc6_amd64_gcc493
-export BUILD_ARCH=slc6_amd64_gcc493
+export SCRAM_ARCH={SCRAM_ARCH}
+export BUILD_ARCH={SCRAM_ARCH}
 export VO_CMS_SW_DIR=/nfs/soft/cms
-cd {project_dir}
+cd {{project_dir}}
 eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
-{exec_name} {job_cfg}
-"""
+{{exec_name}} {{job_cfg}}
+""".format(**os.environ)
 
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
 
@@ -149,13 +150,19 @@ def chunks(l, n):
 
 proxy_file = outdirname + "/FARM/inputs/x509_proxy"
 print("Initializing proxy in " + proxy_file)
-os.system('export X509_USER_PROXY=' + proxy_file + '; voms-proxy-init --voms cms')
-#status, output = commands.getstatusoutput('export X509_USER_PROXY=' + proxy_file + '; voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
-#if status !=0:
-#    print("Proxy initialization failed:")
-#    print("    status = " + str(status))
-#    print("    output =\n" + output)
-#    exit(2)
+#status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
+# os.system handles the hidden input well
+# subprocess.check_output(shell=True) and .Popen(shell=True)
+# had some issues
+status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
+
+if status !=0:
+    print("Proxy initialization failed:")
+    print("    status = " + str(status))
+    print("    output =\n" + output)
+    exit(2)
+
+os.system('export X509_USER_PROXY=' + proxy_file)
 
 print("Proxy is ready.")
 
