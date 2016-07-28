@@ -1475,7 +1475,7 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle < LHEEventProduct > lheEPHandle;
 		lheEPHandle.getByLabel (ev, "externalLHEProducer");
 
-		if (debug)
+		if (debug && isMC)
 			{
 			cout << "number of gen particles = " << gen.size() << "\n";
 
@@ -1889,11 +1889,11 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
 			cout << "-- Commented out --" << endl;
-			// for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
-				// cout << *trnames << endl;
+			//for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
+				//cout << *trnames << endl;
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
-		}
+			}
 
 		// Need either to simulate the HLT (https://twiki.cern.ch/twiki/bin/view/CMS/TopTrigger#How_to_easily_emulate_HLT_paths) to match triggers.
 		// Mara's triggers: HLT_Ele23_WPLoose_Gsf for electrons
@@ -1901,10 +1901,12 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_Iso(Tk)Mu22_v3
 		//HLT_Ele27_WPTight_Gsf_v2
 		bool eTrigger    ( isMC ?
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
 			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
 		bool muTrigger   ( isMC ?
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
+			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
@@ -4421,13 +4423,10 @@ ofile->Close();
 if (outTxtFile) fclose (outTxtFile);
 
 // Now that everything is done, dump the list of lumiBlock that we processed in this job
-/*
 if(!isMC){
-	// FIXME: when lumi certificate is ready for rereco data, check that these work
 	goodLumiFilter.FindLumiInFiles(urls);
 	goodLumiFilter.DumpToJson(((outUrl.ReplaceAll(".root",""))+".json").Data());
 	}
-*/
 
 }
 
