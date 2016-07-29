@@ -1882,15 +1882,19 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------- and require compatibilitiy of the event with the PD
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
 		if (!tr.isValid ()){
-			cout << "Trigger is not valid" << endl;
-			return false;
+			cout << "Trigger HLT is not valid, trying HLT2" << endl;
+			tr = ev.triggerResultsByName ("HLT2");
+			if (!tr.isValid ()){
+				cout << "Trigger HLT2 is not valid, exiting" << endl;
+				return false;
+				}
 			}
 
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
-			cout << "-- Commented out --" << endl;
-			//for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
-				//cout << *trnames << endl;
+			//cout << "-- Commented out --" << endl;
+			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
+				cout << *trnames << endl;
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
 			}
