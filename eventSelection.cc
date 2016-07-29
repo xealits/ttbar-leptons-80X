@@ -87,11 +87,11 @@ namespace utils
 		{
 		// TODO: it is the same jetCorrector as in MacroUtils, only Fall_ prefix is set
 		// Fall15_25nsV2_
-		FactorizedJetCorrector* getJetCorrector(TString baseDir, bool isMC)
+		FactorizedJetCorrector* getJetCorrector(TString baseDir, TString pf, bool isMC)
 			{
 			gSystem->ExpandPathName(baseDir);
 			//TString pf(isMC ? "MC" : "DATA");
-			TString pf("Fall15_25nsV2_");
+			// TString pf("Fall15_25nsV2_");
 			pf += (isMC ? "MC" : "DATA");
 			
 			//order matters: L1 -> L2 -> L3 (-> Residuals)
@@ -1024,11 +1024,13 @@ if(debug) cout << "DEBUG: xsec: " << xsec << endl;
 TString jecDir = runProcess.getParameter < std::string > ("jecDir");
 gSystem->ExpandPathName (jecDir);
 // v1
-//FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, isMC);
+// getJetCorrector(TString baseDir, TString pf, bool isMC)
+FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
 //TString pf(isMC ? "MC" : "DATA");
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
+// JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
+JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Spring16_25nsV6_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
 // JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/MC_Uncertainty_AK4PFchs.txt").Data ());
 
 // ------------------------------------- muon energy scale and uncertainties
