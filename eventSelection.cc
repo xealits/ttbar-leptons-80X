@@ -48,9 +48,11 @@
 #include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 #include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
 
-// TODO: try cmssw Btag
-//#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-//#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+// should work in CMSSW_8_0_12 and CMSSW_8_1_0
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondTools/BTau/interface/BTagCalibrationReader.h"
+// #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+// #include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
 // this one is for 80X -> #include "CondTools/BTau/interface/BTagCalibrationReader.h"
 
 #include "UserCode/llvv_fwk/interface/GammaWeightsHandler.h"
@@ -1096,10 +1098,55 @@ beff = 0.559;
 
 // Setup calibration readers
 //BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/btagSF_CSVv2.csv");
-// v1
-//BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
-// TODO: try new llvv_fwk/data/weights/CSVv2_76X.csv
+// BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
+BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
 // and there:
+
+// in *80X
+/*
+The name of the measurements is
+
+  "incl" for light jets,
+  "mujets" (from QCD methods only) or “comb” (combination of QCD and ttbar methods)
+    for b and c jets for what concerns the pT/eta dependence for the different WP for CSVv2.
+    The precision of the “comb” measurement is better than for the “mujets”,
+    however for precision measurements on top physics done in the 2lepton channel, it is recommended to use the "mujets" one.
+  "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2,
+  but only to be used for jets with a pT spectrum similar to that in ttbar.
+  The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
+*/
+
+// only 1 reader:
+
+BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
+                             "central",             // central sys type
+                             {"up", "down"});      // other sys types
+btagCal.load(btagCalib,              // calibration instance
+            BTagEntry::FLAV_B,      // btag flavour
+            "mujets")               // measurement type
+btagCal.load(btagCalib,              // calibration instance
+            BTagEntry::FLAV_C,      // btag flavour
+            "mujets")               // measurement type
+btagCal.load(btagCalib,              // calibration instance
+            BTagEntry::FLAV_UDSG,   // btag flavour
+            "incl")                 // measurement type
+
+/* usage in 80X:
+double jet_scalefactor    = reader.eval_auto_bounds(
+          "central", 
+          BTagEntry::FLAV_B, 
+          b_jet.eta(), 
+          b_jet.pt()
+      );
+double jet_scalefactor_up = reader.eval_auto_bounds(
+          "up", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
+double jet_scalefactor_do = reader.eval_auto_bounds(
+          "down", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt()); 
+
+*/
+
+// in 76X
+
 //The name of the measurements is
 //
 //  * "incl" for light jets,
@@ -1121,7 +1168,6 @@ beff = 0.559;
 //BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "incl", "central");  // calibration instance, operating point, measurement type, systematics type
 //BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "up"     );  // sys up
 //BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
-
 
 
 /* TODO: CMSSW calibration:
@@ -3423,27 +3469,34 @@ for(size_t f=0; f<urls.size();++f)
 			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
 
 			//update according to the SF measured by BTV
-			// TODO: new fency procedure with CSV files
-			/* v1, no b-tag scale factor
+			// new fency procedure with CSV files
+			// 80X calibrators in btagCal
+			// usage:
+			// btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
+			// -- one calibrator for central value, and up/down
+			// thus the specification of the value to callibrate,
+			// instead of different callibrators
 			if(isMC){
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
 				double eta=jet.eta();
 				if (abs(flavId)==5) {
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
+					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				} else if(abs(flavId)==4) {
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
+					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 				} else {
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
+					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 				}
 			}
-			*/
 
 			/*
 			//update according to the SF measured by BTV
