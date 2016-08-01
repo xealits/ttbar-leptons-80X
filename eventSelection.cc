@@ -3119,7 +3119,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if(debug) cout << "jet eta pt e, e x y z" << endl;
 
-		/* v1, no jet corrections
+		// v6, adding jet corrections and b-tagging
 		LorentzVector jet_corr(0., 0., 0., 0.);
 		for(size_t ijet=0; ijet<jets.size(); ijet++)
 			{
@@ -3228,7 +3228,7 @@ for(size_t f=0; f<urls.size();++f)
 		//met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
 		//met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
 		//met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
-		*/
+
 
 
 
