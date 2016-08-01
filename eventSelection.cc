@@ -46,7 +46,8 @@
 #include "UserCode/llvv_fwk/interface/PDFInfo.h"
 #include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
 #include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
-#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
+
+//#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
 
 // should work in CMSSW_8_0_12 and CMSSW_8_1_0
 #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
@@ -1123,13 +1124,13 @@ BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_B,      // btag flavour
-            "mujets")               // measurement type
+            "mujets");               // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_C,      // btag flavour
-            "mujets")               // measurement type
+            "mujets");              // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
-            "incl")                 // measurement type
+            "incl");                // measurement type
 
 /* usage in 80X:
 double jet_scalefactor    = reader.eval_auto_bounds(
@@ -3482,17 +3483,17 @@ for(size_t f=0; f<urls.size();++f)
 				double eta=jet.eta();
 				if (abs(flavId)==5) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt()), beff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				} else if(abs(flavId)==4) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt()), beff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 				} else {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 				}
