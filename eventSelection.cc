@@ -1931,7 +1931,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------- and require compatibilitiy of the event with the PD
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
 		if (!tr.isValid ()){
-			cout << "Trigger HLT is not valid, trying HLT2" << endl;
+			//cout << "Trigger HLT is not valid, trying HLT2" << endl;
 			tr = ev.triggerResultsByName ("HLT2");
 			if (!tr.isValid ()){
 				cout << "Trigger HLT2 is not valid, exiting" << endl;
