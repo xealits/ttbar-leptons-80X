@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 raws_dir="$1"
 
 
@@ -19,11 +20,11 @@ mkdir $raws_dir/merged-sets/jobsums
 #cp job-reduce/processing-distributions_merging-sets.R $raws_dir/merged-sets/jobsums
 #cp job-reduce/processing_stitch_weightflow.R          $raws_dir/merged-sets/jobsums
 
-# No copy, access the scripts via path in env var, obtained by realpath
+# No copy, access the scripts via path in env var, obtained by readlink -e
 
-SCRIPTS_SUM_COUNTERS=`realpath job-reduce/processing-counters_merging-sets.R`
-SCRIPTS_SUM_DISTR=`realpath job-reduce/processing-distributions_merging-sets.R`
-SCRIPTS_STITCH_WEIGHTFLOW=`realpath job-reduce/processing_stitch_weightflow.R`
+SCRIPTS_SUM_COUNTERS=`readlink -e job-reduce/processing-counters_merging-sets.R`
+SCRIPTS_SUM_DISTR=`readlink -e job-reduce/processing-distributions_merging-sets.R`
+SCRIPTS_STITCH_WEIGHTFLOW=`readlink -e job-reduce/processing_stitch_weightflow.R`
 
 
 # THE OUTPUT DATA
@@ -33,7 +34,7 @@ SCRIPTS_STITCH_WEIGHTFLOW=`realpath job-reduce/processing_stitch_weightflow.R`
 # No copy, access output names via env var:
 # store full path to the job-reduce/ dir and access files in there
 
-JOBREDUCE_DIR=`realpath job-reduce/`
+JOBREDUCE_DIR=`readlink -e job-reduce/`
 #DISTRS=`cat job-reduce/distrs_*`
 #COUNTERS=`cat job-reduce/counters`
 #COUNTERS_MULTISELECT=`cat counters.multi*`
