@@ -420,6 +420,10 @@ Showing 1-10 out of 4 results, for more results use --idx/--limit options
 /SingleMuon/Run2016C-PromptReco-v2/MINIAOD
 /SingleMuon/Run2016D-PromptReco-v2/MINIAOD
 
+
+
+### TTbar
+
 #/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext4-v1/MINIAODSIM
 
 now (since 28-7-2016):
@@ -428,12 +432,68 @@ now (since 28-7-2016):
 The run (test_v4) with the previous dset practically didn't have electron MC.
 
 
-Powheg TTbar datasets for 80X:
+Powheg TTbar datasets for 80X (according to Efe):
 https://cmsweb.cern.ch/das/request?instance=prod%2Fglobal&view=table&input=dataset+dataset%3D%2FTT%2A_13TeV-powheg%2A%2FRunIISpring16DR80-%2A%2F%2A+status%3D%2A&idx=0&limit=50
 dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/* status=*
 
+
+for dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/MINIAODSIM status=*:
+
+/TT_TuneCUETP8M1_alphaS01273_13TeV-powheg-scaledown-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM 	mc 	INVALID 	2016-06-09 05:25:05 	NoGroup 	link
+/TT_TuneCUETP8M1_alphaS01273_13TeV-powheg-scaledown-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM 	mc 	INVALID 	2016-05-01 00:55:20 	NoGroup 	link
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM 	mc 	PRODUCTION 	2016-05-19 05:57:46 	NoGroup 	link
+/TTToSemiLeptonic_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/MINIAODSIM 	mc 	PRODUCTION 	2016-05-22 18:03:10 	NoGroup 	link
+/TTTo2L2Nu_TuneCUETP8M1_alphaS01273_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM 	mc 	PRODUCTION 	2016-05-19 09:35:21 	NoGroup 	link
+
+So, in principle, /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM
+should be fine.
+
 And from HLT page (https://twiki.cern.ch/twiki/bin/view/CMS/TopTrigger#TOP_trigger_80X_reHLT_samples):
 https://cmsweb.cern.ch/das/request?input=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16*reHLT_80X*/*
+
+DAS query:
+dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16*reHLT_80X*/*
+
+
+And also:
+das_client.py --query="dataset dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16*80X*/MINIAODSIM status=VALID"
+
+Showing 1-10 out of 8 results, for more results use --idx/--limit options
+
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext3-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext3-v2/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext4-v1/MINIAODSIM
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_RECODEBUG_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext3-v1/MINIAODSIM
+
+-- from these the newest is RECODEBUG, the second-newest:
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext3-v2/MINIAODSIM
+-- try in v10
+
+
+v6-7 ran on:
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM
+
+--- it has terrible PU (0).
+
+Another set from HLT recommendation:
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16reHLT80-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/AODSIM
+--- AODSIM
+
+
+Try /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM
+in v8, ttbar-data run.
+IT IS IN PRODUCTION.
+
+The AODSIM:
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/AODSIM 
+--- is VALID.
+Trying in v9.
+
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/AODSIM 	2506 	224 	34990578 	9318543783369 	mc 	VALID 	2016-04-28 18:45:09 	NoGroup 
 
 
 
@@ -448,16 +508,22 @@ https://cmsweb.cern.ch/das/request?input=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/R
 /W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 
 
+
+
 ### DY-Jets
 
 /DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
+
+
+
 
 ### Diboson
 
 /WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
+
 
 
 
