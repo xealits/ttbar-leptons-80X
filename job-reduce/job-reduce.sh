@@ -30,16 +30,20 @@ SCRIPTS_STITCH_WEIGHTFLOW=`realpath job-reduce/processing_stitch_weightflow.R`
 #cp job-reduce/distrs_* job-reduce/counters counters.multi* $raws_dir/merged-sets/
 #cp job-reduce/distrs_* job-reduce/counters counters.multi* $raws_dir/merged-sets/jobsums
 
-# No copy, access output names via env var
-# (the file content is stored in a variable, but it might be too big for a variable?)
-# (now, the output files are 42K -- should be ok)
-# (then access it via filenames in vars)
+# No copy, access output names via env var:
+# store full path to the job-reduce/ dir and access files in there
+
+JOBREDUCE_DIR=`realpath job-reduce/`
+#DISTRS=`cat job-reduce/distrs_*`
+#COUNTERS=`cat job-reduce/counters`
+#COUNTERS_MULTISELECT=`cat counters.multi*`
 
 
 # +++++++++ merge procedures
 function Merge_distr {
    # Description: 
    echo $1
+   distrs_headername=$2
    echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $1
    grep --no-filename "^$1:content," ../*csv | sed "s/^$1:content,//" >> $1 
    echo "[Merged distr]"
@@ -101,66 +105,66 @@ echo Distributions
 
 #for t in `cat distrs`
 
-distrs=`cat distrs_pt`
-distrs_headername=`cat distrs_pt_headername`
+distrs=`cat $JOBREDUCE_DIR/distrs_pt`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_pt_headername`
 echo $distrs_headername
 
 for t in $distrs
 do
-  Merge_distr $t
+  Merge_distr $t $distrs_headername
 done
 
 
-distrs=`cat distrs_energy`
-distrs_headername=`cat distrs_energy_headername`
+distrs=`cat $JOBREDUCE_DIR/distrs_energy`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_energy_headername`
 echo $distrs_headername
 
 for t in $distrs
 do
-  Merge_distr $t
+  Merge_distr $t $distrs_headername
 done
 
-distrs=`cat distrs_eta`
-distrs_headername=`cat distrs_eta_headername`
+distrs=`cat $JOBREDUCE_DIR/distrs_eta`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_eta_headername`
 echo $distrs_headername
 
 for t in $distrs
 do
-  Merge_distr $t
-done
-
-
-
-
-
-distrs=`cat distrs_n`
-distrs_headername=`cat distrs_n_headername`
-echo $distrs_headername
-
-for t in $distrs
-do
-  Merge_distr $t
-done
-
-
-distrs=`cat distrs_pileup`
-distrs_headername=`cat distrs_pileup_headername`
-echo $distrs_headername
-
-for t in $distrs
-do
-  Merge_distr $t
+  Merge_distr $t $distrs_headername
 done
 
 
 
-distrs=`cat distrs_particleids`
-distrs_headername=`cat distrs_particleids_headername`
+
+
+distrs=`cat $JOBREDUCE_DIR/distrs_n`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_n_headername`
 echo $distrs_headername
 
 for t in $distrs
 do
-  Merge_distr $t
+  Merge_distr $t $distrs_headername
+done
+
+
+distrs=`cat $JOBREDUCE_DIR/distrs_pileup`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_pileup_headername`
+echo $distrs_headername
+
+for t in $distrs
+do
+  Merge_distr $t $distrs_headername
+done
+
+
+
+distrs=`cat $JOBREDUCE_DIR/distrs_particleids`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_particleids_headername`
+echo $distrs_headername
+
+for t in $distrs
+do
+  Merge_distr $t $distrs_headername
 done
 
 
@@ -173,7 +177,7 @@ echo
 
 echo Counters
 
-for t in `cat counters counters.multi*`
+for t in `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multi*`
 do
   Merge_counter $t
 done
@@ -193,7 +197,7 @@ echo summing jobs in $raws_dir/merged-sets
 echo Distributions
 
 
-for t in `cat distrs_pt distrs_n distrs_pileup distrs_energy distrs_eta`
+for t in `cat $JOBREDUCE_DIR/distrs_pt $JOBREDUCE_DIR/distrs_n $JOBREDUCE_DIR/distrs_pileup $JOBREDUCE_DIR/distrs_energy $JOBREDUCE_DIR/distrs_eta`
 do
    Sum_distr $t
 done
@@ -205,7 +209,7 @@ echo
 
 echo Counters
 
-for t in `cat counters counters.multi*`
+for t in `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multi*`
 do
    Sum_counter $t
 done
@@ -221,25 +225,19 @@ echo
 echo stitching weight_flows
 
 echo SingleElectron
-# ./processing_stitch_weightflow.R weightflow_el `cat counters counters.multiselect.el`
-$SCRIPTS_STITCH_WEIGHTFLOW weightflow_el `cat counters counters.multiselect.el`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_el `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multiselect.el`
 
 echo SingleMuon
-# ./processing_stitch_weightflow.R weightflow_mu `cat counters counters.multiselect.mu`
-$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mu `cat counters counters.multiselect.mu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mu `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multiselect.mu`
 
 echo EMu
-# ./processing_stitch_weightflow.R weightflow_emu `cat counters counters.multiselect.emu`
-$SCRIPTS_STITCH_WEIGHTFLOW weightflow_emu `cat counters counters.multiselect.emu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_emu `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multiselect.emu`
 
 echo MuMu
-# ./processing_stitch_weightflow.R weightflow_mumu `cat counters counters.multiselect.mumu`
-$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mumu `cat counters counters.multiselect.mumu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mumu `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multiselect.mumu`
 
 echo EE
-# ./processing_stitch_weightflow.R weightflow_ee `cat counters counters.multiselect.ee`
-$SCRIPTS_STITCH_WEIGHTFLOW weightflow_ee `cat counters counters.multiselect.ee`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_ee `cat $JOBREDUCE_DIR/counters $JOBREDUCE_DIR/counters.multiselect.ee`
 
 
-#counters  counters.multisel.el  counters.multisel.mu  counters.multiselect.ee  counters.multiselect.emu  counters.multiselect.mumu
 
