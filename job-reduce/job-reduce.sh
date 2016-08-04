@@ -15,21 +15,66 @@ mkdir $raws_dir/merged-sets
 mkdir $raws_dir/merged-sets/jobsums
 
 # SCRIPTS
-#cp merge_jobs.sh $raws_dir/merged-sets/
-#cp sum_jobs.sh $raws_dir/merged-sets/jobsums
-cp processing-counters_merging-sets.R      $raws_dir/merged-sets/jobsums
-cp processing-distributions_merging-sets.R $raws_dir/merged-sets/jobsums
-cp processing_stitch_weightflow.R          $raws_dir/merged-sets/jobsums
-#cp processing-counters_merging-multiselect.R $raws_dir/merged-sets/jobsums
-#cp stitch_weightflows.sh $raws_dir/merged-sets/jobsums
+#cp job-reduce/processing-counters_merging-sets.R      $raws_dir/merged-sets/jobsums
+#cp job-reduce/processing-distributions_merging-sets.R $raws_dir/merged-sets/jobsums
+#cp job-reduce/processing_stitch_weightflow.R          $raws_dir/merged-sets/jobsums
+
+# No copy, access the scripts via path in env var, obtained by realpath
+
+SCRIPTS_SUM_COUNTERS=`realpath job-reduce/processing-counters_merging-sets.R`
+SCRIPTS_SUM_DISTR=`realpath job-reduce/processing-distributions_merging-sets.R`
+SCRIPTS_STITCH_WEIGHTFLOW=`realpath job-reduce/processing_stitch_weightflow.R`
+
 
 # THE OUTPUT DATA
-cp distrs_* counters counters.multi* $raws_dir/merged-sets/
-cp distrs_* counters counters.multi* $raws_dir/merged-sets/jobsums
-#cp dtags $raws_dir/merged-sets/jobsums
+#cp job-reduce/distrs_* job-reduce/counters counters.multi* $raws_dir/merged-sets/
+#cp job-reduce/distrs_* job-reduce/counters counters.multi* $raws_dir/merged-sets/jobsums
+
+# No copy, access output names via env var
+# (the file content is stored in a variable, but it might be too big for a variable?)
+# (now, the output files are 42K -- should be ok)
+# (then access it via filenames in vars)
+
+
+# +++++++++ merge procedures
+function Merge_distr {
+   # Description: 
+   echo $1
+   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $1
+   grep --no-filename "^$1:content," ../*csv | sed "s/^$1:content,//" >> $1 
+   echo "[Merged distr]"
+}  
+
+function Merge_counter {
+   # Description: 
+   echo $1
+   echo "type,dtag,job_num,$1" > $1
+   grep --no-filename "^$1," ../*csv | sed "s/^$1,//" >> $1 
+   echo "[Merged counter]"
+}
 
 
 
+# +++++++++ sum procedures
+function Sum_distr {
+   # Description:
+   echo $1
+   input=../"$1"
+   output="$1"
+   # ./processing-distributions_merging-sets.R $input $output
+   $SCRIPTS_SUM_DISTR $input $output
+   echo "[Summed distr]"
+}
+
+function Sum_counter {
+   # Description:
+   echo $1
+   input=../"$1"
+   output="$1"
+   #./processing-counters_merging-sets.R $input $output
+   $SCRIPTS_SUM_COUNTERS $input $output
+   echo "[Summed counter]"
+}
 
 
 
@@ -62,10 +107,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 
@@ -75,10 +117,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 distrs=`cat distrs_eta`
@@ -87,10 +126,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 
@@ -103,10 +139,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 
@@ -116,10 +149,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 
@@ -130,10 +160,7 @@ echo $distrs_headername
 
 for t in $distrs
 do
-   echo $t
-   echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $t
-   grep --no-filename "^$t:content," ../*csv | sed "s/^$t:content,//" >> $t 
-   echo "[Merged]"
+  Merge_distr $t
 done
 
 
@@ -148,10 +175,7 @@ echo Counters
 
 for t in `cat counters counters.multi*`
 do
-   echo $t
-   echo "type,dtag,job_num,$t" > $t
-   grep --no-filename "^$t," ../*csv | sed "s/^$t,//" >> $t 
-   echo "[Merged]"
+  Merge_counter $t
 done
 
 echo
@@ -162,6 +186,7 @@ echo
 
 # ||||||||||||||||||||||||||||||||| SUM
 
+
 cd jobsums
 echo summing jobs in $raws_dir/merged-sets
 
@@ -170,11 +195,7 @@ echo Distributions
 
 for t in `cat distrs_pt distrs_n distrs_pileup distrs_energy distrs_eta`
 do
-   echo $t
-   input=../"$t"
-   output="$t"
-   ./processing-distributions_merging-sets.R $input $output
-   echo "[Merged jobs]"
+   Sum_distr $t
 done
 
 echo
@@ -186,11 +207,7 @@ echo Counters
 
 for t in `cat counters counters.multi*`
 do
-   echo $t
-   input=../"$t"
-   output="$t"
-   ./processing-counters_merging-sets.R $input $output
-   echo "[Merged jobs]"
+   Sum_counter $t
 done
 
 echo
@@ -202,20 +219,26 @@ echo
 # ................................... STITCH WEIGHT_FLOW
 
 echo stitching weight_flows
+
 echo SingleElectron
-./processing_stitch_weightflow.R weightflow_el `cat counters counters.multiselect.el`
+# ./processing_stitch_weightflow.R weightflow_el `cat counters counters.multiselect.el`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_el `cat counters counters.multiselect.el`
 
 echo SingleMuon
-./processing_stitch_weightflow.R weightflow_mu `cat counters counters.multiselect.mu`
+# ./processing_stitch_weightflow.R weightflow_mu `cat counters counters.multiselect.mu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mu `cat counters counters.multiselect.mu`
 
 echo EMu
-./processing_stitch_weightflow.R weightflow_emu `cat counters counters.multiselect.emu`
+# ./processing_stitch_weightflow.R weightflow_emu `cat counters counters.multiselect.emu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_emu `cat counters counters.multiselect.emu`
 
 echo MuMu
-./processing_stitch_weightflow.R weightflow_mumu `cat counters counters.multiselect.mumu`
+# ./processing_stitch_weightflow.R weightflow_mumu `cat counters counters.multiselect.mumu`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_mumu `cat counters counters.multiselect.mumu`
 
 echo EE
-./processing_stitch_weightflow.R weightflow_ee `cat counters counters.multiselect.ee`
+# ./processing_stitch_weightflow.R weightflow_ee `cat counters counters.multiselect.ee`
+$SCRIPTS_STITCH_WEIGHTFLOW weightflow_ee `cat counters counters.multiselect.ee`
 
 
 #counters  counters.multisel.el  counters.multisel.mu  counters.multiselect.ee  counters.multiselect.emu  counters.multiselect.mumu
