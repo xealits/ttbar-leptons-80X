@@ -1788,7 +1788,7 @@ for(size_t f=0; f<urls.size();++f)
 		// why don't use nGoodPV for Pile-Up?
 		unsigned int num_inters = 0, num_inters_raw = 0;
 		double weight_pu_test = weight;
-		/* v1, no pile-up weight
+		// tests v7-10+ pileup is back
 		if(isMC)
 			{
 			int ngenITpu = 0;
@@ -1844,7 +1844,6 @@ for(size_t f=0; f<urls.size();++f)
 		weight *= puWeight;
 		weight_up *= puWeight_up;
 		weight_down *= puWeight_down;
-		*/
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
