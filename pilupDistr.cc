@@ -857,12 +857,16 @@ if (argc < 2)
 gSystem->Load ("libFWCoreFWLite");
 AutoLibraryLoader::enable ();
 
+const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
 
 bool debug           = runProcess.getParameter<bool>  ("debug");
+bool isMC            = runProcess.getParameter<bool>  ("isMC");
 
 TString dtag         = runProcess.getParameter<std::string>("dtag");
 string dtag_s        = runProcess.getParameter<std::string>("dtag");
 string job_num       = runProcess.getParameter<std::string>("job_num");
+
+JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
 std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vector < std::string > >("input");
 TString outUrl = runProcess.getParameter<std::string>("outfile");
@@ -888,8 +892,11 @@ for(size_t f=0; f<urls.size();++f)
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 
+	unsigned int iev(0); // number of events
+
 	for (ev.toBegin(); !ev.atEnd(); ++ev)
 		{
+		iev += 1;
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
