@@ -901,9 +901,25 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
+		// ---------------------------------- event weights
 		// NLO -1 corrections
 		double weightGen(1.);
 
+		// pileup weight
+		double puWeight         (1.0);
+		double puWeight_up      (1.0);
+		double puWeight_down    (1.0);
+
+		// rawWeight is everything but Pile-Up
+		double rawWeight        (1.0);
+
+		// final weight of the event
+		double weight           (1.0);
+		double weight_up        (1.0);
+		double weight_down      (1.0);
+
+
+		// getting the NLO -1 weight
 		if(isNLOMC)
 			{
 
@@ -914,6 +930,14 @@ for(size_t f=0; f<urls.size();++f)
 				weightGen = (evt->weight() > 0 ) ? 1. : -1. ;
 				}
 			}
+
+		weight *= weightGen;
+		weight_up *= weightGen;
+		weight_down *= weightGen;
+		rawWeight *=weightGen;
+
+
+		// Good primary vertices
 
 		reco::VertexCollection vtx;
 		reco::Vertex goodPV;
@@ -931,7 +955,10 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
+
+		// ----------------------------------------- Apply pileup reweighting
 		unsigned int num_inters = 0, num_inters_raw = 0;
+		double weight_pu_test = weight;
 
 		if(isMC)
 			{
@@ -998,6 +1025,17 @@ for(size_t f=0; f<urls.size();++f)
 		fill_pu( string("pileup_weight_pernuminters"), num_inters, weight);
 		fill_pu( string("pileup_weight_up_pernuminters"), num_inters, weight_up);
 		fill_pu( string("pileup_weight_down_pernuminters"), num_inters, weight_down);
+
+		if (weightGen<0)
+			{
+			fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
+			fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
+			}
+		else
+			{
+			fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
+			fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
+			}
 
 		}
 	delete file;
