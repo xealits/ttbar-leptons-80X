@@ -1,2 +1,4 @@
-pileupCalc.py -i Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt --inputLumiJSON pileup_latest_8-8-2016.txt  --calcMode true --minBiasXsec 69200 --maxPileupBin 50 --numPileupBins 50  MyDataPileupHistogram_8-8-2016.root
+pileupCalc.py -i Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt --inputLumiJSON pileup_latest_8-8-2016.txt  --calcMode true --minBiasXsec 66020 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_Down_8-8-2016.root
+pileupCalc.py -i Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt --inputLumiJSON pileup_latest_8-8-2016.txt  --calcMode true --minBiasXsec 72380 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_Up_8-8-2016.root
 
+pileupCalc.py -i Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt --inputLumiJSON pileup_latest_8-8-2016.txt  --calcMode true --minBiasXsec 69200 --maxPileupBin 50 --numPileupBins 50  MyDataPileupHistogram_8-8-2016.root
