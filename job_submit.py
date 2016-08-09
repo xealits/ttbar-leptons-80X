@@ -205,14 +205,17 @@ for dset_group in dsets['proc']:
         #dset_files = out_rows[3:]
         print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
 
-        status, out = commands.getstatusoutput('das_client --query="site dataset={} | grep site.name,site.dataset_fraction" '.format(dset))
-        sites = out.split('\n')
-        if status != 0 or len(sites) < 1:
+        # Finding full local sample
+        status, out = commands.getstatusoutput('das_client --query="site dataset={}" --format=JSON '.format(dset))
+        #sites = out.split('\n')
+        if status != 0 or len(out) < 1:
             print("Failed to fetch _sites_ of {} dataset".format(dset))
             print("das_client status = " + str(status))
             print("           output = " + out)
             print("Continue to other dsets")
             continue
+        sites_info = json.loads(out)
+        sites = [' '.join(i['site']['name'], i['site']['dataset_fraction']) for i in sites_info['data']]
 
         if any(local_tier in s and "100.00%" in s for s in sites):
             print("The full dataset is found on local tier " + local_tier)
