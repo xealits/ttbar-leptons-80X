@@ -1954,8 +1954,9 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_Ele27_WPTight_Gsf_v2
 		bool eTrigger    ( isMC ?
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
+			// new trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
+			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
+			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") );
 		bool muTrigger   ( isMC ?
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
