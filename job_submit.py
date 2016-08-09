@@ -80,7 +80,7 @@ The dsets.json file structured as:
 
 from sys import argv, exit
 import json, os
-import commands # for some reason subprocess.check_output does not work with das_client.py
+import commands # for some reason subprocess.check_output does not work with das_client
 import shutil
 
 
@@ -191,26 +191,26 @@ for dset_group in dsets['proc']:
         # TODO: other parameters as well?
 
         # get files of the dset
-        status, out = commands.getstatusoutput('das_client.py --limit=0 --query="file dataset={}"'.format(dset))
+        status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
         #out_rows = out.split('\n')
         dset_files = out.split('\n')
 
         if status != 0 or dset_files < 1:
             print("Failed fetch _files_ of {} dataset".format(dset))
-            print("das_client.py status = " + str(status))
-            print("              output = " + out)
+            print("das_client status = " + str(status))
+            print("           output = " + out)
             print("Continue to other dsets")
             continue
 
         #dset_files = out_rows[3:]
         print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
 
-        status, out = commands.getstatusoutput('das_client.py --query="site dataset={} | grep site.name,site.dataset_fraction" '.format(dset))
+        status, out = commands.getstatusoutput('das_client --query="site dataset={} | grep site.name,site.dataset_fraction" '.format(dset))
         sites = out.split('\n')
         if status != 0 or len(sites) < 1:
             print("Failed to fetch _sites_ of {} dataset".format(dset))
-            print("das_client.py status = " + str(status))
-            print("              output = " + out)
+            print("das_client status = " + str(status))
+            print("           output = " + out)
             print("Continue to other dsets")
             continue
 
