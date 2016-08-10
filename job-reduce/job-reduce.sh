@@ -87,6 +87,37 @@ function Sum_counter {
 }
 
 
+# ============ both procedures
+
+function Reduce_distr {
+   # Description: 
+   # 3 input parameters
+   #   $1 counter name
+   #   $2 distr header name
+   #   $3 directory with jobs outputs
+
+   echo in $3 reducing $1
+   cd $3/merged-sets
+   Merge_distr $1 $2
+   cd jobsums
+   Sum_distr $1
+}
+
+function Reduce_counter {
+   # Description: 
+   # 2 input parameters
+   #   $1 counter name
+   #   $2 directory with jobs outputs
+
+   echo in $2 reducing $1
+   cd $2/merged-sets
+   Merge_counter $1
+   cd jobsums
+   Sum_counter $1
+}
+
+
+
 
 # ------------------------- MERGE
 
