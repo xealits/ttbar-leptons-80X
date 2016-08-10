@@ -426,6 +426,12 @@ bool hasTauAsMother(const reco::GenParticle  p)
 	}
 
 
+float jet_radius(pat::Jet& jet)
+	{
+	return sqrt(jet::EtaPhiMoments.etaEtaMoment + jet::EtaPhiMoments.phiPhiMoment);
+	}
+
+
 /*
  * string find_W_decay(const reco::Candidate * W) {
  *
@@ -1321,15 +1327,11 @@ Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fa
 
 TH1D* singlelep_ttbar_initialevents  = (TH1D*) new TH1D("singlelep_ttbar_init",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
 TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_presele",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-/* These counter histograms are dissabled -- use int for that
-TH1D* singlelep_ttbar_selected_mu_events = (TH1D*) new TH1D("singlelep_ttbar_sele_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected_el_events = (TH1D*) new TH1D("singlelep_ttbar_sele_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected2_mu_events = (TH1D*) new TH1D("singlelep_ttbar_sele2_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected2_el_events = (TH1D*) new TH1D("singlelep_ttbar_sele2_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
 
-TH1D* singlelep_ttbar_maraselected_mu_events = (TH1D*) new TH1D("singlelep_ttbar_marasele_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_maraselected_el_events = (TH1D*) new TH1D("singlelep_ttbar_marasele_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-*/
+
+// jet parameters: pt, eta, radius
+TH3F jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
+TH3F tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
 
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
@@ -2921,6 +2923,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// ---------------------------- Clean jet collection from selected taus
+		/* no need here
 		pat::JetCollection selJetsNoLepNoTau;
 
 		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
@@ -2980,13 +2983,14 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed jets" << endl;
 			}
 
+		*/
 
 		// --------------------------- B-tagged jets
 		pat::JetCollection selBJets;
 
-		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
+		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 			{
-			pat::Jet& jet = selJetsNoLepNoTau[ijet];
+			pat::Jet& jet = selJetsNoLep[ijet];
 
 			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium); // old working point
 			// bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.8); // new working point -- according to Mara's analysis
@@ -3043,7 +3047,7 @@ for(size_t f=0; f<urls.size();++f)
 		unsigned int n_leptons = selLeptons.size();
 
 		unsigned int n_taus = selTausNoLep.size();
-		unsigned int n_jets = selJetsNoLepNoTau.size();
+		unsigned int n_jets = selJetsNoLep.size();
 		unsigned int n_bjets = selBJets.size();
 
 		// Select jets for tau-fake-rate study, save the counts
@@ -3055,12 +3059,14 @@ for(size_t f=0; f<urls.size();++f)
 		bool selection_QCD_jets = (n_jets > 1);
 
 
+		pat::JetCollection probeJets;
 		// select jets:
 		//   - don't consider the jet if it is the only one matching HLT jet
 		// compare with taus
 		// save fake-rate
 
-		//TODO:
+		//TODO: remove HLT jet from the probe jets, if there is only 1 HLT jet
+		/*
 		HLT_jet = ;
 		int hlt_bias_jet = -1;
 		unsigned int n_hlt_jets = 0;
@@ -3085,7 +3091,6 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-		pat::JetCollection probeJets;
 		if (hlt_bias_jet > 0)
 			{
 			probeJets = // selected_jets without the bias one
@@ -3094,14 +3099,38 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			probeJets = // selected_jets
 			}
+		*/
 
-		TH3F jets_distr;
-		TH3F tau_jets_distr;
+		// for now just take all jets:
+		probeJets = selJetsNoLep;
+
+		//TH3F jets_distr;
+		//TH3F tau_jets_distr;
+		float tau_fake_distance = 0.1; // the distance to tau for a jet to be considered tau's origin
 
 		// loop through probe jets and fill jets_distr
 		// loop through jets, find the ones close to taus -- fill tau_jets_distr
 		// TODO: do these distrs via standard way with some fill_jet dynamic function
 
+		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+			{
+			pat::Jet& jet = selJetsNoLep[ijet];
+
+			jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+			}
+
+		for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
+			{
+			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+				{
+				if (reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]) <= tau_fake_distance)
+					{
+					// the tau is fake by this jet -- save distr
+					tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+					continue;
+					}
+				}
+			}
 
 		} // End single file event loop
 
