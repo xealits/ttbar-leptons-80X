@@ -1357,74 +1357,6 @@ for(size_t f=0; f<urls.size();++f)
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 
-	/*
-	// acceptance parameters
-	unsigned int iev(0); // number of events
-	unsigned int n_events_pass_lumi(0); // number of events lassing lumi
-
-	double sum_weights_raw = 0; // sum of raw weights
-	double sum_weights = 0; // sum of final weights
-
-	// sum weights before the particle selection
-	double sum_weights_passtrig_raw = 0;
-	double sum_weights_passtrig = 0;
-
-	// before channel multiselect
-	double weight_before_channel_select = 0;
-
-	double crossel_sum_weights_raw = 0; // crossel
-	double crossel_sum_weights = 0;
-	double oursel_sum_weights_raw = 0; // oursel
-	double oursel_sum_weights = 0;
-	double oursel_sum_weights_el = 0;
-	double oursel_sum_weights_mu = 0;
-	double marasel_sum_weights_raw = 0; // marasel
-	double marasel_sum_weights = 0;
-
-
-	// MULTISELECTION array -- 8 bits
-	// now 6 bits are used -- 0-63 is max
-	double weights_in_no_channel[MULTISEL_SIZE], weights_in_el_channel[MULTISEL_SIZE], weights_in_mu_channel[MULTISEL_SIZE],
-		weights_in_elmu_channel[MULTISEL_SIZE], weights_in_elel_channel[MULTISEL_SIZE], weights_in_mumu_channel[MULTISEL_SIZE];
-	//int weights_in_selections_int[100];
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		//weights_in_selections[i] = 0;
-		weights_in_no_channel[i] = 0;
-		weights_in_el_channel[i] = 0;
-		weights_in_mu_channel[i] = 0;
-		weights_in_elmu_channel[i] = 0;
-		weights_in_elel_channel[i] = 0;
-		weights_in_mumu_channel[i] = 0;
-		//weights_in_selections_int[i] = 0;
-		}
-
-	unsigned int negative_event_nvtx[100];
-	unsigned int positive_event_nvtx[100];
-	double negative_event_pernvtx_weight[100];
-	double positive_event_pernvtx_weight[100];
-	double negative_event_pergoodpv_weight[100];
-	double positive_event_pergoodpv_weight[100];
-	double event_pergoodpv_weight[100];
-	double n_selected_leptons_weighted[100];
-	double n_selected_taus_weighted[100];
-	double n_selected_jets_weighted[100];
-	double n_selected_bjets_weighted[100];
-	for (int i=0; i<100; i++)
-		{
-		negative_event_nvtx[i] = 0;
-		positive_event_nvtx[i] = 0;
-		negative_event_pernvtx_weight[i] = 0;
-		positive_event_pernvtx_weight[i] = 0;
-		negative_event_pergoodpv_weight[i] = 0;
-		positive_event_pergoodpv_weight[i] = 0;
-		event_pergoodpv_weight[i] = 0;
-		n_selected_leptons_weighted[i] = 0;
-		n_selected_taus_weighted[i] = 0;
-		n_selected_jets_weighted[i] = 0;
-		n_selected_bjets_weighted[i] = 0;
-		}
-	*/
 
 	int treeStep (ev.size()/50);
 
@@ -1831,10 +1763,15 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		// Need either to simulate the HLT (https://twiki.cern.ch/twiki/bin/view/CMS/TopTrigger#How_to_easily_emulate_HLT_paths) to match triggers.
-		// Mara's triggers: HLT_Ele23_WPLoose_Gsf for electrons
-		//                  HLT_IsoMu20 or HLT_IsoTkMu20 for muons
-		//HLT_Iso(Tk)Mu22_v3
-		//HLT_Ele27_WPTight_Gsf_v2
+		// trigger for Jet-heavy events in analysis note AN-2012-489: HLT_Jet30_v1
+
+		// TODO: find the corresponding trigger in 2016
+
+		bool hltTrigger utils::passTriggerPatterns(tr, "HLT_Jet30_v*");
+
+		if (!hltTrigger) continue; // No orthogonalization -- run on only 1 trigger type of datasets
+
+		/*
 		bool eTrigger    ( isMC ?
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
 			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
@@ -1847,11 +1784,6 @@ for(size_t f=0; f<urls.size();++f)
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
 			);
-		
-		//if(filterOnlySINGLEMU) {                    eTrigger = false; }
-		//if(filterOnlySINGLEE)  { muTrigger = false;                   }
-		// SingleMuon-dataset jobs process double-HLT events
-		// SingleElectron-dataset jobs skip them
 
 		// if data and SingleElectron dataset and both triggers -- skip event
 		if (!debug) {
@@ -1859,6 +1791,7 @@ for(size_t f=0; f<urls.size();++f)
 		
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
 		}
+		*/
 
 		// TODO: ----------------------------- HLT efficiency scale factors
 		// one should run it on the fired trigger objects,
@@ -1998,14 +1931,6 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<pat::TauCollection> tausHandle;
 		tausHandle.getByLabel(ev, "slimmedTaus");
 		if(tausHandle.isValid() ) taus = *tausHandle;
-
-
-		// ------------------------------------ merging electrons and muons
-		// Let's merge after processing and channel assignment
-		// std::vector<patUtils::GenericLepton> leptons;
-		// for(size_t l=0; l<electrons.size(); ++l) leptons.push_back(patUtils::GenericLepton (electrons[l] ));
-		// for(size_t l=0; l<muons.size(); ++l)     leptons.push_back(patUtils::GenericLepton (muons[l]     ));
-		// std::sort(leptons.begin(), leptons.end(), utils::sort_CandidatesByPt);
 
 
 		// CONTROLINFO
@@ -3122,6 +3047,61 @@ for(size_t f=0; f<urls.size();++f)
 		unsigned int n_bjets = selBJets.size();
 
 		// Select jets for tau-fake-rate study, save the counts
+
+		// W+jets selection:
+		bool selection_W_jets = (n_leptons > 0) && (n_jets > 0);
+
+		// And all-jets selection:
+		bool selection_QCD_jets = (n_jets > 1);
+
+
+		// select jets:
+		//   - don't consider the jet if it is the only one matching HLT jet
+		// compare with taus
+		// save fake-rate
+
+		//TODO:
+		HLT_jet = ;
+		int hlt_bias_jet = -1;
+		unsigned int n_hlt_jets = 0;
+
+		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
+			{
+			pat::Jet& jet = selJetsNoLepNoTau[ijet];
+
+
+			if (reco::deltaR(jet, HLT_jet) < 0.1)
+				{
+				// 
+				if (n_hlt_jets == 0)
+					{
+					hlt_bias_jet = ijet;
+					}
+				else if (n_hlt_jets == 1)
+					{
+					hlt_bias_jet = -1;
+					}
+				n_hlt_jets += 1;
+				}
+			}
+
+		pat::JetCollection probeJets;
+		if (hlt_bias_jet > 0)
+			{
+			probeJets = // selected_jets without the bias one
+			}
+		else
+			{
+			probeJets = // selected_jets
+			}
+
+		TH3F jets_distr;
+		TH3F tau_jets_distr;
+
+		// loop through probe jets and fill jets_distr
+		// loop through jets, find the ones close to taus -- fill tau_jets_distr
+		// TODO: do these distrs via standard way with some fill_jet dynamic function
+
 
 		} // End single file event loop
 

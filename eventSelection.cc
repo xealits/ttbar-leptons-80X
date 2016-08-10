@@ -2002,6 +2002,11 @@ for(size_t f=0; f<urls.size();++f)
 		increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
 		increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
+		if (eTrigger)
+			increment( string("weightflow_weight_passed_electron_trigger"), weight );
+		else if (muTrigger)
+			increment( string("weightflow_weight_passed_muon_trigger"), weight );
+
 		if(debug)
 			{
 			cout << "Set triggers" << endl;
