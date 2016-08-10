@@ -215,7 +215,11 @@ for dset_group in dsets['proc']:
             print("Continue to other dsets")
             continue
         sites_info = json.loads(out)
-        sites = [' '.join(i['site']['name'], i['site']['dataset_fraction']) for i in sites_info['data']]
+        sites = []
+        for i in sites_info['data']:
+            print(i['site'])
+            sites.append(i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'])
+        #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
 
         if any(local_tier in s and "100.00%" in s for s in sites):
             print("The full dataset is found on local tier " + local_tier)

@@ -72,6 +72,7 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
 #include "TEventList.h"
@@ -428,7 +429,8 @@ bool hasTauAsMother(const reco::GenParticle  p)
 
 float jet_radius(pat::Jet& jet)
 	{
-	return sqrt(jet::EtaPhiMoments.etaEtaMoment + jet::EtaPhiMoments.phiPhiMoment);
+	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
+	return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
 	}
 
 
@@ -1330,8 +1332,8 @@ TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_pres
 
 
 // jet parameters: pt, eta, radius
-TH3F jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
-TH3F tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
+TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
+TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 10);
 
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
@@ -1769,7 +1771,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// TODO: find the corresponding trigger in 2016
 
-		bool hltTrigger utils::passTriggerPatterns(tr, "HLT_Jet30_v*");
+		bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 
 		if (!hltTrigger) continue; // No orthogonalization -- run on only 1 trigger type of datasets
 
