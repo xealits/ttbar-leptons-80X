@@ -3196,8 +3196,12 @@ printf ("Results save in %s\n", outUrl.Data());
 // for resubmit option of the job script
 TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
-singlelep_ttbar_initialevents->Write();
-singlelep_ttbar_preselectedevents->Write();
+//singlelep_ttbar_initialevents->Write();
+//singlelep_ttbar_preselectedevents->Write();
+
+jets_distr->Write();
+tau_jets_distr->Write();
+
 
 ofile->Close();
 
