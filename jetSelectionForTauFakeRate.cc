@@ -430,7 +430,8 @@ bool hasTauAsMother(const reco::GenParticle  p)
 float jet_radius(pat::Jet& jet)
 	{
 	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
-	return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
+	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
+	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
 	}
 
 
@@ -1363,6 +1364,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 	int treeStep (ev.size()/50);
+	unsigned int iev = 0;
 
 	for (ev.toBegin(); !ev.atEnd(); ++ev)
 		{
@@ -1666,8 +1668,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
-		sum_weights += weight;
-		sum_weights_raw += rawWeight;
 
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
@@ -1695,26 +1695,18 @@ for(size_t f=0; f<urls.size();++f)
 		//num_inters = 1;
 		if (num_inters>99) num_inters = 99;
 		if (nGoodPV>100) nGoodPV = 99;
-		event_pergoodpv_weight[nGoodPV] += weight;
 		//if (num_inters<0)  num_inters = 0;
 		if (weightGen<0)
 			{
 			increment( string("negative_events"), 1 );
 			fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
 			fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
-
-			negative_event_nvtx[num_inters] += 1;
-			negative_event_pernvtx_weight[num_inters] += weight;
-			negative_event_pergoodpv_weight[nGoodPV] += weight;
 			}
 		else
 			{
 			increment( string("positive_events"), 1 );
 			fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
 			fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
-			positive_event_nvtx[num_inters] += 1;
-			positive_event_pernvtx_weight[num_inters] += weight;
-			positive_event_pergoodpv_weight[nGoodPV] += weight;
 			}
 
 		// -------------------------------------   Basic event selection
@@ -1732,7 +1724,6 @@ for(size_t f=0; f<urls.size();++f)
 		// 80X, v2
 		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
 		// Notice: it is the first continue in the event loop
-		n_events_pass_lumi += 1;
 		// there is no sum_weights_pass_lumi -- lumi is for data only..
 
 		// inline control functions usage:
@@ -1808,8 +1799,6 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_efficiency_sf *= muTrigger ? muHLT_SF[] : 1 ;
 
 
-		sum_weights_passtrig_raw += rawWeight;
-		sum_weights_passtrig += weight;
 
 
 		// inline control functions usage:
