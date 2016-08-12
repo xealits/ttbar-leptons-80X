@@ -218,7 +218,9 @@ for dset_group in dsets['proc']:
         sites = []
         for i in sites_info['data']:
             print(i['site'])
-            sites.append(i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'])
+            x = i['site'][0]
+            x.update(i['site'][1])
+            sites.append(x['name'] + ' ' + x['dataset_fraction'])
         #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
 
         if any(local_tier in s and "100.00%" in s for s in sites):
