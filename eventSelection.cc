@@ -1952,14 +1952,16 @@ for(size_t f=0; f<urls.size();++f)
 		//                  HLT_IsoMu20 or HLT_IsoTkMu20 for muons
 		//HLT_Iso(Tk)Mu22_v3
 		//HLT_Ele27_WPTight_Gsf_v2
+		// wildcard * for data
+		// specific version for MC
 		bool eTrigger    ( isMC ?
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
-			// new trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
-			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") );
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
 		bool muTrigger   ( isMC ?
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
