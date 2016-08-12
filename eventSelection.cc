@@ -1928,21 +1928,54 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
-		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
+		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 		if (!tr.isValid ()){
-			//cout << "Trigger HLT is not valid, trying HLT2" << endl;
-			tr = ev.triggerResultsByName ("HLT2");
+			if(debug){
+				cout << "HLT2 is NOT valid, switching to HLT!\n";
+				}
+			tr = ev.triggerResultsByName ("HLT");
 			if (!tr.isValid ()){
-				cout << "Trigger HLT2 is not valid, exiting" << endl;
+				cout << "Trigger HLT is not valid, exiting" << endl;
 				return false;
+				}
+			else if(debug){
+				cout << "Trigger HLT is valid\n";
+				}
+			}
+		else if(debug){
+			cout << "Trigger HLT2 is valid\n";
+			if(!tr.isValid()){
+				cout << "And now trigger HLT2 is NOT valid\n";
 				}
 			}
 
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
 			//cout << "-- Commented out --" << endl;
+			//edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
+			//tr = ev.triggerResultsByName ("HLT");
+			//if (!tr.isValid ()){
 			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
 				cout << *trnames << endl;
+				//cout << "1: " << *trnames << endl;
+				//}
+			/*
+			else
+				{
+				cout << "HLT is not valid\n";
+				}
+			cout << "Printing HLT2 trigger list" << endl;
+			tr = ev.triggerResultsByName ("HLT2");
+			if (!tr.isValid ()){
+				for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
+					cout << "2: " << *trnames << endl;
+				}
+			else
+				{
+				cout << "HLT2 is not valid\n";
+				tr = ev.triggerResultsByName ("HLT");
+				}
+			*/
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
 			}
@@ -2005,9 +2038,13 @@ for(size_t f=0; f<urls.size();++f)
 		increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
 		if (eTrigger)
+			{
 			increment( string("weightflow_weight_passed_electron_trigger"), weight );
+			}
 		else if (muTrigger)
+			{
 			increment( string("weightflow_weight_passed_muon_trigger"), weight );
+			}
 
 		if(debug)
 			{

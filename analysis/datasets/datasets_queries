@@ -1,3 +1,5 @@
+dataset=/WJets*/RunIISpring16*reHLT_80X*/*
+dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16*reHLT_80X*/*
 
 das_client.py --query="dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"
 das_client.py --limit=0 --query="dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/* status=*"
