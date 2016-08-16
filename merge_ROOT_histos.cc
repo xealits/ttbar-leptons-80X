@@ -1,5 +1,5 @@
 
-void merge_ROOT_histos(TString histo_name, TString filename1, TString filename2, TString out_filename) {
+void merge_ROOT_histos( TString filename1, TString filename2, TString out_filename ) {
 	// read histo_name from the two files
 	// add the histos
 	// save to out_filename
@@ -10,18 +10,25 @@ void merge_ROOT_histos(TString histo_name, TString filename1, TString filename2,
 	TFile *file1 = TFile::Open(filename1);
 	TFile *file2 = TFile::Open(filename2);
 
-	TH3F * h1 = (TH3F*) file1->Get(histo_name);
-	TH3F * h2 = (TH3F*) file2->Get(histo_name);
+	TH3F * jets_h1 = (TH3F*) file1->Get("jets_distr");
+	TH3F * jets_h2 = (TH3F*) file2->Get("jets_distr");
 
-	h1->Print();
-	h2->Print();
+	TH3F * taus_h1 = (TH3F*) file1->Get("tau_jets_distr");
+	TH3F * taus_h2 = (TH3F*) file2->Get("tau_jets_distr");
 
-	h1->Add(h2, 1);
+	jets_h1->Print();
+	jets_h2->Print();
+	jets_h1->Add(jets_h2, 1);
+	jets_h1->Print();
 
-	h1->Print();
+	taus_h1->Print();
+	taus_h2->Print();
+	taus_h1->Add(taus_h2, 1);
+	taus_h1->Print();
 
 	TFile *out_f = TFile::Open(out_filename, "RECREATE");
-	h1->Write();
+	jets_h1->Write();
+	taus_h1->Write();
 	out_f->Write();
 	out_f->Close();
 
