@@ -46,8 +46,8 @@ function Merge_distr {
    # 2 input parameters
    #   $1 distr name
    #   $2 distr header name
-   echo $1
    distrs_headername=$2
+   echo Merge_distr $1 $2
    echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $1
    grep --no-filename "^$1:content," ../*csv | sed "s/^$1:content,//" >> $1 
    echo "[Merged distr]"
@@ -57,7 +57,7 @@ function Merge_counter {
    # Description: 
    # 1 input parameter
    #   $1 counter name
-   echo $1
+   echo Merge_counter $1
    echo "type,dtag,job_num,$1" > $1
    grep --no-filename "^$1," ../*csv | sed "s/^$1,//" >> $1 
    echo "[Merged counter]"
@@ -68,7 +68,7 @@ function Merge_counter {
 # +++++++++ sum procedures
 function Sum_distr {
    # Description:
-   echo $1
+   echo Sum_distr $1
    input=../"$1"
    output="$1"
    # ./processing-distributions_merging-sets.R $input $output
@@ -78,7 +78,7 @@ function Sum_distr {
 
 function Sum_counter {
    # Description:
-   echo $1
+   echo Sum_counter $1
    input=../"$1"
    output="$1"
    #./processing-counters_merging-sets.R $input $output
@@ -238,6 +238,13 @@ for t in `cat $JOBREDUCE_DIR/distrs_pt $JOBREDUCE_DIR/distrs_n $JOBREDUCE_DIR/di
 do
    Sum_distr $t
 done
+
+#
+#for t in `cat  $JOBREDUCE_DIR/distrs_eta`
+#do
+   #Sum_distr $t
+#done
+
 
 echo
 
