@@ -1333,8 +1333,9 @@ TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_pres
 
 
 // jet parameters: pt, eta, radius
-TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 2);
-TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -4, 4, 100, 0, 2);
+// in the datasets jet eta varies within [-2.5, 2.5]
+TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
+TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
 
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
