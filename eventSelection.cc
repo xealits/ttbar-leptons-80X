@@ -506,6 +506,22 @@ struct JobDef
 
 //std::map<string, TH1D*> th1d_distr_control;
 
+
+double jet_radius(pat::Jet& jet)
+	{
+	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
+	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
+	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
+	}
+
+//jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]))
+double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, double jet_pt, double jet_eta, double jet_radius)
+	{
+	//
+	return 0;
+	}
+
+
 string mc_decay("");
 // Some MC datasets are inclusive, but analysis needs info on separate channels from them
 // thus the events are traversed and the channel is found
@@ -1018,6 +1034,14 @@ TTree* summaryTree = NULL; //ev->;
 //      cwd->cd();
 //    }
 //
+
+
+// Data-driven tau fakerate background
+
+TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates.root"));
+
+TH3F * tau_fake_rate_jets_histo = (TH3F *) tau_fake_rate_file->Get("jets_distr");
+TH3F * tau_fake_rate_taus_histo = (TH3F *) tau_fake_rate_file->Get("tau_jets_distr");
 
 
 //MC normalization (to 1/pb)
@@ -3762,6 +3786,20 @@ for(size_t f=0; f<urls.size();++f)
 					fill_n( string("singlemu_prebselpoint_n_jets"), n_jets, weight);
 					fill_n( string("singlemu_prebselpoint_n_bjets"), n_bjets, weight);
 					fill_n( string("singlemu_prebselpoint_n_taus"), n_taus, weight);
+					}
+
+				if (passJetSelection && passMetSelection && passBtagsSelection)
+					{
+					// pre-tau selection
+					// calculate jet-to-tau fake rate per all jets and save the sum
+					double jet_to_tau_fake_rate = 0.0;
+					// using selJetsNoLep jets
+					for(size_t n=0; n<selJetsNoLep.size(); ++n)
+						{
+						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						}
+
+					increment(string("singlemu_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)

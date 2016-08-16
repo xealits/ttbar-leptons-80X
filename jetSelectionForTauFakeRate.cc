@@ -427,7 +427,7 @@ bool hasTauAsMother(const reco::GenParticle  p)
 	}
 
 
-float jet_radius(pat::Jet& jet)
+double jet_radius(pat::Jet& jet)
 	{
 	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
 	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
