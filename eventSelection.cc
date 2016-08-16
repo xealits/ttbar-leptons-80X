@@ -515,10 +515,25 @@ double jet_radius(pat::Jet& jet)
 	}
 
 //jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]))
-double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, double jet_pt, double jet_eta, double jet_radius)
+double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
 	{
-	//
-	return 0;
+	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
+	// are identical TH3F histograms
+	// Int_t TH1::FindBin 	( 	Double_t  	x,
+	//	Double_t  	y = 0,
+	//	Double_t  	z = 0 
+	// )
+	// virtual Double_t TH3::GetBinContent 	( 	Int_t  	bin	) 	const
+	Int_t global_bin_id = tau_fake_rate_jets_histo->FindBin(jet_pt, jet_eta, jet_radius);
+	Double_t jets_rate = tau_fake_rate_jets_histo->GetBinContent(global_bin_id);
+	Double_t taus_rate = tau_fake_rate_taus_histo->GetBinContent(global_bin_id);
+
+	if (jet_rate < 1)
+		{
+		return 0.
+		}
+	else
+		return taus_rate/jets_rate;
 	}
 
 
@@ -1038,7 +1053,7 @@ TTree* summaryTree = NULL; //ev->;
 
 // Data-driven tau fakerate background
 
-TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates.root"));
+TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates"));
 
 TH3F * tau_fake_rate_jets_histo = (TH3F *) tau_fake_rate_file->Get("jets_distr");
 TH3F * tau_fake_rate_taus_histo = (TH3F *) tau_fake_rate_file->Get("tau_jets_distr");
