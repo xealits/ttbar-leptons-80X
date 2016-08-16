@@ -3920,6 +3920,20 @@ for(size_t f=0; f<urls.size();++f)
 					fill_n( string("singleel_prebselpoint_n_taus"), n_taus, weight);
 					}
 
+				if (passJetSelection && passMetSelection && passBtagsSelection)
+					{
+					// pre-tau selection
+					// calculate jet-to-tau fake rate per all jets and save the sum
+					double jet_to_tau_fake_rate = 0.0;
+					// using selJetsNoLep jets
+					for(size_t n=0; n<selJetsNoLep.size(); ++n)
+						{
+						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						}
+
+					increment(string("singleel_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
+					}
+
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_particle_ids(string("nearest_particle_around_tau_singleel_fullselection"), closest_totaunolep_particle_id, weight);
