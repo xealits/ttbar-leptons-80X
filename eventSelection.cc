@@ -72,6 +72,7 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
 #include "TEventList.h"
@@ -528,9 +529,9 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_ta
 	Double_t jets_rate = tau_fake_rate_jets_histo->GetBinContent(global_bin_id);
 	Double_t taus_rate = tau_fake_rate_taus_histo->GetBinContent(global_bin_id);
 
-	if (jet_rate < 1)
+	if (jets_rate < 1)
 		{
-		return 0.
+		return 0.;
 		}
 	else
 		return taus_rate/jets_rate;
@@ -1053,7 +1054,7 @@ TTree* summaryTree = NULL; //ev->;
 
 // Data-driven tau fakerate background
 
-TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates"));
+TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates") .c_str() );
 
 TH3F * tau_fake_rate_jets_histo = (TH3F *) tau_fake_rate_file->Get("jets_distr");
 TH3F * tau_fake_rate_taus_histo = (TH3F *) tau_fake_rate_file->Get("tau_jets_distr");
