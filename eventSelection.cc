@@ -516,7 +516,10 @@ double jet_radius(pat::Jet& jet)
 	}
 
 //jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]))
-double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
+//jetToTauFakeRate(tau_fake_rate_jets_histo1, tau_fake_rate_taus_histo1, tau_fake_rate_jets_histo2, tau_fake_rate_taus_histo2, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+//jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
+// later tau_fake_rate_histo1_fraction can be a TH3F histogram with fractions per pt, eta, radius
+double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
 	{
 	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
 	// are identical TH3F histograms
@@ -525,16 +528,21 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_ta
 	//	Double_t  	z = 0 
 	// )
 	// virtual Double_t TH3::GetBinContent 	( 	Int_t  	bin	) 	const
-	Int_t global_bin_id = tau_fake_rate_jets_histo->FindBin(jet_pt, jet_eta, jet_radius);
-	Double_t jets_rate = tau_fake_rate_jets_histo->GetBinContent(global_bin_id);
-	Double_t taus_rate = tau_fake_rate_taus_histo->GetBinContent(global_bin_id);
+	Int_t global_bin_id = tau_fake_rate_jets_histo1->FindBin(jet_pt, jet_eta, jet_radius);
 
-	if (jets_rate < 1)
-		{
-		return 0.;
-		}
-	else
-		return taus_rate/jets_rate;
+	Double_t jets_rate1 = tau_fake_rate_jets_histo1->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate_taus_histo1->GetBinContent(global_bin_id);
+
+	Double_t jets_rate2 = tau_fake_rate_jets_histo2->GetBinContent(global_bin_id);
+	Double_t taus_rate2 = tau_fake_rate_taus_histo2->GetBinContent(global_bin_id);
+
+	// now linear mix of the two fakerates, according to the fraction:
+	//    tau_fake_rate_histo1_fraction * taus_rate1/jets_rate1 +
+	//    (1 - tau_fake_rate_histo1_fraction) * taus_rate2/jets_rate2
+	// and also for small rates:
+	//    (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1)
+
+	return tau_fake_rate_histo1_fraction * (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1) + (1 - tau_fake_rate_histo1_fraction) * (jets_rate2 < 1 ? 0 : taus_rate2/jets_rate2);
 	}
 
 
@@ -1054,10 +1062,20 @@ TTree* summaryTree = NULL; //ev->;
 
 // Data-driven tau fakerate background
 
-TFile * tau_fake_rate_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates") .c_str() );
+TFile * tau_fake_rate1_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1") .c_str() );
 
-TH3F * tau_fake_rate_jets_histo = (TH3F *) tau_fake_rate_file->Get("jets_distr");
-TH3F * tau_fake_rate_taus_histo = (TH3F *) tau_fake_rate_file->Get("tau_jets_distr");
+TH3F * tau_fake_rate1_jets_histo = (TH3F *) tau_fake_rate1_file->Get("jets_distr");
+TH3F * tau_fake_rate1_taus_histo = (TH3F *) tau_fake_rate1_file->Get("tau_jets_distr");
+
+
+TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
+
+TH3F * tau_fake_rate2_jets_histo = (TH3F *) tau_fake_rate2_file->Get("jets_distr");
+TH3F * tau_fake_rate2_taus_histo = (TH3F *) tau_fake_rate2_file->Get("tau_jets_distr");
+
+
+Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
+
 
 
 //MC normalization (to 1/pb)
@@ -3812,7 +3830,7 @@ for(size_t f=0; f<urls.size();++f)
 					// using selJetsNoLep jets
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
 					increment(string("singlemu_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
@@ -3929,7 +3947,8 @@ for(size_t f=0; f<urls.size();++f)
 					// using selJetsNoLep jets
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
 					increment(string("singleel_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
