@@ -1,8 +1,9 @@
-On 15 July
-==========
 
 Data
-----
+======
+
+On 15 July
+--------------------------
 
 Showing 1-10 out of 4 results, for more results use --idx/--limit options
 
@@ -91,7 +92,19 @@ file_size: 2098694664622
 
 
 MC
----
+======
+
+
+
+
+On 15 July, and reHLT datasets choice
+--------------------------
+
+
+
+
+
+
 
 ### TTbar
 
@@ -538,8 +551,9 @@ Showing 1-10 out of 8 results, for more results use --idx/--limit options
 v6-7 ran on:
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM
 
---- it has terrible PU (0).
-Let's call it HLT1 ttbar.
+--- it has terrible PU (0). Nope, PU is ok.
+It's called HLT1 ttbar, it is the selected one now.
+
 
 Another set from HLT recommendation:
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16reHLT80-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/AODSIM
@@ -560,7 +574,20 @@ Trying in v9.
 
 
 
+For no-reHLT:
+
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM
+
+
+
+
+
+
+
+
 ### W-Jets
+
+For no-reHLT:
 
 /WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 
@@ -574,6 +601,8 @@ Trying in v9.
 
 ### DY-Jets
 
+For no-reHLT:
+
 /DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 
@@ -581,6 +610,8 @@ Trying in v9.
 
 
 ### Diboson
+
+For no-reHLT:
 
 /WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
@@ -590,6 +621,8 @@ Trying in v9.
 
 
 ### Single Top
+
+For no-reHLT:
 
 /ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM
 /ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
@@ -601,6 +634,8 @@ Trying in v9.
 
 
 ### QCD
+
+For no-reHLT:
 
 /QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM
@@ -630,6 +665,13 @@ Trying in v9.
 /QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
 /QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM
+
+
+
+
+
+
+
 
 
 
