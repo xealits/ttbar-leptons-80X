@@ -81,6 +81,7 @@ The dsets.json file structured as:
 from sys import argv, exit
 import json, os
 import commands # for some reason subprocess.check_output does not work with das_client
+import subprocess # trying it again
 import shutil
 
 
@@ -191,8 +192,13 @@ for dset_group in dsets['proc']:
         # TODO: other parameters as well?
 
         # get files of the dset
-        status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
-        #out_rows = out.split('\n')
+        #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
+        # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
+        #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
+        # -- no! the output of the command is the list of files
+        status, out = 0, subprocess.check_output('das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+        # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
+        out_rows = out.split('\n')
         dset_files = out.split('\n')
 
         if status != 0 or dset_files < 1:
