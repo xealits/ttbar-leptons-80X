@@ -20,7 +20,7 @@ int csv_TH3Fs(TString filename, TString out_filename) {
 	h1->Print();
 	h2->Print();
 
-	fprintf(out_f, "i_bin,x,y,z,tau_jets_bin,jets_bin\n");
+	fprintf(out_f, "i_bin,x,y,z,jets_bin,tau_jets_bin\n");
 
 	Int_t size = h1->GetSize();
 	bool passed_midwork = 0;
