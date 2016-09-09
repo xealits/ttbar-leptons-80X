@@ -2048,11 +2048,12 @@ for(size_t f=0; f<urls.size();++f)
 		// Setting no-reHLT triggers!
 		bool eTrigger    ( isMC ?
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
+			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
-			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") );
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
+			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") ); // Using no-reHLT Data for now
 		bool muTrigger   ( isMC ?
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
