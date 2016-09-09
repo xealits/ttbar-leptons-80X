@@ -1337,6 +1337,8 @@ TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_pres
 TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
 TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
 
+TH1D* taujet_distance = (TH1D*) new TH1D("taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
+
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
 
@@ -3117,9 +3119,11 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
-				if (reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]) <= tau_fake_distance)
+				double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+				if (fake_distance <= tau_fake_distance)
 					{
 					// the tau is fake by this jet -- save distr
+					taujet_distance->Fill(fake_distance);
 					tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
 					continue;
 					}
@@ -3195,6 +3199,7 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
 jets_distr->Write();
 tau_jets_distr->Write();
+taujet_distance->Write();
 
 
 ofile->Close();
