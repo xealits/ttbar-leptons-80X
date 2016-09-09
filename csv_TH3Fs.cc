@@ -1,21 +1,20 @@
 
-int csv_TH3Fs(TString filename1, TString filename2, TString out_filename) {
-	// read histo_name from the two files
-	// add the histos
+int csv_TH3Fs(TString filename, TString out_filename) {
+	// read jets_distr and tau_jets_distr from the filename
+	// loop through bins, printing the contents in long csv format
 	// save to out_filename
 
 	gROOT->Reset();
 
 
-	TFile *file1 = TFile::Open(filename1);
-	TFile *file2 = TFile::Open(filename2);
+	TFile *file = TFile::Open(filename);
 
 	FILE * out_f;
 	out_f = fopen(out_filename.Data(), "w");
 
-	TH3F * h1 = (TH3F*) file1->Get("jets_distr");
+	TH3F * h1 = (TH3F*) file->Get("jets_distr");
 	cout << "got jets_distr\n";
-	TH3F * h2 = (TH3F*) file2->Get("tau_jets_distr");
+	TH3F * h2 = (TH3F*) file->Get("tau_jets_distr");
 	cout << "got tau_jets_distr\n";
 
 	h1->Print();
@@ -66,8 +65,7 @@ int csv_TH3Fs(TString filename1, TString filename2, TString out_filename) {
 	}
 	}
 
-	file1->Close();
-	file2->Close();
+	file->Close();
 	fclose(out_f);
 
 
