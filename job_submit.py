@@ -163,7 +163,10 @@ if status !=0:
     print("    output =\n" + output)
     exit(2)
 
-os.system('export X509_USER_PROXY=' + proxy_file)
+#os.system('export X509_USER_PROXY=' + proxy_file)
+my_env = os.environ.copy()
+my_env["X509_USER_PROXY"] = proxy_file
+
 
 print("Proxy is ready.")
 
@@ -196,7 +199,13 @@ for dset_group in dsets['proc']:
         # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
         #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
         # -- no! the output of the command is the list of files
-        status, out = 0, subprocess.check_output('das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+        status, out = 0, subprocess.check_output( 'das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+
+        # the correct approach
+        #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
+        #out, err = p.communicate()
+        #status = 0 # TODO: extract exit status
+
         # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
         out_rows = out.split('\n')
         dset_files = out.split('\n')
