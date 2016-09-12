@@ -47,20 +47,26 @@ function Merge_distr {
    #   $1 distr name
    #   $2 distr header name
    distrs_headername=$2
+
+   { # adding the red collor to error stream
    echo Merge_distr $1 $2
    echo "type,dtag,job_num," `grep -m 1 --no-filename "^header,$distrs_headername," ../*.csv | head -n 1 | sed "s/^header,$distrs_headername,//"` > $1
    grep --no-filename "^$1:content," ../*csv | sed "s/^$1:content,//" >> $1 
    echo "[Merged distr]"
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }  
 
 function Merge_counter {
    # Description: 
    # 1 input parameter
    #   $1 counter name
+
+   { # adding the red collor to error stream
    echo Merge_counter $1
    echo "type,dtag,job_num,$1" > $1
    grep --no-filename "^$1," ../*csv | sed "s/^$1,//" >> $1 
    echo "[Merged counter]"
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }
 
 
@@ -71,9 +77,12 @@ function Sum_distr {
    echo Sum_distr $1
    input=../"$1"
    output="$1"
+
+   { # adding the red collor to error stream
    # ./processing-distributions_merging-sets.R $input $output
    $SCRIPTS_SUM_DISTR $input $output
    echo "[Summed distr]"
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }
 
 function Sum_counter {
@@ -81,9 +90,12 @@ function Sum_counter {
    echo Sum_counter $1
    input=../"$1"
    output="$1"
+
+   { # adding the red collor to error stream
    #./processing-counters_merging-sets.R $input $output
    $SCRIPTS_SUM_COUNTERS $input $output
    echo "[Summed counter]"
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }
 
 
@@ -96,11 +108,13 @@ function Reduce_distr {
    #   $2 distr header name
    #   $3 directory with jobs outputs
 
+   { # adding the red collor to error stream
    echo in $3 reducing $1
    cd $3/merged-sets
    Merge_distr $1 $2
    cd jobsums
    Sum_distr $1
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }
 
 function Reduce_counter {
@@ -109,11 +123,13 @@ function Reduce_counter {
    #   $1 counter name
    #   $2 directory with jobs outputs
 
+   { # adding the red collor to error stream
    echo in $2 reducing $1
    cd $2/merged-sets
    Merge_counter $1
    cd jobsums
    Sum_counter $1
+   } 2> >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
 }
 
 
@@ -239,11 +255,11 @@ do
    Sum_distr $t
 done
 
-#
-#for t in `cat  $JOBREDUCE_DIR/distrs_eta`
-#do
-   #Sum_distr $t
-#done
+
+for t in `cat  $JOBREDUCE_DIR/distrs_eta`
+do
+   Sum_distr $t
+done
 
 
 echo

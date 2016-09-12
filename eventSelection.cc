@@ -2049,7 +2049,8 @@ for(size_t f=0; f<urls.size();++f)
 		bool eTrigger    ( isMC ?
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
+			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
+			utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
