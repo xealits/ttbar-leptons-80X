@@ -1309,3 +1309,86 @@ AlCa_EcalEtaEEonly_v5
 
 
 
+Summary of datasets info
+------------------------
+
+[otoldaie@lxplus041 datasets]$ das_client --query="summary dataset=/JetHT/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 833
+nevents  : 74605513
+nblocks  : 27
+nlumis   : 31021
+file_size: 2078852454162
+
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ das_client --query="summary dataset=/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1569
+nevents  : 148167727
+nblocks  : 22
+nlumis   : 30885
+file_size: 3670676557558
+
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ 
+[otoldaie@lxplus041 datasets]$ das_client --query="summary dataset=/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1035
+nevents  : 98175265
+nblocks  : 22
+nlumis   : 30696
+file_size: 2098694664622
+
+
+
+--- 2ce more in singleelectron
+
+
+
+
+
+
+
+
+
+
+12-9-2016 new datasets in miniaod workbook
+==========================================
+
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring16_withHLT_campaign_8
+--- well, these should work at least somehow.
+
+which for TTbar leads to:
+dataset=/TT_*/*RunIISpring16MiniAODv2*withHLT*/MINIAODSIM
+
+trying these:
+dataset=/TT_TuneCUETP8M1down_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM
+dataset=/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM
+
+--- let's create couple jobs and run locally.
+
+example files:
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/004E2E76-A66F-E611-9965-848F69FD291F.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/006FF9B6-976F-E611-9EFC-008CFA1660F8.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/00AFFBE3-AA6F-E611-B8D6-008CFA152104.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/00B9AC4F-B16F-E611-833F-008CFA56D770.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/023C4A69-9D6F-E611-B7EA-549F3525C380.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/02600A12-B16F-E611-B85F-008CFA1CB73C.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/0269BE73-AB6F-E611-8299-549F35AD8B7B.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/02759EF8-B76F-E611-8400-44A84225CABC.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/02F95207-B76F-E611-AB7C-008CFA166000.root
+/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/04555050-B36F-E611-A684-A4BADB1E6F7A.root
+
+
+
+
+
