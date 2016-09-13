@@ -2047,8 +2047,11 @@ for(size_t f=0; f<urls.size();++f)
 		// specific version for MC
 		// Setting no-reHLT triggers!
 		bool eTrigger    ( isMC ?
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			// 2015, 76X MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
+			// 2016, 80X MC
+			// true : // for noHLT MC
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
 			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
@@ -2056,12 +2059,15 @@ for(size_t f=0; f<urls.size();++f)
 			 utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") ); // Using no-reHLT Data for now
 		bool muTrigger   ( isMC ?
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
+			// 2015, 76X MC
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
+			// 2016, 80X MC
+			// true : // for noHLT MC
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
+			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			);
 		
 		//if(filterOnlySINGLEMU) {                    eTrigger = false; }
