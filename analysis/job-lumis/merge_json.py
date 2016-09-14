@@ -21,7 +21,9 @@ def merge_file(filename):
 
     m = {}
 
-    for run_num, lumies in d:
+    for i, record in enumerate(d):
+        if len(record) != 2: raise(ValueError('Line %s is not ["run_num", [lumisecs]]' % i))
+        run_num, lumies = record
         m.setdefault(run_num, []).extend(lumies)
 
     return m

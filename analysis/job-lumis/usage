@@ -1,1 +1,9 @@
+cat all jobs pre-json:
+cat *json > all.json
+
+with vim turn all.json into the format:
+[ ["run_num", [lumisections]] ]
+
+run merge_json.py to get the real json
+
 brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/OfflineNormtagV2.json -i Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_Totem_JSON_v2.txt
