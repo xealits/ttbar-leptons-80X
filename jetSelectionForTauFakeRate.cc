@@ -1334,8 +1334,17 @@ TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_pres
 
 // jet parameters: pt, eta, radius
 // in the datasets jet eta varies within [-2.5, 2.5]
-TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
-TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
+//TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
+//TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
+
+// good bins 1
+Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
+Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
+Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
+	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
+
+TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 
 TH1D* taujet_distance = (TH1D*) new TH1D("taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
 
