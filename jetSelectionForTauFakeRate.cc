@@ -1779,7 +1779,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 		//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
-		bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*") );
+		bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
 
 		if (!hltTrigger) continue; // No orthogonalization -- run on only 1 trigger type of datasets
 
