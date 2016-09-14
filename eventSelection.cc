@@ -2110,9 +2110,15 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			increment( string("weightflow_weight_passed_electron_trigger"), weight );
 			}
-		else if (muTrigger)
+
+		if (muTrigger)
 			{
 			increment( string("weightflow_weight_passed_muon_trigger"), weight );
+			}
+
+		if (eTrigger && muTrigger)
+			{
+			increment( string("weightflow_weight_passed_electron_and_muon_triggers"), weight );
 			}
 
 		if(debug)
