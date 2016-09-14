@@ -1343,10 +1343,13 @@ Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
 Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
 	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
 
-TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* wjets_jets_distr = (TH3F*) new TH3F("wjets jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* wjets_tau_jets_distr = (TH3F*) new TH3F("wjets tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
 
-TH1D* taujet_distance = (TH1D*) new TH1D("taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
+TH3F* qcd_jets_distr = (TH3F*) new TH3F("qcd jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* qcd_tau_jets_distr = (TH3F*) new TH3F("qcd tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
 
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
@@ -2303,7 +2306,6 @@ for(size_t f=0; f<urls.size();++f)
 		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
 		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
 
-
 		if (isSingleE)
 			{
 			fill_pt_e( string("singleel_electrons_pt"), selElectrons[0].pt(), weight);
@@ -2464,8 +2466,8 @@ for(size_t f=0; f<urls.size();++f)
 			if(tau.tauID("decayModeFinding")<0.5) continue; // High pt tau. Otherwise, OldDMs (or no <DMs> -- they are synonyms)
 			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
 			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
-			//if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
-			if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
+			if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
+			// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
 			if (tau.tauID ("againstMuonTight3")                          <0.5) continue; // Medium working point not usable. Available values: Loose, Tight
 			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
 			// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
@@ -3118,24 +3120,56 @@ for(size_t f=0; f<urls.size();++f)
 		// loop through jets, find the ones close to taus -- fill tau_jets_distr
 		// TODO: do these distrs via standard way with some fill_jet dynamic function
 
-		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-			{
-			pat::Jet& jet = selJetsNoLep[ijet];
+		// Check among 2 channels of selection:
+		//     QCD-channel -- 2 or more jets
+		//     W+jets      -- only 1 iso muon, one or more jets
 
-			jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-			}
 
-		for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
+		bool Wjets_selection = clean_lep_conditions && isSingleMu && (selJetsNoLep.size() > 0);
+		bool QCD_selection  = selJetsNoLep.size() > 1;
+
+		if (Wjets_selection)
 			{
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
-				double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
-				if (fake_distance <= tau_fake_distance)
+				pat::Jet& jet = selJetsNoLep[ijet];
+				wjets_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				}
+			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
+				{
+				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 					{
-					// the tau is fake by this jet -- save distr
-					taujet_distance->Fill(fake_distance);
-					tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
-					continue;
+					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					if (fake_distance <= tau_fake_distance)
+						{
+						// the tau is fake by this jet -- save distr
+						wjets_taujet_distance->Fill(fake_distance);
+						wjets_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						continue;
+						}
+					}
+				}
+			}
+
+		if (QCD_selection)
+			{
+			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+				{
+				pat::Jet& jet = selJetsNoLep[ijet];
+				qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				}
+			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
+				{
+				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+					{
+					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					if (fake_distance <= tau_fake_distance)
+						{
+						// the tau is fake by this jet -- save distr
+						qcd_taujet_distance->Fill(fake_distance);
+						qcd_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						continue;
+						}
 					}
 				}
 			}
@@ -3207,10 +3241,13 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 //singlelep_ttbar_initialevents->Write();
 //singlelep_ttbar_preselectedevents->Write();
 
-jets_distr->Write();
-tau_jets_distr->Write();
-taujet_distance->Write();
+qcd_jets_distr->Write();
+qcd_tau_jets_distr->Write();
+qcd_taujet_distance->Write();
 
+wjets_jets_distr->Write();
+wjets_tau_jets_distr->Write();
+wjets_taujet_distance->Write();
 
 ofile->Close();
 
