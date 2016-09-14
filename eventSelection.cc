@@ -3838,13 +3838,19 @@ for(size_t f=0; f<urls.size();++f)
 					// pre-tau selection
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_fake_rate = 0.0;
+					double jet_to_tau_fake_rate1 = 0.0; // done with only histo 1
+					double jet_to_tau_fake_rate2 = 0.0; // only histo 2
 					// using selJetsNoLep jets
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate  += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate1 += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
-					increment(string("singlemu_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
+					increment(string("singlemu_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate);
+					increment(string("singlemu_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1);
+					increment(string("singlemu_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
@@ -3955,14 +3961,20 @@ for(size_t f=0; f<urls.size();++f)
 					// pre-tau selection
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_fake_rate = 0.0;
+					double jet_to_tau_fake_rate1 = 0.0;
+					double jet_to_tau_fake_rate2 = 0.0;
 					// using selJetsNoLep jets
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate  += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate1 += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
-					increment(string("singleel_pretauselection_jettotaufakerate"), jet_to_tau_fake_rate);
+					increment(string("singleel_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate);
+					increment(string("singleel_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1);
+					increment(string("singleel_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
