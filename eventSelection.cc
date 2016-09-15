@@ -1064,14 +1064,15 @@ TTree* summaryTree = NULL; //ev->;
 
 TFile * tau_fake_rate1_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1") .c_str() );
 
-TH3F * tau_fake_rate1_jets_histo = (TH3F *) tau_fake_rate1_file->Get("jets_distr");
-TH3F * tau_fake_rate1_taus_histo = (TH3F *) tau_fake_rate1_file->Get("tau_jets_distr");
+// TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
+TH3F * tau_fake_rate1_jets_histo = (TH3F *) tau_fake_rate1_file->Get("qcd jets_distr");
+TH3F * tau_fake_rate1_taus_histo = (TH3F *) tau_fake_rate1_file->Get("qcd tau_jets_distr");
 
 
 TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
 
-TH3F * tau_fake_rate2_jets_histo = (TH3F *) tau_fake_rate2_file->Get("jets_distr");
-TH3F * tau_fake_rate2_taus_histo = (TH3F *) tau_fake_rate2_file->Get("tau_jets_distr");
+TH3F * tau_fake_rate2_jets_histo = (TH3F *) tau_fake_rate2_file->Get("wjets jets_distr");
+TH3F * tau_fake_rate2_taus_histo = (TH3F *) tau_fake_rate2_file->Get("wjets tau_jets_distr");
 
 
 Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
