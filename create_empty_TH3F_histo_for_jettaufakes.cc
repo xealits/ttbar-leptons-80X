@@ -8,23 +8,44 @@ void create_empty_TH3F_histo_for_jettaufakes( TString filename, TString out_file
 
 	TFile *file = TFile::Open(filename);
 
-	TH3F * jets_h = (TH3F*) file->Get("jets_distr");
-	TH3F * copy_jets_h = (TH3F*) jets_h->Clone(); // copy
-	copy_jets_h->Reset(); // make it empty
+	//TH3F * jets_h = (TH3F*) file->Get("jets_distr");
+	TH3F * qcd_jets_h   = (TH3F*) file->Get("qcd jets_distr");
+	TH3F * wjets_jets_h = (TH3F*) file->Get("wjets jets_distr");
+	TH3F * copy_q_jets_h = (TH3F*)   qcd_jets_h->Clone(); // copy
+	TH3F * copy_w_jets_h = (TH3F*) wjets_jets_h->Clone(); // copy
+	copy_q_jets_h->Reset(); // make it empty
+	copy_w_jets_h->Reset(); // make it empty
 
-	jets_h->Print();
-	copy_jets_h->Print();
+	qcd_jets_h->Print();
+	copy_q_jets_h->Print();
 
-	TH3F * tau_jets_h = (TH3F*) file->Get("tau_jets_distr");
-	TH3F * copy_tau_jets_h = (TH3F*) tau_jets_h->Clone(); // copy
-	copy_tau_jets_h->Reset(); // make it empty
+	//TH3F * tau_jets_h = (TH3F*) file->Get("tau_jets_distr");
+	TH3F * q_tau_jets_h = (TH3F*) file->Get("qcd tau_jets_distr");
+	TH3F * w_tau_jets_h = (TH3F*) file->Get("wjets tau_jets_distr");
+	TH3F * copy_q_tau_jets_h = (TH3F*) q_tau_jets_h->Clone(); // copy
+	TH3F * copy_w_tau_jets_h = (TH3F*) w_tau_jets_h->Clone(); // copy
+	copy_q_tau_jets_h->Reset(); // make it empty
+	copy_w_tau_jets_h->Reset(); // make it empty
 
-	tau_jets_h->Print();
-	copy_tau_jets_h->Print();
+	q_tau_jets_h->Print();
+	copy_q_tau_jets_h->Print();
+
+	//fake jet distance
+	TH3F * q_dist_h = (TH3F*) file->Get("qcd taujet_distance");
+	TH3F * w_dist_h = (TH3F*) file->Get("wjets taujet_distance");
+	TH3F * copy_q_dist_h = (TH3F*) q_dist_h->Clone(); // copy
+	TH3F * copy_w_dist_h = (TH3F*) w_dist_h->Clone(); // copy
+	copy_q_dist_h->Reset(); // make it empty
+	copy_w_dist_h->Reset(); // make it empty
 
 	TFile *out_f = TFile::Open(out_filename, "CREATE");
-	copy_jets_h->Write();
-	copy_tau_jets_h->Write();
+	copy_q_jets_h->Write();
+	copy_q_tau_jets_h->Write();
+	copy_q_dist_h->Write();
+	copy_w_jets_h->Write();
+	copy_w_tau_jets_h->Write();
+	copy_w_dist_h->Write();
+
 	out_f->Write();
 	out_f->Close();
 
