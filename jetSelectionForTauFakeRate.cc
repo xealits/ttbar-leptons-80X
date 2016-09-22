@@ -3140,10 +3140,10 @@ for(size_t f=0; f<urls.size();++f)
 				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 					{
 					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					wjets_taujet_distance->Fill(fake_distance);
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						wjets_taujet_distance->Fill(fake_distance);
 						wjets_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
 						continue;
 						}
@@ -3163,10 +3163,10 @@ for(size_t f=0; f<urls.size();++f)
 				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 					{
 					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					qcd_taujet_distance->Fill(fake_distance);
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						qcd_taujet_distance->Fill(fake_distance);
 						qcd_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
 						continue;
 						}
