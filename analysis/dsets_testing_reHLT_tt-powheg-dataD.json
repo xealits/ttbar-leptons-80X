@@ -7,7 +7,7 @@
       "comment":"",
       "lcolor":1,
       "data":[
-         { "dtag":"MC13TeV_TTJets_powheg"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
+         { "dtag":"MC13TeV_reHLT_TTJets_powheg"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
           "dset":"/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"  }
       ]
     },

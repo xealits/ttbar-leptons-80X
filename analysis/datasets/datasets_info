@@ -1361,7 +1361,7 @@ file_size: 2098694664622
 
 
 
-12-9-2016 new datasets in miniaod workbook
+12-9-2016 new datasets in miniaod workbook (withHLT campaign)
 ==========================================
 
 https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring16_withHLT_campaign_8
@@ -1387,6 +1387,25 @@ example files:
 /store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/02759EF8-B76F-E611-8400-44A84225CABC.root
 /store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/02F95207-B76F-E611-AB7C-008CFA166000.root
 /store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1up_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/80000/04555050-B36F-E611-A684-A4BADB1E6F7A.root
+
+
+
+
+
+22-9-2016 reHLT campaign datasets
+========================
+
+The one TTbar
+
+$ das_client --query="summary dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 2124
+nevents  : 92925926
+nblocks  : 73
+nlumis   : 466566
+file_size: 3755243950424
 
 
 
