@@ -164,9 +164,9 @@ if status !=0:
     exit(2)
 
 #os.system('export X509_USER_PROXY=' + proxy_file)
-my_env = os.environ.copy()
-my_env["X509_USER_PROXY"] = proxy_file
-
+#my_env = os.environ.copy()
+#my_env["X509_USER_PROXY"] = proxy_file
+os.environ["X509_USER_PROXY"] = proxy_file
 
 print("Proxy is ready.")
 
@@ -199,7 +199,8 @@ for dset_group in dsets['proc']:
         # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
         #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
         # -- no! the output of the command is the list of files
-        status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+        #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+        status, out = 0, subprocess.check_output( 'das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
 
         # the correct approach
         #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
