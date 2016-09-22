@@ -8,8 +8,10 @@
       "comment":"",
       "lcolor":1,
       "data":[
-         { "dtag":"MC13TeV_TTJets_powheg"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
-          "dset":"/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"  }
+         { "dtag":"MC13TeV_TTJets_powheg_scaleup"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
+          "dset":"/TT_TuneCUETP8M1_13TeV-powheg-scaleup-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"  },
+         { "dtag":"MC13TeV_TTJets_powheg_scaledown"                           , "split_NoUse_TestingAutomaticOne":100, "xsec":831.76       , "br":[ 1.0 ] ,
+          "dset":"/TT_TuneCUETP8M1_13TeV-powheg-scaledown-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"  }
       ]
     },
 
