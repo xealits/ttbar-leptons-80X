@@ -7,49 +7,64 @@ dataset=/*/RunIISpring16*withHLT_80X*/*
 dataset=/WJets*/RunIISpring16*reHLT_80X*/*
 dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16*reHLT_80X*/*
 
-das_client.py --query="dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"
-das_client.py --limit=0 --query="dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/* status=*"
+das_client --query="dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"
+das_client --limit=0 --query="dataset dataset=/TT*_13TeV-powheg*/RunIISpring16DR80-*/* status=*"
 
-das_client.py --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
 
 
+
+allHLT datasets
+
+{
+das_client --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*/MINIAODSIM"
+} | tee allHLT_datasets
 
 withHLT datasets
 
 {
-das_client.py --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM"
 } | tee withHLT_datasets
 
 
 reHLT datasets
 
 {
-das_client.py --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
-das_client.py --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/W*Jets*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/DYJets*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WW_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WZ_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM"
 } | tee reHLT_datasets
 
