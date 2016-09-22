@@ -1622,6 +1622,26 @@ for(size_t f=0; f<urls.size();++f)
 			//string mc_decay(""); // move to all job parameters
 			// every found t-quark decay branch will be added as a substring to this string (el, mu, tau, q)
 			// TODO: what to do if there are > t-decays than 1 ttbar pair in an event? (naive traverse approach also doesn't work?)
+
+			// For reference, some PDG IDs:
+			// QUARKS
+			// d  1
+			// u  2
+			// s  3
+			// c  4
+			// b  5
+			// t  6
+			// b' 7
+			// t' 8
+			// g 21
+			// gamma 22
+			// Z     23
+			// W     24
+			// h     25
+			// e, ve     11, 12
+			// mu, vmu   13, 14
+			// tau, vtau 15, 16
+
 			for(size_t i = 0; i < gen.size(); ++ i) {
 				const reco::GenParticle & p = gen[i];
 				int id = p.pdgId();

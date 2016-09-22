@@ -34,6 +34,7 @@ das_client.py --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*withHLT*/M
 das_client.py --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
 das_client.py --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
 das_client.py --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM" 
+das_client.py --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*withHLT*/MINIAODSIM"
 } | tee withHLT_datasets
 
 
@@ -49,5 +50,6 @@ das_client.py --limit=0 --query="dataset=/ZZ_*/RunIISpring16MiniAODv2*reHLT*/MIN
 das_client.py --limit=0 --query="dataset=/ST_*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
 das_client.py --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
 das_client.py --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM" 
+das_client.py --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM"
 } | tee reHLT_datasets
 

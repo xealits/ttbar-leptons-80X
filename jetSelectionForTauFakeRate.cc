@@ -70,6 +70,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TCanvas.h"
+#include "TH1I.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"
@@ -1343,13 +1344,38 @@ Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
 Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
 	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
 
-TH3F* wjets_jets_distr = (TH3F*) new TH3F("wjets jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* wjets_tau_jets_distr = (TH3F*) new TH3F("wjets tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
+TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* wjets_tau_jets_distr  = (TH3F*) new TH3F("wjets_tau_jets_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets_taujet_distance", ";Distance [phi-eta];Events",            100, 0.,  2.  );
+TH1I* wjets_jet_origin      = (TH1D*) new TH1D("wjets_jet_origin",    ";PDg ID;Particles",            100, 0,  100  );
+TH1I* wjets_taujet_origin   = (TH1D*) new TH1D("wjets_taujet_origin", ";PDg ID;Particles",            100, 0,  100  );
 
-TH3F* qcd_jets_distr = (TH3F*) new TH3F("qcd jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* qcd_tau_jets_distr = (TH3F*) new TH3F("qcd tau_jets_distr", ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd taujet_distance",     ";Distance [phi-eta];Events",            100, 0.,  2.  );
+TH3F* qcd_jets_distr      = (TH3F*) new TH3F("qcd_jets_distr",        ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* qcd_tau_jets_distr  = (TH3F*) new TH3F("qcd_tau_jets_distr",    ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd_taujet_distance",   ";Distance [phi-eta];Events",            100, 0.,  2.  );
+TH1I* qcd_jet_origin      = (TH1D*) new TH1D("qcd_jet_origin",    ";PDG ID;N Particles",            100, 0.,  2.  );
+TH1I* qcd_taujet_origin   = (TH1D*) new TH1D("qcd_taujet_origin", ";PDG ID;N Particles",            100, 0.,  2.  );
+
+/* For reference, some PDG IDs:
+ * QUARKS
+ * d  1
+ * u  2
+ * s  3
+ * c  4
+ * b  5
+ * t  6
+ * b' 7
+ * t' 8
+ * g 21
+ * gamma 22
+ * Z     23
+ * W     24
+ * h     25
+ * e, ve     11, 12
+ * mu, vmu   13, 14
+ * tau, vtau 15, 16
+ */
+
 
 // Kinematic parameters of the decay
 TLorentzVector pl, plb, pb, pbb, prest;
@@ -3130,11 +3156,31 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (Wjets_selection)
 			{
+			// TODO: make only 1 loop through jets,
+			// checking closeness to taus along the way
+
+			// loop through all jets,
+			// save them
+			// if it is MC save also the gluon/quark composition
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
 				wjets_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				// const reco::GenParticle* genParton()
+				if (isMC)
+					{
+					const reco::GenParticle* jet_origin = jet.genParton();
+					// the ID should be in:
+					// jet_origin->pdgId();
+					wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
+					// wjets_taujet_origin
+					}
 				}
+
+			// loop through taus
+			// find jets close to tau -- consider them faking the tau
+			// save such jets
+			// if it is MC save also their gluon/quark origin -- just in case, for interest
 			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
 				{
 				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
@@ -3145,6 +3191,15 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						// the tau is fake by this jet -- save distr
 						wjets_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						// const reco::GenParticle* genParton()
+						if (isMC)
+							{
+							const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
+							// the ID should be in:
+							// jet_origin->pdgId();
+							wjets_taujet_origin->Fill(abs( jet_origin->pdgId() ));
+							// wjets_jet_origin
+							}
 						continue;
 						}
 					}
@@ -3157,7 +3212,17 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
 				qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				// const reco::GenParticle* genParton()
+				if (isMC)
+					{
+					const reco::GenParticle* jet_origin = jet.genParton();
+					// the ID should be in:
+					// jet_origin->pdgId();
+					qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
+					// qcd_taujet_origin
+					}
 				}
+
 			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
 				{
 				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
@@ -3168,6 +3233,15 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						// the tau is fake by this jet -- save distr
 						qcd_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						// const reco::GenParticle* genParton()
+						if (isMC)
+							{
+							const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
+							// the ID should be in:
+							// jet_origin->pdgId();
+							qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
+							// qcd_jet_origin
+							}
 						continue;
 						}
 					}
@@ -3244,10 +3318,14 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 qcd_jets_distr->Write();
 qcd_tau_jets_distr->Write();
 qcd_taujet_distance->Write();
+qcd_taujet_origin->Write();
+qcd_jet_origin->Write();
 
 wjets_jets_distr->Write();
 wjets_tau_jets_distr->Write();
 wjets_taujet_distance->Write();
+wjets_taujet_origin->Write();
+wjets_jet_origin->Write();
 
 ofile->Close();
 
