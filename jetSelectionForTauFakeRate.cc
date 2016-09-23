@@ -1347,14 +1347,14 @@ Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0
 TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH3F* wjets_tau_jets_distr  = (TH3F*) new TH3F("wjets_tau_jets_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets_taujet_distance", ";Distance [phi-eta];Events",            100, 0.,  2.  );
-TH1I* wjets_jet_origin      = (TH1D*) new TH1D("wjets_jet_origin",    ";PDg ID;Particles",            100, 0,  100  );
-TH1I* wjets_taujet_origin   = (TH1D*) new TH1D("wjets_taujet_origin", ";PDg ID;Particles",            100, 0,  100  );
+TH1I* wjets_jet_origin      = (TH1I*) new TH1I("wjets_jet_origin",    ";PDg ID;Particles",            100, 0,  100  );
+TH1I* wjets_taujet_origin   = (TH1I*) new TH1I("wjets_taujet_origin", ";PDg ID;Particles",            100, 0,  100  );
 
 TH3F* qcd_jets_distr      = (TH3F*) new TH3F("qcd_jets_distr",        ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH3F* qcd_tau_jets_distr  = (TH3F*) new TH3F("qcd_tau_jets_distr",    ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd_taujet_distance",   ";Distance [phi-eta];Events",            100, 0.,  2.  );
-TH1I* qcd_jet_origin      = (TH1D*) new TH1D("qcd_jet_origin",    ";PDG ID;N Particles",            100, 0.,  2.  );
-TH1I* qcd_taujet_origin   = (TH1D*) new TH1D("qcd_taujet_origin", ";PDG ID;N Particles",            100, 0.,  2.  );
+TH1I* qcd_jet_origin      = (TH1I*) new TH1I("qcd_jet_origin",    ";PDG ID;N Particles",            100, 0,  100  );
+TH1I* qcd_taujet_origin   = (TH1I*) new TH1I("qcd_taujet_origin", ";PDG ID;N Particles",            100, 0,  100  );
 
 /* For reference, some PDG IDs:
  * QUARKS
