@@ -2071,8 +2071,8 @@ for(size_t f=0; f<urls.size();++f)
 			// 2015, 76X MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
 			// 2016, 80X MC
-			true : // for noHLT MC
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
+			//true : // for noHLT MC
+			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // tecommended inn ttbar trig for reHLT
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
 			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
@@ -2085,8 +2085,8 @@ for(size_t f=0; f<urls.size();++f)
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
 			// 2016, 80X MC
-			true : // for noHLT MC
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
+			//true : // for noHLT MC
+			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") : // tecommended inn ttbar trig for reHLT
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			);
@@ -3875,9 +3875,9 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
-					increment(string("singlemu_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate);
-					increment(string("singlemu_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1);
-					increment(string("singlemu_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2);
+					increment(string("singlemu_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
+					increment(string("singlemu_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.);
+					increment(string("singlemu_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
@@ -3999,9 +3999,9 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						}
 
-					increment(string("singleel_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate);
-					increment(string("singleel_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1);
-					increment(string("singleel_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2);
+					increment(string("singleel_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
+					increment(string("singleel_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.);
+					increment(string("singleel_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
