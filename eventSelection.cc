@@ -519,7 +519,7 @@ double jet_radius(pat::Jet& jet)
 //jetToTauFakeRate(tau_fake_rate_jets_histo1, tau_fake_rate_taus_histo1, tau_fake_rate_jets_histo2, tau_fake_rate_taus_histo2, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 //jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
 // later tau_fake_rate_histo1_fraction can be a TH3F histogram with fractions per pt, eta, radius
-double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
+double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
 	{
 	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
 	// are identical TH3F histograms
@@ -528,6 +528,7 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_t
 	//	Double_t  	z = 0 
 	// )
 	// virtual Double_t TH3::GetBinContent 	( 	Int_t  	bin	) 	const
+
 	Int_t global_bin_id = tau_fake_rate_jets_histo1->FindBin(jet_pt, jet_eta, jet_radius);
 
 	Double_t jets_rate1 = tau_fake_rate_jets_histo1->GetBinContent(global_bin_id);
@@ -541,8 +542,16 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_t
 	//    (1 - tau_fake_rate_histo1_fraction) * taus_rate2/jets_rate2
 	// and also for small rates:
 	//    (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1)
+	
+	Double_t fakerate = tau_fake_rate_histo1_fraction * (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1) + (1 - tau_fake_rate_histo1_fraction) * (jets_rate2 < 1 ? 0 : taus_rate2/jets_rate2);
 
-	return tau_fake_rate_histo1_fraction * (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1) + (1 - tau_fake_rate_histo1_fraction) * (jets_rate2 < 1 ? 0 : taus_rate2/jets_rate2);
+	if (debug)
+		{
+		cout << jet_pt << " " << jet_eta << " " << jet_radius << " : " << global_bin_id << " : ";
+		cout << taus_rate1 << "/" << jets_rate1 << ", " << taus_rate2 << "/" << jets_rate2 << "; "<< fakerate << "\n";
+		}
+
+	return fakerate;
 	}
 
 
@@ -904,6 +913,7 @@ TRandom *r3 = new TRandom3();
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
 
 bool debug           = runProcess.getParameter<bool>  ("debug");
+int debug_len           = runProcess.getParameter<int>  ("debug_len");
 bool runSystematics  = runProcess.getParameter<bool>  ("runSystematics");
 bool saveSummaryTree = runProcess.getParameter<bool>  ("saveSummaryTree");
 bool isMC            = runProcess.getParameter<bool>  ("isMC");
@@ -1564,7 +1574,7 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
-			if(iev == 5)
+			if(iev == debug_len)
 				{
 				cout << "Got to the event " << iev << " in the file, exiting" << endl;
 				//return 0;
@@ -2034,8 +2044,8 @@ for(size_t f=0; f<urls.size();++f)
 			//edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
 			//tr = ev.triggerResultsByName ("HLT");
 			//if (!tr.isValid ()){
-			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
-				cout << *trnames << endl;
+			//for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
+				//cout << *trnames << endl;
 				//cout << "1: " << *trnames << endl;
 				//}
 			/*
@@ -2180,9 +2190,9 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (! isMC && metFilters.isValid()) {
 			if(debug){
-				cout << "Printing PAT/RECO trigger list for MET filters here" << endl;
-				for(edm::TriggerNames::Strings::const_iterator trnames = metFilters.triggerNames().begin(); trnames!=metFilters.triggerNames().end(); ++trnames)
-					cout << *trnames << endl;
+				//cout << "Printing PAT/RECO trigger list for MET filters here" << endl;
+				//for(edm::TriggerNames::Strings::const_iterator trnames = metFilters.triggerNames().begin(); trnames!=metFilters.triggerNames().end(); ++trnames)
+					//cout << *trnames << endl;
 				cout << "----------- End of trigger list ----------" << endl;
 				//return 0;
 			}
@@ -3864,15 +3874,36 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// pre-tau selection
 					// calculate jet-to-tau fake rate per all jets and save the sum
-					double jet_to_tau_fake_rate = 0.0;
-					double jet_to_tau_fake_rate1 = 0.0; // done with only histo 1
-					double jet_to_tau_fake_rate2 = 0.0; // only histo 2
+					double jet_to_tau_no_fake_prob = 1.0;
+					double jet_to_tau_no_fake_prob1 = 1.0; // done with only histo 1
+					double jet_to_tau_no_fake_prob2 = 1.0; // only histo 2
+
+					double jet_to_tau_fake_rate = 1.0;
+					double jet_to_tau_fake_rate1 = 1.0; // done with only histo 1
+					double jet_to_tau_fake_rate2 = 1.0; // only histo 2
+
 					// using selJetsNoLep jets
+					if (debug)
+						{
+						cout << "passed pre-tau selection" << "\n";
+						cout << "N jets for pre-tau fakerate = " << selJetsNoLep.size() << "\n";
+						}
+
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						jet_to_tau_fake_rate  += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate1 += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						}
+
+					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;
+					jet_to_tau_fake_rate1 = 1.0 - jet_to_tau_no_fake_prob1; // done with only histo 1
+					jet_to_tau_fake_rate2 = 1.0 - jet_to_tau_no_fake_prob2; // only histo 2
+
+					if (debug)
+						{
+						cout << "no-fake probs: " << jet_to_tau_no_fake_prob1 << " " << jet_to_tau_no_fake_prob << " " << jet_to_tau_no_fake_prob2 << "\n";
+						cout << "fakerates: " << jet_to_tau_fake_rate1 << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2 << "\n";
 						}
 
 					increment(string("singlemu_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
@@ -3987,16 +4018,35 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// pre-tau selection
 					// calculate jet-to-tau fake rate per all jets and save the sum
-					double jet_to_tau_fake_rate = 0.0;
-					double jet_to_tau_fake_rate1 = 0.0;
-					double jet_to_tau_fake_rate2 = 0.0;
+					double jet_to_tau_no_fake_prob = 1.0;
+					double jet_to_tau_no_fake_prob1 = 1.0; // done with only histo 1
+					double jet_to_tau_no_fake_prob2 = 1.0; // only histo 2
+
+					double jet_to_tau_fake_rate = 1.0;
+					double jet_to_tau_fake_rate1 = 1.0; // done with only histo 1
+					double jet_to_tau_fake_rate2 = 1.0; // only histo 2
 					// using selJetsNoLep jets
+					if (debug)
+						{
+						cout << "passed pre-tau selection" << "\n";
+						cout << "N jets for pre-tau fakerate = " << selJetsNoLep.size() << "\n";
+						}
+
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate  += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate1 += jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						jet_to_tau_fake_rate2 += jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						}
+
+					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;
+					jet_to_tau_fake_rate1 = 1.0 - jet_to_tau_no_fake_prob1; // done with only histo 1
+					jet_to_tau_fake_rate2 = 1.0 - jet_to_tau_no_fake_prob2; // only histo 2
+
+					if (debug)
+						{
+						cout << "fakerates: " << jet_to_tau_fake_rate1 << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2 << "\n";
 						}
 
 					increment(string("singleel_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
@@ -4417,7 +4467,7 @@ for(size_t f=0; f<urls.size();++f)
 		if (isSingleE && isSingleMu) nMultiChannel++;
 
 		if(debug){
-			cout << "channel is defined, running the event selection" << endl;
+			cout << "end of event" << endl;
 			}
 
 
