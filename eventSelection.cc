@@ -620,7 +620,8 @@ int fill_particle_ids(string control_point_name, int value, double weight)
 	// check if the key (mc_decay, control point) has been initialized
 	std::pair <string,string> key (mc_decay, control_point_name);
 
-	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
+	if (th1i_distr_control.find(key) == th1i_distr_control.end() )
+	//if (th1d_distr_control.find(key) == th1d_distr_control.end() )
 		{
 		// the control point distr has not been created/initialized
 		// create it:
@@ -630,20 +631,23 @@ int fill_particle_ids(string control_point_name, int value, double weight)
 		// trying TH1D for v13.5
 		// th1d_distr_control[key] = TH1D(control_point_name.c_str(), ";;ID", 600, -300., 300.);
 		//cout << "creating " << mc_decay << " - " << control_point_name << endl;
-		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;ID", 600, -300., 300.)));
+		th1i_distr_control.insert( std::make_pair(key, TH1I((mc_decay + control_point_name).c_str(), ";;ID", 600, -300., 300.)));
+		//th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;ID", 600, -300., 300.)));
 		//cout << "creating " << control_point_name << endl;
 		}
 
 	// fill the distribution:
-	// th1i_distr_control[key].Fill(value, weight);
-	th1d_distr_control[key].Fill(value, weight);
+	th1i_distr_control[key].Fill(value, weight);
+	//th1d_distr_control[key].Fill(value, weight);
 	//cout << "filled " << control_point_name << endl;
 	//cout << th1i_distr_control[control_point_name].Integral() << endl;
 
-	if (th1d_distr_control_headers.find(string("p_id")) == th1d_distr_control_headers.end() )
+	if (th1i_distr_control_headers.find(string("p_id")) == th1i_distr_control_headers.end() )
+	//if (th1d_distr_control_headers.find(string("p_id")) == th1d_distr_control_headers.end() )
 		{
 		// th1d_distr_control_headers[string("p_id")] = TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.);
-		th1d_distr_control_headers.insert( std::make_pair(string("p_id"), TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
+		th1i_distr_control_headers.insert( std::make_pair(string("p_id"), TH1I("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
+		//th1d_distr_control_headers.insert( std::make_pair(string("p_id"), TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
 		}
 
 	// return success:
@@ -3885,12 +3889,25 @@ for(size_t f=0; f<urls.size();++f)
 					// using selJetsNoLep jets
 					if (debug)
 						{
-						cout << "passed pre-tau selection" << "\n";
-						cout << "N jets for pre-tau fakerate = " << selJetsNoLep.size() << "\n";
+						cout << "(mu) passed pre-tau selection" << "\n";
+						cout << "N NoLep jets for pre-tau fakerate = " << selJetsNoLep.size() << "\n";
+						cout << "N NoLepNoTau jets for pre-tau fakerate = " << selJetsNoLepNoTau.size() << "\n";
+
+						cout << "FakeRates of NoLepNoTau jets:\n";
+						for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
+							{
+							cout << (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << " ";
+							cout << (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << "\n";
+							}
 						}
 
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
+						if (debug) cout << n << ":\n";
+						if (isMC) fill_particle_ids(string("smu_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
+
 						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
@@ -3906,9 +3923,9 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "fakerates: " << jet_to_tau_fake_rate1 << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2 << "\n";
 						}
 
-					increment(string("singlemu_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
-					increment(string("singlemu_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.);
-					increment(string("singlemu_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.);
+					increment(string("singlemu_pretauselection_jettotaufakerate"),  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
+					increment(string("singlemu_pretauselection_jettotaufakerate1"), weight * (jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.));
+					increment(string("singlemu_pretauselection_jettotaufakerate2"), weight * (jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
@@ -4028,13 +4045,26 @@ for(size_t f=0; f<urls.size();++f)
 					// using selJetsNoLep jets
 					if (debug)
 						{
-						cout << "passed pre-tau selection" << "\n";
+						cout << "(el) passed pre-tau selection" << "\n";
 						cout << "N jets for pre-tau fakerate = " << selJetsNoLep.size() << "\n";
+						cout << "N NoLepNoTau jets for pre-tau fakerate = " << selJetsNoLepNoTau.size() << "\n";
+
+						cout << "FakeRates of NoLepNoTau jets:\n";
+						for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
+							{
+							cout << (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << " ";
+							cout << (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << "\n";
+							}
 						}
 
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
+						if (debug) cout << n << ":\n";
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+						if (isMC) fill_particle_ids(string("sel_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
+
 						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
@@ -4049,9 +4079,9 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "fakerates: " << jet_to_tau_fake_rate1 << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2 << "\n";
 						}
 
-					increment(string("singleel_pretauselection_jettotaufakerate"),  jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.);
-					increment(string("singleel_pretauselection_jettotaufakerate1"), jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.);
-					increment(string("singleel_pretauselection_jettotaufakerate2"), jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.);
+					increment(string("singleel_pretauselection_jettotaufakerate"),  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
+					increment(string("singleel_pretauselection_jettotaufakerate1"), weight * (jet_to_tau_fake_rate1 < 1. ? jet_to_tau_fake_rate1 : 1.));
+					increment(string("singleel_pretauselection_jettotaufakerate2"), weight * (jet_to_tau_fake_rate2 < 1. ? jet_to_tau_fake_rate2 : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
