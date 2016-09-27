@@ -3180,22 +3180,22 @@ for(size_t f=0; f<urls.size();++f)
 					//wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// wjets_taujet_origin
 					}
-				}
 
-			// loop through taus
-			// find jets close to tau -- consider them faking the tau
-			// save such jets
-			// if it is MC save also their gluon/quark origin -- just in case, for interest
-			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
-				{
-				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+				// loop through taus
+				// find jets close to tau -- consider them faking the tau
+				// save such jets
+				// if it is MC save also their gluon/quark origin -- just in case, for interest
+				for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
 					{
-					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					//for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+					//{
+					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
 					wjets_taujet_distance->Fill(fake_distance);
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						wjets_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
@@ -3208,6 +3208,7 @@ for(size_t f=0; f<urls.size();++f)
 							}
 						continue;
 						}
+					//}
 					}
 				}
 			}
@@ -3228,18 +3229,18 @@ for(size_t f=0; f<urls.size();++f)
 					//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_taujet_origin
 					}
-				}
 
-			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
-				{
-				for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+				for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
 					{
-					double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					//for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+					//{
+					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
+					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
 					qcd_taujet_distance->Fill(fake_distance);
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						qcd_tau_jets_distr->Fill(selJetsNoLep[ijet].pt(), selJetsNoLep[ijet].eta(), jet_radius(selJetsNoLep[ijet]));
+						qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
@@ -3252,6 +3253,7 @@ for(size_t f=0; f<urls.size();++f)
 							}
 						continue;
 						}
+					//}
 					}
 				}
 			}
