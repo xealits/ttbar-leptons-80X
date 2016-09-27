@@ -3905,12 +3905,23 @@ for(size_t f=0; f<urls.size();++f)
 
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						if (debug) cout << n << ":\n";
-						if (isMC) fill_particle_ids(string("smu_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
+						pat::Jet& jet = selJetsNoLep[n];
+						if (isMC)
+							{
+							int partID = jet.partonFlavour();
+							//int hadrID = jet.hadronFlavour(); // TODO: test later
+							//const reco::GenParticle & jet_origin = jet.genParton();
+							//const reco::GenParticle* jet_origin = jet.genParton();
+							//const reco::LeafCandidate* jet_origin = jet.genParton();
+							//cout << "BBB " << abs( jet_origin.pdgId() ) << "\n";
+							//fill_particle_ids(string("smu_pretau_jet_origin_ids"), 1, weight);
 
-						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
-						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
-						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							fill_particle_ids(string("smu_pretau_jet_origin_ids"), partID, weight);
+							}
+
+						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;
@@ -4061,13 +4072,19 @@ for(size_t f=0; f<urls.size();++f)
 
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
+						pat::Jet& jet = selJetsNoLep[n];
 						if (debug) cout << n << ":\n";
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-						if (isMC) fill_particle_ids(string("sel_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
+						if (isMC)
+							{
+							int partID = jet.partonFlavour();
+							//fill_particle_ids(string("sel_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
+							fill_particle_ids(string("sel_pretau_jet_origin_ids"), partID, weight);
+							}
 
-						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
-						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
-						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob1 *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate1_jets_histo, tau_fake_rate1_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob2 *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate2_jets_histo, tau_fake_rate2_taus_histo, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;

@@ -3169,10 +3169,15 @@ for(size_t f=0; f<urls.size();++f)
 				// const reco::GenParticle* genParton()
 				if (isMC)
 					{
-					const reco::GenParticle* jet_origin = jet.genParton();
+					//const reco::GenParticle* jet_origin = jet.genParton();
+					// TODO this genParton is apparently not defined in PAT jets
+					// using the jet.partonFlavor
+					// need to check if it is correct parton ID from generation MC
+					// there is also hadronFlavor..
 					// the ID should be in:
 					// jet_origin->pdgId();
-					wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
+					wjets_jet_origin->Fill(abs( jet.partonFlavour() ));
+					//wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// wjets_taujet_origin
 					}
 				}
@@ -3194,10 +3199,11 @@ for(size_t f=0; f<urls.size();++f)
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
-							const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
+							//const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
 							// the ID should be in:
 							// jet_origin->pdgId();
-							wjets_taujet_origin->Fill(abs( jet_origin->pdgId() ));
+							wjets_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							//wjets_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// wjets_jet_origin
 							}
 						continue;
@@ -3215,10 +3221,11 @@ for(size_t f=0; f<urls.size();++f)
 				// const reco::GenParticle* genParton()
 				if (isMC)
 					{
-					const reco::GenParticle* jet_origin = jet.genParton();
+					//const reco::GenParticle* jet_origin = jet.genParton();
 					// the ID should be in:
 					// jet_origin->pdgId();
-					qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
+					qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
+					//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_taujet_origin
 					}
 				}
@@ -3236,10 +3243,11 @@ for(size_t f=0; f<urls.size();++f)
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
-							const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
+							//const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
 							// the ID should be in:
 							// jet_origin->pdgId();
-							qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
+							qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// qcd_jet_origin
 							}
 						continue;
