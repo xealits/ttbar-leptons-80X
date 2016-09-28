@@ -12,17 +12,17 @@ int csv_qw_TH3Fs(TString filename, TString out_filename) {
 	FILE * out_f;
 	out_f = fopen(out_filename.Data(), "w");
 
-	TH3F * q_h1 = (TH3F*) file->Get("qcd jets_distr");
+	TH3F * q_h1 = (TH3F*) file->Get("qcd_jets_distr");
 	cout << "got jets_distr\n";
-	TH3F * q_h2 = (TH3F*) file->Get("qcd tau_jets_distr");
+	TH3F * q_h2 = (TH3F*) file->Get("qcd_tau_jets_distr");
 	cout << "got tau_jets_distr\n";
-	TH3F * q_hd = (TH3F*) file->Get("qcd taujet_distance");
+	TH3F * q_hd = (TH3F*) file->Get("qcd_taujet_distance");
 
-	TH3F * h1 = (TH3F*) file->Get("wjets jets_distr");
+	TH3F * h1 = (TH3F*) file->Get("wjets_jets_distr");
 	cout << "got jets_distr\n";
-	TH3F * h2 = (TH3F*) file->Get("wjets tau_jets_distr");
+	TH3F * h2 = (TH3F*) file->Get("wjets_tau_jets_distr");
 	cout << "got tau_jets_distr\n";
-	TH3F * hd = (TH3F*) file->Get("wjets taujet_distance");
+	TH3F * hd = (TH3F*) file->Get("wjets_taujet_distance");
 
 	h1->Print();
 	h2->Print();
@@ -34,9 +34,9 @@ int csv_qw_TH3Fs(TString filename, TString out_filename) {
 	bool passed_midwork = 0;
 	cout << "the histos size = " << size << " and " << h2->GetSize() << "\n";
 
-	Int_t size_x = h1->GetNbinsX();
-	Int_t size_y = h1->GetNbinsY();
-	Int_t size_z = h1->GetNbinsZ();
+	Int_t size_x = 10; //h1->GetNbinsX();
+	Int_t size_y = 6; //h1->GetNbinsY();
+	Int_t size_z = 16; //h1->GetNbinsZ();
 	cout << "the histos size = " << size_x << " , " << size_y << " , " << size_z << "\n";
 
 	for (int iz=1; iz<=size_z; ++iz)
