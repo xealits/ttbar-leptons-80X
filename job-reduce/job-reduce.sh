@@ -149,6 +149,11 @@ do
 done
 
 
+for t in `cat  $JOBREDUCE_DIR/distrs_particleids`
+do
+   Sum_distr $t
+done
+
 echo
 
 

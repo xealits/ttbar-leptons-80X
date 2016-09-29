@@ -10,12 +10,12 @@ void merge_ROOT_histos( TString filename1, TString filename2, TString out_filena
 	TFile *file1 = TFile::Open(filename1);
 	TFile *file2 = TFile::Open(filename2);
 
-	/*
 	TH3F * jets_h1 = (TH3F*) file1->Get("jets_distr");
 	TH3F * jets_h2 = (TH3F*) file2->Get("jets_distr");
 
 	TH3F * taus_h1 = (TH3F*) file1->Get("tau_jets_distr");
 	TH3F * taus_h2 = (TH3F*) file2->Get("tau_jets_distr");
+	/*
 	*/
 
 	/*
@@ -60,7 +60,6 @@ void merge_ROOT_histos( TString filename1, TString filename2, TString out_filena
 	qcd_jets_h1->Add(qcd_jets_h2, 1);
 	qcd_jets_h1->Print();
 
-/*
 	qcd_taus_h1->Print();
 	qcd_taus_h2->Print();
 	qcd_taus_h1->Add(qcd_taus_h2, 1);
@@ -85,6 +84,8 @@ void merge_ROOT_histos( TString filename1, TString filename2, TString out_filena
 	//wjets_dist_h2->Print();
 	wjets_dist_h1->Add(wjets_dist_h2, 1);
 	//wjets_dist_h1->Print();
+/*
+*/
 
 	q_jet_origin_h1->Print();
 	w_jet_origin_h1->Print();
@@ -94,7 +95,6 @@ void merge_ROOT_histos( TString filename1, TString filename2, TString out_filena
 	w_taujet_origin_h1->Add(w_taujet_origin_h2, 1);
 	q_jet_origin_h1->Print();
 	w_jet_origin_h1->Print();
-*/
 
 	TFile *out_f = TFile::Open(out_filename, "RECREATE");
 	qcd_jets_h1->Write();
