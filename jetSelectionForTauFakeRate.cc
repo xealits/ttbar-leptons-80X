@@ -3156,6 +3156,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (Wjets_selection)
 			{
+			increment( string("weightflow_wjets_selection"), weight );
+
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
 
@@ -3215,6 +3217,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (QCD_selection)
 			{
+			increment( string("weightflow_qcd_selection"), weight );
+
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
