@@ -3916,6 +3916,7 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
 					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
 					increment(string("singlemu_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singlemu_pretauselection_nRawTaus"),  weight * taus.size());
 					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
 					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
 					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
@@ -4105,6 +4106,7 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singleel_pretauselection_njets"),  weight * selJets.size());
 					increment(string("singleel_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
 					increment(string("singleel_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singleel_pretauselection_nRawTaus"),  weight * taus.size());
 					increment(string("singleel_pretauselection_ntaus"),  weight * selTaus.size());
 					increment(string("singleel_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
 					increment(string("singleel_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
