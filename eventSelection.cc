@@ -3758,11 +3758,13 @@ for(size_t f=0; f<urls.size();++f)
 
 		unsigned int n_leptons = selLeptons.size();
 		// unsigned int n_taus = selTaus.size();
-		unsigned int n_taus = selTausNoLep.size();
+		// unsigned int n_taus = selTausNoLep.size();
+		unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
 		//unsigned int n_jets = selJets.size();
 		//unsigned int n_bjets = selBJets.size();
 		// unsigned int n_jets = selSingleLepJets.size();
-		unsigned int n_jets = selJetsNoLepNoTau.size();
+		// unsigned int n_jets = selJetsNoLepNoTau.size();
+		unsigned int n_jets = selJetsNoLep.size(); // Try "reverse" tau-jet cleanning logic
 		// unsigned int n_bjets = selSingleLepBJets.size();
 		unsigned int n_bjets = selBJets.size();
 
@@ -3825,7 +3827,8 @@ for(size_t f=0; f<urls.size();++f)
 			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
 			bool passTauSelection(n_taus==1); // only 1 tau // 2^1
 			// bool passTauSelection(n_taus>0); // >= 1 tau in 13.2
-			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
+			// bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
+			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLepNoJet[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 
 
 			// MULTISELECT
@@ -4009,27 +4012,27 @@ for(size_t f=0; f<urls.size();++f)
 
 					// pts
 					fill_pt_e( string("singlemu_selection_muon_pt"), selLeptons[0].pt(), weight);
-					fill_pt_e( string("singlemu_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("singlemu_selection_jet1_pt"), selJetsNoLepNoTau[0].pt(), weight);
-					fill_pt_e( string("singlemu_selection_jet2_pt"), selJetsNoLepNoTau[1].pt(), weight);
+					fill_pt_e( string("singlemu_selection_tau_pt"), selTausNoLepNoJet[0].pt(), weight);
+					fill_pt_e( string("singlemu_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
+					fill_pt_e( string("singlemu_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
 					fill_pt_e( string("singlemu_selection_bjet_pt"), selBJets[0].pt(), weight);
 					// fill_pt_e( string("singlemu_selection_met_pt"), n_met.pt(), weight);
 					fill_pt_e( string("singlemu_selection_met_pt"), met.pt(), weight);
 
 					// energies
 					fill_pt_e( string("singlemu_selection_muon_energy"), selLeptons[0].energy(), weight);
-					fill_pt_e( string("singlemu_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("singlemu_selection_jet1_energy"), selJetsNoLepNoTau[0].energy(), weight);
-					fill_pt_e( string("singlemu_selection_jet2_energy"), selJetsNoLepNoTau[1].energy(), weight);
+					fill_pt_e( string("singlemu_selection_tau_energy"), selTausNoLepNoJet[0].energy(), weight);
+					fill_pt_e( string("singlemu_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
+					fill_pt_e( string("singlemu_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
 					fill_pt_e( string("singlemu_selection_bjet_energy"), selBJets[0].energy(), weight);
 					// fill_pt_e( string("singlemu_selection_met_energy"), n_met.energy(), weight);
 					fill_pt_e( string("singlemu_selection_met_energy"), met.energy(), weight);
 
 					// etas:
 					fill_eta( string("singlemu_selection_muon_eta"), selLeptons[0].eta(), weight);
-					fill_eta( string("singlemu_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("singlemu_selection_jet1_eta"), selJetsNoLepNoTau[0].eta(), weight);
-					fill_eta( string("singlemu_selection_jet2_eta"), selJetsNoLepNoTau[1].eta(), weight);
+					fill_eta( string("singlemu_selection_tau_eta"), selTausNoLepNoJet[0].eta(), weight);
+					fill_eta( string("singlemu_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
+					fill_eta( string("singlemu_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
 					fill_eta( string("singlemu_selection_bjet_eta"), selBJets[0].eta(), weight);
 					// fill_eta( string("singlemu_selection_met_eta"), n_met.eta(), weight);
 					fill_eta( string("singlemu_selection_met_eta"), met.eta(), weight);
@@ -4190,27 +4193,27 @@ for(size_t f=0; f<urls.size();++f)
 					fill_n( string("singleel_selection_n_taus"), n_taus, weight);
 
 					fill_pt_e( string("singleel_selection_electron_pt"), selLeptons[0].pt(), weight);
-					fill_pt_e( string("singleel_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("singleel_selection_jet1_pt"), selJetsNoLepNoTau[0].pt(), weight);
-					fill_pt_e( string("singleel_selection_jet2_pt"), selJetsNoLepNoTau[1].pt(), weight);
+					fill_pt_e( string("singleel_selection_tau_pt"), selTausNoLepNoJet[0].pt(), weight);
+					fill_pt_e( string("singleel_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
+					fill_pt_e( string("singleel_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
 					fill_pt_e( string("singleel_selection_bjet_pt"), selBJets[0].pt(), weight);
 					// fill_pt_e( string("singleel_selection_met_pt"), n_met.pt(), weight);
 					fill_pt_e( string("singlemu_selection_met_pt"), met.pt(), weight);
 
 					// energies
 					fill_pt_e( string("singleel_selection_electron_energy"), selLeptons[0].energy(), weight);
-					fill_pt_e( string("singleel_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("singleel_selection_jet1_energy"), selJetsNoLepNoTau[0].energy(), weight);
-					fill_pt_e( string("singleel_selection_jet2_energy"), selJetsNoLepNoTau[1].energy(), weight);
+					fill_pt_e( string("singleel_selection_tau_energy"), selTausNoLepNoJet[0].energy(), weight);
+					fill_pt_e( string("singleel_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
+					fill_pt_e( string("singleel_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
 					fill_pt_e( string("singleel_selection_bjet_energy"), selBJets[0].energy(), weight);
 					// fill_pt_e( string("singleel_selection_met_energy"), n_met.energy(), weight);
 					fill_pt_e( string("singlemu_selection_met_energy"), met.energy(), weight);
 
 					//etas:
 					fill_eta( string("singleel_selection_electron_eta"), selLeptons[0].eta(), weight);
-					fill_eta( string("singleel_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("singleel_selection_jet1_eta"), selJetsNoLepNoTau[0].eta(), weight);
-					fill_eta( string("singleel_selection_jet2_eta"), selJetsNoLepNoTau[1].eta(), weight);
+					fill_eta( string("singleel_selection_tau_eta"), selTausNoLepNoJet[0].eta(), weight);
+					fill_eta( string("singleel_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
+					fill_eta( string("singleel_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
 					fill_eta( string("singleel_selection_bjet_eta"), selBJets[0].eta(), weight);
 					// fill_eta( string("singleel_selection_met_eta"), n_met.eta(), weight);
 					fill_eta( string("singlemu_selection_met_eta"), met.eta(), weight);
@@ -4377,8 +4380,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("elel_selection_el1_pt"), selElectrons[0].pt(), weight);
 					fill_pt_e( string("elel_selection_el2_pt"), selElectrons[1].pt(), weight);
 					// fill_pt_e( string("elel_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("elel_selection_jet1_pt"), selJetsNoLepNoTau[0].pt(), weight);
-					fill_pt_e( string("elel_selection_jet2_pt"), selJetsNoLepNoTau[1].pt(), weight);
+					fill_pt_e( string("elel_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
+					fill_pt_e( string("elel_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
 					fill_pt_e( string("elel_selection_bjet_pt"), selBJets[0].pt(), weight);
 					// fill_pt_e( string("elel_selection_met_pt"), n_met.pt(), weight);
 					fill_pt_e( string("elel_selection_met_pt"), met.pt(), weight);
@@ -4387,8 +4390,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("elel_selection_el1_energy"), selElectrons[0].energy(), weight);
 					fill_pt_e( string("elel_selection_el2_energy"), selElectrons[1].energy(), weight);
 					// fill_pt_e( string("elel_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("elel_selection_jet1_energy"), selJetsNoLepNoTau[0].energy(), weight);
-					fill_pt_e( string("elel_selection_jet2_energy"), selJetsNoLepNoTau[1].energy(), weight);
+					fill_pt_e( string("elel_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
+					fill_pt_e( string("elel_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
 					fill_pt_e( string("elel_selection_bjet_energy"), selBJets[0].energy(), weight);
 					// fill_pt_e( string("elel_selection_met_energy"), n_met.energy(), weight);
 					fill_pt_e( string("elel_selection_met_energy"), met.energy(), weight);
@@ -4397,8 +4400,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_eta( string("elel_selection_el1_eta"), selElectrons[0].eta(), weight);
 					fill_eta( string("elel_selection_el2_eta"), selElectrons[1].eta(), weight);
 					// fill_eta( string("elel_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("elel_selection_jet1_eta"), selJetsNoLepNoTau[0].eta(), weight);
-					fill_eta( string("elel_selection_jet2_eta"), selJetsNoLepNoTau[1].eta(), weight);
+					fill_eta( string("elel_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
+					fill_eta( string("elel_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
 					fill_eta( string("elel_selection_bjet_eta"), selBJets[0].eta(), weight);
 					// fill_eta( string("elel_selection_met_eta"), n_met.eta(), weight);
 					fill_eta( string("elel_selection_met_eta"), met.eta(), weight);
@@ -4455,8 +4458,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("mumu_selection_mu1_pt"), selMuons[0].pt(), weight);
 					fill_pt_e( string("mumu_selection_mu2_pt"), selMuons[1].pt(), weight);
 					// fill_pt_e( string("mumu_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("mumu_selection_jet1_pt"), selJetsNoLepNoTau[0].pt(), weight);
-					fill_pt_e( string("mumu_selection_jet2_pt"), selJetsNoLepNoTau[1].pt(), weight);
+					fill_pt_e( string("mumu_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
+					fill_pt_e( string("mumu_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
 					fill_pt_e( string("mumu_selection_bjet_pt"), selBJets[0].pt(), weight);
 					// fill_pt_e( string("mumu_selection_met_pt"), n_met.pt(), weight);
 					fill_pt_e( string("mumu_selection_met_pt"), met.pt(), weight);
@@ -4465,8 +4468,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("mumu_selection_mu1_energy"), selMuons[0].energy(), weight);
 					fill_pt_e( string("mumu_selection_mu2_energy"), selMuons[1].energy(), weight);
 					// fill_pt_e( string("mumu_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("mumu_selection_jet1_energy"), selJetsNoLepNoTau[0].energy(), weight);
-					fill_pt_e( string("mumu_selection_jet2_energy"), selJetsNoLepNoTau[1].energy(), weight);
+					fill_pt_e( string("mumu_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
+					fill_pt_e( string("mumu_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
 					fill_pt_e( string("mumu_selection_bjet_energy"), selBJets[0].energy(), weight);
 					// fill_pt_e( string("mumu_selection_met_energy"), n_met.energy(), weight);
 					fill_pt_e( string("mumu_selection_met_energy"), met.energy(), weight);
@@ -4475,8 +4478,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_eta( string("mumu_selection_mu1_eta"), selMuons[0].eta(), weight);
 					fill_eta( string("mumu_selection_mu2_eta"), selMuons[1].eta(), weight);
 					// fill_eta( string("mumu_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("mumu_selection_jet1_eta"), selJetsNoLepNoTau[0].eta(), weight);
-					fill_eta( string("mumu_selection_jet2_eta"), selJetsNoLepNoTau[1].eta(), weight);
+					fill_eta( string("mumu_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
+					fill_eta( string("mumu_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
 					fill_eta( string("mumu_selection_bjet_eta"), selBJets[0].eta(), weight);
 					// fill_eta( string("mumu_selection_met_eta"), n_met.eta(), weight);
 					fill_eta( string("mumu_selection_met_eta"), met.eta(), weight);
@@ -4533,8 +4536,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("elmu_selection_el_pt"), selElectrons[0].pt(), weight);
 					fill_pt_e( string("elmu_selection_mu_pt"), selMuons[0].pt(), weight);
 					// fill_pt_e( string("elmu_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("elmu_selection_jet1_pt"), selJetsNoLepNoTau[0].pt(), weight);
-					fill_pt_e( string("elmu_selection_jet2_pt"), selJetsNoLepNoTau[1].pt(), weight);
+					fill_pt_e( string("elmu_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
+					fill_pt_e( string("elmu_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
 					fill_pt_e( string("elmu_selection_bjet_pt"), selBJets[0].pt(), weight);
 					// fill_pt_e( string("elmu_selection_met_pt"), n_met.pt(), weight);
 					fill_pt_e( string("elmu_selection_met_pt"), met.pt(), weight);
@@ -4543,8 +4546,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("elmu_selection_el_energy"), selElectrons[0].energy(), weight);
 					fill_pt_e( string("elmu_selection_mu_energy"), selMuons[0].energy(), weight);
 					// fill_pt_e( string("elmu_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("elmu_selection_jet1_energy"), selJetsNoLepNoTau[0].energy(), weight);
-					fill_pt_e( string("elmu_selection_jet2_energy"), selJetsNoLepNoTau[1].energy(), weight);
+					fill_pt_e( string("elmu_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
+					fill_pt_e( string("elmu_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
 					fill_pt_e( string("elmu_selection_bjet_energy"), selBJets[0].energy(), weight);
 					// fill_pt_e( string("elmu_selection_met_energy"), n_met.energy(), weight);
 					fill_pt_e( string("elmu_selection_met_energy"), met.energy(), weight);
@@ -4553,8 +4556,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_eta( string("elmu_selection_el_eta"), selElectrons[0].eta(), weight);
 					fill_eta( string("elmu_selection_mu_eta"), selMuons[0].eta(), weight);
 					// fill_eta( string("elmu_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("elmu_selection_jet1_eta"), selJetsNoLepNoTau[0].eta(), weight);
-					fill_eta( string("elmu_selection_jet2_eta"), selJetsNoLepNoTau[1].eta(), weight);
+					fill_eta( string("elmu_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
+					fill_eta( string("elmu_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
 					fill_eta( string("elmu_selection_bjet_eta"), selBJets[0].eta(), weight);
 					// fill_eta( string("elmu_selection_met_eta"), n_met.eta(), weight);
 					fill_eta( string("elmu_selection_met_eta"), met.eta(), weight);
