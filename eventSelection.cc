@@ -3725,6 +3725,31 @@ for(size_t f=0; f<urls.size();++f)
 		std::sort(selSingleLepBJets.begin(), selSingleLepBJets.end(), utils::sort_CandidatesByPt);
 		*/
 
+		pat::TauCollection selTausNoLepNoJet;
+		int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
+		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+			{
+			pat::Tau& tau = selTausNoLep[itau];
+
+			// cross-cleaning taus with jets
+			bool overlapWithJet(false);
+			for(int n=0; n<(int)selJetsNoLep.size();++n)
+				{
+				if (reco::deltaR(tau, selJetsNoLep[n])<0.4)
+					{ overlapWithJet=true; break; }
+				}
+			if (overlapWithJet) continue;
+
+			// the taus, far from leptons and jets
+			selTausNoLepNoJet.push_back(tau);
+
+			// for the fake-rate counts (in MC)
+			// let's save how many taus we find:
+			// increment(string("number_of_tausNoLepNoJet_found"), weight);
+			}
+
+
+
 		// -------------------------------------------------- all particles are selected
 
 		if(debug){
@@ -3881,6 +3906,16 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+
+					//
+					increment(string("singlemu_pretauselection_nRawJets"),  weight * jets.size());
+					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
+					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singlemu_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_no_fake_prob = 1.0;
 					double jet_to_tau_no_fake_prob1_q = 1.0; // done with only histo 1
@@ -3912,6 +3947,7 @@ for(size_t f=0; f<urls.size();++f)
 						}
 
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
+						// TODO: selJetsNoLepNoTau ???
 						{
 						pat::Jet& jet = selJetsNoLep[n];
 						if (isMC)
@@ -4059,6 +4095,16 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+
+					//
+					increment(string("singleel_pretauselection_nRawJets"),  weight * jets.size());
+					increment(string("singleel_pretauselection_njets"),  weight * selJets.size());
+					increment(string("singleel_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singleel_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singleel_pretauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singleel_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singleel_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_no_fake_prob = 1.0;
 					double jet_to_tau_no_fake_prob1_q = 1.0; // done with only histo 1
