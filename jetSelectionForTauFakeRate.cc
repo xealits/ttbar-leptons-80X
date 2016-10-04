@@ -1346,12 +1346,14 @@ Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0
 
 TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH3F* wjets_tau_jets_distr  = (TH3F*) new TH3F("wjets_tau_jets_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* wjets_distinct_tau_distr = (TH3F*) new TH3F("wjets_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets_taujet_distance", ";Distance [phi-eta];Events",            100, 0.,  2.  );
 TH1I* wjets_jet_origin      = (TH1I*) new TH1I("wjets_jet_origin",    ";PDg ID;Particles",            100, 0,  100  );
 TH1I* wjets_taujet_origin   = (TH1I*) new TH1I("wjets_taujet_origin", ";PDg ID;Particles",            100, 0,  100  );
 
 TH3F* qcd_jets_distr      = (TH3F*) new TH3F("qcd_jets_distr",        ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH3F* qcd_tau_jets_distr  = (TH3F*) new TH3F("qcd_tau_jets_distr",    ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+TH3F* qcd_distinct_tau_distr = (TH3F*) new TH3F("qcd_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd_taujet_distance",   ";Distance [phi-eta];Events",            100, 0.,  2.  );
 TH1I* qcd_jet_origin      = (TH1I*) new TH1I("qcd_jet_origin",    ";PDG ID;N Particles",            100, 0,  100  );
 TH1I* qcd_taujet_origin   = (TH1I*) new TH1I("qcd_taujet_origin", ";PDG ID;N Particles",            100, 0,  100  );
@@ -2656,6 +2658,9 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed taus" << endl;
 			}
 
+
+
+
 		//
 		// ----------------------------------------------- JET/MET ANALYSIS
 		//
@@ -3071,6 +3076,38 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
+
+
+
+		// ------------------------------------------ the taus far from jets
+
+		pat::TauCollection selTausNoLepNoJet; // selTausNoLep
+		// int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
+		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+			{
+			pat::Tau& tau = selTausNoLep[itau];
+
+			// cross-cleaning taus with leptons
+			bool overlapWithJet(false);
+			for(int n=0; n<(int)selJetsNoLep.size();++n)
+				{
+				if (reco::deltaR(tau, selJetsNoLep[n])<0.4)
+					{ overlapWithJet=true; break; }
+				}
+			if (overlapWithJet) continue;
+
+			selTausNoLepNoJet.push_back(tau);
+			// so these are the final taus we use in the selection
+
+			// for the fake-rate counts (in MC)
+			// let's save how many taus we find:
+			increment(string("weight_of_tausnolepnojet_found"), weight);
+			}
+
+
+
+
+
 		// -------------------------------------------------- All particles are selected
 		// now the channel/selection can be done
 
@@ -3213,6 +3250,15 @@ for(size_t f=0; f<urls.size();++f)
 					//}
 					}
 				}
+
+				// and the fakerate of "distinct taus"
+				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
+					{
+					//
+					pat::Jet& tau = selTausNoLepNoJet[itau];
+					wjets_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					// there is no partonFlavour origin for taus..........
+					}
 			}
 
 		if (QCD_selection)
@@ -3258,6 +3304,15 @@ for(size_t f=0; f<urls.size();++f)
 						continue;
 						}
 					//}
+					}
+
+				// and the fakerate of "distinct taus"
+				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
+					{
+					//
+					pat::Jet& tau = selTausNoLepNoJet[itau];
+					qcd_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					// there is no partonFlavour origin for taus..........
 					}
 				}
 			}
@@ -3340,6 +3395,9 @@ wjets_tau_jets_distr->Write();
 wjets_taujet_distance->Write();
 wjets_taujet_origin->Write();
 wjets_jet_origin->Write();
+
+wjets_distinct_tau_distr->Write();
+qcd_distinct_tau_distr->Write();
 
 ofile->Close();
 
