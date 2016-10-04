@@ -435,6 +435,13 @@ double jet_radius(pat::Jet& jet)
 	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
 	}
 
+double jet_radius(pat::Tau& jet)
+	{
+	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
+	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
+	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
+	}
+
 
 /*
  * string find_W_decay(const reco::Candidate * W) {
@@ -3277,7 +3284,7 @@ for(size_t f=0; f<urls.size();++f)
 				pat::Jet& jet = selJetsNoLep[ijet];
 				// wjets_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 				//fill_jet_distr(string control_point_name, double weight, double pt, double eta, double radius)
-				fill_jet_distr(hlt_channel + string("wjets_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+				fill_jet_distr(hlt_channel + string("wjets_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 
 				// const reco::GenParticle* genParton()
 				if (isMC)
@@ -3309,7 +3316,7 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						// the tau is fake by this jet -- save distr
 						// wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 
 						// const reco::GenParticle* genParton()
 						if (isMC)
@@ -3331,9 +3338,9 @@ for(size_t f=0; f<urls.size();++f)
 				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
 					{
 					//
-					pat::Jet& tau = selTausNoLepNoJet[itau];
+					pat::Tau& tau = selTausNoLepNoJet[itau];
 					// wjets_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
-					fill_jet_distr(hlt_channel + string("wjets_distinct_tau_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+					fill_jet_distr(hlt_channel + string("wjets_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau));
 
 					// there is no partonFlavour origin for taus..........
 					}
@@ -3347,7 +3354,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
 				// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 
 				// const reco::GenParticle* genParton()
 				if (isMC)
@@ -3366,13 +3373,14 @@ for(size_t f=0; f<urls.size();++f)
 					//{
 					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
 					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
-					// qcd_taujet_distance->Fill(fake_distance);
-					fill_jet_distr(hlt_channel + string("qcd_taujet_distance"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+					qcd_taujet_distance->Fill(fake_distance);
 
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+						//qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
+
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
@@ -3387,17 +3395,17 @@ for(size_t f=0; f<urls.size();++f)
 						}
 					//}
 					}
+				}
 
 				// and the fakerate of "distinct taus"
 				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
 					{
 					//
-					pat::Jet& tau = selTausNoLepNoJet[itau];
+					pat::Tau& tau = selTausNoLepNoJet[itau];
 					// qcd_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
-					fill_jet_distr(hlt_channel + string("qcd_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau))
+					fill_jet_distr(hlt_channel + string("qcd_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau));
 					// there is no partonFlavour origin for taus..........
 					}
-				}
 			}
 
 		} // End single file event loop
@@ -3496,7 +3504,6 @@ wjets_taujet_distance->Write();
 
 for(std::map<std::pair <string,string>, TH3F>::iterator it = th3f_distr_control.begin(); it != th3f_distr_control.end(); ++it)
 	{
-
 	const std::pair <string,string> *key = &it->first;
 	string mc_decay_suffix = key->first;
 	string name = key->second;
