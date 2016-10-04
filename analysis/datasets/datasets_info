@@ -42,18 +42,6 @@ nblocks  : 47
 nlumis   : 20569
 file_size: 2464297655709
 
-[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"
-
-Showing 1-10 out of 1 results, for more results use --idx/--limit options
-
-nfiles   : 1569
-nevents  : 148167727
-nblocks  : 22
-nlumis   : 30885
-file_size: 3670676557558
-
-
-
 [otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"
 
 Showing 1-10 out of 1 results, for more results use --idx/--limit options
@@ -74,6 +62,11 @@ nblocks  : 44
 nlumis   : 20876
 file_size: 1480106482449
 
+
+
+### RunD
+
+
 [otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"
 
 Showing 1-10 out of 1 results, for more results use --idx/--limit options
@@ -84,6 +77,71 @@ nblocks  : 22
 nlumis   : 30696
 file_size: 2098694664622
 
+[otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1569
+nevents  : 148167727
+nblocks  : 22
+nlumis   : 30885
+file_size: 3670676557558
+
+Lumimask /afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/job-lumis/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt
+About 4.3 fb^-1.
+
+
+
+### Data 2015
+
+lumiMask: /afs/cern.ch/user/o/otoldaie/work/private/project/CMSSW_7_6_3/src/UserCode/llvv_fwk/data/json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt
+
+/SingleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD
+/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD
+/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD
+/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD
+
+-- About 2.2 fb^-1
+
+]$ for d in "/SingleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD" "/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD" "/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD" "/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD"
+> do
+>   das_client --query="summary dataset=$d"
+> done
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 33
+nevents  : 1341179
+nblocks  : 8
+nlumis   : 1775
+file_size: 18663546878
+
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 21
+nevents  : 837157
+nblocks  : 8
+nlumis   : 1840
+file_size: 17297601285
+
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 1916
+nevents  : 91999861
+nblocks  : 74
+nlumis   : 46254
+file_size: 1429717896088
+
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 2801
+nevents  : 134140420
+nblocks  : 92
+nlumis   : 46528
+file_size: 2572821884607
 
 
 
