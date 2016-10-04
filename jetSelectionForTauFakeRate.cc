@@ -527,13 +527,65 @@ string mc_decay("");
 
 std::map<std::pair <string,string>, TH1D> th1d_distr_control;
 std::map<string, TH1D> th1d_distr_control_headers;
+
+std::map<std::pair <string,string>, TH3F> th3f_distr_control;
+std::map<string, TH3F> th3f_distr_control_headers;
+
 std::map<std::pair <string,string>, TH1I> th1i_distr_control;
 std::map<string, TH1I> th1i_distr_control_headers;
+
 std::map<std::pair <string,string>, double> weight_flow_control;
 
-//std::map<string, TH1D> th1d_distr_control;
-//std::map<string, TH1I> th1i_distr_control;
-//std::map<string, double> weight_flow_control;
+// good bins 1
+Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
+Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
+Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
+	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
+
+//TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+
+int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius)
+	{
+	// for tau (and other) fake-rates
+	// check if the key (mc_decay, control point) has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th3f_distr_control.find(key) == th3f_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		// create it:
+		//th1i_distr_control[control_point_name] = (TH1D*) new TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 200.);
+		//th1i_distr_control[key] = TH1I(control_point_name.c_str(), ";;N", 100, 0., 100.);
+		// particle counters are broken here
+		// trying TH1D for v13.5
+		// th3f_distr_control[key] = TH1D(control_point_name.c_str(), ";;ID", 600, -300., 300.);
+		//cout << "creating " << mc_decay << " - " << control_point_name << endl;
+		// th3f_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;ID", 600, -300., 300.)));
+		th3f_distr_control.insert( std::make_pair(key, TH3F(control_point_name.c_str(),      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	// th1i_distr_control[key].Fill(value, weight);
+	// th3f_distr_control[key].Fill(value, weight);
+	// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+	th3f_distr_control[key].Fill(pt, eta, radius, weight);
+
+	//cout << "filled " << control_point_name << endl;
+	//cout << th1i_distr_control[control_point_name].Integral() << endl;
+
+	if (th3f_distr_control_headers.find(string("j_distr")) == th3f_distr_control_headers.end() )
+		{
+		// th3f_distr_control_headers[string("p_id")] = TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.);
+		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
+		th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
 
 
 int fill_n(string control_point_name, unsigned int value, double weight)
@@ -1338,22 +1390,23 @@ TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_pres
 //TH3F* jets_distr = (TH3F*) new TH3F("jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
 //TH3F* tau_jets_distr = (TH3F*) new TH3F("tau_jets_distr", ";;", 500, 0, 500, 400, -3, 3, 100, 0, 2);
 
-// good bins 1
-Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
-Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
-Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
-	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
+//// good bins 1
+//Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
+//Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
+//Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
+//	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
 
-TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* wjets_tau_jets_distr  = (TH3F*) new TH3F("wjets_tau_jets_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* wjets_distinct_tau_distr = (TH3F*) new TH3F("wjets_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+//TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+//TH3F* wjets_tau_jets_distr  = (TH3F*) new TH3F("wjets_tau_jets_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+//TH3F* wjets_distinct_tau_distr = (TH3F*) new TH3F("wjets_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+
+// TH3F* qcd_jets_distr      = (TH3F*) new TH3F("qcd_jets_distr",        ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+// TH3F* qcd_tau_jets_distr  = (TH3F*) new TH3F("qcd_tau_jets_distr",    ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+// TH3F* qcd_distinct_tau_distr = (TH3F*) new TH3F("qcd_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
+
 TH1D* wjets_taujet_distance = (TH1D*) new TH1D("wjets_taujet_distance", ";Distance [phi-eta];Events",            100, 0.,  2.  );
 TH1I* wjets_jet_origin      = (TH1I*) new TH1I("wjets_jet_origin",    ";PDg ID;Particles",            100, 0,  100  );
 TH1I* wjets_taujet_origin   = (TH1I*) new TH1I("wjets_taujet_origin", ";PDg ID;Particles",            100, 0,  100  );
-
-TH3F* qcd_jets_distr      = (TH3F*) new TH3F("qcd_jets_distr",        ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* qcd_tau_jets_distr  = (TH3F*) new TH3F("qcd_tau_jets_distr",    ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
-TH3F* qcd_distinct_tau_distr = (TH3F*) new TH3F("qcd_distinct_tau_distr",  ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 TH1D* qcd_taujet_distance = (TH1D*) new TH1D("qcd_taujet_distance",   ";Distance [phi-eta];Events",            100, 0.,  2.  );
 TH1I* qcd_jet_origin      = (TH1I*) new TH1I("qcd_jet_origin",    ";PDG ID;N Particles",            100, 0,  100  );
 TH1I* qcd_taujet_origin   = (TH1I*) new TH1I("qcd_taujet_origin", ";PDG ID;N Particles",            100, 0,  100  );
@@ -1807,9 +1860,27 @@ for(size_t f=0; f<urls.size();++f)
 
 		// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 		//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
-		bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
+		// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
+		bool JetHLTTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*") );
+		bool MuonHLTTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
 
-		if (!hltTrigger) continue; // No orthogonalization -- run on only 1 trigger type of datasets
+		// if (!(JetHLTTrigger || MuonHLTTrigger)) continue; // No orthogonalization -- run on only 1 trigger type of datasets
+
+		string hlt_channel("");
+
+		if (JetHLTTrigger && MuonHLTTrigger)
+			{
+			hlt_channel = string("HLTjetmu_");
+			}
+		else if (JetHLTTrigger)
+			{
+			hlt_channel = string("HLTjet_");
+			}
+		else if (JetHLTTrigger)
+			{
+			hlt_channel = string("HLTmu_");
+			}
+		else continue;
 
 		/*
 		bool eTrigger    ( isMC ?
@@ -3193,7 +3264,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (Wjets_selection)
 			{
-			increment( string("weightflow_wjets_selection"), weight );
+			increment( hlt_channel + string("weightflow_wjets_selection"), weight );
 
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
@@ -3204,7 +3275,10 @@ for(size_t f=0; f<urls.size();++f)
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
-				wjets_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				// wjets_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				//fill_jet_distr(string control_point_name, double weight, double pt, double eta, double radius)
+				fill_jet_distr(hlt_channel + string("wjets_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+
 				// const reco::GenParticle* genParton()
 				if (isMC)
 					{
@@ -3234,7 +3308,9 @@ for(size_t f=0; f<urls.size();++f)
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
-						wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+						// wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
@@ -3256,19 +3332,23 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					//
 					pat::Jet& tau = selTausNoLepNoJet[itau];
-					wjets_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					// wjets_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					fill_jet_distr(hlt_channel + string("wjets_distinct_tau_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+
 					// there is no partonFlavour origin for taus..........
 					}
 			}
 
 		if (QCD_selection)
 			{
-			increment( string("weightflow_qcd_selection"), weight );
+			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
 
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
-				qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+
 				// const reco::GenParticle* genParton()
 				if (isMC)
 					{
@@ -3286,7 +3366,9 @@ for(size_t f=0; f<urls.size();++f)
 					//{
 					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
 					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
-					qcd_taujet_distance->Fill(fake_distance);
+					// qcd_taujet_distance->Fill(fake_distance);
+					fill_jet_distr(hlt_channel + string("qcd_taujet_distance"), weight, jet.pt(), jet.eta(), jet_radius(jet))
+
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
@@ -3311,7 +3393,8 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					//
 					pat::Jet& tau = selTausNoLepNoJet[itau];
-					qcd_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					// qcd_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
+					fill_jet_distr(hlt_channel + string("qcd_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau))
 					// there is no partonFlavour origin for taus..........
 					}
 				}
@@ -3384,20 +3467,46 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 //singlelep_ttbar_initialevents->Write();
 //singlelep_ttbar_preselectedevents->Write();
 
-qcd_jets_distr->Write();
-qcd_tau_jets_distr->Write();
-qcd_taujet_distance->Write();
+//qcd_jets_distr->Write();
+//qcd_tau_jets_distr->Write();
+//wjets_jets_distr->Write();
+//wjets_tau_jets_distr->Write();
+//wjets_distinct_tau_distr->Write();
+//qcd_distinct_tau_distr->Write();
+
 qcd_taujet_origin->Write();
 qcd_jet_origin->Write();
-
-wjets_jets_distr->Write();
-wjets_tau_jets_distr->Write();
-wjets_taujet_distance->Write();
 wjets_taujet_origin->Write();
 wjets_jet_origin->Write();
 
-wjets_distinct_tau_distr->Write();
-qcd_distinct_tau_distr->Write();
+qcd_taujet_distance->Write();
+wjets_taujet_distance->Write();
+
+//for(std::map<string, TH1D>::iterator it = th1d_distr_control_headers.begin(); it != th1d_distr_control_headers.end(); ++it)
+//	{
+//	string name = it->first;
+//	TH1D * header_distr = & it->second;
+//	// Header:
+//	fprintf(out, "header,%s", name.c_str());
+//	for (int i=0; i < header_distr->GetSize(); i++) fprintf(out, ",%g", header_distr->GetBinCenter(i));
+//	fprintf(out, "\n");
+//	}
+
+// write all jet distr histos
+
+for(std::map<std::pair <string,string>, TH3F>::iterator it = th3f_distr_control.begin(); it != th3f_distr_control.end(); ++it)
+	{
+
+	const std::pair <string,string> *key = &it->first;
+	string mc_decay_suffix = key->first;
+	string name = key->second;
+
+	TH3F * distr = & it->second;
+
+	distr->Write();
+	}
+
+
 
 ofile->Close();
 
