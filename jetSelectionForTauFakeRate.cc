@@ -2959,8 +2959,8 @@ for(size_t f=0; f<urls.size();++f)
 			// and now the tighter final selection
 			double eta = jet.eta();
 			double pt  = jet.pt();
-			// bool passKino = pt > 30. && fabs(eta) < 2.5;
-			bool passKino = pt > 20. && fabs(eta) < 2.5; // 20 GeV is the pt of taus in main selection
+			bool passKino = pt > 30. && fabs(eta) < 2.5; // j5.5
+			//bool passKino = pt > 20. && fabs(eta) < 2.5; // 20 GeV is the pt of taus in main selection
 
 			// corrections:
 			// TODO: are they MC-only?
