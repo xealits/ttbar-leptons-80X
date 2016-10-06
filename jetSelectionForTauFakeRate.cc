@@ -756,7 +756,7 @@ int fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
 		}
 
 	// fill the distribution:
-	th2d_distr_control[key].Fill(value, weight);
+	th2d_distr_control[key].Fill(pt1, pt2, weight);
 	//cout << "filled " << control_point_name << endl;
 	//cout << th2d_distr_control[control_point_name].Integral() << endl;
 

@@ -3726,7 +3726,6 @@ for(size_t f=0; f<urls.size();++f)
 		*/
 
 		pat::TauCollection selTausNoLepNoJet;
-		int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
 		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
 			{
 			pat::Tau& tau = selTausNoLep[itau];
