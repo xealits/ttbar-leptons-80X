@@ -535,6 +535,9 @@ string mc_decay("");
 std::map<std::pair <string,string>, TH1D> th1d_distr_control;
 std::map<string, TH1D> th1d_distr_control_headers;
 
+std::map<std::pair <string,string>, TH2D> th2d_distr_control;
+std::map<string, TH2D> th2d_distr_control_headers;
+
 std::map<std::pair <string,string>, TH3F> th3f_distr_control;
 std::map<string, TH3F> th3f_distr_control_headers;
 
@@ -728,6 +731,39 @@ int fill_pt_e(string control_point_name, double value, double weight)
 		{
 		// th1d_distr_control_headers[string("pt_e")] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
 		th1d_distr_control_headers.insert( std::make_pair(string("pt_e"), TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+int fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		// create it:
+		//th2d_distr_control[control_point_name] = (TH1D*) new TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 200.);
+		// th2d_distr_control[key] = TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 400.);
+		//cout << "creating " << mc_decay << " - " << control_point_name << endl;
+		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;Pt/E(GeV)", 400, 0., 400., 400, 0., 400.)));
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th2d_distr_control[key].Fill(value, weight);
+	//cout << "filled " << control_point_name << endl;
+	//cout << th2d_distr_control[control_point_name].Integral() << endl;
+
+	if (th2d_distr_control_headers.find(string("pt_pt")) == th2d_distr_control_headers.end() )
+		{
+		// th2d_distr_control_headers[string("pt_e")] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_control_headers.insert( std::make_pair(string("pt_e"), TH2D("Header of Pt vs Pt (E vs E) distributions", ";;Pt/E(GeV)", 400, 0., 400., 400, 0., 400.)));
 		}
 
 	// return success:
@@ -3317,6 +3353,7 @@ for(size_t f=0; f<urls.size();++f)
 						// the tau is fake by this jet -- save distr
 						// wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
+						fill_pt_pt(hlt_channel + string("wjets_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// const reco::GenParticle* genParton()
 						if (isMC)
@@ -3382,6 +3419,8 @@ for(size_t f=0; f<urls.size();++f)
 						// the tau is fake by this jet -- save distr
 						//qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
+						// fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
+						fill_pt_pt(hlt_channel + string("qcd_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// const reco::GenParticle* genParton()
 						if (isMC)
@@ -3411,6 +3450,14 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				*/
 			}
+
+		/*
+		measure:
+		tau PT VS tau-jet PT
+		N "distinct taus" for jet-match with NoLep jets, all jets, ID jets, Nolep jets with lower PT reuirement
+
+		the "jets - taus" selJetsNoLepNoTau are corrected with this tau fakerate
+		*/
 
 		} // End single file event loop
 
@@ -3513,6 +3560,19 @@ for(std::map<std::pair <string,string>, TH3F>::iterator it = th3f_distr_control.
 	string name = key->second;
 
 	TH3F * distr = & it->second;
+
+	distr->Write();
+	}
+
+//th2d_distr_control
+//fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
+for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.begin(); it != th2d_distr_control.end(); ++it)
+	{
+	const std::pair <string,string> *key = &it->first;
+	string mc_decay_suffix = key->first;
+	string name = key->second;
+
+	TH2D * distr = & it->second;
 
 	distr->Write();
 	}
