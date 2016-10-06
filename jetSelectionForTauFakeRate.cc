@@ -2956,6 +2956,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------- Select the jets, based on their individual parameters
 		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
+		pat::JetCollection idJets;
+		pat::JetCollection selLowPtJets;
 		pat::JetCollection selJets;
 		// TODO: do all jet selection right here
 		// now selBJets are not used anywhere
@@ -2984,6 +2986,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (passPFloose)
 				{
+				idJets.push_back(jet);
 				fill_pt_e( string("all_jets_ided_pt"), jet.pt(), weight);
 				if (count_ided_jets < 2)
 					{
@@ -3024,6 +3027,11 @@ for(size_t f=0; f<urls.size();++f)
 				double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
 				if (dphijmet < mindphijmet) mindphijmet = dphijmet;
 				// FIXME: mindphijmet is not used anywhere now
+				}
+
+			if (passPFloose && (pt > 20. && fabs(eta) < 2.5))
+				{
+				selLowPtJets.push_back(jet);
 				}
 			}
 
@@ -3073,10 +3081,12 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
+		// pat::JetCollection idJets;
+		// pat::JetCollection selLowPtJets;
+		// lepton-clean
 
 
 		// ---------------------------- Clean jet collection from selected taus
-		/* no need here
 		pat::JetCollection selJetsNoLepNoTau;
 
 		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
@@ -3093,6 +3103,7 @@ for(size_t f=0; f<urls.size();++f)
 			selJetsNoLepNoTau.push_back(jet);
 			}
 
+		/* no need here
 		// Control values for processed jets cleaned of leptons and taus:
 		for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
 			{
@@ -3218,8 +3229,75 @@ for(size_t f=0; f<urls.size();++f)
 			increment(string("weight_of_tausnolepnojet_found"), weight);
 			}
 
+		double selTausNoLep_noAnyJets = 0;
+		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+			{
+			pat::Tau& tau = selTausNoLep[itau];
 
+			// cross-cleaning taus with leptons
+			bool overlapWithJet(false);
+			for(int n=0; n<(int)jets.size();++n)
+				{
+				if (reco::deltaR(tau, jets[n])<0.4)
+					{ overlapWithJet=true; break; }
+				}
+			if (overlapWithJet) continue;
 
+			selTausNoLep_noAnyJets += weight;
+			// selTausNoLepNoJet.push_back(tau);
+			// so these are the final taus we use in the selection
+
+			// for the fake-rate counts (in MC)
+			// let's save how many taus we find:
+			// increment(string("weight_of_tausnolepnojet_found"), weight);
+			}
+
+		double selTausNoLep_noIdJets = 0;
+		double selTausNoLep_noSelLowPtJets = 0;
+
+		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+			{
+			pat::Tau& tau = selTausNoLep[itau];
+
+			// cross-cleaning taus with leptons
+			bool overlapWithJet(false);
+			for(int n=0; n<(int)idJets.size();++n)
+				{
+				if (reco::deltaR(tau, idJets[n])<0.4)
+					{ overlapWithJet=true; break; }
+				}
+			if (overlapWithJet) continue;
+
+			selTausNoLep_noIdJets += weight;
+			// selTausNoLepNoJet.push_back(tau);
+			// so these are the final taus we use in the selection
+
+			// for the fake-rate counts (in MC)
+			// let's save how many taus we find:
+			// increment(string("weight_of_tausnolepnojet_found"), weight);
+			}
+
+		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+			{
+			pat::Tau& tau = selTausNoLep[itau];
+
+			// cross-cleaning taus with leptons
+			bool overlapWithJet(false);
+			for(int n=0; n<(int)selLowPtJets.size();++n)
+				{
+				if (reco::deltaR(tau, selLowPtJets[n])<0.4)
+					{ overlapWithJet=true; break; }
+				}
+			if (overlapWithJet) continue;
+
+			selTausNoLep_noSelLowPtJets += weight;
+			// selTausNoLepNoJet.push_back(tau);
+			// so these are the final taus we use in the selection
+
+			// for the fake-rate counts (in MC)
+			// let's save how many taus we find:
+			// increment(string("weight_of_tausnolepnojet_found"), weight);
+			}
 
 
 		// -------------------------------------------------- All particles are selected
@@ -3310,9 +3388,21 @@ for(size_t f=0; f<urls.size();++f)
 			increment( hlt_channel + string("weightflow_wjets_selection"), weight );
 			// N jets, taus
 			increment( hlt_channel + string("wjets_selection_njets"), weight*jets.size() );
+			// pat::JetCollection idJets;
+			// pat::JetCollection selLowPtJets;
+			increment( hlt_channel + string("wjets_selection_nidJets"), weight*idJets.size() );
+			increment( hlt_channel + string("wjets_selection_nselLowPtJets"), weight*selLowPtJets.size() );
 			increment( hlt_channel + string("wjets_selection_nselJetsNoLep"), weight*selJetsNoLep.size() );
+			// selJetsNoLepNoTau
+			increment( hlt_channel + string("wjets_selection_nselJetsNoLepNoTau"), weight*selJetsNoLepNoTau.size() );
+
 			increment( hlt_channel + string("wjets_selection_ntaus"), weight*taus.size() );
 			increment( hlt_channel + string("wjets_selection_nselTausNoLep"), weight*selTausNoLep.size() );
+			// double selTausNoLep_noIdJets = 0;
+			// double selTausNoLep_noSelLowPtJets = 0;
+			increment( hlt_channel + string("wjets_selection_nselTausNoLep_noIdJets"), selTausNoLep_noIdJets );
+			increment( hlt_channel + string("wjets_selection_nselTausNoLep_noSelLowPtJets"), selTausNoLep_noSelLowPtJets );
+			increment( hlt_channel + string("wjets_selection_nselTausNoLepNoJet"), weight*selTausNoLepNoJet.size() );
 
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
@@ -3398,9 +3488,17 @@ for(size_t f=0; f<urls.size();++f)
 			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
 			// N jets, taus
 			increment( hlt_channel + string("qcd_selection_njets"), weight*jets.size() );
+			increment( hlt_channel + string("qcd_selection_nidJets"), weight*idJets.size() );
+			increment( hlt_channel + string("qcd_selection_nselLowPtJets"), weight*selLowPtJets.size() );
 			increment( hlt_channel + string("qcd_selection_nselJetsNoLep"), weight*selJetsNoLep.size() );
+			increment( hlt_channel + string("qcd_selection_nselJetsNoLepNoTau"), weight*selJetsNoLepNoTau.size() );
+
 			increment( hlt_channel + string("qcd_selection_ntaus"), weight*taus.size() );
 			increment( hlt_channel + string("qcd_selection_nselTausNoLep"), weight*selTausNoLep.size() );
+			//
+			increment( hlt_channel + string("qcd_selection_nselTausNoLep_noIdJets"), selTausNoLep_noIdJets );
+			increment( hlt_channel + string("qcd_selection_nselTausNoLep_noSelLowPtJets"), selTausNoLep_noSelLowPtJets );
+			increment( hlt_channel + string("qcd_selection_nselTausNoLepNoJet"), weight*selTausNoLepNoJet.size() );
 
 
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
