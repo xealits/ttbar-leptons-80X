@@ -3308,6 +3308,11 @@ for(size_t f=0; f<urls.size();++f)
 		if (Wjets_selection)
 			{
 			increment( hlt_channel + string("weightflow_wjets_selection"), weight );
+			// N jets, taus
+			increment( hlt_channel + string("wjets_selection_njets"), weight*jets.size() );
+			increment( hlt_channel + string("wjets_selection_nselJetsNoLep"), weight*selJetsNoLep.size() );
+			increment( hlt_channel + string("wjets_selection_ntaus"), weight*taus.size() );
+			increment( hlt_channel + string("wjets_selection_nselTausNoLep"), weight*selTausNoLep.size() );
 
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
@@ -3355,6 +3360,9 @@ for(size_t f=0; f<urls.size();++f)
 						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 						fill_pt_pt(hlt_channel + string("wjets_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
 
+						// N tau-jets
+						increment( hlt_channel + string("wjets_selection_ntaujet"), weight );
+
 						// const reco::GenParticle* genParton()
 						if (isMC)
 							{
@@ -3388,6 +3396,12 @@ for(size_t f=0; f<urls.size();++f)
 		if (QCD_selection)
 			{
 			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
+			// N jets, taus
+			increment( hlt_channel + string("qcd_selection_njets"), weight*jets.size() );
+			increment( hlt_channel + string("qcd_selection_nselJetsNoLep"), weight*selJetsNoLep.size() );
+			increment( hlt_channel + string("qcd_selection_ntaus"), weight*taus.size() );
+			increment( hlt_channel + string("qcd_selection_nselTausNoLep"), weight*selTausNoLep.size() );
+
 
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
@@ -3421,6 +3435,9 @@ for(size_t f=0; f<urls.size();++f)
 						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 						// fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
 						fill_pt_pt(hlt_channel + string("qcd_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
+
+						// N tau-jets
+						increment( hlt_channel + string("qcd_selection_ntaujet"), weight );
 
 						// const reco::GenParticle* genParton()
 						if (isMC)
