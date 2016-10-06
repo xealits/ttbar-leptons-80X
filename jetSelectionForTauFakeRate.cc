@@ -3358,7 +3358,7 @@ for(size_t f=0; f<urls.size();++f)
 						// the tau is fake by this jet -- save distr
 						// wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
-						fill_pt_pt(hlt_channel + string("wjets_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						fill_pt_pt(hlt_channel + string("wjets_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// N tau-jets
 						increment( hlt_channel + string("wjets_selection_ntaujet"), weight );
@@ -3434,7 +3434,7 @@ for(size_t f=0; f<urls.size();++f)
 						//qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 						// fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
-						fill_pt_pt(hlt_channel + string("qcd_tau_jets_distr"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						fill_pt_pt(hlt_channel + string("qcd_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// N tau-jets
 						increment( hlt_channel + string("qcd_selection_ntaujet"), weight );
