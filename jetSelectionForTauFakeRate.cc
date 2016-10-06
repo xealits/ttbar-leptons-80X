@@ -3335,6 +3335,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 				// and the fakerate of "distinct taus"
+				/* TODO: apparently pat:Tau-s may not have phiphi/etaeta momenta for the radius
 				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
 					{
 					//
@@ -3344,6 +3345,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					// there is no partonFlavour origin for taus..........
 					}
+				*/
 			}
 
 		if (QCD_selection)
@@ -3398,6 +3400,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 				// and the fakerate of "distinct taus"
+				/* TODO: apparently pat:Tau-s may not have phiphi/etaeta momenta for the radius
 				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
 					{
 					//
@@ -3406,6 +3409,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_jet_distr(hlt_channel + string("qcd_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau));
 					// there is no partonFlavour origin for taus..........
 					}
+				*/
 			}
 
 		} // End single file event loop
