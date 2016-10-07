@@ -1922,7 +1922,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			hlt_channel = string("HLTjet_");
 			}
-		else if (JetHLTTrigger)
+		else if (MuonHLTTrigger)
 			{
 			hlt_channel = string("HLTmu_");
 			}
