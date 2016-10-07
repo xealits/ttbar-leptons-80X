@@ -6,37 +6,46 @@ int csv_qw_TH3Fs(TString filename, TString out_filename) {
 
 	gROOT->Reset();
 
+	// HLTjet_qcd_jets_distr;1	
+	// HLTjet_qcd_tau_jets_distr;1	
+	// HLTjet_wjets_jets_distr;1	
+	// HLTjet_wjets_tau_jets_distr;1	
+	// HLTjetmu_qcd_jets_distr;1	
+	// HLTjetmu_qcd_tau_jets_distr;1	
+	// HLTjetmu_wjets_jets_distr;1	
+	// HLTjetmu_wjets_tau_jets_distr;1	
+
 
 	TFile *file = TFile::Open(filename);
 
 	FILE * out_f;
 	out_f = fopen(out_filename.Data(), "w");
 
-	TH3F * q_h1 = (TH3F*) file->Get("qcd_jets_distr");
-	cout << "got jets_distr\n";
-	TH3F * q_h2 = (TH3F*) file->Get("qcd_tau_jets_distr");
-	cout << "got tau_jets_distr\n";
-	TH3F * q_hd = (TH3F*) file->Get("qcd_taujet_distance");
+	TH3F * hj_q_h1 = (TH3F*) file->Get("HLTjet_qcd_jets_distr");
+	TH3F * hj_q_h2 = (TH3F*) file->Get("HLTjet_qcd_tau_jets_distr");
+	TH3F * hj_w_h1 = (TH3F*) file->Get("HLTjet_wjets_jets_distr");
+	TH3F * hj_w_h2 = (TH3F*) file->Get("HLTjet_wjets_tau_jets_distr");
+	TH3F * hjm_q_h1 = (TH3F*) file->Get("HLTjetmu_qcd_jets_distr");
+	TH3F * hjm_q_h2 = (TH3F*) file->Get("HLTjetmu_qcd_tau_jets_distr");
+	TH3F * hjm_w_h1 = (TH3F*) file->Get("HLTjetmu_wjets_jets_distr");
+	TH3F * hjm_w_h2 = (TH3F*) file->Get("HLTjetmu_wjets_tau_jets_distr");
 
-	TH3F * h1 = (TH3F*) file->Get("wjets_jets_distr");
-	cout << "got jets_distr\n";
-	TH3F * h2 = (TH3F*) file->Get("wjets_tau_jets_distr");
-	cout << "got tau_jets_distr\n";
+	TH3F * q_hd = (TH3F*) file->Get("qcd_taujet_distance");
 	TH3F * hd = (TH3F*) file->Get("wjets_taujet_distance");
 
-	h1->Print();
-	h2->Print();
+	hj_q_h1->Print();
+	hj_q_h2->Print();
 	hd->Print();
 
-	fprintf(out_f, "i_bin,x,y,z, w_jets_bin,w_tau_jets_bin, q_jets_bin,q_tau_jets_bin\n");
+	fprintf(out_f, "i_bin,x,y,z, hj_w_jets_bin,hj_w_tau_jets_bin, hj_q_jets_bin,hj_q_tau_jets_bin, hjm_w_jets_bin,hjm_w_tau_jets_bin, hjm_q_jets_bin,hjm_q_tau_jets_bin\n");
 
-	Int_t size = h1->GetSize();
+	Int_t size = hj_q_h1->GetSize();
 	bool passed_midwork = 0;
-	cout << "the histos size = " << size << " and " << h2->GetSize() << "\n";
+	cout << "the histos size = " << size << " and " << hj_q_h2->GetSize() << "\n";
 
-	Int_t size_x = 10; //h1->GetNbinsX();
-	Int_t size_y = 6; //h1->GetNbinsY();
-	Int_t size_z = 16; //h1->GetNbinsZ();
+	Int_t size_x = hj_q_h1->GetNbinsX();
+	Int_t size_y = hj_q_h1->GetNbinsY();
+	Int_t size_z = hj_q_h1->GetNbinsZ();
 	cout << "the histos size = " << size_x << " , " << size_y << " , " << size_z << "\n";
 
 	for (int iz=1; iz<=size_z; ++iz)
@@ -52,28 +61,44 @@ int csv_qw_TH3Fs(TString filename, TString out_filename) {
 			cout << "Passed midwork!\n";
 			}
 		*/
-		double xcenter1 = (double) h1->GetXaxis()->GetBinCenter(ix);
-		double xcenter2 = (double) h2->GetXaxis()->GetBinCenter(ix);
-		double ycenter1 = (double) h1->GetYaxis()->GetBinCenter(iy);
-		double ycenter2 = (double) h2->GetYaxis()->GetBinCenter(iy);
-		double zcenter1 = (double) h1->GetZaxis()->GetBinCenter(iz);
-		double zcenter2 = (double) h2->GetZaxis()->GetBinCenter(iz);
+		//cout << "AAA\n";
+
+		double xcenter1 = (double) hj_q_h1->GetXaxis()->GetBinCenter(ix);
+		double xcenter2 = (double) hj_q_h2->GetXaxis()->GetBinCenter(ix);
+		double ycenter1 = (double) hj_q_h1->GetYaxis()->GetBinCenter(iy);
+		double ycenter2 = (double) hj_q_h2->GetYaxis()->GetBinCenter(iy);
+		double zcenter1 = (double) hj_q_h1->GetZaxis()->GetBinCenter(iz);
+		double zcenter2 = (double) hj_q_h2->GetZaxis()->GetBinCenter(iz);
 		if (xcenter1 != xcenter2) return 1;
 
 		// some brilliance from ROOT histograms (f*cking 3d array!)
 		// Int_t bin = h->GetBin(binx,biny,binz);
-		Int_t global_bin = h1->GetBin(ix,iy,iz);
-		Int_t global_bin2 = h2->GetBin(ix,iy,iz);
+		Int_t global_bin = hj_q_h1->GetBin(ix,iy,iz);
+		Int_t global_bin2 = hj_q_h2->GetBin(ix,iy,iz);
 		if (global_bin != global_bin2) return 2;
 		// TODO: check the bins are the same in qcd jets?
 
-		double w_n_jets     = h1->GetBinContent( global_bin );
-		double w_n_tau_jets = h2->GetBinContent( global_bin );
-		double q_n_jets     = q_h1->GetBinContent( global_bin );
-		double q_n_tau_jets = q_h2->GetBinContent( global_bin );
+		//cout << "BBB\n";
 
-		fprintf(out_f, "%d, %g,%g,%g, %g,%g, %g,%g\n", global_bin, xcenter1, ycenter1, zcenter1, w_n_jets,w_n_tau_jets, q_n_jets,q_n_tau_jets);
+		double hj_w_n_jets     = hj_w_h1->GetBinContent( global_bin );
+		double hj_w_n_tau_jets = hj_w_h2->GetBinContent( global_bin ); // no histo in j5.6 Data
+		//double hj_w_n_tau_jets = 0;
+		double hj_q_n_jets     = hj_q_h1->GetBinContent( global_bin );
+		double hj_q_n_tau_jets = hj_q_h2->GetBinContent( global_bin );
+		//double hj_q_n_tau_jets = 0;
+
+		double hjm_w_n_jets     = hjm_w_h1->GetBinContent( global_bin );
+		double hjm_w_n_tau_jets = hjm_w_h2->GetBinContent( global_bin );
+		double hjm_q_n_jets     = hjm_q_h1->GetBinContent( global_bin );
+		double hjm_q_n_tau_jets = hjm_q_h2->GetBinContent( global_bin );
+
+		//cout << "CCC\n";
+
+		fprintf(out_f, "%d, %g,%g,%g, %g,%g,%g,%g, %g,%g", global_bin, xcenter1, ycenter1, zcenter1, hj_w_n_jets,hj_w_n_tau_jets, hj_q_n_jets,hj_q_n_tau_jets, hjm_w_n_jets,hjm_w_n_tau_jets);
+		fprintf(out_f, ",%g,%g", hjm_q_n_jets,hjm_q_n_tau_jets);
+		fprintf(out_f, "\n");
 		//fprintf(out_f, "%d,%g,%g\n", i, n_jets, n_tau_jets);
+		//cout << "DDD\n";
 		}
 	}
 	}
