@@ -3999,14 +3999,14 @@ for(size_t f=0; f<urls.size();++f)
 					// post-tau selection
 
 					//
-					increment(string("singlemu_pretauselection_nRawJets"),  weight * jets.size());
-					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
-					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
-					increment(string("singlemu_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
-					increment(string("singlemu_pretauselection_nRawTaus"),  weight * taus.size());
-					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
-					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
-					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					increment(string("singlemu_posttauselection_nRawJets"),  weight * jets.size());
+					increment(string("singlemu_posttauselection_njets"),  weight * selJets.size());
+					increment(string("singlemu_posttauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singlemu_posttauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singlemu_posttauselection_nRawTaus"),  weight * taus.size());
+					increment(string("singlemu_posttauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singlemu_posttauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singlemu_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
@@ -4196,14 +4196,14 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// post-tau selection
 
-					increment(string("singleel_pretauselection_nRawJets"),  weight * jets.size());
-					increment(string("singleel_pretauselection_njets"),  weight * selJets.size());
-					increment(string("singleel_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
-					increment(string("singleel_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
-					increment(string("singleel_pretauselection_nRawTaus"),  weight * taus.size());
-					increment(string("singleel_pretauselection_ntaus"),  weight * selTaus.size());
-					increment(string("singleel_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
-					increment(string("singleel_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					increment(string("singleel_posttauselection_nRawJets"),  weight * jets.size());
+					increment(string("singleel_posttauselection_njets"),  weight * selJets.size());
+					increment(string("singleel_posttauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singleel_posttauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singleel_posttauselection_nRawTaus"),  weight * taus.size());
+					increment(string("singleel_posttauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singleel_posttauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singleel_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
