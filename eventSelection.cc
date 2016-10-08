@@ -3820,7 +3820,8 @@ for(size_t f=0; f<urls.size();++f)
 			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
 			//bool passJetSelection(selSingleLepJets.size()>1); // 2 jets // 2^4
 			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
-			bool passJetSelection(n_jets>1); // 2 jets // 2^4
+			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
+			bool passJetSelection(n_jets>2); // >= 3 jets
 			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
 			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
