@@ -3994,6 +3994,21 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singlemu_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
 					}
 
+				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
+					{
+					// post-tau selection
+
+					//
+					increment(string("singlemu_pretauselection_nRawJets"),  weight * jets.size());
+					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
+					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singlemu_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singlemu_pretauselection_nRawTaus"),  weight * taus.size());
+					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					}
+
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_particle_ids(string("nearest_particle_around_tau_singlemu_fullselection"), closest_totaunolep_particle_id, weight);
@@ -4175,6 +4190,20 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singleel_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
+					}
+
+				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
+					{
+					// post-tau selection
+
+					increment(string("singleel_pretauselection_nRawJets"),  weight * jets.size());
+					increment(string("singleel_pretauselection_njets"),  weight * selJets.size());
+					increment(string("singleel_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
+					increment(string("singleel_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
+					increment(string("singleel_pretauselection_nRawTaus"),  weight * taus.size());
+					increment(string("singleel_pretauselection_ntaus"),  weight * selTaus.size());
+					increment(string("singleel_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
+					increment(string("singleel_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
