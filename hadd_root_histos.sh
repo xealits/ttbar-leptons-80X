@@ -2,7 +2,8 @@ mc_dtags="MC2016_noHLT_WJets_amcatnlo MC2016_noHLT_DYJetsToLL_10to50_amcatnlo MC
 data_dtags="Data13TeV_JetHT2016D_PromptReco_v2 Data13TeV_SingleMuon2016D_PromptRecoV2"
 dtags="$data_dtags $mc_dtags"
 
-task=j5.6
+#task=j5.7
+task=$1
 task_dir=/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/test/tests/outdir_test_jettaufakes_"$task"/
 
 #hadd j5.6_MC2016_noHLT_WJets.root /afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/test/tests/outdir_test_jettaufakes_j5.6/MC2016_noHLT_WJets_amcatnlo_*root
@@ -11,7 +12,7 @@ task_dir=/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_
 
 echo "from $task_dir"
 
-for dtag in $data_dtags
+for dtag in $dtags
 do
   echo "[ $dtag ]"
   hadd "$task"_"$dtag".root $task_dir/$dtag*root
