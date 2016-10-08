@@ -1079,18 +1079,19 @@ TTree* summaryTree = NULL; //ev->;
 TFile * tau_fake_rate1_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1") .c_str() );
 
 // TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
-TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("qcd_jets_distr");
-TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("qcd_tau_jets_distr");
-TH3F * tau_fake_rate1_jets_histo_w = (TH3F *) tau_fake_rate1_file->Get("wjets_jets_distr");
-TH3F * tau_fake_rate1_taus_histo_w = (TH3F *) tau_fake_rate1_file->Get("wjets_tau_jets_distr");
+// rate1 = file1 = JetHT data file
+TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr");
+TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr");
+TH3F * tau_fake_rate1_jets_histo_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_jets_distr");
+TH3F * tau_fake_rate1_taus_histo_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_tau_jets_distr");
 
 
 TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
-
-TH3F * tau_fake_rate2_jets_histo_q = (TH3F *) tau_fake_rate2_file->Get("qcd_jets_distr");
-TH3F * tau_fake_rate2_taus_histo_q = (TH3F *) tau_fake_rate2_file->Get("qcd_tau_jets_distr");
-TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("wjets_jets_distr");
-TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("wjets_tau_jets_distr");
+// rate2 = file2 = SingleMuon data file
+TH3F * tau_fake_rate2_jets_histo_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_jets_distr");
+TH3F * tau_fake_rate2_taus_histo_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_tau_jets_distr");
+TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr");
+TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr");
 
 
 Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
@@ -3757,8 +3758,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		unsigned int n_leptons = selLeptons.size();
 		// unsigned int n_taus = selTaus.size();
-		// unsigned int n_taus = selTausNoLep.size();
-		unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
+		unsigned int n_taus = selTausNoLep.size();
+		// unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
 		//unsigned int n_jets = selJets.size();
 		//unsigned int n_bjets = selBJets.size();
 		// unsigned int n_jets = selSingleLepJets.size();
@@ -3825,8 +3826,8 @@ for(size_t f=0; f<urls.size();++f)
 			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
 			//bool passBtagsSelection(selBJets.size()>0); // 1 b jet // 2^2
 			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
-			bool passTauSelection(n_taus==1); // only 1 tau // 2^1
-			// bool passTauSelection(n_taus>0); // >= 1 tau in 13.2
+			// bool passTauSelection(n_taus==1); // only 1 tau // 2^1
+			bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 			// bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLepNoJet[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 
