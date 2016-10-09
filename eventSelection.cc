@@ -2510,13 +2510,13 @@ for(size_t f=0; f<urls.size();++f)
 
 			// ------------------------- electron IDs
 			//Cut based identification
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight);
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose);
+			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, CutVersion::ICHEP16Cut);
+			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, CutVersion::ICHEP16Cut);
 
 			// ------------------------- electron isolation
 
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose);
+			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight, CutVersion::ICHEP16Cut);
+			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, CutVersion::ICHEP16Cut);
 
 
 			// ---------------------------- kinematics
@@ -2650,12 +2650,12 @@ for(size_t f=0; f<urls.size();++f)
 			//Cut based identification
 
 			// ------------------------- muon IDs
-			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight);
-			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose);
+			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight, CutVersion::ICHEP16Cut);
+			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose, CutVersion::ICHEP16Cut);
 
 			// ------------------------- muon isolation
-			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight);
-			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose);
+			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, CutVersion::ICHEP16Cut);
+			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, CutVersion::ICHEP16Cut);
 
 			if (passId && passIso)
 				{
