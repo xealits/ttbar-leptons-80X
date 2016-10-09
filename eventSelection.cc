@@ -1202,10 +1202,10 @@ BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_B,      // btag flavour
-            "mujets");               // measurement type
+            "comb");               // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_C,      // btag flavour
-            "mujets");              // measurement type
+            "comb");              // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
             "incl");                // measurement type
@@ -3620,12 +3620,11 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------- B-tagged jets
 		pat::JetCollection selBJets;
 
-		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
+		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 			{
-			pat::Jet& jet = selJetsNoLepNoTau[ijet];
+			pat::Jet& jet = selJetsNoLep[ijet];
 
-			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium); // old working point
-			// bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.8); // new working point -- according to Mara's analysis
+			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
 			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
 
 			//update according to the SF measured by BTV
