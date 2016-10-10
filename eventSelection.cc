@@ -780,6 +780,32 @@ int fill_eta(string control_point_name, double value, double weight)
 	}
 
 
+int fill_btag_sf(string control_point_name, double value, double weight)
+	{
+	//
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		// create it:
+		//th1d_distr_control[control_point_name] = (TH1D*) new TH1D(control_point_name.c_str(), ";;Eta", 200, -4., 4.);
+		// th1d_distr_control[key] = TH1D(control_point_name.c_str(), ";;Eta", 200, -4., 4.);
+		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;B_sf", 200, 0., 2.)));
+		}
+
+	// fill the distribution:
+	th1d_distr_control[key].Fill(value, weight);
+
+	if (th1d_distr_control_headers.find(string("b_sf")) == th1d_distr_control_headers.end() )
+		{
+		// th1d_distr_control_headers[string("eta")] = TH1D("Header of Eta distributions", ";;Eta", 200, -4., 4.);
+			th1d_distr_control_headers.insert( std::make_pair(string("b_sf"), TH1D("Header of B SF distributions", ";;Eta", 200, 0., 2.)));
+		}
+
+	// return success:
+	return 0;
+	}
 
 
 int increment(string control_point_name, double weight)
@@ -3673,19 +3699,26 @@ for(size_t f=0; f<urls.size();++f)
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
 				double eta=jet.eta();
+				double sf;
 				if (abs(flavId)==5) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.), beff);
+					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
+					fill_btag_sf(string("btag_flavour_sf_b"), sf, weight);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				} else if(abs(flavId)==4) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.), beff);
+					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
+					fill_btag_sf(string("btag_flavour_sf_c"), sf, weight);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 				} else {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.), leff);
+					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
+					fill_btag_sf(string("btag_flavour_sf_udsg"), sf, weight);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 				}
