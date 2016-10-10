@@ -108,6 +108,15 @@ do
 done
 
 
+distrs=`cat $JOBREDUCE_DIR/distrs_bsf`
+distrs_headername=`cat $JOBREDUCE_DIR/distrs_bsf_headername`
+echo $distrs_headername
+
+for t in $distrs
+do
+  Merge_distr $t $distrs_headername
+done
+
 
 
 
@@ -150,6 +159,11 @@ done
 
 
 for t in `cat  $JOBREDUCE_DIR/distrs_particleids`
+do
+   Sum_distr $t
+done
+
+for t in `cat  $JOBREDUCE_DIR/distrs_bsf`
 do
    Sum_distr $t
 done

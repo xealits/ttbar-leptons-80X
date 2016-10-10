@@ -1878,7 +1878,8 @@ for(size_t f=0; f<urls.size();++f)
 			evt.getByLabel(ev, "generator");
 			if(evt.isValid())
 				{
-				weightGen = (evt->weight() > 0 ) ? 1. : -1. ;
+				//weightGen = (evt->weight() > 0 ) ? 1. : -1. ;
+				weightGen = evt->weight();
 				}
 
 			// FIXME: this is for PDF uncertainties, must reactivate it at some point.
