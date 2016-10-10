@@ -602,9 +602,43 @@ std::map<std::pair <string,string>, TH1I> th1i_distr_control;
 std::map<string, TH1I> th1i_distr_control_headers;
 std::map<std::pair <string,string>, double> weight_flow_control;
 
+std::map<std::pair <string,string>, TH2D> th2d_distr_control;
+std::map<string, TH2D> th2d_distr_control_headers;
+
 //std::map<string, TH1D> th1d_distr_control;
 //std::map<string, TH1I> th1i_distr_control;
 //std::map<string, double> weight_flow_control;
+
+int fill_btag_eff(string control_point_name, double pt, double eta, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		// create it:
+		//th2d_distr_control[control_point_name] = (TH1D*) new TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 200.);
+		// th2d_distr_control[key] = TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 400.);
+		//cout << "creating " << mc_decay << " - " << control_point_name << endl;
+		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;Pt-Eta", 250, 0., 500., 200, -4., 4.)));
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th2d_distr_control[key].Fill(pt, eta, weight);
+	//cout << "filled " << control_point_name << endl;
+	//cout << th2d_distr_control[control_point_name].Integral() << endl;
+
+	if (th2d_distr_control_headers.find(string("btag_eff")) == th2d_distr_control_headers.end() )
+		{
+		// th2d_distr_control_headers[string("btag_eff")] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_control_headers.insert( std::make_pair(string("btag_eff"), TH2D("Header of B-tag efficiency distributions", ";;Pt-Eta", 250, 0., 500., 200, -4., 4.)));
+		}
+
+	// return success:
+	return 0;
+	}
 
 
 int fill_n(string control_point_name, unsigned int value, double weight)
@@ -3699,15 +3733,21 @@ for(size_t f=0; f<urls.size();++f)
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
 				double eta=jet.eta();
+				fill_btag_eff(string("mc_all_b-tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+
 				double sf;
 				if (abs(flavId)==5) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
+					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_b_jets_pt_eta"), jet.pt(), eta, weight);
+
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_b"), sf, weight);
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				} else if(abs(flavId)==4) {
+					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_c_jets_pt_eta"), jet.pt(), eta, weight);
+
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_c"), sf, weight);
@@ -3715,6 +3755,8 @@ for(size_t f=0; f<urls.size();++f)
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 				} else {
+					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_udsg_jets_pt_eta"), jet.pt(), eta, weight);
+
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_udsg"), sf, weight);
@@ -3935,10 +3977,12 @@ for(size_t f=0; f<urls.size();++f)
 				fill_n( string("n_taus_singlemu"), n_taus, weight);
 
 				fill_pt_e( string("singlemu_channel_met_pt"), met.pt(), weight);
+
 				if (passJetSelection)
 					{
 					fill_pt_e( string("singlemu_jetsel_met_pt"), met.pt(), weight);
 					}
+
 				if (passJetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_pt_e( string("singlemu_allbutmetsel_met_pt"), met.pt(), weight);
@@ -3969,9 +4013,27 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection && passMetSelection)
 					{
+					// pre-b-tag 
 					fill_n( string("singlemu_prebselpoint_n_jets"), n_jets, weight);
 					fill_n( string("singlemu_prebselpoint_n_bjets"), n_bjets, weight);
-					fill_n( string("singlemu_prebselpoint_n_taus"), n_taus, weight);
+					fill_n( string("singlemu_prebselpoint_n_taus"), n_taus, weight);					
+
+					//		pat::JetCollection selBJets;
+					//
+					//		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+					//			{
+					//			pat::Jet& jet = selJetsNoLep[ijet];
+
+					for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+						{
+						pat::Jet& jet = selJetsNoLep[ijet];
+						fill_btag_eff(string("mc_smu_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+						}
+					for (size_t ijet = 0; ijet < selBJets.size(); ++ijet)
+						{
+						pat::Jet& jet = selBJets[ijet];
+						fill_btag_eff(string("mc_smu_prebsel_b-tagged_jets_pt_eta"), jet.pt(), eta, weight);
+						}
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection)
@@ -4177,6 +4239,17 @@ for(size_t f=0; f<urls.size();++f)
 					fill_n( string("singleel_prebselpoint_n_jets"), n_jets, weight);
 					fill_n( string("singleel_prebselpoint_n_bjets"), n_bjets, weight);
 					fill_n( string("singleel_prebselpoint_n_taus"), n_taus, weight);
+
+					for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+						{
+						pat::Jet& jet = selJetsNoLep[ijet];
+						fill_btag_eff(string("mc_sel_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+						}
+					for (size_t ijet = 0; ijet < selBJets.size(); ++ijet)
+						{
+						pat::Jet& jet = selBJets[ijet];
+						fill_btag_eff(string("mc_sel_prebsel_b-tagged_jets_pt_eta"), jet.pt(), eta, weight);
+						}
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection)
