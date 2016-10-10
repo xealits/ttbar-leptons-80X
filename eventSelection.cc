@@ -4027,12 +4027,12 @@ for(size_t f=0; f<urls.size();++f)
 					for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 						{
 						pat::Jet& jet = selJetsNoLep[ijet];
-						fill_btag_eff(string("mc_smu_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+						fill_btag_eff(string("mc_smu_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), jet.eta(), weight);
 						}
 					for (size_t ijet = 0; ijet < selBJets.size(); ++ijet)
 						{
 						pat::Jet& jet = selBJets[ijet];
-						fill_btag_eff(string("mc_smu_prebsel_b-tagged_jets_pt_eta"), jet.pt(), eta, weight);
+						fill_btag_eff(string("mc_smu_prebsel_b-tagged_jets_pt_eta"), jet.pt(), jet.eta(), weight);
 						}
 					}
 
@@ -4243,12 +4243,12 @@ for(size_t f=0; f<urls.size();++f)
 					for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 						{
 						pat::Jet& jet = selJetsNoLep[ijet];
-						fill_btag_eff(string("mc_sel_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+						fill_btag_eff(string("mc_sel_prebsel_b-tagging_candidate_jets_pt_eta"), jet.pt(), jet.eta(), weight);
 						}
 					for (size_t ijet = 0; ijet < selBJets.size(); ++ijet)
 						{
 						pat::Jet& jet = selBJets[ijet];
-						fill_btag_eff(string("mc_sel_prebsel_b-tagged_jets_pt_eta"), jet.pt(), eta, weight);
+						fill_btag_eff(string("mc_sel_prebsel_b-tagged_jets_pt_eta"), jet.pt(), jet.eta(), weight);
 						}
 					}
 
