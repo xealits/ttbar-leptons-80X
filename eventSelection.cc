@@ -5000,6 +5000,21 @@ singlelep_ttbar_preselectedevents->Write();
 // singlelep_ttbar_maraselected_mu_events->Write();
 // singlelep_ttbar_maraselected_el_events->Write();
 
+for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
+	{
+	const std::pair <string,string> *key = &it->first;
+	string mc_decay_suffix = key->first;
+	string name = key->second;
+
+	TH1D * distr = & it->second;
+
+	distr->Write();
+	// // Content:
+	//fprintf(out, "%s:content, %s,%s,%s", name.c_str(), JD.type.c_str(), (JD.dtag + mc_decay_suffix).c_str(), JD.job_num.c_str());
+	//for (int i=0; i < distr->GetSize(); i++) fprintf(out, ",%g", distr->GetBinContent(i));
+	//fprintf(out, "\n");
+	}
+
 ofile->Close();
 
 
