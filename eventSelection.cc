@@ -142,21 +142,53 @@ namespace utils
 			// TODO: 13TeV table for CMSSW_76X
 			// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
 			// following https://github.com/pfs/TopLJets2015/blob/master/TopAnalysis/src/CommonTools.cc
+			//eta=fabs(eta);
+			//double ptSF(1.0), ptSF_err(0.06);
+			//if      (eta<0.5) { ptSF=1.095; ptSF_err=0.018; }
+			//else if (eta<0.8) { ptSF=1.120; ptSF_err=0.028; }
+			//else if (eta<1.1) { ptSF=1.097; ptSF_err=0.017; }
+			//else if (eta<1.3) { ptSF=1.103; ptSF_err=0.033; }
+			//else if (eta<1.7) { ptSF=1.118; ptSF_err=0.014; }
+			//else if (eta<1.9) { ptSF=1.100; ptSF_err=0.033; }
+			//else if (eta<2.1) { ptSF=1.162; ptSF_err=0.044; }
+			//else if (eta<2.3) { ptSF=1.160; ptSF_err=0.048; }
+			//else if (eta<2.5) { ptSF=1.161; ptSF_err=0.060; }
+			//else if (eta<2.8) { ptSF=1.209; ptSF_err=0.059; }
+			//else if (eta<3.0) { ptSF=1.564; ptSF_err=0.321; }
+			//else if (eta<3.2) { ptSF=1.384; ptSF_err=0.033; }
+			//else if (eta<5.0) { ptSF=1.216; ptSF_err=0.050; }
+
+			// 2016 80X
+			//abs(eta) region 	0.0–0.5 	0.5-0.8 	0.8–1.1 	1.1-1.3 	1.3–1.7 	1.7 - 1.9 	1.9–2.1 	2.1 - 2.3 	2.3 - 2.5 	2.5–2.8 	2.8-3.0 	3.0-3.2 	3.2-5.0
+			//Data/MC SF
+			//1.122 +-0.026
+			//1.167 +-0.048
+			//1.168 +-0.046
+			//1.029 +-0.066
+			//1.115 +-0.03
+			//1.041 +-0.062
+			//1.167 +-0.086
+			//1.094 +-0.093
+			//1.168 +-0.120
+			//1.266 +-0.132
+			//1.595 +-0.175
+			//0.998 +-0.066
+			//1.226 +-0.145
 			eta=fabs(eta);
 			double ptSF(1.0), ptSF_err(0.06);
-			if      (eta<0.5) { ptSF=1.095; ptSF_err=0.018; }
-			else if (eta<0.8) { ptSF=1.120; ptSF_err=0.028; }
-			else if (eta<1.1) { ptSF=1.097; ptSF_err=0.017; }
-			else if (eta<1.3) { ptSF=1.103; ptSF_err=0.033; }
-			else if (eta<1.7) { ptSF=1.118; ptSF_err=0.014; }
-			else if (eta<1.9) { ptSF=1.100; ptSF_err=0.033; }
-			else if (eta<2.1) { ptSF=1.162; ptSF_err=0.044; }
-			else if (eta<2.3) { ptSF=1.160; ptSF_err=0.048; }
-			else if (eta<2.5) { ptSF=1.161; ptSF_err=0.060; }
-			else if (eta<2.8) { ptSF=1.209; ptSF_err=0.059; }
-			else if (eta<3.0) { ptSF=1.564; ptSF_err=0.321; }
-			else if (eta<3.2) { ptSF=1.384; ptSF_err=0.033; }
-			else if (eta<5.0) { ptSF=1.216; ptSF_err=0.050; }
+			if      (eta<0.5) { ptSF=1.122; ptSF_err=0.026; }
+			else if (eta<0.8) { ptSF=1.167; ptSF_err=0.048; }
+			else if (eta<1.1) { ptSF=1.168; ptSF_err=0.046; }
+			else if (eta<1.3) { ptSF=1.029; ptSF_err=0.066; }
+			else if (eta<1.7) { ptSF=1.115; ptSF_err=0.03 ; }
+			else if (eta<1.9) { ptSF=1.041; ptSF_err=0.062; }
+			else if (eta<2.1) { ptSF=1.167; ptSF_err=0.086; }
+			else if (eta<2.3) { ptSF=1.094; ptSF_err=0.093; }
+			else if (eta<2.5) { ptSF=1.168; ptSF_err=0.120; }
+			else if (eta<2.8) { ptSF=1.266; ptSF_err=0.132; }
+			else if (eta<3.0) { ptSF=1.595; ptSF_err=0.175; }
+			else if (eta<3.2) { ptSF=0.998; ptSF_err=0.066; }
+			else if (eta<5.0) { ptSF=1.226; ptSF_err=0.145; }
 
 			toReturn[0]=TMath::Max(0., (genPt+ptSF*(pt-genPt))/pt );
 			toReturn[1]=TMath::Max(0., (genPt+(ptSF+ptSF_err)*(pt-genPt))/pt );
@@ -2206,10 +2238,11 @@ for(size_t f=0; f<urls.size();++f)
 				//return 0;
 			}
 			//std::vector<std::string>& patterns("Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter", "Flag_CSCTightHalo2015Filter", "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_goodVertices", "Flag_eeBadScFilter");
-			if (!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_CSCTightHalo2015Filter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*"))
+			if (!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*"))
 				continue;
 			if (!utils::passTriggerPatterns(metFilters, "Flag_goodVertices")) continue;
 			if (!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter")) continue;
+			if (!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) continue;
 		}
 		
 
