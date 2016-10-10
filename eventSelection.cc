@@ -2557,7 +2557,8 @@ for(size_t f=0; f<urls.size();++f)
 			double leta( electron.superCluster()->eta() );
 
 			// ---------------------- Main lepton kin
-			if(electron.pt() < 30.)                passKin = false;
+			//if(electron.pt() < 30.)                passKin = false;
+			if(electron.pt() < 35.)                passKin = false;
 			// if(leta > 2.1)                         passKin = false;
 			if(leta > 2.4)                         passKin = false;
 			if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
@@ -2702,13 +2703,13 @@ for(size_t f=0; f<urls.size();++f)
 			double leta( muon.eta());
 
 			// ---------------------- Main muon kin
-			// if(muon.pt() < 30.)   passKin = false;
+			if(muon.pt() < 30.)   passKin = false;
 			// if(leta > 2.1)        passKin = false;
-			if(muon.pt() < 26.)   passKin = false;
+			//if(muon.pt() < 26.)   passKin = false;
 			if(leta > 2.4)        passKin = false;
 
 			// ---------------------- Veto muon kin
-			// if (muon.pt () < 20)  passVetoKin = false;
+			//if (muon.pt () < 20)  passVetoKin = false;
 			// if (leta > 2.1)       passVetoKin = false;
 			if (muon.pt () < 10)  passVetoKin = false;
 			if (leta > 2.5)       passVetoKin = false;
