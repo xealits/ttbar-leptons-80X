@@ -4910,6 +4910,8 @@ printf("End of (file loop) the job.\n");
 
 // CONTROLINFO
 /*
+*/
+
 FILE *csv_out;
 string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
 csv_out = fopen(FileName.c_str(), "w");
@@ -4929,7 +4931,6 @@ printout_distrs(csv_out, job_def);
 
 fprintf(csv_out, "End of job output.\n\n");
 fclose(csv_out);
-*/
 
 if(saveSummaryTree)
 	{
@@ -4958,6 +4959,7 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 singlelep_ttbar_initialevents->Write();
 singlelep_ttbar_preselectedevents->Write();
 
+/*
 for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
 	{
 	const std::pair <string,string> *key = &it->first;
@@ -4995,6 +4997,7 @@ for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.
 
 	distr->Write();
 	}
+*/
 
 ofile->Close();
 
