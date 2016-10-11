@@ -608,7 +608,7 @@ double top_pT_SF(double x)
 	// -- taking all combined for 8 TeV
 	double a = 0.156;
 	double b = -0.00137;
-	return TMath::Exp(a + b*x)
+	return TMath::Exp(a + b*x);
 	}
 
 
