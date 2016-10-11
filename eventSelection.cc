@@ -587,6 +587,33 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_t
 	}
 
 
+
+
+
+// Top pT reweighting
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
+// -- the study is done for 7-8 Tev
+//    but still recommended for 13TeV
+
+double top_pT_SF(double x)
+	{
+	// the SF function is SF(x)=exp(a+bx)
+	// sqrt(s) 	channel     	a     	b
+	// 7 TeV 	all combined 	0.199 	-0.00166
+	// 7 TeV 	l+jets      	0.174 	-0.00137
+	// 7 TeV 	dilepton    	0.222 	-0.00197
+	// 8 TeV 	all combined 	0.156 	-0.00137
+	// 8 TeV 	l+jets       	0.159 	-0.00141
+	// 8 TeV 	dilepton     	0.148 	-0.00129
+	// -- taking all combined for 8 TeV
+	double a = 0.156;
+	double b = -0.00137;
+	return TMath::Exp(a + b*x)
+	}
+
+
+
+
 string mc_decay("");
 // Some MC datasets are inclusive, but analysis needs info on separate channels from them
 // thus the events are traversed and the channel is found
@@ -1261,6 +1288,7 @@ double leff(0.13), sfl(1.05), sflunc(0.12);
 sfb = 0.861; // SF is not used --- BTagCalibrationReader btagCal instead
 // sbbunc =;
 beff = 0.559;
+beff = 0.747;
 
 // new btag calibration
 // TODO: check callibration readers in https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
@@ -1522,75 +1550,6 @@ int nMultiChannel(0);
 // to check if processing goes well now
 // increment( string("weight_passed_oursel"), 0. );
 
-/*
-fprintf(csv_out, "Headers\n");
-
-// MULTISELECT headers:
-
-fprintf(csv_out, "weights_in_no_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-fprintf(csv_out, "weights_in_el_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-fprintf(csv_out, "weights_in_mu_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-fprintf(csv_out, "weights_in_elmu_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-fprintf(csv_out, "weights_in_elel_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-fprintf(csv_out, "weights_in_mumu_channel, num_events, num_events_pass_lumi, initial_events_weight, sum_rawweights_pass_trig, sum_weights_passtrig, weight_before_channel_select");
-for (int i=0; i<MULTISEL_SIZE; i++)
-	{
-	fprintf(csv_out, ",%d", i);
-	}
-fprintf(csv_out, "\n");
-
-*/
-
-
-
-// EVENTOUT
-
-/*
-fprintf(csv_out, "crossel:pu_num_inters,nGoodPV, rawWeight, weight, isElectron, l_px,l_py,l_pz,l_e, b1_px,b1_py,b1_pz,b1_e, j1_px,j1_py,j1_pz,j1_e,j2_px,j2_py,j2_pz,j2_e\n");
-fprintf(csv_out, "oursel: iev, pu_num_inters,nGoodPV, rawWeight, weight, weight_up, weight_down, isElectron,");
-fprintf(csv_out, "met_0, met_1, met_2, met_3, met_4, met_5, met_6,");
-fprintf(csv_out, "l_vz, l_px,l_py,l_pz,l_e,");
-fprintf(csv_out, "tau_vz, tau_px,tau_py,tau_pz,tau_e,");
-fprintf(csv_out, "b1_vz, b1_px,b1_py,b1_pz,b1_e,");
-fprintf(csv_out, "j1_vz, j1_px,j1_py,j1_pz,j1_e,");
-fprintf(csv_out, "j2_vz, j2_px,j2_py,j2_pz,j2_e\n");
-//fprintf(csv_out, "j1_vz, j1_pt, j1_pt_up, j1_pt_down, j1_px,j1_py,j1_pz,j1_e,");
-//fprintf(csv_out, "j2_vz, j2_pt, j2_pt_up, j2_pt_down, j2_px,j2_py,j2_pz,j2_e\n");
-
-fprintf(csv_out, "marasel:pu_num_inters,nGoodPV, rawWeight, weight, isElectron, l_px,l_py,l_pz,l_e, b1_px,b1_py,b1_pz,b1_e,b2_px,b2_py,b2_pz,b2_e, j1_px,j1_py,j1_pz,j1_e,j2_px,j2_py,j2_pz,j2_e,j3_px,j3_py,j3_pz,j3_e,j4_px,j4_py,j4_pz,j4_e\n");
-
-fprintf(csv_out, "\n");
-*/
 
 for(size_t f=0; f<urls.size();++f)
 	{
@@ -1613,34 +1572,6 @@ for(size_t f=0; f<urls.size();++f)
 
 	// before channel multiselect
 	double weight_before_channel_select = 0;
-
-	double crossel_sum_weights_raw = 0; // crossel
-	double crossel_sum_weights = 0;
-	double oursel_sum_weights_raw = 0; // oursel
-	double oursel_sum_weights = 0;
-	double oursel_sum_weights_el = 0;
-	double oursel_sum_weights_mu = 0;
-	double marasel_sum_weights_raw = 0; // marasel
-	double marasel_sum_weights = 0;
-
-
-
-	// MULTISELECTION array -- 8 bits
-	// now 6 bits are used -- 0-63 is max
-	double weights_in_no_channel[MULTISEL_SIZE], weights_in_el_channel[MULTISEL_SIZE], weights_in_mu_channel[MULTISEL_SIZE],
-		weights_in_elmu_channel[MULTISEL_SIZE], weights_in_elel_channel[MULTISEL_SIZE], weights_in_mumu_channel[MULTISEL_SIZE];
-	//int weights_in_selections_int[100];
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		//weights_in_selections[i] = 0;
-		weights_in_no_channel[i] = 0;
-		weights_in_el_channel[i] = 0;
-		weights_in_mu_channel[i] = 0;
-		weights_in_elmu_channel[i] = 0;
-		weights_in_elel_channel[i] = 0;
-		weights_in_mumu_channel[i] = 0;
-		//weights_in_selections_int[i] = 0;
-		}
 
 	unsigned int negative_event_nvtx[100];
 	unsigned int positive_event_nvtx[100];
@@ -1849,6 +1780,10 @@ for(size_t f=0; f<urls.size();++f)
 		// NLO -1 corrections
 		double weightGen(1.);
 
+		// Top pT reweighting
+		double topPtWgt = 1.;
+		// top_pT_SF
+
 		// there are also the (dissabled now, since NLO samples are used) HT-binned and pthat-binned stitching of LO and NLO
 
 		// ---------------------------------- pileup weight
@@ -1866,6 +1801,40 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_up        (1.0);
 		double weight_down      (1.0);
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
+
+		// ---------------------------------- Top pT reweighting
+		// find the produced tops,
+		// reweight according them
+		if (isTTbarMC && genHandle.isValid())
+			{
+			bool found_top, found_atop;
+			for(size_t i = 0; i < gen.size(); ++ i)
+				{
+				const reco::GenParticle & p = gen[i];
+				int id = p.pdgId();
+				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
+
+				if (id == 6 && (!found_top))
+					{ // if it is first t quark
+					found_top = true;
+					topPtWgt *= TMath::Sqrt(top_pT_SF(p.pt()));
+					}
+
+				if (id == -6 && (!found_atop))
+					{ // if it is first anti-t quark
+					found_atop = true;
+					topPtWgt *= TMath::Sqrt(top_pT_SF(p.pt()));
+					}
+
+				if (found_top && found_atop) break;
+				}
+
+			// similar range distribution
+			fill_btag_sf(string("top_pT_reweighting_SF"), topPtWgt, 1);
+			}
+
+		weight *= topPtWgt; // how is the overall integral of MC?
+		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
 
 		// ---------------------------------- these are weird NLO -1 weights
@@ -3989,7 +3958,6 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("singlemu_allbutmetsel_met_pt"), met.pt(), weight);
 					}
 
-				weights_in_mu_channel[multisel] += weight;
 				increment(string("weightflow_mu_") + to_string(multisel), weight);
 				// increment(string("weightflow_up_mu_") + to_string(multisel), weight_up);
 				// increment(string("weightflow_down_mu_") + to_string(multisel), weight_down);
@@ -4212,7 +4180,6 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pt_e( string("singleel_allbutmetsel_met_pt"), met.pt(), weight);
 					}
 
-				weights_in_el_channel[multisel] += weight;
 				increment(string("weightflow_e_") + to_string(multisel), weight);
 				// increment(string("weightflow_up_e_") + to_string(multisel), weight_up);
 				// increment(string("weightflow_down_e_") + to_string(multisel), weight_down);
@@ -4765,138 +4732,6 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		} // End single file event loop
-
-	/* removing the old output
-	fprintf(csv_out, "acceptances:");
-	fprintf(csv_out, "%s,", urls[f].c_str());
-	fprintf(csv_out, "%d,%d,%g,%g,", iev, n_events_pass_lumi, sum_weights_raw, sum_weights);
-	fprintf(csv_out, "%g,%g,", sum_weights_passtrig_raw, sum_weights_passtrig);
-	fprintf(csv_out, "%g,%g,",  crossel_sum_weights_raw, crossel_sum_weights);
-	fprintf(csv_out, "%g,%g,",  oursel_sum_weights_raw, oursel_sum_weights);
-	fprintf(csv_out, "%g,%g,",  oursel_sum_weights_el, oursel_sum_weights_mu);
-	fprintf(csv_out, "%g,%g\n", marasel_sum_weights_raw, marasel_sum_weights);
-
-	// MULTISELECT
-
-	fprintf(csv_out, "weights_in_no_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_no_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "weights_in_el_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_el_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "weights_in_mu_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_mu_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "weights_in_elmu_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_elmu_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "weights_in_elel_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_elel_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "weights_in_mumu_channel, %d, %d, %g, %g, %g, %g", iev, n_events_pass_lumi, sum_weights, sum_weights_passtrig_raw, sum_weights_passtrig, weight_before_channel_select);
-	for (int i=0; i<MULTISEL_SIZE; i++)
-		{
-		fprintf(csv_out, ",%g", weights_in_mumu_channel[i]);
-		//fprintf(csv_out, "%d,", weights_in_selections_int[i]);
-		}
-	fprintf(csv_out, "\n");
-
-
-
-
-	fprintf(csv_out, "negative_events_nvtx:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%d,", negative_event_nvtx[i]); }
-	fprintf(csv_out, "\n");
-	fprintf(csv_out, "positive_events_nvtx:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%d,", positive_event_nvtx[i]); }
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "negative_event_pernvtx_weight:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", negative_event_pernvtx_weight[i]); }
-	fprintf(csv_out, "\n");
-
-	fprintf(csv_out, "positive_event_pernvtx_weight:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", positive_event_pernvtx_weight[i]); }
-	fprintf(csv_out, "\n");
-
-
-	// double event_pergoodpv_weight[100];
-	fprintf(csv_out, "event_pergoodpv_weight:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", event_pergoodpv_weight[i]); }
-	fprintf(csv_out, "\n");
-
-	// double negative_event_pergoodpv_weight[100];
-	fprintf(csv_out, "negative_event_pergoodpv_weight:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", negative_event_pergoodpv_weight[i]); }
-	fprintf(csv_out, "\n");
-
-	// double positive_event_pergoodpv_weight[100];
-	fprintf(csv_out, "positive_event_pergoodpv_weight:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", positive_event_pergoodpv_weight[i]); }
-	fprintf(csv_out, "\n");
-
-	// double n_selected_leptons_weighted[100];
-	fprintf(csv_out, "n_selected_leptons_weighted:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", n_selected_leptons_weighted[i]); }
-	fprintf(csv_out, "\n");
-
-	// double n_selected_taus_weighted[100];
-	fprintf(csv_out, "n_selected_taus_weighted:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", n_selected_taus_weighted[i]); }
-	fprintf(csv_out, "\n");
-
-	// double n_selected_jets_weighted[100];
-	fprintf(csv_out, "n_selected_jets_weighted:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", n_selected_jets_weighted[i]); }
-	fprintf(csv_out, "\n");
-
-	// double n_selected_bjets_weighted[100];
-	fprintf(csv_out, "n_selected_bjets_weighted:");
-	for (int i=0; i<100; i++)
-		{ fprintf(csv_out, "%g,", n_selected_bjets_weighted[i]); }
-	fprintf(csv_out, "\n");
-
-	printf("\n");
-	printf("Done processing the file\n");
-	printf("\n");
-
-	fprintf(csv_out, "End of event loop in the file.\n\n");
-	*/
 
 	delete file;
 	} // End loop on files

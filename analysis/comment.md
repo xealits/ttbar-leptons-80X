@@ -157,9 +157,9 @@ channel selection & selection steps.
 The steps of Pietro's code with changes.
 
 * MC shaping to data properties
-  + NLO -1 weights for powheg and amcatnlo datasets -> **0 leave as is**
+  + NLO -1 weights for powheg and amcatnlo datasets -> Just multiply the weight now
   + *removed* merging-stitching of LO and NLO sets (via HT/phat binning)
-  + count N good verteces (used as pile-up in data?)
+  + count N good verteces (used as pile-up in data?) **has it changed again?**
   + Apply pileup reweighting -> **manual reweight**
     pileup_latest.txt in
     `/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/`
@@ -167,16 +167,25 @@ The steps of Pietro's code with changes.
     
   + (TODO) HLT trigger efficiency
   + (TODO) lepton ID/Iso efficiencies
-  + B-tag efficiency (needs to be checked and updated according to \url{twiki/bin/viewauth/CMS/BtagRecommendation76X})
-  + B-tag scale factors: \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Data_MC_Scale_Factors}
-    TODO: the 80X scale factors are used now -- update
+  + B-tag efficiency (updated according to \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X})
+    ichep 80X v2 csv files
+    medium WP b-tag SF for b and c = 0.90 +- 10^-5 -- it is practically constant
+    for light jets medium WP corresponds to
+    0.980777+-0.00109334*x+4.2909e-06*x*x+-2.78512e-09*x*x*x
+    -- the distr is mostly bellow 1,
+    **which contradicts the slides of the B-tag working group**
+    \url{http://cds.cern.ch/record/2202967/files/DP2016_042.pdf?version=1}
+    (but contradicts in good way -- less MC gets b-tags)
   + (TODO?) PDF weights from \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#How_to_use_weights}
-  + save distributions of weights -> **1**
+  + Top reweighting?
 * basic event selection
   + remove Run2015B[Orthogonalize Run2015B PromptReco+17Jul15 mix]
   + Skip bad lumi -> **check for lumicert for new datasets 1**
     using: `Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt`
     (RunD is about 4.3 fp^-1)
+    unprescaled certificate for the top triggers:
+    `TOP_Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_UnprescaledPaths.txt`
+    (about 3039 pb^-1)
     (2015 RunD is about 2160.8 pb^-1 RunC ~ 17.2 pb^-1,
     `Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt`
     `Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt`)
@@ -188,10 +197,10 @@ The steps of Pietro's code with changes.
      muons --- `HLT_IsoMu20` or `HLT_IsoTkMu20` for data and MC
      electrons --- `HLT_Ele23_WPLoose_Gsf` for data and MC)
   + Apply MET filters via HLT paths according to
-    url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the}
+    url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2}
     "Flag_HBHENoiseFilter*",
     "Flag_HBHENoiseIsoFilter*",
-    "Flag_CSCTightHalo2015Filter*",
+    "Flag_CSCTightHalo2015Filter*" -> Flag_globalTightHalo2016Filter,
     "Flag_EcalDeadCellTriggerPrimitiveFilter*"
     "Flag_goodVertices"
     "Flag_eeBadScFilter"
@@ -257,7 +266,18 @@ The steps of Pietro's code with changes.
         veto: P_T > 15, eta < 2.5,
       * both have window at leta > 1.4442 && leta < 1.5660
         IDs and isolation are done with cut-based procedure according to
-        https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+        https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2
+        https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
+        used:
+        https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria
+        "recipes for regular users":
+        `egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium`
+        (how to access it?)
+        and
+        HLT e,ulation
+        `egmGsfElectronIDs:cutBasedElectronHLTPreselection-Summer16-V1`
+        and the tag for the HEEP ID recommended for 2016 data:
+        `egmGsfElectronIDs:heepElectronID-HEEPV60`
         (Isolation twiki requested)
 * Merged electrons and muons for later convenience
 * select the taus -> **0 leave as is**
