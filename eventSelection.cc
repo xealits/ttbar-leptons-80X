@@ -1105,7 +1105,7 @@ bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") ));
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
 bool isNLOMC      (isMC && (dtag.Contains("amcatnlo") || dtag.Contains("powheg")) );
-	
+
 TString outTxtUrl = outUrl + ".txt";
 FILE *outTxtFile = NULL;
 if (!isMC) outTxtFile = fopen (outTxtUrl.Data (), "w");
@@ -1498,7 +1498,20 @@ Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fa
 // So here we got all the parameters from the config
 
 
+if(debug)
+	{
+	cout << "Some input parameters\n";
 
+	cout << "isMC = " << isMC << "\n";
+	cout << "isW0JetsSet = " << isW0JetsSet << "\n";
+
+	cout << "isTTbarMC = "    << isTTbarMC << "\n";
+	cout << "isPromptReco = " << isPromptReco << "\n";
+	cout << "isRun2015B = "   << isRun2015B << "\n";
+	cout << "isNLOMC = "      << isNLOMC << "\n";
+
+	cout << "jecDir = "      << jecDir << "\n";
+	}
 
 
 
