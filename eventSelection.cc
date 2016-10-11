@@ -4973,6 +4973,18 @@ for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.
 	//fprintf(out, "\n");
 	}
 
+for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.begin(); it != th1i_distr_control.end(); ++it)
+	{
+	const std::pair <string,string> *key = &it->first;
+	string mc_decay_suffix = key->first;
+	string name = key->second;
+
+	TH1I * distr = & it->second;
+
+	distr->Write()
+	}
+
+
 for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.begin(); it != th2d_distr_control.end(); ++it)
 	{
 	const std::pair <string,string> *key = &it->first;
