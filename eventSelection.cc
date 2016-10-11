@@ -1948,6 +1948,10 @@ for(size_t f=0; f<urls.size();++f)
 		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
 		// Clean up vertex collection
+		// it seems utils::isGoodVertex is outdated
+		nGoodPV = vtx.size();
+		goodPV = vtx[0];
+		/*
 		for(size_t ivtx=0; ivtx<vtx.size(); ++ivtx)
 			{
 			if(utils::isGoodVertex(vtx[ivtx]))
@@ -1956,6 +1960,7 @@ for(size_t f=0; f<urls.size();++f)
 				nGoodPV++;
 				}
 			}
+		*/
 
 		// ----------------------------------------- Apply pileup reweighting
 		// why don't use nGoodPV for Pile-Up?
@@ -2829,6 +2834,8 @@ for(size_t f=0; f<urls.size();++f)
 		// isSingleMu = (abs(slepId)==13) && muTrigger && iso_lep;
 		// isSingleE  = (abs(slepId)==11) && eTrigger  && iso_lep;
 		bool clean_lep_conditions = nVetoE==0 && nVetoMu==0 && nGoodPV != 0;
+		// maybe it is worth trying not considering the nGoodPV?
+
 		// TODO: test if trigger needed here at all
 		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
 		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
