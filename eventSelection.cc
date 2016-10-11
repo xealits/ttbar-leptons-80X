@@ -4981,7 +4981,7 @@ for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.
 
 	TH1I * distr = & it->second;
 
-	distr->Write()
+	distr->Write();
 	}
 
 
