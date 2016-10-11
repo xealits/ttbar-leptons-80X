@@ -4909,46 +4909,12 @@ printf("End of (file loop) the job.\n");
 
 
 // CONTROLINFO
-
+/*
 FILE *csv_out;
 string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
 csv_out = fopen(FileName.c_str(), "w");
 
 fprintf(csv_out, "New output (sums per whole job!):\n");
-
-// inline control functions usage:
-//   fill_pt_e( "control_point_name", value, weight)
-//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
-//   increment( "control_point_name", weight )
-//   printout_distrs(FILE * out)
-//   printout_counters(FILE * out)
-
-//std::map<string, TH1D*> th1d_distr_control;
-//top2pt_jets_pt_taucleaned
-
-// cout << "some control distrs:" << endl;
-// cout << th1d_distr_control["top2pt_jets_pt_taucleaned"].Integral() << endl;
-// cout << th1d_distr_control["top2pt_jets_pt_taucleaned"].GetSize() << endl;
-
-// cout << th1d_distr_control["all_jets_pt_taucleaned"].Integral() << endl;
-// cout << th1d_distr_control["all_jets_pt_taucleaned"].GetSize() << endl;
-
-// cout << th1d_distr_control["all_jets_pt_correctedF"].Integral() << endl;
-// cout << th1d_distr_control["all_jets_pt_correctedF"].GetSize() << endl;
-
-// cout << th1d_distr_control["all_jets_pt_corrected2"].Integral() << endl;
-// cout << th1d_distr_control["all_jets_pt_corrected2"].GetSize() << endl;
-
-// cout << th1d_distr_control["all_jets_pt_slimmed"].Integral() << endl;
-// cout << th1d_distr_control["all_jets_pt_slimmed"].GetSize() << endl;
-
-// cout << th1d_distr_control["all_jets_pt_corrected1"].Integral() << endl;
-// cout << th1d_distr_control["all_jets_pt_corrected1"].GetSize() << endl;
-
-// hopefully TString will get converted to string...
-
-//printout_counters(csv_out, string(isMC ? "MC,": "Data,") + dtag_s + string(",") + job_num);
-//printout_distrs(csv_out, string(isMC ? "MC,": "Data,") + dtag_s + string(",") + job_num);
 printout_counters(csv_out, job_def);
 printout_distrs(csv_out, job_def);
 
@@ -4961,11 +4927,9 @@ printout_distrs(csv_out, job_def);
 // the only problem is:
 // FIXME: how to do MULTISELECT nicely here?
 
-
 fprintf(csv_out, "End of job output.\n\n");
-
-
 fclose(csv_out);
+*/
 
 if(saveSummaryTree)
 	{
@@ -4993,13 +4957,6 @@ TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
 singlelep_ttbar_initialevents->Write();
 singlelep_ttbar_preselectedevents->Write();
-// singlelep_ttbar_selected_mu_events->Write();
-// singlelep_ttbar_selected_el_events->Write();
-// singlelep_ttbar_selected2_mu_events->Write();
-// singlelep_ttbar_selected2_el_events->Write();
-
-// singlelep_ttbar_maraselected_mu_events->Write();
-// singlelep_ttbar_maraselected_el_events->Write();
 
 for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
 	{
@@ -5014,6 +4971,17 @@ for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.
 	//fprintf(out, "%s:content, %s,%s,%s", name.c_str(), JD.type.c_str(), (JD.dtag + mc_decay_suffix).c_str(), JD.job_num.c_str());
 	//for (int i=0; i < distr->GetSize(); i++) fprintf(out, ",%g", distr->GetBinContent(i));
 	//fprintf(out, "\n");
+	}
+
+for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.begin(); it != th2d_distr_control.end(); ++it)
+	{
+	const std::pair <string,string> *key = &it->first;
+	string mc_decay_suffix = key->first;
+	string name = key->second;
+
+	TH2D * distr = & it->second;
+
+	distr->Write();
 	}
 
 ofile->Close();
