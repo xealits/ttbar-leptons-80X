@@ -1603,8 +1603,10 @@ for(size_t f=0; f<urls.size();++f)
 
 	int treeStep (ev.size()/50);
 
+	int iev = 0;
 	for (ev.toBegin(); !ev.atEnd(); ++ev)
 		{
+		iev += 1;
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
@@ -1662,6 +1664,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// traversing separate t quarks
 		//if (debug) {
+		// no MC truth in sync
+		/*
 		if (isTTbarMC && genHandle.isValid()) {
 			//string mc_decay(""); // move to all job parameters
 			// every found t-quark decay branch will be added as a substring to this string (el, mu, tau, q)
@@ -1722,6 +1726,7 @@ for(size_t f=0; f<urls.size();++f)
 			// so, mc_decay will be populated with strings matching t decays
 			// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
 		}
+		*/
 
 		if (debug) {
 			cout << "MC suffix " << mc_decay << " is found\n";
@@ -1763,7 +1768,10 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		fill_pt_e( "number_of_events_in_selection_steps", 1, 1)
+		fill_pt_e( "number_of_events_in_selection_steps_elel", 1, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_elmu", 1, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_mumu", 1, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_else", 1, 1);
 
 		if (iev % treeStep == 0)
 			{
@@ -2094,6 +2102,11 @@ for(size_t f=0; f<urls.size();++f)
 		// wildcard * for data
 		// specific version for MC
 		// Setting no-reHLT triggers!
+
+		// yet no trigger for sync
+		bool eTrigger = true;
+		bool muTrigger = true;
+		/*
 		bool eTrigger    ( isMC ?
 			// 2015, 76X MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
@@ -2117,7 +2130,8 @@ for(size_t f=0; f<urls.size();++f)
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			);
-		
+		*/
+
 		//if(filterOnlySINGLEMU) {                    eTrigger = false; }
 		//if(filterOnlySINGLEE)  { muTrigger = false;                   }
 		// SingleMuon-dataset jobs process double-HLT events
@@ -2135,7 +2149,10 @@ for(size_t f=0; f<urls.size();++f)
 		// I run it on selection candidates now
 		// which is done below, when the candidates are selected
 
-		fill_pt_e( "number_of_events_in_selection_steps", 2, 1)
+		fill_pt_e( "number_of_events_in_selection_steps_elel", 2, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_elmu", 2, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_mumu", 2, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_else", 2, 1);
 
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
@@ -2211,7 +2228,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "met filters applied here" << endl;
 			}
 
-		fill_pt_e( "number_of_events_in_selection_steps", 3, 1)
+		fill_pt_e( "number_of_events_in_selection_steps_elel", 3, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_elmu", 3, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_mumu", 3, 1);
+		fill_pt_e( "number_of_events_in_selection_steps_else", 3, 1);
 
 		// ------------------------- event physics and the corresponding selection
 
@@ -2565,7 +2585,7 @@ for(size_t f=0; f<urls.size();++f)
 		std::vector<patUtils::GenericLepton> selPositiveLeptons, selNegativeLeptons;
 		for(size_t l=0; l<selLeptons.size(); ++l)
 			{
-			if (selLeptons[l].pdfId() > 0) selPositiveLeptons.push_back(patUtils::GenericLepton (selLeptons[l]     ));
+			if (selLeptons[l].pdgId() > 0) selPositiveLeptons.push_back(patUtils::GenericLepton (selLeptons[l]     ));
 			else selNegativeLeptons.push_back(patUtils::GenericLepton (selLeptons[l]     ));
 			}
 
@@ -2626,18 +2646,6 @@ for(size_t f=0; f<urls.size();++f)
 			ntaus++;
 			}
 		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
-
-		// Control values for processed individual taus:
-		for(size_t n=0; n<selTaus.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_individual_pt"), selTaus[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_individual_pt"), selTaus[n].pt(), weight);
-				if (isSingleE)  fill_pt_e( string("top1pt_taus_individual_singleel_pt"), selTaus[n].pt(), weight);
-				if (isSingleMu) fill_pt_e( string("top1pt_taus_individual_singlemu_pt"), selTaus[n].pt(), weight);
-				}
-			}
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -2734,20 +2742,6 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
-
-		// Control values for processed taus cleaned of leptons:
-		for(size_t n=0; n<selTausNoLep.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
-				}
-			}
-
 
 
 		if(debug){
@@ -2765,7 +2759,6 @@ for(size_t f=0; f<urls.size();++f)
 		// now goes the procedure of corrections to jets and then METs
 
 		// ----------------------- The updateJEC procedure from src/MacroUtils:
-		//void updateJEC(pat::JetCollection& jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC){
 
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
@@ -2913,9 +2906,6 @@ for(size_t f=0; f<urls.size();++f)
 		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), n_met.pt(), weight);
 		//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
 		//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
-		fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
-		if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), met.pt(), weight);
-		if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), met.pt(), weight);
 
 		if(debug) cout << "Jet Energy Corrections updated" << endl;
 
@@ -3070,6 +3060,7 @@ for(size_t f=0; f<urls.size();++f)
 			selJetsNoLepNoTau.push_back(jet);
 			}
 
+		/*
 		// Control values for processed jets cleaned of leptons and taus:
 		for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
 			{
@@ -3107,6 +3098,7 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				}
 			}
+		*/
 
 
 		if(debug){
@@ -3270,34 +3262,42 @@ for(size_t f=0; f<urls.size();++f)
 
 		// select 2 leptons of OPOSITE sign with HIGHEST PTs (which can be done in many ways actually)
 		LorentzVector lepSum;
+		int lepIdProduct;
 		if (selNegativeLeptons.size()>0 && selPositiveLeptons.size()>0)
 			{
 			// TODO: what is "remove mass < 20 GeV at this step"?
 			lepSum = selNegativeLeptons[0].p4() + selPositiveLeptons[0].p4();
+			lepIdProduct = selNegativeLeptons[0].pdgId() * selPositiveLeptons[0].pdgId();
 			if (lepSum.M() < 20) continue;
 			}
 		else continue;
 
-		fill_pt_e( "number_of_events_in_selection_steps", 4, 1)
+		string channel;
+		if (lepIdProduct == -121) channel = string("_elel");
+		else if (lepIdProduct == -143) channel = string("_elmu");
+		else if (lepIdProduct == -169) channel = string("_mumu");
+		else channel = string("_else");
+
+		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 4, 1);
 
 		// Z mass veto
 		if (lepSum.M() > 76. && lepSum.M() < 106.) continue;
-		fill_pt_e( "number_of_events_in_selection_steps", 5, 1)
+		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 5, 1);
 
 
 		// met > 40 GeV cut
 		if (met.pt()<40.) continue;
-		fill_pt_e( "number_of_events_in_selection_steps", 6, 1)
+		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 6, 1);
 
 		// >= 2 jets
 		// using selJets, no lep or cleaning 
 		if (selJets.size() < 2) continue;
-		fill_pt_e( "number_of_events_in_selection_steps", 7, 1)
+		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 7, 1);
 
 		// TODO: b-tagging -- how many jets are required?
 		// using selBJets, which are produced from selJetsNoLep!!
 		if (selBJets.size() == 0) continue;
-		fill_pt_e( "number_of_events_in_selection_steps", 8, 1)
+		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 8, 1);
 
 
 		if(debug){
@@ -3390,7 +3390,7 @@ for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.
 
 	TH1I * distr = & it->second;
 
-	distr->Write()
+	distr->Write();
 	}
 
 
