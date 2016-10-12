@@ -3212,21 +3212,34 @@ for(size_t f=0; f<urls.size();++f)
 			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
 			// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
 			if (tau.tauID ("againstElectronTightMVA6")                  <0.5) continue;
+
+			// maybe use MVA-based discriminators:
+			// byVLooseIsolationMVArun2v1DBoldDMwLT
+			// byLooseIsolationMVArun2v1DBoldDMwLT
+			// byMediumIsolationMVArun2v1DBoldDMwLT
+			// byTightIsolationMVArun2v1DBoldDMwLT
+			// byVTightIsolationMVArun2v1DBoldDMwLT
+
+			// or the new discriminators:
+			// byLooseCombinedIsolationDeltaBetaCorr3HitsdR03
+			// byMediumCombinedIsolationDeltaBetaCorr3HitsdR03
+			// byTightCombinedIsolationDeltaBetaCorr3HitsdR03
+			// -- recommended for multi-object final states (ttH, H->tau-tau)
 			
 			fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
 
 			// Pixel hits cut (will be available out of the box in new MINIAOD production)
-			{
-			int nChHadPixelHits = 0;
-			reco::CandidatePtrVector chCands = tau.signalChargedHadrCands();
-			for(reco::CandidatePtrVector::const_iterator iter = chCands.begin(); iter != chCands.end(); iter++)
-				{
-				pat::PackedCandidate const* packedCand = dynamic_cast<pat::PackedCandidate const*>(iter->get());
-				int pixelHits = packedCand->numberOfPixelHits();
-				if(pixelHits > nChHadPixelHits) nChHadPixelHits = pixelHits;
-				}
-			if(nChHadPixelHits==0) continue;
-			}
+			//{
+			//int nChHadPixelHits = 0;
+			//reco::CandidatePtrVector chCands = tau.signalChargedHadrCands();
+			//for(reco::CandidatePtrVector::const_iterator iter = chCands.begin(); iter != chCands.end(); iter++)
+			//	{
+			//	pat::PackedCandidate const* packedCand = dynamic_cast<pat::PackedCandidate const*>(iter->get());
+			//	int pixelHits = packedCand->numberOfPixelHits();
+			//	if(pixelHits > nChHadPixelHits) nChHadPixelHits = pixelHits;
+			//	}
+			//if(nChHadPixelHits==0) continue;
+			//}
 
 			fill_pt_e( string("all_taus_ided_pt"), tau.pt(), weight);
 			if (count_ided_taus<1)
