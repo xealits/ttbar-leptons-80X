@@ -2166,7 +2166,11 @@ for(size_t f=0; f<urls.size();++f)
 		// wildcard * for data
 		// specific version for MC
 		// Setting no-reHLT triggers!
-		bool eTrigger    ( isMC ?
+		bool eTrigger = false;
+		bool muTrigger = false;
+		if (tr.isValid())
+			{
+			eTrigger =    ( isMC ?
 			// 2015, 76X MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
 			// 2016, 80X MC
@@ -2178,7 +2182,7 @@ for(size_t f=0; f<urls.size();++f)
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
 			 utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") ); // Using no-reHLT Data for now
-		bool muTrigger   ( isMC ?
+			muTrigger =   ( isMC ?
 			// 2015, 76X MC
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
@@ -2189,7 +2193,14 @@ for(size_t f=0; f<urls.size();++f)
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			);
-		
+			}
+		else if (isMC) // noHLT MC
+			{
+			eTrigger = true;
+			muTrigger = true;
+			}
+		else return 233;
+
 		//if(filterOnlySINGLEMU) {                    eTrigger = false; }
 		//if(filterOnlySINGLEE)  { muTrigger = false;                   }
 		// SingleMuon-dataset jobs process double-HLT events
