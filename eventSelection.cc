@@ -1119,6 +1119,9 @@ bool isW0JetsSet   (isMC && (dtag.Contains ("W0Jets")));
 // WJets have NUP = all those numbers
 // for W0Jets one takes NUP = 5
 
+//bool isNoHLT = runProcess.getParameter<bool>  ("isNoHLT");
+bool isNoHLT = dtag.Contains("noHLT");
+
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
@@ -2186,7 +2189,13 @@ for(size_t f=0; f<urls.size();++f)
 		// Setting no-reHLT triggers!
 		bool eTrigger = false;
 		bool muTrigger = false;
-		if (tr.isValid())
+
+		if (isNoHLT)
+			{
+			eTrigger = true;
+			muTrigger = true;
+			}
+		else if (tr.isValid())
 			{
 			eTrigger =    ( isMC ?
 			// 2015, 76X MC
@@ -2211,11 +2220,6 @@ for(size_t f=0; f<urls.size();++f)
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
 			);
-			}
-		else if (isMC) // noHLT MC
-			{
-			eTrigger = true;
-			muTrigger = true;
 			}
 		else return 233;
 
