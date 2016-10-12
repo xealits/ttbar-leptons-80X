@@ -379,13 +379,31 @@ bool passPFJetID(std::string label, pat::Jet jet)
 	// float nconst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
 	// float muf(jet.muonEnergy()/rawJetEn); 
 
+	// at time of 80X all 13TeV (74X, 76X, 80X) recommendations got new specification for |eta| < 2.7
 	if (label=="Loose")
+		{
 		// passID = ( ((nhf<0.99 && nef<0.99 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.99) || abs(eta)>2.4)) && abs(eta)<=3.0 );
 		// the same, just with new names:
-		passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
+		// passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 
+		if (fabs(eta) <= 3.0)
+			{
+			if (fabs(eta) <= 2.7) passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
+			else passID = NEMF<0.90 && NumNeutralParticles > 2;
+			}
+		else passID = NEMF<0.90 && NumNeutralParticles > 10;
+		}
 	if (label=="Tight")
+		{
 		// passID = ( ((nhf<0.90 && nef<0.90 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.90) || abs(eta)>2.4)) && abs(eta) <=3.0);
-		passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
+		// passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
+		// the same, only NHF and NEMF are 0.90 at |eta| < 2.7
+		if (fabs(eta) <= 3.0)
+			{
+			if (fabs(eta) <= 2.7) passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
+			else passID = NEMF<0.90 && NumNeutralParticles > 2;
+			}
+		else passID = NEMF<0.90 && NumNeutralParticles > 10;
+		}
 
 	// there is also:
 	//tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4) && abs(eta)<=3.0
@@ -3185,7 +3203,7 @@ for(size_t f=0; f<urls.size();++f)
 			// Discriminators from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
 			// "The tau passes the discriminator if pat::Tau::tauID("name") returns a value of 0.5 or greater"
 			//if(tau.tauID("decayModeFindingNewDMs")<0.5) continue; // High pt tau. Otherwise, OldDMs
-			if (tau.tauID("decayModeFinding")<0.5) continue; // High pt tau. Otherwise, OldDMs (or no <DMs> -- they are synonyms)
+			if (tau.tauID("decayModeFinding")<0.5) continue; // OldDMs is synonim for no <DMs>
 			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
 			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
 			if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
