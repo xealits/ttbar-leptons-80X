@@ -1338,7 +1338,8 @@ The name of the measurements is
 
 // only 1 reader:
 
-BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
+// BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
+BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
                              "central",             // central sys type
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
@@ -3210,8 +3211,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (tau.tauID("decayModeFinding")<0.5) continue; // OldDMs is synonim for no <DMs>
 			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
 			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
-			if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
-			// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
+			// if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
+			if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
 			if (tau.tauID ("againstMuonTight3")                          <0.5) continue; // Medium working point not usable. Available values: Loose, Tight
 			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
 			// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
@@ -3754,7 +3755,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = selJetsNoLep[ijet];
 
-			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
+			// bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
+			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
 			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
 
 			//update according to the SF measured by BTV
