@@ -1768,6 +1768,7 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
+		// ---------------------------------------------------------- step 0a
 		fill_pt_e( "number_of_events_in_selection_steps_elel", 1, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_elmu", 1, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_mumu", 1, 1);
@@ -2149,6 +2150,7 @@ for(size_t f=0; f<urls.size();++f)
 		// I run it on selection candidates now
 		// which is done below, when the candidates are selected
 
+		// ---------------------------------------------------------- step 0b
 		fill_pt_e( "number_of_events_in_selection_steps_elel", 2, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_elmu", 2, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_mumu", 2, 1);
@@ -2228,6 +2230,7 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "met filters applied here" << endl;
 			}
 
+		// ---------------------------------------------------------- step 0c
 		fill_pt_e( "number_of_events_in_selection_steps_elel", 3, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_elmu", 3, 1);
 		fill_pt_e( "number_of_events_in_selection_steps_mumu", 3, 1);
@@ -2325,7 +2328,7 @@ for(size_t f=0; f<urls.size();++f)
 		// LEPTON ANALYSIS
 		//
 
-		// ---------------------------------- electrons selection
+		// ---------------------------------- ELECTRONS SELECTION
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
@@ -2452,7 +2455,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-		// ---------------------------------- muons selection
+		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton> selLeptons;
 		pat::MuonCollection selMuons;
@@ -2592,7 +2595,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-		// ------------------------------------------ select the individual taus
+		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
 		int ntaus (0);
 		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
@@ -2749,7 +2752,17 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		//
-		// ----------------------------------------------- JET/MET ANALYSIS
+		// ----------------------------------------------- JETS SELECTION
+		// for 2016 top cross-sections sync Dileptons exercise
+		// https://twiki.cern.ch/twiki/bin/view/CMS/TTbarXSecSynchronization#Dileptons
+		// jets:
+		//          |eta| < 2.4 pt > 30,
+		//          official Jet ID,
+		//          JECs v6, no JER for this exercise.
+		//          Official jet ID twiki and JEC twiki 
+		//          https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
+		//          https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC
+		//          and R > 0.4 to selected leptons
 		//
 		if(debug) cout << "Now update Jet Energy Corrections" << endl;
 		//add scale/resolution uncertainties and propagate to the MET
@@ -2811,6 +2824,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
+			/* dilep cross-sections sync exercise
 			//smear JER
 			//double newJERSF(1.0);
 			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
@@ -2849,6 +2863,7 @@ for(size_t f=0; f<urls.size();++f)
 				jet.addUserFloat("_scale_jup",    ptUnc[0] );
 				jet.addUserFloat("_scale_jdown",  ptUnc[1] );
 				}
+			*/
 
 			// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 			// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
@@ -2870,7 +2885,7 @@ for(size_t f=0; f<urls.size();++f)
 		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
 		// ----------------------------------- here is the correctF jet correction point
 		// Propagate jet_corr to MET:
-		met.setP4(met.p4() - jet_corr);
+		//met.setP4(met.p4() - jet_corr); // don't propagate in syn exercise
 		// TODO: uncertainties?
 		// for leptons they are done as:
 		//met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
@@ -2925,6 +2940,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------- Select the jets, based on their individual parameters
 		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
+
 		pat::JetCollection selJets;
 		// TODO: do all jet selection right here
 		// now selBJets are not used anywhere
@@ -2964,7 +2980,7 @@ for(size_t f=0; f<urls.size();++f)
 			// and now the tighter final selection
 			double eta = jet.eta();
 			double pt  = jet.pt();
-			bool passKino = pt > 30. && fabs(eta) < 2.5;
+			bool passKino = pt > 30. && fabs(eta) < 2.4;
 
 			// corrections:
 			// TODO: are they MC-only?
@@ -3278,6 +3294,7 @@ for(size_t f=0; f<urls.size();++f)
 		else if (lepIdProduct == -169) channel = string("_mumu");
 		else channel = string("_else");
 
+		// ---------------------------------------------------------- step 1
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 4, 1);
 
 		// Z mass veto
@@ -3289,9 +3306,10 @@ for(size_t f=0; f<urls.size();++f)
 		if (met.pt()<40.) continue;
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 6, 1);
 
+		// ---------------------------------------------------------- step 4
 		// >= 2 jets
-		// using selJets, no lep or cleaning 
-		if (selJets.size() < 2) continue;
+		// using selJetsNoLep
+		if (selJetsNoLep.size() < 2) continue;
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 7, 1);
 
 		// TODO: b-tagging -- how many jets are required?
