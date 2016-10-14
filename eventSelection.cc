@@ -3748,15 +3748,15 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		// --------------------------- B-tagged jets
+		// --------------------------- B-TAGED JETS
 		pat::JetCollection selBJets;
 
 		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 			{
 			pat::Jet& jet = selJetsNoLep[ijet];
 
-			// bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
-			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
+			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
+			//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
 			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
 
 			//update according to the SF measured by BTV
@@ -3780,7 +3780,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
@@ -3790,7 +3790,7 @@ for(size_t f=0; f<urls.size();++f)
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_sf_flavour_c"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
@@ -3800,7 +3800,7 @@ for(size_t f=0; f<urls.size();++f)
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
