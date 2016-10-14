@@ -998,6 +998,38 @@ int printout_counters(FILE * out, JobDef JD)
 
 
 
+bool passElMediumIso_SyncExercise(pat::Electron& el)
+	{
+	bool pass = false;
+	// from TopLJets2015
+	//ev_.l_relIso[ev_.nl]=(el.chargedHadronIso()+ max(0., el.neutralHadronIso() + el.photonIso()  - 0.5*el.puChargedHadronIso()))/el.pt();
+	//ev_.l_chargedHadronIso[ev_.nl]=el.chargedHadronIso();
+	//
+	//the llvv does it with:
+	//  float  chIso   = el.pfIsolationVariables().sumChargedHadronPt;
+	//  float  nhIso   = el.pfIsolationVariables().sumNeutralHadronEt;
+	//  float  gIso    = el.pfIsolationVariables().sumPhotonEt;
+	//
+	//  if (rho == 0) {
+	//    float  puchIso = el.pfIsolationVariables().sumPUPt; 
+	//    relIso  = (chIso + TMath::Max(0.,nhIso+gIso-0.5*puchIso)) / el.pt();
+	//  }
+	//  else {
+	//    float effArea = utils::cmssw::getEffectiveArea(11,el.superCluster()->eta(),3);
+	//    relIso  = (chIso + TMath::Max(0.,nhIso+gIso-rho*effArea)) / el.pt();
+	//  }
+	//
+	//  FIXME: !! and rho is set = 0 by default and not updated!
+	//
+	//
+	Float_t relIso;
+	relIso = (el.chargedHadronIso()+ max(0., el.neutralHadronIso() + el.photonIso()  - 0.5*el.puChargedHadronIso()))/el.pt();
+	return pass;
+	}
+
+
+
+
 
 int main (int argc, char *argv[])
 {
@@ -2420,8 +2452,9 @@ for(size_t f=0; f<urls.size();++f)
 			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::ICHEP16Cut);
 			//passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
 			// and Spring15 Iso
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::Spring15Cut25ns);
+			//passIso     = passElMediumIso_SyncExercise(electron);
+			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns, rho);
+			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::Spring15Cut25ns, rho);
 
 
 			// ---------------------------- kinematics
