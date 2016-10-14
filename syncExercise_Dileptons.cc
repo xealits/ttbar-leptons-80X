@@ -52,8 +52,9 @@
 // should work in CMSSW_8_0_12 and CMSSW_8_1_0
 #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
 #include "CondTools/BTau/interface/BTagCalibrationReader.h"
-// #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-// #include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+// in 76X
+//#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+//#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
 // this one is for 80X -> #include "CondTools/BTau/interface/BTagCalibrationReader.h"
 
 #include "UserCode/llvv_fwk/interface/GammaWeightsHandler.h"
@@ -1283,8 +1284,8 @@ beff = 0.747;
 
 // Setup calibration readers
 //BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/btagSF_CSVv2.csv");
-// BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
-BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
+BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
+//BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
 // and there:
 
 // in *80X
@@ -1303,6 +1304,7 @@ The name of the measurements is
 
 // only 1 reader:
 
+// running sync with 76X SF
 BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
                              "central",             // central sys type
                              {"up", "down"});      // other sys types
@@ -1315,6 +1317,7 @@ btagCal.load(btagCalib,              // calibration instance
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
             "incl");                // measurement type
+
 
 /* usage in 80X:
 double jet_scalefactor    = reader.eval_auto_bounds(
@@ -1344,6 +1347,25 @@ double jet_scalefactor_do = reader.eval_auto_bounds(
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Data_MC_Scale_Factors
 // OP_MEDIUM instead of OP_LOOSE?
 // v1
+
+/*
+BTagCalibrationReader btagCalB  (&btagCalib, BTagEntry::OP_MEDIUM, "central");  // calibration instance, operating point, measurement type, systematics type
+BTagCalibrationReader btagCalC  (&btagCalib, BTagEntry::OP_MEDIUM, "central");  // calibration instance, operating point, measurement type, systematics type
+BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "central");  // calibration instance, operating point, measurement type, systematics type
+
+btagCalB.load(&btagCalib,
+	BTagEntry::FLAV_B,
+	"mujets");
+
+btagCalC.load(&btagCalib,
+	BTagEntry::FLAV_C,
+	"mujets");
+
+btagCalL.load(&btagCalib,
+	BTagEntry::FLAV_UDSG,
+	"incl");
+*/
+
 //BTagCalibrationReader btagCal   (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "central");  // calibration instance, operating point, measurement type, systematics type
 //BTagCalibrationReader btagCalUp (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "up"     );  // sys up
 //BTagCalibrationReader btagCalDn (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "down"   );  // sys down
@@ -3182,6 +3204,7 @@ for(size_t f=0; f<urls.size();++f)
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_b_jets_pt_eta"), jet.pt(), eta, weight);
 
+					//sf = btagCalB.eval(BTagEntry::FLAV_B, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_b"), sf, weight);
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
@@ -3191,6 +3214,7 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_c_jets_pt_eta"), jet.pt(), eta, weight);
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
+					//sf = btagCalC.eval(BTagEntry::FLAV_C, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_c"), sf, weight);
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
@@ -3200,6 +3224,7 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b-tagged_udsg_jets_pt_eta"), jet.pt(), eta, weight);
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
+					//sf = btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_udsg"), sf, weight);
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
