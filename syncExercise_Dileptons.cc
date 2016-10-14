@@ -3280,7 +3280,6 @@ for(size_t f=0; f<urls.size();++f)
 		LorentzVector lepSum;
 		int lepIdProduct;
 		// two highest leptons of different sign
-		/* not this way
 		if (selNegativeLeptons.size()>0 && selPositiveLeptons.size()>0)
 			{
 			// TODO: what is "remove mass < 20 GeV at this step"?
@@ -3295,13 +3294,15 @@ for(size_t f=0; f<urls.size();++f)
 		else if (lepIdProduct == -143) channel = string("_elmu");
 		else if (lepIdProduct == -169) channel = string("_mumu");
 		else channel = string("_else");
-		*/
+
 
 
 		if (debug)
 			{
 			cout << "N selLeptons = " << selLeptons.size() << "\n";
 			}
+
+		/*
 		// another way: two highest pT leptons, with opposite charge
 		// selLeptons
 		if (selLeptons.size()>1)
@@ -3323,6 +3324,7 @@ for(size_t f=0; f<urls.size();++f)
 		else if (lepIdProduct == -143) channel = string("_elmu");
 		else if (lepIdProduct == -169) channel = string("_mumu");
 		else channel = string("_else");
+		*/
 
 		// ---------------------------------------------------------- step 1
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 4, 1);
