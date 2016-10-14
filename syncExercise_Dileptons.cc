@@ -2463,8 +2463,8 @@ for(size_t f=0; f<urls.size();++f)
 			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::ICHEP16Cut);
 			//passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
 			// and Spring15 Iso
-			passIso     = passElMediumIso_SyncExercise(electron);
-			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns, rho);
+			//passIso     = passElMediumIso_SyncExercise(electron);
+			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns, rho);
 			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::Spring15Cut25ns, rho);
 
 
