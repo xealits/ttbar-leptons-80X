@@ -1917,6 +1917,10 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<reco::VertexCollection> vtxHandle;
 		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
+
+		goodPV = vtx[0];
+		nGoodPV = vtx.size();
+		/* it seems to be outdated
 		// Clean up vertex collection
 		for(size_t ivtx=0; ivtx<vtx.size(); ++ivtx)
 			{
@@ -1926,6 +1930,7 @@ for(size_t f=0; f<urls.size();++f)
 				nGoodPV++;
 				}
 			}
+		*/
 
 		// ----------------------------------------- Apply pileup reweighting
 		// why don't use nGoodPV for Pile-Up?
