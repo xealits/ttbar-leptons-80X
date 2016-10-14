@@ -2387,13 +2387,19 @@ for(size_t f=0; f<urls.size();++f)
 
 			// ------------------------- electron IDs
 			//Cut based identification
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Medium, patUtils::CutVersion::ICHEP16Cut);
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+			//passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Medium, patUtils::CutVersion::ICHEP16Cut);
+			//passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+			// apparently sync exercises uses Spring15 ID
+			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Medium, patUtils::CutVersion::Spring15Cut25ns);
+			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::Spring15Cut25ns);
 
 			// ------------------------- electron isolation
 
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::ICHEP16Cut);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
+			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::ICHEP16Cut);
+			//passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
+			// and Spring15 Iso
+			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns);
+			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::Spring15Cut25ns);
 
 
 			// ---------------------------- kinematics
@@ -2522,12 +2528,16 @@ for(size_t f=0; f<urls.size();++f)
 			//Cut based identification
 
 			// ------------------------- muon IDs
-			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose, patUtils::CutVersion::ICHEP16Cut);
+			// Std IDs don't depend on CutVersion
+			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight, patUtils::CutVersion::Spring15Cut25ns);
+			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose, patUtils::CutVersion::Spring15Cut25ns);
 
 			// ------------------------- muon isolation
-			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, patUtils::CutVersion::ICHEP16Cut);
+			// Spring15 Cuts in sync
+			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::Spring15Cut25ns);
+			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, patUtils::CutVersion::Spring15Cut25ns);
+			//passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut);
+			//passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, patUtils::CutVersion::ICHEP16Cut);
 
 			if (passId && passIso)
 				{
