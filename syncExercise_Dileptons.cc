@@ -3302,7 +3302,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			cout << "N selLeptons = " << selLeptons.size() << "\n";
 			}
-		// another way: two highest pT leptons, but not necessary of opposite charge
+		// another way: two highest pT leptons, with opposite charge
 		// selLeptons
 		if (selLeptons.size()>1)
 			{
@@ -3319,9 +3319,9 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		string channel;
-		if (fabs(lepIdProduct) == 121) channel = string("_elel");
-		else if (fabs(lepIdProduct) == 143) channel = string("_elmu");
-		else if (fabs(lepIdProduct) == 169) channel = string("_mumu");
+		if (lepIdProduct == -121) channel = string("_elel");
+		else if (lepIdProduct == -143) channel = string("_elmu");
+		else if (lepIdProduct == -169) channel = string("_mumu");
 		else channel = string("_else");
 
 		// ---------------------------------------------------------- step 1
