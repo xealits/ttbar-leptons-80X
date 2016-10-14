@@ -379,13 +379,26 @@ bool passPFJetID(std::string label, pat::Jet jet)
 	// float nconst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
 	// float muf(jet.muonEnergy()/rawJetEn); 
 
+	// new reccom
+	// at time of 80X all 13TeV (74X, 76X, 80X) recommendations got new specification for |eta| < 2.7
 	if (label=="Loose")
-		// passID = ( ((nhf<0.99 && nef<0.99 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.99) || abs(eta)>2.4)) && abs(eta)<=3.0 );
-		// the same, just with new names:
-		passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
+		{
+		if (fabs(eta) <= 3.0)
+			{
+			if (fabs(eta) <= 2.7) passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
+			else passID = NEMF<0.90 && NumNeutralParticles > 2;
+			}
+		else passID = NEMF<0.90 && NumNeutralParticles > 10;
+		}
 	if (label=="Tight")
-		// passID = ( ((nhf<0.90 && nef<0.90 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.90) || abs(eta)>2.4)) && abs(eta) <=3.0);
-		passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
+		{
+		if (fabs(eta) <= 3.0)
+			{
+			if (fabs(eta) <= 2.7) passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
+			else passID = NEMF<0.90 && NumNeutralParticles > 2;
+			}
+		else passID = NEMF<0.90 && NumNeutralParticles > 10;
+		}
 
 	// there is also:
 	//tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4) && abs(eta)<=3.0
@@ -2387,7 +2400,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(electron.pt() < 20.)                passKin = false;
 			// if(leta > 2.1)                         passKin = false;
 			if(leta > 2.4)                         passKin = false;
-			// if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
+			if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
 
 			// ---------------------- Veto lepton kin
 			// if (electron.pt () < 20)            passVetoKin = false;
