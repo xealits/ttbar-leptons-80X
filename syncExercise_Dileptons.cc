@@ -1022,8 +1022,19 @@ bool passElMediumIso_SyncExercise(pat::Electron& el)
 	//  FIXME: !! and rho is set = 0 by default and not updated!
 	//
 	//
+
+	// from sync page:
+	// https://twiki.cern.ch/twiki/bin/view/CMS/TTbarXSecSynchronization#Dileptons
+	// Rel Iso cut barrel(endcap) <0.0766 (0.0678) 
 	Float_t relIso;
+	
+	bool barrel = (fabs(el.superCluster()->eta()) <= 1.479);
+	bool endcap = (!barrel && fabs(el.superCluster()->eta()) < 2.5);
+
 	relIso = (el.chargedHadronIso()+ max(0., el.neutralHadronIso() + el.photonIso()  - 0.5*el.puChargedHadronIso()))/el.pt();
+
+	if (barrel) pass = relIso < 0.0766;
+	else if (endcap) pass = relIso < 0.0678;
 	return pass;
 	}
 
@@ -2452,8 +2463,8 @@ for(size_t f=0; f<urls.size();++f)
 			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::ICHEP16Cut);
 			//passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
 			// and Spring15 Iso
-			//passIso     = passElMediumIso_SyncExercise(electron);
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns, rho);
+			passIso     = passElMediumIso_SyncExercise(electron);
+			//passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Medium, patUtils::CutVersion::Spring15Cut25ns, rho);
 			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::Spring15Cut25ns, rho);
 
 
