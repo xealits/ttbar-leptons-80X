@@ -3272,13 +3272,15 @@ for(size_t f=0; f<urls.size();++f)
 		// -------------------------------------------------- all particles are selected
 
 		if(debug){
-			cout << "all particle-objects are processed, checking channel selection" << endl;
+			cout << "all particle-objects are processed, checking channel selection AAAAAAAAAA" << endl;
 			}
 
 
 		// select 2 leptons of OPOSITE sign with HIGHEST PTs (which can be done in many ways actually)
 		LorentzVector lepSum;
 		int lepIdProduct;
+		// two highest leptons of different sign
+		/* not this way
 		if (selNegativeLeptons.size()>0 && selPositiveLeptons.size()>0)
 			{
 			// TODO: what is "remove mass < 20 GeV at this step"?
@@ -3293,17 +3295,47 @@ for(size_t f=0; f<urls.size();++f)
 		else if (lepIdProduct == -143) channel = string("_elmu");
 		else if (lepIdProduct == -169) channel = string("_mumu");
 		else channel = string("_else");
+		*/
+
+
+		if (debug)
+			{
+			cout << "N selLeptons = " << selLeptons.size() << "\n";
+			}
+		// another way: two highest pT leptons, but not necessary of opposite charge
+		// selLeptons
+		if (selLeptons.size()>1)
+			{
+			// TODO: what is "remove mass < 20 GeV at this step"?
+			lepSum = selLeptons[0].p4() + selLeptons[1].p4();
+			lepIdProduct = selLeptons[0].pdgId() * selLeptons[1].pdgId();
+			if (lepSum.M() < 20) continue;
+			}
+		else continue;
+
+		if (debug)
+			{
+			cout << "lep ID product" << lepIdProduct << "\n";
+			}
+
+		string channel;
+		if (fabs(lepIdProduct) == 121) channel = string("_elel");
+		else if (fabs(lepIdProduct) == 143) channel = string("_elmu");
+		else if (fabs(lepIdProduct) == 169) channel = string("_mumu");
+		else channel = string("_else");
 
 		// ---------------------------------------------------------- step 1
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 4, 1);
 
-		// Z mass veto
-		if (lepSum.M() > 76. && lepSum.M() < 106.) continue;
+		// ---------------------------------------------------------- step 2
+		// Z mass veto for mm/ee
+		if ((fabs(lepIdProduct) != 143) && lepSum.M() > 76. && lepSum.M() < 106.) continue;
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 5, 1);
 
 
-		// met > 40 GeV cut
-		if (met.pt()<40.) continue;
+		// ---------------------------------------------------------- step 3
+		// met > 40 GeV cut for mm/ee
+		if ((fabs(lepIdProduct) != 143) && met.pt()<40.) continue;
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 6, 1);
 
 		// ---------------------------------------------------------- step 4
@@ -3312,6 +3344,7 @@ for(size_t f=0; f<urls.size();++f)
 		if (selJetsNoLep.size() < 2) continue;
 		fill_pt_e( string("number_of_events_in_selection_steps") + channel, 7, 1);
 
+		// ---------------------------------------------------------- step 5
 		// TODO: b-tagging -- how many jets are required?
 		// using selBJets, which are produced from selJetsNoLep!!
 		if (selBJets.size() == 0) continue;
