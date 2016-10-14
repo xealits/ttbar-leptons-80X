@@ -3207,7 +3207,7 @@ for(size_t f=0; f<urls.size();++f)
 					//sf = btagCalB.eval(BTagEntry::FLAV_B, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_b"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 				} else if(abs(flavId)==4) {
@@ -3217,7 +3217,7 @@ for(size_t f=0; f<urls.size();++f)
 					//sf = btagCalC.eval(BTagEntry::FLAV_C, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_c"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 				} else {
@@ -3227,7 +3227,7 @@ for(size_t f=0; f<urls.size();++f)
 					//sf = btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt());
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
 					fill_btag_sf(string("btag_flavour_sf_udsg"), sf, weight);
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
+					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 				}
