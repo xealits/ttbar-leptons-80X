@@ -1295,10 +1295,10 @@ BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_B,      // btag flavour
-            "comb");               // measurement type
+            "mujets");               // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_C,      // btag flavour
-            "comb");              // measurement type
+            "mujets");              // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
             "incl");                // measurement type
@@ -3123,6 +3123,9 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// --------------------------- B-tagged jets
+		// for sync exercise let's change SF application:
+		weight = 1.0; // in sync we don't weight MC
+		// but b-tag SF will weight -- not yet
 		pat::JetCollection selBJets;
 
 		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
