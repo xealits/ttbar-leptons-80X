@@ -3796,6 +3796,7 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
 				} else {
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					hasCSVtag = false; // 8.26 no b-tagged light jets in MC
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
