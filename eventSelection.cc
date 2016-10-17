@@ -3964,24 +3964,25 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
+
 				bool s1 = false;
 				bool s2 = false;
 				bool s3 = false;
 				bool s4 = false;
 				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i++) // consider selection1 or not
+				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 					{
 					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i++)
+					for (int i2 = 0; i2 < 2; i2++)
 					{
 					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i++)
+					for (int i3 = 0; i3 < 2; i3++)
 					{
 					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i++)
+					for (int i4 = 0; i4 < 2; i4++)
 					{
 					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i++)
+					for (int i5 = 0; i5 < 2; i5++)
 						{
 						s5 = !s5;
 						// if a selection is not considered
@@ -4234,12 +4235,27 @@ for(size_t f=0; f<urls.size();++f)
 			if (isSingleE)
 				{
 				// the 5 geometrical for loops...
-				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
-					{ for (bool s2 = true; s1; s1 &= false)
-					{ for (bool s3 = true; s1; s1 &= false)
-					{ for (bool s4 = true; s1; s1 &= false)
-					{ for (bool s5 = true; s1; s1 &= false)
+
+				bool s1 = false;
+				bool s2 = false;
+				bool s3 = false;
+				bool s4 = false;
+				bool s5 = false;
+				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+					{
+					s1 = !s1;
+					for (int i2 = 0; i2 < 2; i2++)
+					{
+					s2 = !s2;
+					for (int i3 = 0; i3 < 2; i3++)
+					{
+					s3 = !s3;
+					for (int i4 = 0; i4 < 2; i4++)
+					{
+					s4 = !s4;
+					for (int i5 = 0; i5 < 2; i5++)
 						{
+						s5 = !s5;
 						// if a selection is not considered
 						// it is passed
 						bool pass = (s1 ? passJetSelection : true);
@@ -4583,12 +4599,29 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
-				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
-					{ for (bool s2 = true; s1; s1 &= false)
-					{ for (bool s3 = true; s1; s1 &= false)
-					{ for (bool s4 = true; s1; s1 &= false)
-					{ for (bool s5 = true; s1; s1 &= false)
+
+				bool s1 = false;
+				bool s2 = false;
+				bool s3 = false;
+				bool s4 = false;
+				bool s5 = false;
+				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+					{
+					s1 = !s1;
+					for (int i2 = 0; i2 < 2; i2++)
+					{
+					s2 = !s2;
+					for (int i3 = 0; i3 < 2; i3++)
+					{
+					s3 = !s3;
+					for (int i4 = 0; i4 < 2; i4++)
+					{
+					s4 = !s4;
+					for (int i5 = 0; i5 < 2; i5++)
 						{
+						s5 = !s5;
+						// if a selection is not considered
+						// it is passed
 						bool pass = (s1 ? passMllVeto : true);
 						pass &= (s2 ? passJetSelection : true);
 						pass &= (s3 ? passMetSelection : true);
@@ -4692,12 +4725,29 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
-				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
-					{ for (bool s2 = true; s1; s1 &= false)
-					{ for (bool s3 = true; s1; s1 &= false)
-					{ for (bool s4 = true; s1; s1 &= false)
-					{ for (bool s5 = true; s1; s1 &= false)
+
+				bool s1 = false;
+				bool s2 = false;
+				bool s3 = false;
+				bool s4 = false;
+				bool s5 = false;
+				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+					{
+					s1 = !s1;
+					for (int i2 = 0; i2 < 2; i2++)
+					{
+					s2 = !s2;
+					for (int i3 = 0; i3 < 2; i3++)
+					{
+					s3 = !s3;
+					for (int i4 = 0; i4 < 2; i4++)
+					{
+					s4 = !s4;
+					for (int i5 = 0; i5 < 2; i5++)
 						{
+						s5 = !s5;
+						// if a selection is not considered
+						// it is passed
 						bool pass = (s1 ? passMllVeto : true);
 						pass &= (s2 ? passJetSelection : true);
 						pass &= (s3 ? passMetSelection : true);
@@ -4801,12 +4851,27 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
-				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
-					{ for (bool s2 = true; s1; s1 &= false)
-					{ for (bool s3 = true; s1; s1 &= false)
-					{ for (bool s4 = true; s1; s1 &= false)
-					{ for (bool s5 = true; s1; s1 &= false)
+
+				bool s1 = false;
+				bool s2 = false;
+				bool s3 = false;
+				bool s4 = false;
+				bool s5 = false;
+				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+					{
+					s1 = !s1;
+					for (int i2 = 0; i2 < 2; i2++)
+					{
+					s2 = !s2;
+					for (int i3 = 0; i3 < 2; i3++)
+					{
+					s3 = !s3;
+					for (int i4 = 0; i4 < 2; i4++)
+					{
+					s4 = !s4;
+					for (int i5 = 0; i5 < 2; i5++)
 						{
+						s5 = !s5;
 						// if a selection is not considered
 						// it is passed
 						bool pass = (s1 ? passMllVeto : true);
@@ -4824,7 +4889,7 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						//  + to_string(multi)
+						// + to_string(multi)
 						fill_1i(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
