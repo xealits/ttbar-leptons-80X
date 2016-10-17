@@ -1918,11 +1918,12 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_down      (1.0);
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
-		fill_1i(string("weightflow_mu_iniweight"), 300, 0, 300,   1, weight);
-		fill_1i(string("weightflow_el_iniweight"), 300, 0, 300,   1, weight);
-		fill_1i(string("weightflow_elel_iniweight"), 300, 0, 300, 1, weight);
-		fill_1i(string("weightflow_elmu_iniweight"), 300, 0, 300, 1, weight);
-		fill_1i(string("weightflow_mumu_iniweight"), 300, 0, 300, 1, weight);
+		// iniweight 1
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   1, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   1, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 1, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 1, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 1, weight);
 
 		// ---------------------------------- Top pT reweighting
 		// find the produced tops,
@@ -1958,11 +1959,12 @@ for(size_t f=0; f<urls.size();++f)
 		weight *= topPtWgt; // how is the overall integral of MC?
 		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
-		fill_1i(string("weightflow_mu_wighttoppt"), 300, 0, 300,   2, weight);
-		fill_1i(string("weightflow_el_wighttoppt"), 300, 0, 300,   2, weight);
-		fill_1i(string("weightflow_elel_wighttoppt"), 300, 0, 300, 2, weight);
-		fill_1i(string("weightflow_elmu_wighttoppt"), 300, 0, 300, 2, weight);
-		fill_1i(string("weightflow_mumu_wighttoppt"), 300, 0, 300, 2, weight);
+		// wighttoppt 2
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   2, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   2, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 2, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 2, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 2, weight);
 
 		// ---------------------------------- these are weird NLO -1 weights
 		// TODO: figure out how exactly they correct for NLO
@@ -2052,11 +2054,12 @@ for(size_t f=0; f<urls.size();++f)
 		weight_down *= weightGen;
 		rawWeight *=weightGen;
 
-		fill_1i(string("weightflow_mu_weightgen"), 300, 0, 300,   3, weight);
-		fill_1i(string("weightflow_el_weightgen"), 300, 0, 300,   3, weight);
-		fill_1i(string("weightflow_elel_weightgen"), 300, 0, 300, 3, weight);
-		fill_1i(string("weightflow_elmu_weightgen"), 300, 0, 300, 3, weight);
-		fill_1i(string("weightflow_mumu_weightgen"), 300, 0, 300, 3, weight);
+		// weightgen
+		fill_1i(string("weightflow_el"), 300, 0, 300,   3, weight);
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   3, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 3, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 3, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 3, weight);
 
 		// ------------------------------- count N good verteces
 		// needed for particle selection/event classification later
@@ -2150,11 +2153,12 @@ for(size_t f=0; f<urls.size();++f)
 
 		// int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
 
-		fill_1i(string("weightflow_mu_puweight"), 300, 0, 300,   4, weight);
-		fill_1i(string("weightflow_el_puweight"), 300, 0, 300,   4, weight);
-		fill_1i(string("weightflow_elel_puweight"), 300, 0, 300, 4, weight);
-		fill_1i(string("weightflow_elmu_puweight"), 300, 0, 300, 4, weight);
-		fill_1i(string("weightflow_mumu_puweight"), 300, 0, 300, 4, weight);
+		// puweight
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   4, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   4, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 4, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 4, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 4, weight);
 
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
@@ -2231,11 +2235,12 @@ for(size_t f=0; f<urls.size();++f)
 		increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
 		increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
-		fill_1i(string("weightflow_mu_passlumi"), 300, 0, 300,   5, weight);
-		fill_1i(string("weightflow_el_passlumi"), 300, 0, 300,   5, weight);
-		fill_1i(string("weightflow_elel_passlumi"), 300, 0, 300, 5, weight);
-		fill_1i(string("weightflow_elmu_passlumi"), 300, 0, 300, 5, weight);
-		fill_1i(string("weightflow_mumu_passlumi"), 300, 0, 300, 5, weight);
+		// passlumi 5
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   5, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   5, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 5, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 5, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 5, weight);
 
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -2357,11 +2362,12 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_efficiency_sf *= eTrigger  ? eHLT_sf[] : 1 ;
 		//HLT_efficiency_sf *= muTrigger ? muHLT_SF[] : 1 ;
 
-		fill_1i(string("weightflow_mu_passtrig"), 300, 0, 300,   6, weight);
-		fill_1i(string("weightflow_el_passtrig"), 300, 0, 300,   6, weight);
-		fill_1i(string("weightflow_elel_passtrig"), 300, 0, 300, 6, weight);
-		fill_1i(string("weightflow_elmu_passtrig"), 300, 0, 300, 6, weight);
-		fill_1i(string("weightflow_mumu_passtrig"), 300, 0, 300, 6, weight);
+		// passtrig 6
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   6, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   6, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 6, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 6, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 6, weight);
 
 
 		sum_weights_passtrig_raw += rawWeight;
@@ -2450,11 +2456,12 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "met filters applied here" << endl;
 			}
 
-		fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
-		fill_1i(string("weightflow_el_passmetfilters"), 300, 0, 300,   7, weight);
-		fill_1i(string("weightflow_elel_passmetfilters"), 300, 0, 300, 7, weight);
-		fill_1i(string("weightflow_elmu_passmetfilters"), 300, 0, 300, 7, weight);
-		fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
+		// passmetfilters 7
+		fill_1i(string("weightflow_mu"), 300, 0, 300,   7, weight);
+		fill_1i(string("weightflow_el"), 300, 0, 300,   7, weight);
+		fill_1i(string("weightflow_elel"), 300, 0, 300, 7, weight);
+		fill_1i(string("weightflow_elmu"), 300, 0, 300, 7, weight);
+		fill_1i(string("weightflow_mumu"), 300, 0, 300, 7, weight);
 
 
 		// ------------------------- event physics and the corresponding selection
@@ -3980,7 +3987,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1i(string("weightflow_mu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						// + to_string(multi)
+						fill_1i(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
 					}
@@ -4235,7 +4243,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1i(string("weightflow_el_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						// + to_string(multi)
+						fill_1i(string("weightflow_el"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
 					}
@@ -4581,7 +4590,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1i(string("weightflow_elel_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						// + to_string(multi)
+						fill_1i(string("weightflow_elel"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
 					}
@@ -4689,7 +4699,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1i(string("weightflow_mumu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						// + to_string(multi)
+						fill_1i(string("weightflow_mumu"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
 					}
@@ -4799,7 +4810,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1i(string("weightflow_elmu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						//  + to_string(multi)
+						fill_1i(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
 						}
 					}
 					}
