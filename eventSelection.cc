@@ -2905,6 +2905,14 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed muons" << endl;
 			}
 
+		// Finally, merge leptons for cross-cleaning with taus and jets, and other conveniences:
+
+		std::vector<patUtils::GenericLepton> selLeptons;
+		for(size_t l=0; l<selElectrons.size(); ++l) selLeptons.push_back(patUtils::GenericLepton (selElectrons[l] ));
+		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
+		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
+
+
 
 		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
@@ -2975,17 +2983,6 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
 
-		// Control values for processed individual taus:
-		for(size_t n=0; n<selTaus.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_individual_pt"), selTaus[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_individual_pt"), selTaus[n].pt(), weight);
-				if (isSingleE)  fill_pt_e( string("top1pt_taus_individual_singleel_pt"), selTaus[n].pt(), weight);
-				if (isSingleMu) fill_pt_e( string("top1pt_taus_individual_singlemu_pt"), selTaus[n].pt(), weight);
-				}
-			}
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -3083,19 +3080,6 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
-
-		// Control values for processed taus cleaned of leptons:
-		for(size_t n=0; n<selTausNoLep.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
-				}
-			}
-
 
 
 		if(debug){
@@ -3266,8 +3250,6 @@ for(size_t f=0; f<urls.size();++f)
 		//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
 		//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
 		fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
-		if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), met.pt(), weight);
-		if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), met.pt(), weight);
 
 		if(debug) cout << "Jet Energy Corrections updated" << endl;
 
@@ -3422,44 +3404,6 @@ for(size_t f=0; f<urls.size();++f)
 			selJetsNoLepNoTau.push_back(jet);
 			}
 
-		// Control values for processed jets cleaned of leptons and taus:
-		for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
-			{
-
-			fill_pt_e( string("all_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				}
-
-			if (isSingleMu)
-				{
-				fill_pt_e( string("all_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("top2pt_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-
-			if (isSingleE)
-				{
-				fill_pt_e( string("all_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("top2pt_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-
-			if (isEMu)
-				{
-				fill_pt_e( string("jets_all_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("jets_top2pt_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-			}
-
 
 		if(debug){
 			cout << "processed jets" << endl;
@@ -3595,7 +3539,74 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// -------------------------------------------------- all particles are selected
-		// channel weightflow
+
+		// -------------------------------------------------- control values
+
+		// Control values for processed individual taus:
+		for(size_t n=0; n<selTaus.size(); ++n)
+			{
+			fill_pt_e( string("all_taus_individual_pt"), selTaus[n].pt(), weight);
+			if (n == 0)
+				{
+				fill_pt_e( string("top1pt_taus_individual_pt"), selTaus[n].pt(), weight);
+				}
+			}
+
+		// Control values for processed taus cleaned of leptons:
+		for(size_t n=0; n<selTausNoLep.size(); ++n)
+			{
+			fill_pt_e( string("all_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
+			if (n == 0)
+				{
+				fill_pt_e( string("top1pt_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
+				if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
+				if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
+				}
+			}
+
+		// Control values for processed jets cleaned of leptons and taus:
+		for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
+			{
+
+			fill_pt_e( string("all_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
+			if (n < 2)
+				{
+				fill_pt_e( string("top2pt_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
+				}
+
+			/* this kind of thing
+			if (isSingleMu)
+				{
+				fill_pt_e( string("all_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
+				if (n < 2)
+					{
+					fill_pt_e( string("top2pt_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
+					}
+				}
+
+			if (isSingleE)
+				{
+				fill_pt_e( string("all_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
+				if (n < 2)
+					{
+					fill_pt_e( string("top2pt_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
+					}
+				}
+
+			if (isEMu)
+				{
+				fill_pt_e( string("jets_all_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
+				if (n < 2)
+					{
+					fill_pt_e( string("jets_top2pt_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
+					}
+				}
+			*/
+			}
+
+
+
+		// -------------------------------------------------- channel weightflow
 
 		// last record was:
 		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
@@ -3644,6 +3655,9 @@ for(size_t f=0; f<urls.size();++f)
 		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
 		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
 
+		// TODO: this kind of thing:
+		// if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), met.pt(), weight);
+		// if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), met.pt(), weight);
 
 		if (isSingleE)
 			{
@@ -3696,13 +3710,6 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug){
 			cout << "propagated lepton corrections to met" << endl;
 			}
-
-		// Finally, merge leptons for cross-cleaning with taus and jets:
-
-		std::vector<patUtils::GenericLepton> selLeptons;
-		for(size_t l=0; l<selElectrons.size(); ++l) selLeptons.push_back(patUtils::GenericLepton (selElectrons[l] ));
-		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
-		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
 
 
 		if(debug){
