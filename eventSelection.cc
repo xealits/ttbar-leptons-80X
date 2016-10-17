@@ -670,7 +670,7 @@ int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	if (th2d_distr_control_headers.find(control_point_name) == th2d_distr_control_headers.end() )
 		{
 		// th2d_distr_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
 		}
 
 	// return success:
@@ -696,7 +696,7 @@ int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
 		{
 		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup)));
+		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
 		}
 
 	// return success:
@@ -723,7 +723,7 @@ int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
 		{
 		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup)));
+		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
 		}
 
 	// return success:
@@ -3559,8 +3559,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (n == 0)
 				{
 				fill_pt_e( string("top1pt_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
-				if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
+				// this kind of thing:
+				// if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
+				// if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
 				}
 			}
 
