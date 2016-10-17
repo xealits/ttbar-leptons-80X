@@ -3964,12 +3964,26 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
-				for (int i1 = 0, bool s1 = true; i1 < 2; i++, s1 &= false) // consider selection1 or not
-					{ for (int i2 = 0, bool s2 = true; i2 < 2; i++, s1 &= false)
-					{ for (int i3 = 0, bool s3 = true; i3 < 2; i++, s1 &= false)
-					{ for (int i4 = 0, bool s4 = true; i4 < 2; i++, s1 &= false)
-					{ for (int i5 = 0, bool s5 = true; i5 < 2; i++, s1 &= false)
+				bool s1 = false;
+				bool s2 = false;
+				bool s3 = false;
+				bool s4 = false;
+				bool s5 = false;
+				for (int i1 = 0; i1 < 2; i++) // consider selection1 or not
+					{
+					s1 = !s1;
+					for (int i2 = 0; i2 < 2; i++)
+					{
+					s2 = !s2;
+					for (int i3 = 0; i3 < 2; i++)
+					{
+					s3 = !s3;
+					for (int i4 = 0; i4 < 2; i++)
+					{
+					s4 = !s4;
+					for (int i5 = 0; i5 < 2; i++)
 						{
+						s5 = !s5;
 						// if a selection is not considered
 						// it is passed
 						bool pass = (s1 ? passJetSelection : true);
