@@ -3865,8 +3865,6 @@ for(size_t f=0; f<urls.size();++f)
 
 
 			// MULTISELECT
-			// multiselection
-			// TODO: multisel should be done per-channel, now it is one (el/mu) for all 
 			unsigned int multisel = 0;
 			// multisel += (isSingleMu ? 1 : 0); //! should be 1
 			// multisel += (isSingleE ? 2 : 0);
@@ -3875,6 +3873,15 @@ for(size_t f=0; f<urls.size();++f)
 			multisel += (passBtagsSelection ? 4 : 0);
 			multisel += (passTauSelection ? 8 : 0);
 			multisel += (passOS ? 16 : 0);
+
+			// bool multiselect[5] = {passJetSelection, passMetSelection, passBtagsSelection, passTauSelection, passOS};
+
+			// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+			// fill_1i(string("weightflow_el_passmetfilters"), 300, 0, 300,   7, weight);
+			// fill_1i(string("weightflow_elel_passmetfilters"), 300, 0, 300, 7, weight);
+			// fill_1i(string("weightflow_elmu_passmetfilters"), 300, 0, 300, 7, weight);
+			// fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
+
 
 			fill_pt_e( string("singlelep_channel_met_pt"), met.pt(), weight);
 			if (passJetSelection)
@@ -3895,6 +3902,38 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleMu)
 				{
+				// the 5 geometrical for loops...
+				// TODO: it's awekward
+				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
+					{ for (bool s2 = true; s1; s1 &= false)
+					{ for (bool s3 = true; s1; s1 &= false)
+					{ for (bool s4 = true; s1; s1 &= false)
+					{ for (bool s5 = true; s1; s1 &= false)
+						{
+						// if a selection is not considered
+						// it is passed
+						bool pass = (s1 ? passJetSelection : true);
+						pass &= (s2 ? passMetSelection : true);
+						pass &= (s3 ? passBtagsSelection : true);
+						pass &= (s4 ? passTauSelection : true);
+						pass &= (s5 ? passOS : true);
+
+						if (!pass) continue;
+
+						unsigned int multi = 0;
+						multi += (s1 ? 1 : 0);
+						multi += (s2 ? 2 : 0);
+						multi += (s3 ? 4 : 0);
+						multi += (s4 ? 8 : 0);
+						multi += (s5 ? 16 : 0);
+
+						fill_1i(string("weightflow_mu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						}
+					}
+					}
+					}
+					}
+
 				fill_n( string("n_jets_singlemu"), n_jets, weight);
 				fill_n( string("n_bjets_singlemu"), n_bjets, weight);
 				fill_n( string("n_taus_singlemu"), n_taus, weight);
@@ -4119,6 +4158,37 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleE)
 				{
+				// the 5 geometrical for loops...
+				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
+					{ for (bool s2 = true; s1; s1 &= false)
+					{ for (bool s3 = true; s1; s1 &= false)
+					{ for (bool s4 = true; s1; s1 &= false)
+					{ for (bool s5 = true; s1; s1 &= false)
+						{
+						// if a selection is not considered
+						// it is passed
+						bool pass = (s1 ? passJetSelection : true);
+						pass &= (s2 ? passMetSelection : true);
+						pass &= (s3 ? passBtagsSelection : true);
+						pass &= (s4 ? passTauSelection : true);
+						pass &= (s5 ? passOS : true);
+
+						if (!pass) continue;
+
+						unsigned int multi = 0;
+						multi += (s1 ? 1 : 0);
+						multi += (s2 ? 2 : 0);
+						multi += (s3 ? 4 : 0);
+						multi += (s4 ? 8 : 0);
+						multi += (s5 ? 16 : 0);
+
+						fill_1i(string("weightflow_el_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						}
+					}
+					}
+					}
+					}
+
 				fill_n( string("n_jets_singleel"), n_jets, weight);
 				fill_n( string("n_bjets_singleel"), n_bjets, weight);
 				fill_n( string("n_taus_singleel"), n_taus, weight);
@@ -4435,6 +4505,36 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isDoubleE)
 				{
+				// the 5 geometrical for loops...
+				// TODO: it's awekward
+				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
+					{ for (bool s2 = true; s1; s1 &= false)
+					{ for (bool s3 = true; s1; s1 &= false)
+					{ for (bool s4 = true; s1; s1 &= false)
+					{ for (bool s5 = true; s1; s1 &= false)
+						{
+						bool pass = (s1 ? passMllVeto : true);
+						pass &= (s2 ? passJetSelection : true);
+						pass &= (s3 ? passMetSelection : true);
+						pass &= (s4 ? passOS : true);
+						pass &= (s5 ? passBtagsSelection : true);
+
+						if (!pass) continue;
+
+						unsigned int multi = 0;
+						multi += (s1 ? 1 : 0);
+						multi += (s2 ? 2 : 0);
+						multi += (s3 ? 4 : 0);
+						multi += (s4 ? 8 : 0);
+						multi += (s5 ? 16 : 0);
+
+						fill_1i(string("weightflow_elel_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						}
+					}
+					}
+					}
+					}
+
 				increment(string("weightflow_ee_") + to_string(multisel), weight);
 				// increment(string("weightflow_up_ee_") + to_string(multisel), weight_up);
 				// increment(string("weightflow_down_ee_") + to_string(multisel), weight_down);
@@ -4513,6 +4613,36 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isDoubleMu)
 				{
+				// the 5 geometrical for loops...
+				// TODO: it's awekward
+				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
+					{ for (bool s2 = true; s1; s1 &= false)
+					{ for (bool s3 = true; s1; s1 &= false)
+					{ for (bool s4 = true; s1; s1 &= false)
+					{ for (bool s5 = true; s1; s1 &= false)
+						{
+						bool pass = (s1 ? passMllVeto : true);
+						pass &= (s2 ? passJetSelection : true);
+						pass &= (s3 ? passMetSelection : true);
+						pass &= (s4 ? passOS : true);
+						pass &= (s5 ? passBtagsSelection : true);
+
+						if (!pass) continue;
+
+						unsigned int multi = 0;
+						multi += (s1 ? 1 : 0);
+						multi += (s2 ? 2 : 0);
+						multi += (s3 ? 4 : 0);
+						multi += (s4 ? 8 : 0);
+						multi += (s5 ? 16 : 0);
+
+						fill_1i(string("weightflow_mumu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						}
+					}
+					}
+					}
+					}
+
 				increment(string("weightflow_mumu_") + to_string(multisel), weight);
 				// increment(string("weightflow_up_mumu_") + to_string(multisel), weight_up);
 				// increment(string("weightflow_down_mumu_") + to_string(multisel), weight_down);
@@ -4591,6 +4721,38 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isEMu)
 				{
+				// the 5 geometrical for loops...
+				// TODO: it's awekward
+				for (bool s1 = true; s1; s1 &= false) // consider selection1 or not
+					{ for (bool s2 = true; s1; s1 &= false)
+					{ for (bool s3 = true; s1; s1 &= false)
+					{ for (bool s4 = true; s1; s1 &= false)
+					{ for (bool s5 = true; s1; s1 &= false)
+						{
+						// if a selection is not considered
+						// it is passed
+						bool pass = (s1 ? passMllVeto : true);
+						pass &= (s2 ? passJetSelection : true);
+						pass &= (s3 ? passMetSelection : true);
+						pass &= (s4 ? passOS : true);
+						pass &= (s5 ? passBtagsSelection : true);
+
+						if (!pass) continue;
+
+						unsigned int multi = 0;
+						multi += (s1 ? 1 : 0);
+						multi += (s2 ? 2 : 0);
+						multi += (s3 ? 4 : 0);
+						multi += (s4 ? 8 : 0);
+						multi += (s5 ? 16 : 0);
+
+						fill_1i(string("weightflow_elmu_") + to_string(multi), 300, 0, 300,   10 + multi, weight);
+						}
+					}
+					}
+					}
+					}
+
 				increment(string("weightflow_emu_") + to_string(multisel), weight);
 				// increment(string("weightflow_up_emu_") + to_string(multisel), weight_up);
 				// increment(string("weightflow_down_emu_") + to_string(multisel), weight_down);
