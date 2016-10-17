@@ -730,8 +730,8 @@ int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	return 0;
 	}
 
-
-
+// TODO: rearrange the code into particle selection and channel selection
+// TODO organize the code with new general record functions and remove these
 
 int fill_btag_eff(string control_point_name, double pt, double eta, double weight)
 	{
@@ -1673,6 +1673,8 @@ for(size_t f=0; f<urls.size();++f)
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 
+	// TODO: remove all these
+
 	// acceptance parameters
 	unsigned int iev(0); // number of events
 	unsigned int n_events_pass_lumi(0); // number of events lassing lumi
@@ -1916,6 +1918,12 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_down      (1.0);
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
+		fill_1i(string("weightflow_mu_iniweight"), 300, 0, 300,   1, weight);
+		fill_1i(string("weightflow_el_iniweight"), 300, 0, 300,   1, weight);
+		fill_1i(string("weightflow_elel_iniweight"), 300, 0, 300, 1, weight);
+		fill_1i(string("weightflow_elmu_iniweight"), 300, 0, 300, 1, weight);
+		fill_1i(string("weightflow_mumu_iniweight"), 300, 0, 300, 1, weight);
+
 		// ---------------------------------- Top pT reweighting
 		// find the produced tops,
 		// reweight according them
@@ -1950,6 +1958,11 @@ for(size_t f=0; f<urls.size();++f)
 		weight *= topPtWgt; // how is the overall integral of MC?
 		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
+		fill_1i(string("weightflow_mu_wighttoppt"), 300, 0, 300,   2, weight);
+		fill_1i(string("weightflow_el_wighttoppt"), 300, 0, 300,   2, weight);
+		fill_1i(string("weightflow_elel_wighttoppt"), 300, 0, 300, 2, weight);
+		fill_1i(string("weightflow_elmu_wighttoppt"), 300, 0, 300, 2, weight);
+		fill_1i(string("weightflow_mumu_wighttoppt"), 300, 0, 300, 2, weight);
 
 		// ---------------------------------- these are weird NLO -1 weights
 		// TODO: figure out how exactly they correct for NLO
@@ -2038,7 +2051,13 @@ for(size_t f=0; f<urls.size();++f)
 		weight_up *= weightGen;
 		weight_down *= weightGen;
 		rawWeight *=weightGen;
-				
+
+		fill_1i(string("weightflow_mu_weightgen"), 300, 0, 300,   3, weight);
+		fill_1i(string("weightflow_el_weightgen"), 300, 0, 300,   3, weight);
+		fill_1i(string("weightflow_elel_weightgen"), 300, 0, 300, 3, weight);
+		fill_1i(string("weightflow_elmu_weightgen"), 300, 0, 300, 3, weight);
+		fill_1i(string("weightflow_mumu_weightgen"), 300, 0, 300, 3, weight);
+
 		// ------------------------------- count N good verteces
 		// needed for particle selection/event classification later
 		// and pile-up control-distribution for data
@@ -2129,6 +2148,14 @@ for(size_t f=0; f<urls.size();++f)
 		sum_weights += weight;
 		sum_weights_raw += rawWeight;
 
+		// int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
+
+		fill_1i(string("weightflow_mu_puweight"), 300, 0, 300,   4, weight);
+		fill_1i(string("weightflow_el_puweight"), 300, 0, 300,   4, weight);
+		fill_1i(string("weightflow_elel_puweight"), 300, 0, 300, 4, weight);
+		fill_1i(string("weightflow_elmu_puweight"), 300, 0, 300, 4, weight);
+		fill_1i(string("weightflow_mumu_puweight"), 300, 0, 300, 4, weight);
+
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
@@ -2204,6 +2231,11 @@ for(size_t f=0; f<urls.size();++f)
 		increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
 		increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
+		fill_1i(string("weightflow_mu_passlumi"), 300, 0, 300,   5, weight);
+		fill_1i(string("weightflow_el_passlumi"), 300, 0, 300,   5, weight);
+		fill_1i(string("weightflow_elel_passlumi"), 300, 0, 300, 5, weight);
+		fill_1i(string("weightflow_elmu_passlumi"), 300, 0, 300, 5, weight);
+		fill_1i(string("weightflow_mumu_passlumi"), 300, 0, 300, 5, weight);
 
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -2325,6 +2357,12 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_efficiency_sf *= eTrigger  ? eHLT_sf[] : 1 ;
 		//HLT_efficiency_sf *= muTrigger ? muHLT_SF[] : 1 ;
 
+		fill_1i(string("weightflow_mu_passtrig"), 300, 0, 300,   6, weight);
+		fill_1i(string("weightflow_el_passtrig"), 300, 0, 300,   6, weight);
+		fill_1i(string("weightflow_elel_passtrig"), 300, 0, 300, 6, weight);
+		fill_1i(string("weightflow_elmu_passtrig"), 300, 0, 300, 6, weight);
+		fill_1i(string("weightflow_mumu_passtrig"), 300, 0, 300, 6, weight);
+
 
 		sum_weights_passtrig_raw += rawWeight;
 		sum_weights_passtrig += weight;
@@ -2411,6 +2449,12 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			cout << "met filters applied here" << endl;
 			}
+
+		fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+		fill_1i(string("weightflow_el_passmetfilters"), 300, 0, 300,   7, weight);
+		fill_1i(string("weightflow_elel_passmetfilters"), 300, 0, 300, 7, weight);
+		fill_1i(string("weightflow_elmu_passmetfilters"), 300, 0, 300, 7, weight);
+		fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
 
 
 		// ------------------------- event physics and the corresponding selection
@@ -2582,68 +2626,10 @@ for(size_t f=0; f<urls.size();++f)
 		if(tausHandle.isValid() ) taus = *tausHandle;
 
 
-		// ------------------------------------ merging electrons and muons
-		// Let's merge after processing and channel assignment
-		// std::vector<patUtils::GenericLepton> leptons;
-		// for(size_t l=0; l<electrons.size(); ++l) leptons.push_back(patUtils::GenericLepton (electrons[l] ));
-		// for(size_t l=0; l<muons.size(); ++l)     leptons.push_back(patUtils::GenericLepton (muons[l]     ));
-		// std::sort(leptons.begin(), leptons.end(), utils::sort_CandidatesByPt);
-
-
-		// CONTROLINFO
-		// Control values for raw particles:
-
-		std::sort (muons.begin(),  muons.end(),  utils::sort_CandidatesByPt);
-		for(size_t n=0; n<muons.size(); ++n)
-			{
-			fill_pt_e( string("all_muons_slimmed_pt"), muons[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_muons_slimmed_pt"), muons[n].pt(), weight);
-				}
-			}
-
-		std::sort (electrons.begin(),  electrons.end(),  utils::sort_CandidatesByPt);
-		for(size_t n=0; n<electrons.size(); ++n)
-			{
-			fill_pt_e( string("all_electrons_slimmed_pt"), electrons[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_electrons_slimmed_pt"), electrons[n].pt(), weight);
-				}
-			}
-
-
-		std::sort (taus.begin(),  taus.end(),  utils::sort_CandidatesByPt);
-		for(size_t n=0; n<taus.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_slimmed_pt"), taus[n].pt(), weight);
-			if (n < 1)
-				{
-				fill_pt_e( string("top1pt_taus_slimmed_pt"), taus[n].pt(), weight);
-				}
-			}
-
-		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
-		for(size_t n=0; n<jets.size(); n++)
-		{
-			fill_pt_e( string("all_jets_slimmed_pt"), jets[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_slimmed_pt"), jets[n].pt(), weight);
-				}
-		}
-
-
-
-		// and also mets:
-		fill_pt_e( string("met0_all_slimmed_pt"), met.pt(), weight);
-
-
 
 		//
 		//
-		// BELOW FOLLOWS THE ANALYSIS OF THE MAIN SELECTION WITH N-1 PLOTS. Whatever that means
+		// BELOW FOLLOWS THE PARTICLE SELECTION
 		//
 		//
 		
@@ -2654,10 +2640,10 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		//
-		// LEPTON ANALYSIS
+		// LEPTON SELECTION
 		//
 
-		// ---------------------------------- electrons selection
+		// ---------------------------------- ELECTRONS SELECTION
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
@@ -2790,7 +2776,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-		// ---------------------------------- muons selection
+		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton> selLeptons;
 		pat::MuonCollection selMuons;
@@ -2920,359 +2906,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		// Check for the single-electron/single-muon channels and save Pt-s if the event is in channel
-
-		// Here we can already assign leptonic channel
-		// electron or muon -- tau
-		// the selection is:
-
-		// unsigned int n_leptons = selLeptons.size();
-		// Event classification. Single lepton triggers are used for offline selection of dilepton events. The "else if"s guarantee orthogonality
-		bool 
-			isSingleMu(false),
-			isSingleE(false),
-			isDoubleMu(false),
-			isDoubleE(false),
-			isEMu(false);
-		// int multiChannel(0);
-
-
-		// int slepId(0);
-
-		// if(selLeptons.size()>0)
-			// slepId=selLeptons[0].pdgId();
-
-		// bool iso_lep = nVetoE==0 && nVetoMu==0 && selLeptons.size() == 1 && nGoodPV != 0; // 2^5
-		//if(selLeptons.size()!=1 || nGoodPV==0) continue; // Veto requirement alredy applied during the event categoriziation
-		// isSingleMu = (abs(slepId)==13) && muTrigger && iso_lep;
-		// isSingleE  = (abs(slepId)==11) && eTrigger  && iso_lep;
-		bool clean_lep_conditions = nVetoE==0 && nVetoMu==0 && nGoodPV != 0;
-		// maybe it is worth trying not considering the nGoodPV?
-
-		// TODO: test if trigger needed here at all
-		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
-		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
-		// FIXME: TESTING new, trigger-less channel assignment
-		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
-		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
-
-
-		if (isSingleE)
-			{
-			fill_pt_e( string("singleel_electrons_pt"), selElectrons[0].pt(), weight);
-			fill_pt_e( string("met0_singleel_slimmed_pt"), met.pt(), weight);
-			// TODO: no HLT efficiency SF for electron HLT yet:
-			float el_eta = fabs(selElectrons[0].eta());
-			float el_pt  = fabs(selElectrons[0].pt());
-
-			// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
-			// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
-			Double_t electron_HLTeff_SF = 1;
-
-			weight *= electron_HLTeff_SF;
-			}
-		if (isSingleMu)
-			{
-			fill_pt_e( string("singlemu_muons_pt"),     selMuons[0].pt(), weight);
-			fill_pt_e( string("met0_singlemu_slimmed_pt"), met.pt(), weight);
-			// muon_HLTeff_TH2F->FindBin
-			float mu_eta = fabs(selMuons[0].eta());
-			float mu_pt  = fabs(selMuons[0].pt());
-
-			// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
-			// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
-			//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
-			Double_t muon_HLTeff_SF = 1;
-			weight *= muon_HLTeff_SF;
-			}
-
-		if(debug){
-			cout << "assigned lepton channel" << endl;
-			}
-
-		// ------------------------------------- Propagate lepton energy scale to MET
-		// Propagate now (v13)
-		/* no lepton corrections propagation v13.1
-		met.setP4(met.p4() - muDiff - elDiff); // TODO: note this also propagates to all MET uncertainties -- does it??
-		met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
-		met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
-		met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
-		met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
-		*/
-
-		fill_pt_e( string("met0_all_leptoncorr_pt"), met.pt(), weight);
-
-		if (isSingleE)  fill_pt_e( string("met0_singleel_leptoncorr_pt"), met.pt(), weight);
-		if (isSingleMu) fill_pt_e( string("met0_singlemu_leptoncorr_pt"), met.pt(), weight);
-
-		if(debug){
-			cout << "propagated lepton corrections to met" << endl;
-			}
-
-		// FIXME: this is absolutely a test procedure for leptons mismatch, delete later
-		/*
-		if (isSingleE && isMC)
-			{
-			// the ratio table then:
-			double pt = selLeptons[0].pt();
-			if (pt > 30 && pt < 81)
-				{
-				double ratios[102] = {1.417432, 1.355603, 1.326855, 1.295397, 1.274588,
-					1.244550, 1.224524, 1.189812, 1.172887, 1.167444, 1.155932,
-					1.126863, 1.123598, 1.101529, 1.102847, 1.102109, 1.077481,
-					1.063031, 1.070628, 1.065650, 1.055504, 1.057805, 1.067119,
-					1.069570, 1.073800, 1.073553, 1.090602, 1.088997, 1.089411,
-					1.073635, 1.101547, 1.107392, 1.079771, 1.092838, 1.101382,
-					1.110520, 1.104568, 1.106222, 1.091441, 1.105385, 1.087636,
-					1.090410, 1.123266, 1.116482, 1.159609, 1.112731, 1.140635,
-					1.193607, 1.153018, 1.111796, 1.169275, 1.151467, 1.159238,
-					1.203220, 1.126885, 1.160726, 1.140825, 1.133395, 1.171352,
-					1.115036, 1.197012, 1.210529, 1.143451, 1.229832, 1.207743,
-					1.202648, 1.239188, 1.228262, 1.170988, 1.289559, 1.133405,
-					1.201752, 1.173881, 1.273580, 1.159010, 1.163254, 1.181294, 1.128886,
-					1.260505, 1.217777, 1.113412, 1.177267, 1.230890, 1.250940,
-					1.261494, 1.234183, 1.187044, 1.205113, 1.248632, 1.280663, 1.216726,
-					1.225326, 1.291109, 1.256174, 1.199306, 1.266343, 1.235425,
-					1.281472, 1.219297, 1.318849, 1.164462, 1.416536};
-				weight *= ratios[int((pt - 30)*2)];
-				}
-			}
-
-		if (isSingleMu && isMC)
-			{
-			double pt = selLeptons[0].pt();
-			if (pt > 30 && pt < 45.5)
-				{
-				double ratios[31] = {1.163884, 1.150239, 1.132176, 1.113742, 1.096949,
-					1.078991, 1.082796, 1.077936, 1.065941, 1.065551, 1.065027,
-					1.069034, 1.058150, 1.053311, 1.052812, 1.044186, 1.036055,
-					1.041379, 1.039200, 1.035185, 1.034690, 1.032413, 1.025401,
-					1.022467, 1.026297, 1.023207, 1.026607, 1.023327, 1.003550,
-					1.017521, 1.026832};
-				weight *= ratios[int((pt - 30)*2)];
-				}
-			}
-		*/
-
-		// Finally, merge leptons for cross-cleaning with taus and jets:
-
-		std::vector<patUtils::GenericLepton> selLeptons;
-		for(size_t l=0; l<selElectrons.size(); ++l) selLeptons.push_back(patUtils::GenericLepton (selElectrons[l] ));
-		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
-		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
-
-
-		if(debug){
-			cout << "merged selected leptons" << endl;
-			}
-
-		// TODO: more conditions for double-lepton channel? No veto leptons etc?
-		// in progress...
-		if (selLeptons.size()==2 && clean_lep_conditions)
-			{
-			// so this should be a double-lepton channel
-			// TODO: remove tau-selection below?
-			int dilep_ids = selLeptons[0].pdgId() * selLeptons[1].pdgId();
-
-			if (fabs(dilep_ids) == 121 )
-				{
-				isDoubleE = true;
-				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weight);
-
-				// float l1_eta = fabs(selElectrons[0].eta());
-				// float l1_pt  = fabs(selElectrons[0].pt());
-				// float l2_eta = fabs(selElectrons[1].eta());
-				// float l2_pt  = fabs(selElectrons[1].pt());
-
-				// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
-				// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
-				Double_t electron_HLTeff_SF1 = 1;
-				Double_t electron_HLTeff_SF2 = 1;
-
-				weight *= 1 - (1 - electron_HLTeff_SF1)*(1 - electron_HLTeff_SF2);
-				}
-			else if (fabs(dilep_ids) == 169 )
-				{
-				isDoubleMu = true;
-				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weight);
-
-				// Double_t electron_HLTeff_SF = 1;
-				float l1_eta = fabs(selMuons[0].eta());
-				float l1_pt  = fabs(selMuons[0].pt());
-				float l2_eta = fabs(selMuons[1].eta());
-				float l2_pt  = fabs(selMuons[1].pt());
-
-				//Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
-				//Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
-				Double_t muon_HLTeff_SF1 = 1;
-				Double_t muon_HLTeff_SF2 = 1;
-				weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
-				}
-			else
-				{
-				isEMu = true;
-				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weight);
-
-				float mu_eta = fabs(selMuons[0].eta());
-				float mu_pt  = fabs(selMuons[0].pt());
-				//float el_eta = fabs(selElectrons[0].eta());
-				//float el_pt  = fabs(selElectrons[0].pt());
-
-				Double_t electron_HLTeff_SF = 1;
-				//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
-				Double_t muon_HLTeff_SF = 1;
-				weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
-				}
-			}
-
-		if (isSingleE || isSingleMu || isDoubleMu || isDoubleE || isEMu ){
-			fill_pu( string("pileup_inachannel_rawweight_pergoodpv"), nGoodPV, rawWeight);
-			fill_pu( string("pileup_inachannel_weight_pergoodpv"), nGoodPV, weight);
-			fill_pu( string("pileup_inachannel_weight_up_pergoodpv"), nGoodPV, weight_up);
-			fill_pu( string("pileup_inachannel_weight_down_pergoodpv"), nGoodPV, weight_down);
-
-			fill_pu( string("pileup_inachannel_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
-			fill_pu( string("pileup_inachannel_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
-
-			fill_pu( string("pileup_inachannel_rawweight_pernuminters"), num_inters, rawWeight);
-			fill_pu( string("pileup_inachannel_weight_pernuminters"), num_inters, weight);
-			fill_pu( string("pileup_inachannel_weight_up_pernuminters"), num_inters, weight_up);
-			fill_pu( string("pileup_inachannel_weight_down_pernuminters"), num_inters, weight_down);
-			}
-
-		/* old lepton selection, left for reference
-		// ---------------------------------- leptons selection
-		LorentzVector muDiff(0., 0., 0., 0.), elDiff(0., 0., 0., 0.);
-		std::vector<patUtils::GenericLepton> selLeptons;
-		std::vector<patUtils::GenericLepton> selLeptons_nocor;
-		unsigned int nVetoE(0), nVetoMu(0);
-		unsigned int nVetoE_nocor(0), nVetoMu_nocor(0);
-		for(size_t ilep=0; ilep<leptons.size (); ++ilep)
-			{
-			patUtils::GenericLepton& lepton = leptons[ilep];
-			patUtils::GenericLepton  nocor_lepton = leptons[ilep];
-
-			bool 
-				passKin(true),     passId(true),     passIso(true),
-				passVetoKin(true), passVetoId(true), passVetoIso(true);
-
-			int lid(lepton.pdgId());
-
-			//apply muon corrections
-			if(abs(lid) == 13 && muCor)
-				{
-				float qter;
-				TLorentzVector p4(lepton.px(), lepton.py(), lepton.pz(), lepton.energy());
-				// old corrections:
-				// muCor->applyPtCorrection(p4, lid < 0 ? -1 : 1);
-				// if(isMC) muCor->applyPtSmearing(p4, lid < 0 ? -1 : 1, false);
-				// roch-cor (rochcor) corrections:
-				if (isMC) muCor->momcor_mc  (p4, lid<0 ? -1 :1, 0, qter);
-				else muCor->momcor_data(p4, lid<0 ? -1 :1, 0, qter);
-				muDiff -= lepton.p4();
-				lepton.setP4(LorentzVector(p4.Px(), p4.Py(), p4.Pz(), p4.E()));
-				muDiff += lepton.p4();
-				}
-
-			//apply electron corrections
-			if(abs(lid)==11)
-				{
-				elDiff -= lepton.p4();
-				ElectronEnCorrector.calibrate(lepton.el, ev.eventAuxiliary().run(), edm::StreamID::invalidStreamID()); 
-				lepton = patUtils::GenericLepton(lepton.el); //recreate the generic lepton to be sure that the p4 is ok
-				elDiff += lepton.p4();
-				}
-
-			//no need for charge info any longer
-			lid = abs(lid);
-			TString lepStr(lid == 13 ? "mu" : "e");
-					
-			// no need to mess with photon ID // //veto nearby photon (loose electrons are many times photons...)
-			// no need to mess with photon ID // double minDRlg(9999.);
-			// no need to mess with photon ID // for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
-			// no need to mess with photon ID //   minDRlg=TMath::Min(minDRlg,deltaR(leptons[ilep].p4(),selPhotons[ipho].p4()));
-			// no need to mess with photon ID // if(minDRlg<0.1) continue;
-
-			// ---------------------------- kinematics
-			double leta(fabs(lid==11 ? lepton.el.superCluster()->eta() : lepton.eta()));
-
-			// ---------------------- Main lepton kin
-			if(lepton.pt() < 30.)                      passKin = false;
-			if(leta > 2.1)                                    passKin = false;
-			if(lid == 11 && (leta > 1.4442 && leta < 1.5660)) passKin = false; // Crack veto
-
-			// ---------------------- Veto lepton kin
-			if (lepton.pt () < 20)                      passVetoKin = false;
-			if (leta > 2.1)                                    passVetoKin = false;
-			if (lid == 11 && (leta > 1.4442 && leta < 1.5660)) passVetoKin = false; // Crack veto
-
-			//Cut based identification
-
-			//std::vector<pat::Electron> dummyShit; dummyShit.push_back(leptons[ilep].el);
-
-			// ------------------------- lepton IDs
-			// passId     = lid == 11 ? patUtils::passId(electronVidMainId, myEvent, lepton.el) : patUtils::passId(lepton.mu, goodPV, patUtils::llvvMuonId::StdTight);
-			// passVetoId = lid == 11 ? patUtils::passId(electronVidVetoId, myEvent, lepton.el) : patUtils::passId(lepton.mu, goodPV, patUtils::llvvMuonId::StdLoose);
-			// apparently the previous version of the passID callse is actually incompatible with the definition of passID
-			// don't know how it compiled at all....
-			passId     = lid == 11 ? patUtils::passId(lepton.el, goodPV, patUtils::llvvElecId::Tight) : patUtils::passId(lepton.mu, goodPV, patUtils::llvvMuonId::StdTight);
-			passVetoId = lid == 11 ? patUtils::passId(lepton.el, goodPV, patUtils::llvvElecId::Loose) : patUtils::passId(lepton.mu, goodPV, patUtils::llvvMuonId::StdLoose);
-
-			// ------------------------- lepton isolation
-			// passIso     = lid == 11 ? true : patUtils::passIso(lepton.mu, patUtils::llvvMuonIso::Tight); // Electron iso is included within the ID
-			// passVetoIso = lid == 11 ? true : patUtils::passIso(lepton.mu, patUtils::llvvMuonIso::Loose); // Electron iso is included within the ID
-			passIso     = lid == 11 ? patUtils::passIso(lepton.el, patUtils::llvvElecIso::Tight) : patUtils::passIso(lepton.mu, patUtils::llvvMuonIso::Tight);
-			passVetoIso = lid == 11 ? patUtils::passIso(lepton.el, patUtils::llvvElecIso::Loose) : patUtils::passIso(lepton.mu, patUtils::llvvMuonIso::Loose);
-
-			if     (passKin     && passId     && passIso)     selLeptons.push_back(lepton);
-			else if(passVetoKin && passVetoId && passVetoIso) lid==11 ? nVetoE++ : nVetoMu++;
-
-
-
-			// -----------  also, store the Pt distr for passing but not corrected lepton: {TEST}
-
-			passKin     = true;
-			passId      = true;
-			passIso     = true;
-			passVetoKin = true;
-			passVetoId  = true;
-			passVetoIso = true;
-
-			leta = fabs(lid==11 ? nocor_lepton.el.superCluster()->eta() : nocor_lepton.eta());
-			
-			// ---------------------- Main lepton kin
-			if(nocor_lepton.pt() < 30.)                       passKin = false;
-			if(leta > 2.1)                                    passKin = false;
-			if(lid == 11 && (leta > 1.4442 && leta < 1.5660)) passKin = false; // Crack veto
-
-			// ---------------------- Veto lepton kin
-			if (nocor_lepton.pt () < 20)                       passVetoKin = false;
-			if (leta > 2.1)                                    passVetoKin = false;
-			if (lid == 11 && (leta > 1.4442 && leta < 1.5660)) passVetoKin = false; // Crack veto
-
-			// ------------------------- lepton IDs
-			passId     = lid == 11 ? patUtils::passId(nocor_lepton.el, goodPV, patUtils::llvvElecId::Tight) : patUtils::passId(nocor_lepton.mu, goodPV, patUtils::llvvMuonId::StdTight);
-			passVetoId = lid == 11 ? patUtils::passId(nocor_lepton.el, goodPV, patUtils::llvvElecId::Loose) : patUtils::passId(nocor_lepton.mu, goodPV, patUtils::llvvMuonId::StdLoose);
-
-			// ------------------------- lepton isolation
-			passIso     = lid == 11 ? patUtils::passIso(nocor_lepton.el, patUtils::llvvElecIso::Tight) : patUtils::passIso(nocor_lepton.mu, patUtils::llvvMuonIso::Tight);
-			passVetoIso = lid == 11 ? patUtils::passIso(nocor_lepton.el, patUtils::llvvElecIso::Loose) : patUtils::passIso(nocor_lepton.mu, patUtils::llvvMuonIso::Loose);
-
-			if     (passKin     && passId     && passIso)     selLeptons_nocor.push_back(nocor_lepton);
-			else if(passVetoKin && passVetoId && passVetoIso) lid==11 ? nVetoE_nocor++ : nVetoMu_nocor++;
-			}
-
-		std::sort(selLeptons.begin(),   selLeptons.end(),   utils::sort_CandidatesByPt);
-		std::sort(selLeptons_nocor.begin(),   selLeptons_nocor.end(),   utils::sort_CandidatesByPt);
-		//LorentzVector recoMET = met;// FIXME REACTIVATE IT - muDiff;
-
-		*/
-
-
-		// ------------------------------------------ select the individual taus
+		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
 		int ntaus (0);
 		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
@@ -3309,6 +2943,7 @@ for(size_t f=0; f<urls.size();++f)
 			// byMediumCombinedIsolationDeltaBetaCorr3HitsdR03
 			// byTightCombinedIsolationDeltaBetaCorr3HitsdR03
 			// -- recommended for multi-object final states (ttH, H->tau-tau)
+			// -- not found in noHLT TTbar
 			
 			fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
 
@@ -3468,8 +3103,9 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		//
-		// ----------------------------------------------- JET/MET ANALYSIS
+		// JET/MET SELECTION
 		//
+
 		if(debug) cout << "Now update Jet Energy Corrections" << endl;
 		//add scale/resolution uncertainties and propagate to the MET
 		//utils::cmssw::updateJEC(jets, jesCor, totalJESUnc, rho, nGoodPV, isMC);
@@ -3477,7 +3113,9 @@ for(size_t f=0; f<urls.size();++f)
 		// up to here jets were not processed in any way
 		// now goes the procedure of corrections to jets and then METs
 
-		// ----------------------- The updateJEC procedure from src/MacroUtils:
+		// ----------------------- JET CORRECTIONS, JEC, JER
+		// ----------------------- UPDATE JEC
+
 		//void updateJEC(pat::JetCollection& jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC){
 
 		// inline control functions usage:
@@ -3588,6 +3226,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
+
 		// ----------------------------------- here is the correctF jet correction point
 		// Propagate jet_corr to MET:
 		met.setP4(met.p4() - jet_corr);
@@ -3646,7 +3285,7 @@ for(size_t f=0; f<urls.size();++f)
 		//met_pt_values[5] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp).pt();
 		//met_pt_values[6] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown).pt();
 
-		// ------------------------------- Select the jets, based on their individual parameters
+		// ------------------------------- JETS SELECTION
 		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
 		pat::JetCollection selJets;
 		// TODO: do all jet selection right here
@@ -3827,7 +3466,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		// --------------------------- B-TAGED JETS
+		// --------------------------- B-TAGGED JETS
 		pat::JetCollection selBJets;
 
 		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
@@ -3887,31 +3526,6 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
 				}
 			}
-
-			/*
-			//update according to the SF measured by BTV
-			if (isMC)
-				{
-				// test:
-				//int flavId = jet.partonFlavour();
-				//if      (abs(flavId)==5) btsfutil.modifyBTagsWithSF(hasCSVtag, sfb,   beff);
-				//else if (abs(flavId)==4) btsfutil.modifyBTagsWithSF(hasCSVtag, sfb/5, beff);
-				//else                     btsfutil.modifyBTagsWithSF(hasCSVtag, sfl,   leff);
-
-				// TODO: also Pietro now has a more complex modifyBTagsWithSF:
-				//      btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-				//  --- etc
-
-				// TODO: for later
-				if      (abs(flavId)==5) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfb + sfbunc,   beff);
-				else if (abs(flavId)==4) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfb/5 + 2*sfbunc, beff);
-				else                     btsfutil.modifyBTagsWithSF(hasCSVtag_BTagUp, sfl + sfbunc,   leff);
-
-				if      (abs(flavId)==5) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagDown, sfb - sfbunc,   beff);
-				else if (abs(flavId)==4) btsfutil.modifyBTagsWithSF(hasCSVtag_BTagDown, sfb/5 - 2*sfbunc, beff);
-				else                     btsfutil.modifyBTagsWithSF(hasCSVtag_BTagDown, sfl - sfbunc,   leff);
-				}
-			*/
 
 			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
 				{
@@ -3981,10 +3595,197 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// -------------------------------------------------- all particles are selected
+		// channel weightflow
+
+		// last record was:
+		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+		// fill_1i(string("weightflow_el_passmetfilters"), 300, 0, 300,   7, weight);
+		// fill_1i(string("weightflow_elel_passmetfilters"), 300, 0, 300, 7, weight);
+		// fill_1i(string("weightflow_elmu_passmetfilters"), 300, 0, 300, 7, weight);
+		// fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
 
 		if(debug){
 			cout << "all particle-objects are processed, checking channel selection" << endl;
 			}
+
+		// Check for the single-electron/single-muon channels and save Pt-s if the event is in channel
+
+		// Here we can already assign leptonic channel
+		// electron or muon -- tau
+		// the selection is:
+
+		// unsigned int n_leptons = selLeptons.size();
+		// Event classification. Single lepton triggers are used for offline selection of dilepton events. The "else if"s guarantee orthogonality
+		bool 
+			isSingleMu(false),
+			isSingleE(false),
+			isDoubleMu(false),
+			isDoubleE(false),
+			isEMu(false);
+		// int multiChannel(0);
+
+
+		// int slepId(0);
+
+		// if(selLeptons.size()>0)
+			// slepId=selLeptons[0].pdgId();
+
+		// bool iso_lep = nVetoE==0 && nVetoMu==0 && selLeptons.size() == 1 && nGoodPV != 0; // 2^5
+		//if(selLeptons.size()!=1 || nGoodPV==0) continue; // Veto requirement alredy applied during the event categoriziation
+		// isSingleMu = (abs(slepId)==13) && muTrigger && iso_lep;
+		// isSingleE  = (abs(slepId)==11) && eTrigger  && iso_lep;
+		bool clean_lep_conditions = nVetoE==0 && nVetoMu==0 && nGoodPV != 0;
+		// maybe it is worth trying not considering the nGoodPV?
+
+		// TODO: test if trigger needed here at all
+		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
+		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
+		// FIXME: TESTING new, trigger-less channel assignment
+		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
+		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
+
+
+		if (isSingleE)
+			{
+			fill_pt_e( string("singleel_electrons_pt"), selElectrons[0].pt(), weight);
+			fill_pt_e( string("met0_singleel_slimmed_pt"), met.pt(), weight);
+			// TODO: no HLT efficiency SF for electron HLT yet:
+			float el_eta = fabs(selElectrons[0].eta());
+			float el_pt  = fabs(selElectrons[0].pt());
+
+			// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
+			// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+			Double_t electron_HLTeff_SF = 1;
+
+			weight *= electron_HLTeff_SF;
+			}
+		if (isSingleMu)
+			{
+			fill_pt_e( string("singlemu_muons_pt"),     selMuons[0].pt(), weight);
+			fill_pt_e( string("met0_singlemu_slimmed_pt"), met.pt(), weight);
+			// muon_HLTeff_TH2F->FindBin
+			float mu_eta = fabs(selMuons[0].eta());
+			float mu_pt  = fabs(selMuons[0].pt());
+
+			// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
+			// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+			//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+			Double_t muon_HLTeff_SF = 1;
+			weight *= muon_HLTeff_SF;
+			}
+
+		if(debug){
+			cout << "assigned lepton channel" << endl;
+			}
+
+		// ------------------------------------- Propagate lepton energy scale to MET
+		// Propagate now (v13)
+		/* no lepton corrections propagation v13.1
+		met.setP4(met.p4() - muDiff - elDiff); // TODO: note this also propagates to all MET uncertainties -- does it??
+		met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
+		met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
+		met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
+		met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
+		*/
+
+		fill_pt_e( string("met0_all_leptoncorr_pt"), met.pt(), weight);
+
+		if (isSingleE)  fill_pt_e( string("met0_singleel_leptoncorr_pt"), met.pt(), weight);
+		if (isSingleMu) fill_pt_e( string("met0_singlemu_leptoncorr_pt"), met.pt(), weight);
+
+		if(debug){
+			cout << "propagated lepton corrections to met" << endl;
+			}
+
+		// Finally, merge leptons for cross-cleaning with taus and jets:
+
+		std::vector<patUtils::GenericLepton> selLeptons;
+		for(size_t l=0; l<selElectrons.size(); ++l) selLeptons.push_back(patUtils::GenericLepton (selElectrons[l] ));
+		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
+		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
+
+
+		if(debug){
+			cout << "merged selected leptons" << endl;
+			}
+
+		// TODO: more conditions for double-lepton channel? No veto leptons etc?
+		// in progress...
+		if (selLeptons.size()==2 && clean_lep_conditions)
+			{
+			// so this should be a double-lepton channel
+			// TODO: remove tau-selection below?
+			int dilep_ids = selLeptons[0].pdgId() * selLeptons[1].pdgId();
+
+			if (fabs(dilep_ids) == 121 )
+				{
+				isDoubleE = true;
+				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weight);
+				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weight);
+
+				// float l1_eta = fabs(selElectrons[0].eta());
+				// float l1_pt  = fabs(selElectrons[0].pt());
+				// float l2_eta = fabs(selElectrons[1].eta());
+				// float l2_pt  = fabs(selElectrons[1].pt());
+
+				// Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
+				// Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+				Double_t electron_HLTeff_SF1 = 1;
+				Double_t electron_HLTeff_SF2 = 1;
+
+				weight *= 1 - (1 - electron_HLTeff_SF1)*(1 - electron_HLTeff_SF2);
+				}
+			else if (fabs(dilep_ids) == 169 )
+				{
+				isDoubleMu = true;
+				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weight);
+				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weight);
+
+				// Double_t electron_HLTeff_SF = 1;
+				float l1_eta = fabs(selMuons[0].eta());
+				float l1_pt  = fabs(selMuons[0].pt());
+				float l2_eta = fabs(selMuons[1].eta());
+				float l2_pt  = fabs(selMuons[1].pt());
+
+				//Double_t muon_HLTeff_SF1 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l1_eta, l1_pt) );
+				//Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
+				Double_t muon_HLTeff_SF1 = 1;
+				Double_t muon_HLTeff_SF2 = 1;
+				weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
+				}
+			else
+				{
+				isEMu = true;
+				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weight);
+				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weight);
+
+				float mu_eta = fabs(selMuons[0].eta());
+				float mu_pt  = fabs(selMuons[0].pt());
+				//float el_eta = fabs(selElectrons[0].eta());
+				//float el_pt  = fabs(selElectrons[0].pt());
+
+				Double_t electron_HLTeff_SF = 1;
+				//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
+				Double_t muon_HLTeff_SF = 1;
+				weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
+				}
+			}
+
+		// if (isSingleE || isSingleMu || isDoubleMu || isDoubleE || isEMu ){
+		// 	fill_pu( string("pileup_inachannel_rawweight_pergoodpv"), nGoodPV, rawWeight);
+		// 	fill_pu( string("pileup_inachannel_weight_pergoodpv"), nGoodPV, weight);
+		// 	fill_pu( string("pileup_inachannel_weight_up_pergoodpv"), nGoodPV, weight_up);
+		// 	fill_pu( string("pileup_inachannel_weight_down_pergoodpv"), nGoodPV, weight_down);
+
+		// 	fill_pu( string("pileup_inachannel_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
+		// 	fill_pu( string("pileup_inachannel_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
+
+		// 	fill_pu( string("pileup_inachannel_rawweight_pernuminters"), num_inters, rawWeight);
+		// 	fill_pu( string("pileup_inachannel_weight_pernuminters"), num_inters, weight);
+		// 	fill_pu( string("pileup_inachannel_weight_up_pernuminters"), num_inters, weight_up);
+		// 	fill_pu( string("pileup_inachannel_weight_down_pernuminters"), num_inters, weight_down);
+		// 	}
+
 
 		unsigned int n_leptons = selLeptons.size();
 		// unsigned int n_taus = selTaus.size();
