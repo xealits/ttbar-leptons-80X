@@ -3116,7 +3116,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// TODO: so does this mean "in place"?
 			pat::Jet& jet = jets[ijet];
-			fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
+			fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 
 			LorentzVector jet_initial_momentum = jet.p4();
 
@@ -3145,8 +3145,8 @@ for(size_t f=0; f<urls.size();++f)
 			float jes_correction = jesCor->getCorrection();
 			jet.setP4(rawJet*jes_correction);
 
-			fill_2d(string("slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
-			fill_1d(string("slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight)
+			fill_2d(string("slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
 
 			// here is the correct2 jet correction point
 
@@ -3171,7 +3171,7 @@ for(size_t f=0; f<urls.size();++f)
 					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
 					double jer_smearing = smearJER[0];
 					jet.setP4(jet.p4()*jer_smearing);
-					fill_1d(string("slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight)
+					fill_1d(string("slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
 					
 					//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smearJER[0], smearJER[1], smearJER[2]);
 					// //set the JER up/down alternatives
@@ -3186,7 +3186,7 @@ for(size_t f=0; f<urls.size();++f)
 					jet.addUserFloat("_res_jup", 1.0);
 					jet.addUserFloat("_res_jdown", 1.0 );
 					}
-				fill_2d(string("slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
+				fill_2d(string("slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 
 
@@ -3211,7 +3211,7 @@ for(size_t f=0; f<urls.size();++f)
 			// jet_cor propagation is on in 13.4
 			jet_corr += jet.p4() - jet_initial_momentum;
 
-			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., jet_corr.pt(), jet_corr.eta(), weight)
+			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., jet_corr.pt(), jet_corr.eta(), weight);
 
 			if(debug)
 				{
@@ -4963,6 +4963,7 @@ singlelep_ttbar_initialevents->Write();
 singlelep_ttbar_preselectedevents->Write();
 
 /*
+*/
 for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
 	{
 	const std::pair <string,string> *key = &it->first;
@@ -5000,7 +5001,6 @@ for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.
 
 	distr->Write();
 	}
-*/
 
 ofile->Close();
 
