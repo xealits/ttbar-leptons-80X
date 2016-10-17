@@ -654,6 +654,85 @@ std::map<string, TH2D> th2d_distr_control_headers;
 //std::map<string, TH1I> th1i_distr_control;
 //std::map<string, double> weight_flow_control;
 
+int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
+		{
+		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		}
+
+	// fill the distribution:
+	th2d_distr_control[key].Fill(x, y, weight);
+
+	if (th2d_distr_control_headers.find(control_point_name) == th2d_distr_control_headers.end() )
+		{
+		// th2d_distr_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th1d_distr_control[key].Fill(value, weight);
+
+	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
+		{
+		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
+		{
+		// the control point distr has not been created/initialized
+		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th1d_distr_control[key].Fill(value, weight);
+
+	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
+		{
+		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D(string("Header of ") + control_point_name, ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+
 int fill_btag_eff(string control_point_name, double pt, double eta, double weight)
 	{
 	// check if control point has been initialized
