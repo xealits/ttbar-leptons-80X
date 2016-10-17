@@ -3116,6 +3116,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// TODO: so does this mean "in place"?
 			pat::Jet& jet = jets[ijet];
+			fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
+
 			LorentzVector jet_initial_momentum = jet.p4();
 
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
@@ -3140,7 +3142,11 @@ for(size_t f=0; f<urls.size();++f)
 			jesCor->setJetA(jet.jetArea());
 			jesCor->setRho(rho);
 			jesCor->setNPV(nGoodPV);
-			jet.setP4(rawJet*jesCor->getCorrection());
+			float jes_correction = jesCor->getCorrection();
+			jet.setP4(rawJet*jes_correction);
+
+			fill_2d(string("slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
+			fill_1d(string("slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight)
 
 			// here is the correct2 jet correction point
 
@@ -3163,7 +3169,9 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					double genjetpt( genJet ? genJet->pt(): 0.);                    
 					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-					jet.setP4(jet.p4()*smearJER[0]);
+					double jer_smearing = smearJER[0];
+					jet.setP4(jet.p4()*jer_smearing);
+					fill_1d(string("slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight)
 					
 					//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smearJER[0], smearJER[1], smearJER[2]);
 					// //set the JER up/down alternatives
@@ -3178,7 +3186,9 @@ for(size_t f=0; f<urls.size();++f)
 					jet.addUserFloat("_res_jup", 1.0);
 					jet.addUserFloat("_res_jdown", 1.0 );
 					}
+				fill_2d(string("slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight)
 				}
+
 
 			// here is the correct3 jet correction point
 
@@ -3200,6 +3210,8 @@ for(size_t f=0; f<urls.size();++f)
 			// Add the jet momentum correction:
 			// jet_cor propagation is on in 13.4
 			jet_corr += jet.p4() - jet_initial_momentum;
+
+			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., jet_corr.pt(), jet_corr.eta(), weight)
 
 			if(debug)
 				{
@@ -3441,7 +3453,10 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
 
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
-					fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
+					// fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
+					// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+					fill_1d(string("btag_sf_flavour_b"), 200, 0., 2.,   sf, weight);
+
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
@@ -3451,7 +3466,9 @@ for(size_t f=0; f<urls.size();++f)
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
-					fill_btag_sf(string("btag_sf_flavour_c"), sf, weight);
+					// fill_btag_sf(string("btag_sf_flavour_c"), sf, weight);
+					fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
+
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
@@ -3463,7 +3480,9 @@ for(size_t f=0; f<urls.size();++f)
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
-					fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
+					// fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
+					fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
+
 					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
@@ -3541,6 +3560,32 @@ for(size_t f=0; f<urls.size();++f)
 		// -------------------------------------------------- all particles are selected
 
 		// -------------------------------------------------- control values
+
+		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+
+		fill_1i(string("n_slimmedjets"),  20, 0, 20,   jets.size(), weight);
+		fill_1i(string("n_selJets"),      20, 0, 20,   selJets.size(), weight);
+		fill_1i(string("n_selJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+		fill_1i(string("n_selJetsNoLepNoTau"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+
+		fill_1i(string("n_selBJets"), 20, 0, 20,   selBJets.size(), weight);
+
+		fill_1i(string("n_slimmedtaus"),  20, 0, 20,   taus.size(), weight);
+		fill_1i(string("n_selTaus"),      20, 0, 20,   selTaus.size(), weight);
+		fill_1i(string("n_selTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+		fill_1i(string("n_selTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+
+		fill_1i(string("n_slimmedtaus"),  20, 0, 20,   taus.size(), weight);
+		fill_1i(string("n_selTaus"),      20, 0, 20,   selTaus.size(), weight);
+		fill_1i(string("n_selTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+		fill_1i(string("n_selTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+
+		fill_1i(string("n_slimmedmuons"),  20, 0, 20,   muons.size(), weight);
+		fill_1i(string("n_selMuons"),      20, 0, 20,   selMuons.size(), weight);
+
+		fill_1i(string("n_slimmedelectrons"),  20, 0, 20,   electrons.size(), weight);
+		fill_1i(string("n_selElectrons"),      20, 0, 20,   selElectrons.size(), weight);
+
 
 		// Control values for processed individual taus:
 		for(size_t n=0; n<selTaus.size(); ++n)
