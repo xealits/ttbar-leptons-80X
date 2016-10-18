@@ -1664,6 +1664,7 @@ int nMultiChannel(0);
 // to check if processing goes well now
 // increment( string("weight_passed_oursel"), 0. );
 
+unsigned int iev = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
@@ -1671,6 +1672,8 @@ for(size_t f=0; f<urls.size();++f)
 	TFile* file = TFile::Open(urls[f].c_str());
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
+
+	iev++;
 
 	int treeStep (ev.size()/50);
 
@@ -3731,17 +3734,6 @@ for(size_t f=0; f<urls.size();++f)
 		// unsigned int n_bjets = selSingleLepBJets.size();
 		unsigned int n_bjets = selBJets.size();
 
-		n_selected_leptons_weighted[n_leptons > 100 ? 99 : n_leptons] += weight;
-		n_selected_taus_weighted [n_taus > 100 ? 99 : n_taus] += weight;
-		n_selected_jets_weighted [n_jets > 100 ? 99 : n_jets] += weight;
-		n_selected_bjets_weighted[n_bjets > 100 ? 99 : n_bjets] += weight;
-
-		// and the sum of weight before splitting into channels:
-		weight_before_channel_select += weight;
-		increment(string("weight_before_channel_select"), weight);
-		increment(string("weight_up_before_channel_select"), weight_up);
-		increment(string("weight_down_before_channel_select"), weight_down);
-
 
 		// ------------------------------------------ SINGLE LEPTON CHANNELS
 		if (isSingleMu || isSingleE)
@@ -4365,6 +4357,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_pu( string("pileup_elselection_weight_down_pernuminters"), num_inters, weight_down);
 					}
 				}
+			}
 
 
 		// --------------------------------------------- DILEPTON CHANNELS
