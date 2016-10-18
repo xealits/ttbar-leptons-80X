@@ -640,21 +640,20 @@ string mc_decay("");
 // the sub-channel of MC is paired together with the distr_name string into the key of control distrs
 // it is then printed out with dtag
 
-
-// std::map<std::pair <string,string>, TH1D> th1d_distr_control;
-// std::map<string, TH1D> th1d_distr_control_headers;
+std::map<std::pair <string,string>, double> weight_flow_control;
 
 // channel -> {control_point, TH}
 // 1 job = 1 dtag,
 // 1 dtag may have several channels
-std::map<string, std::map<string, TH1D>> th1d_distr_control;
-std::map<string, TH1D> th1d_distr_control_headers;
+std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
+std::map<string, TH1D> th1d_distr_maps_control_headers;
 
+
+std::map<std::pair <string,string>, TH1D> th1d_distr_control;
+std::map<string, TH1D> th1d_distr_control_headers;
 
 std::map<std::pair <string,string>, TH1I> th1i_distr_control;
 std::map<string, TH1I> th1i_distr_control_headers;
-
-// std::map<std::pair <string,string>, double> weight_flow_control;
 
 std::map<std::pair <string,string>, TH2D> th2d_distr_control;
 std::map<string, TH2D> th2d_distr_control_headers;
@@ -669,27 +668,34 @@ int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	// check if control point has been initialized
 	// std::pair <string,string> key (mc_decay, control_point_name);
 
-	// create channel map in th1d_distr_control
-	if (th1d_distr_control.find(mc_decay) == th1d_distr_control.end() )
+	// create channel map in th1d_distr_maps_control
+	if (th1d_distr_maps_control.find(mc_decay) == th1d_distr_maps_control.end() )
 		{
 		//
-		th1d_distr_control.insert( std::make_pair(mc_decay, std::map<string, TH1D>));
+		th1d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1D>()));
 		}
 
-	if (th1d_distr_control[mc_decay].find(control_point_name) == th1d_distr_control.end() )
+	if (th1d_distr_maps_control[mc_decay].find(control_point_name) == th1d_distr_maps_control[mc_decay].end() )
 		{
 		// the control point distr has not been created/initialized
-		th1d_distr_control[mc_decay].insert( std::make_pair(control_point_name, TH1D(control_point_name.c_str(), ";;", nbinsx, xlow, xup)));
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th1d_distr_maps_control[mc_decay][control_point_name] = TH1D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
 		//cout << "creating " << control_point_name << endl;
 		}
 
 	// fill the distribution:
-	th1d_distr_control[mc_decay][control_point_name].Fill(value, weight);
+	th1d_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
 
-	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
+	if (th1d_distr_maps_control_headers.find(control_point_name) == th1d_distr_maps_control_headers.end() )
 		{
-		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		// th1d_distr_maps_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
 		}
 
 	// return success:
@@ -1015,6 +1021,7 @@ int printout_distrs(FILE * out, JobDef JD)
 	//th1d_distr_control_headers
 	//th1i_distr_control_headers
 
+	/*
 	for(std::map<string, TH1D>::iterator it = th1d_distr_control_headers.begin(); it != th1d_distr_control_headers.end(); ++it)
 		{
 		string name = it->first;
@@ -1024,6 +1031,7 @@ int printout_distrs(FILE * out, JobDef JD)
 		for (int i=0; i < header_distr->GetSize(); i++) fprintf(out, ",%g", header_distr->GetBinCenter(i));
 		fprintf(out, "\n");
 		}
+	*/
 
 	for(std::map<string, TH1I>::iterator it = th1i_distr_control_headers.begin(); it != th1i_distr_control_headers.end(); ++it)
 		{
@@ -1035,6 +1043,7 @@ int printout_distrs(FILE * out, JobDef JD)
 		fprintf(out, "\n");
 		}
 
+	/*
 	for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
 		{
 		// iterator->first = key
@@ -1061,6 +1070,7 @@ int printout_distrs(FILE * out, JobDef JD)
 		//	}
 		//fprintf(out, "\n");
 		}
+	*/
 
 	for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.begin(); it != th1i_distr_control.end(); ++it)
 		{
@@ -1818,7 +1828,8 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "MC suffix " << mc_decay << " is found\n";
 			}
 
-		if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
+		//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
+		mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
 
 		//* List of mother-daughters for all particles
 		//* TODO: make it into a separate function
@@ -4892,32 +4903,38 @@ printf ("Results save in %s\n", outUrl.Data());
 std::map<string, std::map<string, TH1D>> th1d_distr_control;
 */
 
+/*
 // mc_channel -> TFile*
 std::map<string, TFile*> control_files;
 
 // open files
-for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
+for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
 	{
-	string *channel = &it->first;
-	control_files[*channel] = TFile::Open (outUrl + string("_") + channel + ".root", "UPDATE");	
+	string channel = it->first;
 	}
+*/
 
-for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
+for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
 	{
 	// const std::pair <string,string> *key = &it->first;
-	string *channel = &it->first;
+	string channel = it->first;
+
+	TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "UPDATE");	
 	// string mc_decay_suffix = key->first;
-	// string name = it->second->first;
-	TH1D * distr = & it->second->second;
+	std::map<string, TH1D> * controlpoints = & it->second;
 
-	// TFile *ofile = TFile::Open (outUrl + string("_") + channel + ".root", "UPDATE");
-
-	distr->Write();
-	control_files[*channel]->Write();
-	// ofile->Write();
-
+	for(std::map<string, TH1D>::iterator it = controlpoints->begin(); it != controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH1D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		cout << "Writing " << controlpoint_name << " to " << channel << " channel\n";
+		}
 	}
 
+/*
 // close files
 // open files
 for(std::map<string, TFile*>::iterator it = control_files.begin(); it != control_files.end(); ++it)
@@ -4926,6 +4943,7 @@ for(std::map<string, TFile*>::iterator it = control_files.begin(); it != control
 	TFile * f = it->second;
 	f->Close();
 	}
+*/
 
 
 
