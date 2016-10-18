@@ -788,7 +788,7 @@ int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
 		{
 		// th2d_distr_maps_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
 		}
 
 	// return success:
@@ -5048,7 +5048,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
-	std::map<string, TH2D> * th2d_controlpoints = & it->second;
+	std::map<string, TH2D> * th2d_controlpoints = & th2d_distr_maps_control[channel];
 
 	for(std::map<string, TH2D>::iterator it = th2d_controlpoints->begin(); it != th2d_controlpoints->end(); ++it)
 		{
@@ -5076,6 +5076,7 @@ for(std::map<string, TFile*>::iterator it = control_files.begin(); it != control
 
 
 
+/*
 TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
 for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.begin(); it != th1i_distr_control.end(); ++it)
@@ -5102,6 +5103,7 @@ for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.
 	}
 
 ofile->Close();
+*/
 
 
 if (outTxtFile) fclose (outTxtFile);
