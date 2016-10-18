@@ -1667,53 +1667,10 @@ int nMultiChannel(0);
 
 for(size_t f=0; f<urls.size();++f)
 	{
-	//fprintf(csv_out, "Processing file: %s\n", urls[f].c_str());
 	cout << "Processing file: " << urls[f].c_str() << "\n";
 	TFile* file = TFile::Open(urls[f].c_str());
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
-
-	// TODO: remove all these
-
-	// acceptance parameters
-	unsigned int iev(0); // number of events
-	unsigned int n_events_pass_lumi(0); // number of events lassing lumi
-
-	double sum_weights_raw = 0; // sum of raw weights
-	double sum_weights = 0; // sum of final weights
-
-	// sum weights before the particle selection
-	double sum_weights_passtrig_raw = 0;
-	double sum_weights_passtrig = 0;
-
-	// before channel multiselect
-	double weight_before_channel_select = 0;
-
-	unsigned int negative_event_nvtx[100];
-	unsigned int positive_event_nvtx[100];
-	double negative_event_pernvtx_weight[100];
-	double positive_event_pernvtx_weight[100];
-	double negative_event_pergoodpv_weight[100];
-	double positive_event_pergoodpv_weight[100];
-	double event_pergoodpv_weight[100];
-	double n_selected_leptons_weighted[100];
-	double n_selected_taus_weighted[100];
-	double n_selected_jets_weighted[100];
-	double n_selected_bjets_weighted[100];
-	for (int i=0; i<100; i++)
-		{
-		negative_event_nvtx[i] = 0;
-		positive_event_nvtx[i] = 0;
-		negative_event_pernvtx_weight[i] = 0;
-		positive_event_pernvtx_weight[i] = 0;
-		negative_event_pergoodpv_weight[i] = 0;
-		positive_event_pergoodpv_weight[i] = 0;
-		event_pergoodpv_weight[i] = 0;
-		n_selected_leptons_weighted[i] = 0;
-		n_selected_taus_weighted[i] = 0;
-		n_selected_jets_weighted[i] = 0;
-		n_selected_bjets_weighted[i] = 0;
-		}
 
 	int treeStep (ev.size()/50);
 
@@ -1877,7 +1834,6 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_n_miniaod_events"), 1.0 );
 
 		singlelep_ttbar_initialevents->Fill(1);
 		iev++;
@@ -1918,6 +1874,7 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_down      (1.0);
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
+		// increment( string("weightflow_n_miniaod_events"), 1.0 );
 		// iniweight 1
 		fill_1i(string("weightflow_mu"), 300, 0, 300,   1, weight);
 		fill_1i(string("weightflow_el"), 300, 0, 300,   1, weight);
@@ -1950,10 +1907,14 @@ for(size_t f=0; f<urls.size();++f)
 					}
 
 				if (found_top && found_atop) break;
+				// TODO: should I apply the reweighting only when both top-atop are found?
+				// it is always true in TTbar MC..
 				}
 
 			// similar range distribution
-			fill_btag_sf(string("top_pT_reweighting_SF"), topPtWgt, 1);
+			// fill_btag_sf(string("top_pT_reweighting_SF"), topPtWgt, 1);
+			fill_1d(string("top_pT_reweighting_SF"), 200, 0., 2., topPtWgt, weight);
+			// TODO: move all weights to a separate section?
 			}
 
 		weight *= topPtWgt; // how is the overall integral of MC?
@@ -2148,8 +2109,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
-		sum_weights += weight;
-		sum_weights_raw += rawWeight;
+		// sum_weights += weight;
+		// sum_weights_raw += rawWeight;
 
 		// int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
 
@@ -2160,53 +2121,65 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 4, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 4, weight);
 
+
+		// pu distrs
+		fill_1d( string("pileup_passtrig_rawWeight_pergoodpv"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_weight_pergoodpv"),    100, 0, 100, nGoodPV, weight);
+		// nGoodPV = vtx.size() now
+
+		fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
+
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_weighted_raw_miniaod_events"), rawWeight );
-		increment( string("weightflow_weighted_miniaod_events"), weight );
-		increment( string("weightflow_weighted_up_miniaod_events"), weight_up );
-		increment( string("weightflow_weighted_down_miniaod_events"), weight_down );
+		// increment( string("weightflow_weighted_raw_miniaod_events"), rawWeight );
+		// increment( string("weightflow_weighted_miniaod_events"), weight );
+		// increment( string("weightflow_weighted_up_miniaod_events"), weight_up );
+		// increment( string("weightflow_weighted_down_miniaod_events"), weight_down );
 
-		fill_pu( string("pileup_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
-		fill_pu( string("pileup_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
+		// // fill_pu( string("pileup_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
+		// fill_pu( string("pileup_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
 
-		fill_pu( string("pileup_ini_rawweight_pergoodpv"), nGoodPV, rawWeight);
-		fill_pu( string("pileup_ini_weight_pergoodpv"), nGoodPV, weight);
-		fill_pu( string("pileup_ini_weight_up_pergoodpv"), nGoodPV, weight_up);
-		fill_pu( string("pileup_ini_weight_down_pergoodpv"), nGoodPV, weight_down);
+		// fill_pu( string("pileup_ini_rawweight_pergoodpv"), nGoodPV, rawWeight);
+		// fill_pu( string("pileup_ini_weight_pergoodpv"), nGoodPV, weight);
+		// fill_pu( string("pileup_ini_weight_up_pergoodpv"), nGoodPV, weight_up);
+		// fill_pu( string("pileup_ini_weight_down_pergoodpv"), nGoodPV, weight_down);
 
-		fill_pu( string("pileup_rawweight_pernuminters"), num_inters, rawWeight);
-		fill_pu( string("pileup_weight_pernuminters"), num_inters, weight);
-		fill_pu( string("pileup_weight_up_pernuminters"), num_inters, weight_up);
-		fill_pu( string("pileup_weight_down_pernuminters"), num_inters, weight_down);
+		// fill_pu( string("pileup_rawweight_pernuminters"), num_inters, rawWeight);
+		// fill_pu( string("pileup_weight_pernuminters"), num_inters, weight);
+		// fill_pu( string("pileup_weight_up_pernuminters"), num_inters, weight_up);
+		// fill_pu( string("pileup_weight_down_pernuminters"), num_inters, weight_down);
 
 		//num_inters = 1;
-		if (num_inters>99) num_inters = 99;
-		if (nGoodPV>100) nGoodPV = 99;
-		event_pergoodpv_weight[nGoodPV] += weight;
-		//if (num_inters<0)  num_inters = 0;
-		if (weightGen<0)
-			{
-			increment( string("negative_events"), 1 );
-			fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
-			fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
+		// TODO: turn it back on for sakes of additional check
+		// -- the weights are rarely negative now
 
-			negative_event_nvtx[num_inters] += 1;
-			negative_event_pernvtx_weight[num_inters] += weight;
-			negative_event_pergoodpv_weight[nGoodPV] += weight;
-			}
-		else
-			{
-			increment( string("positive_events"), 1 );
-			fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
-			fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
-			positive_event_nvtx[num_inters] += 1;
-			positive_event_pernvtx_weight[num_inters] += weight;
-			positive_event_pergoodpv_weight[nGoodPV] += weight;
-			}
+		// if (num_inters>99) num_inters = 99;
+		// if (nGoodPV>100) nGoodPV = 99;
+		// event_pergoodpv_weight[nGoodPV] += weight;
+		// //if (num_inters<0)  num_inters = 0;
+		// if (weightGen<0)
+		// 	{
+		// 	increment( string("negative_events"), 1 );
+		// 	fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
+		// 	fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
+
+		// 	negative_event_nvtx[num_inters] += 1;
+		// 	negative_event_pernvtx_weight[num_inters] += weight;
+		// 	negative_event_pergoodpv_weight[nGoodPV] += weight;
+		// 	}
+		// else
+		// 	{
+		// 	increment( string("positive_events"), 1 );
+		// 	fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
+		// 	fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
+		// 	positive_event_nvtx[num_inters] += 1;
+		// 	positive_event_pernvtx_weight[num_inters] += weight;
+		// 	positive_event_pergoodpv_weight[nGoodPV] += weight;
+		// 	}
 
 		// -------------------------------------   Basic event selection
 
@@ -2223,7 +2196,7 @@ for(size_t f=0; f<urls.size();++f)
 		// 80X, v2
 		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
 		// Notice: it is the first continue in the event loop
-		n_events_pass_lumi += 1;
+		// n_events_pass_lumi += 1;
 		// there is no sum_weights_pass_lumi -- lumi is for data only..
 
 		// inline control functions usage:
@@ -2231,9 +2204,9 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_weight_passed_lumi"), weight ); // should not matter
-		increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
-		increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
+		// increment( string("weightflow_weight_passed_lumi"), weight ); // should not matter
+		// increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
+		// increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
 		// passlumi 5
 		fill_1i(string("weightflow_mu"), 300, 0, 300,   5, weight);
@@ -2369,9 +2342,12 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 6, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 6, weight);
 
+		// increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
+		// increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
+		// increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
-		sum_weights_passtrig_raw += rawWeight;
-		sum_weights_passtrig += weight;
+		// sum_weights_passtrig_raw += rawWeight;
+		// sum_weights_passtrig += weight;
 
 
 		// inline control functions usage:
@@ -2379,39 +2355,44 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
-		increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
-		increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
-		if (eTrigger)
-			{
-			increment( string("weightflow_weight_passed_electron_trigger"), weight );
-			}
+		// if (eTrigger)
+		// 	{
+		// 	increment( string("weightflow_weight_passed_electron_trigger"), weight );
+		// 	}
 
-		if (muTrigger)
-			{
-			increment( string("weightflow_weight_passed_muon_trigger"), weight );
-			}
+		// if (muTrigger)
+		// 	{
+		// 	increment( string("weightflow_weight_passed_muon_trigger"), weight );
+		// 	}
 
-		if (eTrigger && muTrigger)
-			{
-			increment( string("weightflow_weight_passed_electron_and_muon_triggers"), weight );
-			}
+		// if (eTrigger && muTrigger)
+		// 	{
+		// 	increment( string("weightflow_weight_passed_electron_and_muon_triggers"), weight );
+		// 	}
 
 		if(debug)
 			{
 			cout << "Set triggers" << endl;
 			}
 
-		fill_pu( string("pileup_passtrig_rawweight_pergoodpv"), nGoodPV, rawWeight);
-		fill_pu( string("pileup_passtrig_weight_pergoodpv"), nGoodPV, weight);
-		fill_pu( string("pileup_passtrig_weight_up_pergoodpv"), nGoodPV, weight_up);
-		fill_pu( string("pileup_passtrig_weight_down_pergoodpv"), nGoodPV, weight_down);
+		fill_1d( string("pileup_passtrig_rawWeight_pergoodpv"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_weight_pergoodpv"),    100, 0, 100, nGoodPV, weight);
+		// nGoodPV = vtx.size() now
 
-		fill_pu( string("pileup_passtrig_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
-		fill_pu( string("pileup_passtrig_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
-		fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
-		fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
+		fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
+
+		// fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
+		// fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
+
+		// fill_pu( string("pileup_passtrig_rawweight_pergoodpv"), nGoodPV, rawWeight);
+		// fill_pu( string("pileup_passtrig_weight_pergoodpv"), nGoodPV, weight);
+		// fill_pu( string("pileup_passtrig_weight_up_pergoodpv"), nGoodPV, weight_up);
+		// fill_pu( string("pileup_passtrig_weight_down_pergoodpv"), nGoodPV, weight_down);
+
+		// fill_pu( string("pileup_passtrig_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
+		// fill_pu( string("pileup_passtrig_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
 
 
 		// ------------------------------------------------- Apply MET filters
@@ -2466,7 +2447,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------- event physics and the corresponding selection
 
-		//------------------------- load all the objects we will need to access
+		//------------------------- PROCESS OBJECTS
 
 		double rho = 0;
 		fwlite::Handle<double> rhoHandle;
@@ -2476,6 +2457,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
+		// TODO: figure out quark status/tau status in MC
 		// FIXME: Save time and don't load the rest of the objects when selecting by mctruthmode :)
 		//bool hasTop(false);
 		//int
@@ -2677,11 +2659,12 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 
-			fill_pt_e( string("all_electrons_corrected_pt"), electron.pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_electrons_corrected_pt"), electron.pt(), weight);
-				}
+			// TODO: probably, should make separate collections for each step, for corrected particles, then -- passed ID etc
+			// fill_pt_e( string("all_electrons_corrected_pt"), electron.pt(), weight);
+			// if (n < 2)
+			// 	{
+			// 	fill_pt_e( string("top2pt_electrons_corrected_pt"), electron.pt(), weight);
+			// 	}
 
 			//no need for charge info any longer
 			//lid = abs(lid);
@@ -2752,27 +2735,19 @@ for(size_t f=0; f<urls.size();++f)
 			*/
 
 
-			if (passId && passIso)
-				{
-				fill_pt_e( string("all_electrons_idiso_pt"), electron.pt(), weight);
-				if (count_idiso_electrons < 2) fill_pt_e( string("top2pt_electrons_idiso_pt"), electron.pt(), weight);
-				count_idiso_electrons += 1;
-				}
+			// TODO: this kind of thing
+			// if (passId && passIso)
+			// 	{
+			// 	fill_pt_e( string("all_electrons_idiso_pt"), electron.pt(), weight);
+			// 	if (count_idiso_electrons < 2) fill_pt_e( string("top2pt_electrons_idiso_pt"), electron.pt(), weight);
+			// 	count_idiso_electrons += 1;
+			// 	}
 			}
 
 		// TODO: there should be no need to sort selected electrons here again -- they are in order of Pt
 		std::sort(selElectrons.begin(),   selElectrons.end(),   utils::sort_CandidatesByPt);
 		// std::sort(selLeptons.begin(),   selLeptons.end(),   utils::sort_CandidatesByPt);
 		// std::sort(selLeptons_nocor.begin(),   selLeptons_nocor.end(),   utils::sort_CandidatesByPt);
-
-		for(size_t n=0; n<selElectrons.size(); ++n)
-			{
-			fill_pt_e( string("all_electrons_pt_individual"), selElectrons[n].pt(), weight);
-			if (n < 1)
-				{
-				fill_pt_e( string("top2pt_electrons_pt_individual"), selElectrons[n].pt(), weight);
-				}
-			}
 
 
 		if(debug){
@@ -2819,11 +2794,6 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 
-			fill_pt_e( string("all_muons_corrected_pt"), muon.pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_muons_corrected_pt"), muon.pt(), weight);
-				}
 
 			//no need for charge info any longer
 			//lid = abs(lid);
@@ -2898,15 +2868,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		// TODO: there should be no need to sort selected muons here again -- they are in order of Pt
 		std::sort(selMuons.begin(),   selMuons.end(),   utils::sort_CandidatesByPt);
-
-		for(size_t n=0; n<selMuons.size(); ++n)
-			{
-			fill_pt_e( string("all_muons_pt_individual"), selMuons[n].pt(), weight);
-			if (n < 1)
-				{
-				fill_pt_e( string("top2pt_muons_pt_individual"), selMuons[n].pt(), weight);
-				}
-			}
 
 		if(debug){
 			cout << "processed muons" << endl;
@@ -3242,22 +3203,6 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-
-		// Control values for corrected jets:
-
-
-		for(size_t n=0; n<jets.size(); ++n)
-			{
-			if(debug) cout << jets[n].eta() << " " << jets[n].pt() << " " << jets[n].energy() << endl;
-			fill_pt_e( string("all_jets_pt_correctedF"), jets[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_pt_correctedF"), jets[n].pt(), weight);
-				}
-			}
-
-
-
 		// FIXME: So are these MET corrections?
 		if(debug) cout << "Update also MET" << endl;
 		// LorentzVector n_met = met.p4();
@@ -3360,18 +3305,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
 
-		// Control values for processed individual jets:
-		for(size_t n=0; n<selJets.size(); ++n)
-			{
-
-			fill_pt_e( string("all_jets_individual_pt"), selJets[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_individual_pt"), selJets[n].pt(), weight);
-				}
-			}
-
-
 
 
 		// ---------------------------- Clean jet collections from selected leptons
@@ -3390,18 +3323,6 @@ for(size_t f=0; f<urls.size();++f)
 			if (minDRlj < 0.4) continue;
 
 			selJetsNoLep.push_back(jet);
-			}
-
-
-		// Control values for processed jets cleaned of leptons:
-		for(size_t n=0; n<selJetsNoLep.size(); ++n)
-			{
-
-			fill_pt_e( string("all_jets_leptoncleaned_pt"), selJetsNoLep[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_leptoncleaned_pt"), selJetsNoLep[n].pt(), weight);
-				}
 			}
 
 
@@ -3508,37 +3429,6 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		/* Done before
-		// ---------------------------- Clean jet collection from selected taus
-		pat::JetCollection
-		selSingleLepJets, selSingleLepBJets;
-		for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
-			{
-			pat::Jet jet = selJets[ijet];
-
-			double minDRtj(9999.);
-			for(size_t itau=0; itau<selTaus.size(); ++itau)
-				{
-				minDRtj = TMath::Min(minDRtj, reco::deltaR(jet, selTaus[itau]));
-				}
-			if(minDRtj>0.4) selSingleLepJets.push_back(jet);
-
-			bool hasCSVtag = (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
-			if (isMC)
-				{
-				int flavId = jets[ijet].partonFlavour();
-				if      (abs (flavId) == 5) btsfutil.modifyBTagsWithSF(hasCSVtag, sfb,   beff);
-				else if (abs (flavId) == 4) btsfutil.modifyBTagsWithSF(hasCSVtag, sfb/5, beff);
-				else                        btsfutil.modifyBTagsWithSF(hasCSVtag, sfl,   leff);
-				}
-
-			if(!hasCSVtag) continue;
-			if(minDRtj>0.4) selSingleLepBJets.push_back(jets[ijet]);
-			}
-
-		std::sort(selSingleLepJets.begin(),  selSingleLepJets.end(),  utils::sort_CandidatesByPt);
-		std::sort(selSingleLepBJets.begin(), selSingleLepBJets.end(), utils::sort_CandidatesByPt);
-		*/
 
 		pat::TauCollection selTausNoLepNoJet;
 		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
@@ -3566,7 +3456,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// -------------------------------------------------- all particles are selected
 
-		// -------------------------------------------------- control values
+		// -------------------------------------------------- cCONTROL VALUES
 
 		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
 
@@ -3659,7 +3549,6 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-		// -------------------------------------------------- channel weightflow
 
 		// last record was:
 		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
@@ -3672,14 +3561,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "all particle-objects are processed, checking channel selection" << endl;
 			}
 
-		// Check for the single-electron/single-muon channels and save Pt-s if the event is in channel
-
-		// Here we can already assign leptonic channel
-		// electron or muon -- tau
-		// the selection is:
-
-		// unsigned int n_leptons = selLeptons.size();
-		// Event classification. Single lepton triggers are used for offline selection of dilepton events. The "else if"s guarantee orthogonality
+		//
+		// -------------------------------------------------- ASSIGN CHANNEL
+		//
+		// -------------------------------------------------- channel weightflow
 		bool 
 			isSingleMu(false),
 			isSingleE(false),
@@ -3831,20 +3716,6 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-		// if (isSingleE || isSingleMu || isDoubleMu || isDoubleE || isEMu ){
-		// 	fill_pu( string("pileup_inachannel_rawweight_pergoodpv"), nGoodPV, rawWeight);
-		// 	fill_pu( string("pileup_inachannel_weight_pergoodpv"), nGoodPV, weight);
-		// 	fill_pu( string("pileup_inachannel_weight_up_pergoodpv"), nGoodPV, weight_up);
-		// 	fill_pu( string("pileup_inachannel_weight_down_pergoodpv"), nGoodPV, weight_down);
-
-		// 	fill_pu( string("pileup_inachannel_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
-		// 	fill_pu( string("pileup_inachannel_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
-
-		// 	fill_pu( string("pileup_inachannel_rawweight_pernuminters"), num_inters, rawWeight);
-		// 	fill_pu( string("pileup_inachannel_weight_pernuminters"), num_inters, weight);
-		// 	fill_pu( string("pileup_inachannel_weight_up_pernuminters"), num_inters, weight_up);
-		// 	fill_pu( string("pileup_inachannel_weight_down_pernuminters"), num_inters, weight_down);
-		// 	}
 
 
 		unsigned int n_leptons = selLeptons.size();
@@ -3871,36 +3742,8 @@ for(size_t f=0; f<urls.size();++f)
 		increment(string("weight_up_before_channel_select"), weight_up);
 		increment(string("weight_down_before_channel_select"), weight_down);
 
-		//
-		// -------------------------------------------------- ASSIGN CHANNEL
-		//
 
-		// // TODO: did this classification above -- where the leptons are processed
-		// // Event classification. Single lepton triggers are used for offline selection of dilepton events. The "else if"s guarantee orthogonality
-		// if(selLeptons.size()>0)
-		// 	slepId=selLeptons[0].pdgId();
-
-		// bool 
-		// 	isSingleMu(false),
-		// 	isSingleE(false),
-		// 	isDoubleMu(false),
-		// 	isDoubleE(false),
-		// 	isEMu(false);
-		// // int multiChannel(0);
-
-
-		// bool iso_lep = nVetoE==0 && nVetoMu==0 && selLeptons.size() == 1 && nGoodPV != 0; // 2^5
-		// //if(selLeptons.size()!=1 || nGoodPV==0) continue; // Veto requirement alredy applied during the event categoriziation
-		// isSingleMu = (abs(slepId)==13) && muTrigger && iso_lep;
-		// isSingleE  = (abs(slepId)==11) && eTrigger  && iso_lep;
-		// TODO: last discrepancy with multiselect!
-		// TODO: and no double-lepton channel yet
-
-		// --------------------------- store weights at different selections
-		// Event selection booleans for el-tau and mu-tau channels
-
-
-		// ------------------------------------------ Single lepton full analysis
+		// ------------------------------------------ SINGLE LEPTON CHANNELS
 		if (isSingleMu || isSingleE)
 			{
 			// in-channel selection/multiselect for leptons
@@ -4522,67 +4365,9 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				}
 
-			// if(passJetSelection && passBtagsSelection) // 2 jets, 1 b jet, 1 isolated lepton
-			// 	{
-			// 	 now these histograms are dissabled -- use counters to substitute them
-			// 	if(isSingleMu) singlelep_ttbar_selected_mu_events->Fill(1);
-			// 	else if (isSingleE) singlelep_ttbar_selected_el_events->Fill(1);
-			// 	crossel_sum_weights_raw += rawWeight;
-			// 	crossel_sum_weights += weight;
-			// 	}
 
-			/*
-			if(passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS )
-				{
-				// TODO: try saving the whole event
-				if(isSingleMu)
-					{
-					//singlelep_ttbar_selected_mu_events->Fill(1);
-					oursel_sum_weights_mu += weight;
-					}
-				else if (isSingleE)
-					{
-					//singlelep_ttbar_selected_el_events->Fill(1);
-					oursel_sum_weights_el += weight;
-					}
-				fprintf(csv_out, "oursel:%d,%d,%d,%g,%g,%g,%g,%d,", iev, num_inters, nGoodPV, rawWeight, weight, weight_up, weight_down, isSingleE);
-				oursel_sum_weights_raw += rawWeight;
-				oursel_sum_weights += weight;
+		// --------------------------------------------- DILEPTON CHANNELS
 
-				// METs with corrections
-				// LorentzVector met_values[7];
-				fprintf(csv_out, "%g,%g,%g,%g,%g,%g,%g,", met_pt_values[0], met_pt_values[1], met_pt_values[2], met_pt_values[3], met_pt_values[4], met_pt_values[5], met_pt_values[6]);
-				fprintf(csv_out, "%g,", selLeptons[0].vz());
-				fprintf(csv_out, "%g,%g,%g,%g,",  selLeptons[0].px(), selLeptons[0].py(), selLeptons[0].pz(), selLeptons[0].pt());
-				//fprintf(csv_out, "%g,", selTausNoLep[0].vz());
-				// selTausNoLep
-				fprintf(csv_out, "%g,", selTausNoLep[0].vz());
-				fprintf(csv_out, "%g,%g,%g,%g,", selTausNoLep[0].px(), selTausNoLep[0].py(), selTausNoLep[0].pz(), selTausNoLep[0].pt() );
-
-				// selBJets
-				fprintf(csv_out, "%g,", selBJets[0].vz());
-				fprintf(csv_out, "%g,%g,%g,%g,",  selBJets[0].px(), selBJets[0].py(), selBJets[0].pz(), selBJets[0].pt());
-
-				// selJetsNoLepNoTau
-				//fprintf(csv_out, "%g,", selJetsNoLepNoTau[0].vz());
-				fprintf(csv_out, "%g,", selJetsNoLepNoTau[0].vz());
-				fprintf(csv_out, "%g,%g,%g,%g,", selJetsNoLepNoTau[0].px(), selJetsNoLepNoTau[0].py(), selJetsNoLepNoTau[0].pz(), selJetsNoLepNoTau[0].pt() );
-				//fprintf(csv_out, "%g,", selJetsNoLepNoTau[1].vz());
-				fprintf(csv_out, "%g,", selJetsNoLepNoTau[1].vz());
-				fprintf(csv_out, "%g,%g,%g,%g\n", selJetsNoLepNoTau[1].px(), selJetsNoLepNoTau[1].py(), selJetsNoLepNoTau[1].pz(), selJetsNoLepNoTau[1].pt() );
-
-				}
-				*/
-			}
-
-		// inline control functions usage:
-		//   fill_pt_e( "control_point_name", value, weight)
-		// FIXME: do NEWMULTISELECT somehow well
-		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
-		//   increment( "control_point_name", weight )
-
-
-		// --------------------------------------------- Dilepton full analysis
 		if (isDoubleE || isDoubleMu || isEMu)
 			{
 			int dilId (1);
@@ -4599,12 +4384,14 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 			// Event selection booleans
+			// or dilepton mass > 20GeV?
+			// and only for ee/mumu?
 			bool passMllVeto(isEMu ? dileptonSystem.mass()>12. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>12. ) );
 			// bool passJetSelection(selJets.size()>1);
 			bool passJetSelection(n_jets>1);
 			bool passMetSelection(met.pt()>40.);
 			bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
-			// bool passBtagsSelection(selBJets.size()>1); // FIXME: differentiate chhiggs selection from cross-section selection
+			// bool passBtagsSelection(selBJets.size()>1);
 			bool passBtagsSelection(n_bjets>0);
 
 			// MULTISELECT
