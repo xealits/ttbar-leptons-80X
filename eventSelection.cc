@@ -648,6 +648,13 @@ std::map<std::pair <string,string>, double> weight_flow_control;
 std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
 std::map<string, TH1D> th1d_distr_maps_control_headers;
 
+std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
+std::map<string, TH1I> th1i_distr_maps_control_headers;
+
+std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
+std::map<string, TH2D> th2d_distr_maps_control_headers;
+
+
 
 std::map<std::pair <string,string>, TH1D> th1d_distr_control;
 std::map<string, TH1D> th1d_distr_control_headers;
@@ -703,6 +710,101 @@ int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	}
 
 
+
+
+int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th1i_distr_maps_control
+	if (th1i_distr_maps_control.find(mc_decay) == th1i_distr_maps_control.end() )
+		{
+		//
+		th1i_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1I>()));
+		}
+
+	if (th1i_distr_maps_control[mc_decay].find(control_point_name) == th1i_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th1i_distr_maps_control[mc_decay][control_point_name] = TH1I((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th1i_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
+
+	if (th1i_distr_maps_control_headers.find(control_point_name) == th1i_distr_maps_control_headers.end() )
+		{
+		// th1i_distr_maps_control_headers[control_point_name] = TH1I("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1i_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1I((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+
+
+//int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
+int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th2d_distr_maps_control
+	if (th2d_distr_maps_control.find(mc_decay) == th2d_distr_maps_control.end() )
+		{
+		//
+		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH2D>()));
+		}
+
+	if (th2d_distr_maps_control[mc_decay].find(control_point_name) == th2d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th2d_distr_maps_control[mc_decay][control_point_name] = TH2D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th2d_distr_maps_control[mc_decay][control_point_name].Fill(x, y, weight);
+
+	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
+		{
+		// th2d_distr_maps_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+
+
+
+
+
+
+
+/*
 int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
 	{
 	// check if control point has been initialized
@@ -751,6 +853,7 @@ int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	// return success:
 	return 0;
 	}
+*/
 
 
 // TODO: rearrange the code into particle selection and channel selection
@@ -4921,17 +5024,43 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 
 	TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "UPDATE");	
 	// string mc_decay_suffix = key->first;
-	std::map<string, TH1D> * controlpoints = & it->second;
+	std::map<string, TH1D> * th1d_controlpoints = & it->second;
 
-	for(std::map<string, TH1D>::iterator it = controlpoints->begin(); it != controlpoints->end(); ++it)
+	for(std::map<string, TH1D>::iterator it = th1d_controlpoints->begin(); it != th1d_controlpoints->end(); ++it)
 		{
 		string controlpoint_name = it->first;
 		TH1D * distr = & it->second;
 		distr->SetName(controlpoint_name.c_str());
 		distr->Write();
 		out_f->Write(controlpoint_name.c_str());
-		cout << "Writing " << controlpoint_name << " to " << channel << " channel\n";
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
+
+	std::map<string, TH1I> * th1i_controlpoints = & th1i_distr_maps_control[channel];
+
+	for(std::map<string, TH1I>::iterator it = th1i_controlpoints->begin(); it != th1i_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH1I * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	std::map<string, TH2D> * th2d_controlpoints = & it->second;
+
+	for(std::map<string, TH2D>::iterator it = th2d_controlpoints->begin(); it != th2d_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH2D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	out_f->Close();
 	}
 
 /*
