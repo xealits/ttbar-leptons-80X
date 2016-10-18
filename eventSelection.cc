@@ -641,11 +641,20 @@ string mc_decay("");
 // it is then printed out with dtag
 
 
-std::map<std::pair <string,string>, TH1D> th1d_distr_control;
+// std::map<std::pair <string,string>, TH1D> th1d_distr_control;
+// std::map<string, TH1D> th1d_distr_control_headers;
+
+// channel -> {control_point, TH}
+// 1 job = 1 dtag,
+// 1 dtag may have several channels
+std::map<string, std::map<string, TH1D>> th1d_distr_control;
 std::map<string, TH1D> th1d_distr_control_headers;
+
+
 std::map<std::pair <string,string>, TH1I> th1i_distr_control;
 std::map<string, TH1I> th1i_distr_control_headers;
-std::map<std::pair <string,string>, double> weight_flow_control;
+
+// std::map<std::pair <string,string>, double> weight_flow_control;
 
 std::map<std::pair <string,string>, TH2D> th2d_distr_control;
 std::map<string, TH2D> th2d_distr_control_headers;
@@ -654,44 +663,28 @@ std::map<string, TH2D> th2d_distr_control_headers;
 //std::map<string, TH1I> th1i_distr_control;
 //std::map<string, double> weight_flow_control;
 
-int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
-	{
-	// check if control point has been initialized
-	std::pair <string,string> key (mc_decay, control_point_name);
-
-	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
-		{
-		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
-		}
-
-	// fill the distribution:
-	th2d_distr_control[key].Fill(x, y, weight);
-
-	if (th2d_distr_control_headers.find(control_point_name) == th2d_distr_control_headers.end() )
-		{
-		// th2d_distr_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
-		}
-
-	// return success:
-	return 0;
-	}
-
 
 int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
 	{
 	// check if control point has been initialized
-	std::pair <string,string> key (mc_decay, control_point_name);
+	// std::pair <string,string> key (mc_decay, control_point_name);
 
-	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
+	// create channel map in th1d_distr_control
+	if (th1d_distr_control.find(mc_decay) == th1d_distr_control.end() )
+		{
+		//
+		th1d_distr_control.insert( std::make_pair(mc_decay, std::map<string, TH1D>));
+		}
+
+	if (th1d_distr_control[mc_decay].find(control_point_name) == th1d_distr_control.end() )
 		{
 		// the control point distr has not been created/initialized
-		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		th1d_distr_control[mc_decay].insert( std::make_pair(control_point_name, TH1D(control_point_name.c_str(), ";;", nbinsx, xlow, xup)));
 		//cout << "creating " << control_point_name << endl;
 		}
 
 	// fill the distribution:
-	th1d_distr_control[key].Fill(value, weight);
+	th1d_distr_control[mc_decay][control_point_name].Fill(value, weight);
 
 	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
 		{
@@ -702,7 +695,6 @@ int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	// return success:
 	return 0;
 	}
-
 
 
 int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
@@ -729,6 +721,31 @@ int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	// return success:
 	return 0;
 	}
+
+
+int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
+	{
+	// check if control point has been initialized
+	std::pair <string,string> key (mc_decay, control_point_name);
+
+	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
+		{
+		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		}
+
+	// fill the distribution:
+	th2d_distr_control[key].Fill(x, y, weight);
+
+	if (th2d_distr_control_headers.find(control_point_name) == th2d_distr_control_headers.end() )
+		{
+		// th2d_distr_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
 
 // TODO: rearrange the code into particle selection and channel selection
 // TODO organize the code with new general record functions and remove these
@@ -4866,27 +4883,53 @@ printf ("Results save in %s\n", outUrl.Data());
 
 // re-enabled the ROOT output
 // for resubmit option of the job script
-TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
-singlelep_ttbar_initialevents->Write();
-singlelep_ttbar_preselectedevents->Write();
+
+// singlelep_ttbar_initialevents->Write();
+// singlelep_ttbar_preselectedevents->Write();
 
 /*
+std::map<string, std::map<string, TH1D>> th1d_distr_control;
 */
-for(std::map<std::pair <string,string>, TH1D>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
-	{
-	const std::pair <string,string> *key = &it->first;
-	string mc_decay_suffix = key->first;
-	string name = key->second;
 
-	TH1D * distr = & it->second;
+// mc_channel -> TFile*
+std::map<string, TFile*> control_files;
+
+// open files
+for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
+	{
+	string *channel = &it->first;
+	control_files[*channel] = TFile::Open (outUrl + string("_") + channel + ".root", "UPDATE");	
+	}
+
+for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_control.begin(); it != th1d_distr_control.end(); ++it)
+	{
+	// const std::pair <string,string> *key = &it->first;
+	string *channel = &it->first;
+	// string mc_decay_suffix = key->first;
+	// string name = it->second->first;
+	TH1D * distr = & it->second->second;
+
+	// TFile *ofile = TFile::Open (outUrl + string("_") + channel + ".root", "UPDATE");
 
 	distr->Write();
-	// // Content:
-	//fprintf(out, "%s:content, %s,%s,%s", name.c_str(), JD.type.c_str(), (JD.dtag + mc_decay_suffix).c_str(), JD.job_num.c_str());
-	//for (int i=0; i < distr->GetSize(); i++) fprintf(out, ",%g", distr->GetBinContent(i));
-	//fprintf(out, "\n");
+	control_files[*channel]->Write();
+	// ofile->Write();
+
 	}
+
+// close files
+// open files
+for(std::map<string, TFile*>::iterator it = control_files.begin(); it != control_files.end(); ++it)
+	{
+	// string *channel = &it->first;
+	TFile * f = it->second;
+	f->Close();
+	}
+
+
+
+TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
 
 for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.begin(); it != th1i_distr_control.end(); ++it)
 	{
