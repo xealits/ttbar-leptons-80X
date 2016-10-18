@@ -3953,8 +3953,24 @@ for(size_t f=0; f<urls.size();++f)
 				fill_pt_e( string("singlelep_allbutmetsel_met_pt"), met.pt(), weight);
 				}
 
+			if (passJetSelection) {
+				fill_pt_e( string("singlelep_jet_met_pt"), met.pt(), weight);
+				}
+
+			if (passJetSelection && passMetSelection) {
+				fill_pt_e( string("singlelep_met_met_pt"), met.pt(), weight);
+				}
+
+			if (passJetSelection && passMetSelection && passBtagsSelection) {
+				fill_pt_e( string("singlelep_btag_met_pt"), met.pt(), weight);
+				}
+
+			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
+				fill_pt_e( string("singlelep_tau_met_pt"), met.pt(), weight);
+				}
 
 			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
+				fill_pt_e( string("singlelep_os_met_pt"), met.pt(), weight);
 				increment( string("weightflow_weight_passed_singlelep_selection"), weight );
 				increment( string("weightflow_weight_up_passed_singlelep_selection"), weight_up );
 				increment( string("weightflow_weight_down_passed_singlelep_selection"), weight_down );
@@ -3962,6 +3978,27 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleMu)
 				{
+
+				if (passJetSelection) {
+					fill_pt_e( string("singlemu_jet_met_pt"), met.pt(), weight);
+					}
+
+				if (passJetSelection && passMetSelection) {
+					fill_pt_e( string("singlemu_met_met_pt"), met.pt(), weight);
+					}
+
+				if (passJetSelection && passMetSelection && passBtagsSelection) {
+					fill_pt_e( string("singlemu_btag_met_pt"), met.pt(), weight);
+					}
+
+				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
+					fill_pt_e( string("singlemu_tau_met_pt"), met.pt(), weight);
+					}
+
+				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
+					fill_pt_e( string("singlemu_os_met_pt"), met.pt(), weight);
+					}
+
 				// the 5 geometrical for loops...
 				// TODO: it's awekward
 
