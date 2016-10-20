@@ -48,6 +48,7 @@ The cfg.template has the fields `@field` to fill in:
         job_num  = cms.string("@job_num"),
         input = cms.untracked.vstring("@input"),
         outfile = cms.string("@outfile"),
+        outdir = cms.string("@outdir"),
 
 --- TODO: make a pythonic template, with {} instead of the weird @foo.
 
@@ -263,7 +264,10 @@ for dset_group in dsets['proc']:
 
             #if i < 5: print(input_files)
 
-            job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, outdir = outdirname, job_num = i, isMC = not isdata, outfile = outdirname + dtag + '_' + str(i) + '.root', project_dir = project_dir)
+            job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, job_num = i, isMC = not isdata,
+                                       outfile = outdirname + dtag + '_' + str(i) + '.root',
+                                       outdir = outdirname + '/',
+                                       project_dir = project_dir)
             # job_cfg = cfg_templ.format(job_files = job_chunk, lumiCert = lumiMask, dtag = dtag, outdir = outdirname, jobID = i, isdata = isdata)
 
             job_cfg_filename = outdirname + dtag + '_' + str(i) + '_cfg.py'

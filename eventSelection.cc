@@ -1275,6 +1275,8 @@ string job_num       = runProcess.getParameter<std::string>("job_num");
 
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
+TString outUrl = runProcess.getParameter<std::string>("outfile");
+TString outdir = runProcess.getParameter<std::string>("outdir");
 	
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
@@ -1291,8 +1293,7 @@ std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vecto
 //      outFileUrl += "_filt";
 //      outFileUrl += mctruthmode;
 //    }
-TString outUrl = runProcess.getParameter<std::string>("outfile");
-	
+
 // Good lumi mask
 // v2
 lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
@@ -5027,7 +5028,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	//outUrl.Data() is dtag_jobnum
 	// use them separately, take from: dtag_s, job_num
 	// TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "CREATE");
-	TFile* out_f = TFile::Open (TString(dtag_s + channel + string("_") + job_num + string(".root")), "CREATE");
+	TFile* out_f = TFile::Open (outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root")), "CREATE");
 	// string mc_decay_suffix = key->first;
 	std::map<string, TH1D> * th1d_controlpoints = & it->second;
 
@@ -5067,6 +5068,8 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 
 	out_f->Close();
 	}
+
+printf ("New output results saved in %s\n", (outdir.Data() + string("/") + dtag_s + string("_<channel>") + string("_") + job_num + string(".root")).c_str());
 
 /*
 // close files

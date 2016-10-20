@@ -1,0 +1,79 @@
+job=w1
+job_dir=test/tests/outdir_test_v11_ttbar_"$job"/
+
+
+
+
+ls test/tests/outdir_test_v11_ttbar_w1/*root
+
+in vim sub jobnums with *
+%s/_[0-9][0-9]*__/_*__/
+or there is \* here^
+
+
+for d in `cat fff_dtags`                                                          
+do
+  d_file=`echo $d | sed 's/_\*__/_/'`
+  eval "hadd $d_file $d"
+done
+
+
+then should work like:
+
+mkdir $job_dir/merged-sets
+
+for d in `cat fff_dtags`                                                          
+do
+  hadd $job_dir/merged-sets/$d.root $job_dir/$d_*root
+done
+
+
+find_existing_template_dtag() {                                                        
+  job_dir=$2
+
+  for d in `cat $1`
+  do
+    if [ -e $job_dir/$d.root ]
+    then
+        echo $d
+        break
+    fi
+  done
+}
+
+
+for distr in weightflow_mu weightflow_el weightflow_elmu weightflow_elel weightflow_mumu
+do
+  echo extracting $distr from $job_dir
+  templ_dtag=`find_existing_template_dtag job-reduce/dtag_xsecs $job_dir`
+  echo template dtag is $templ_dtag
+  root -l -q 'job-reduce/csv_distr_TH1D.cc("'$distr'", "'$job_dir'", "'$templ_dtag'", true)' > "$job"_$distr
+
+  for d in `cat job-reduce/dtag_xsecs` 
+  do
+    echo $d
+    if [ -e "$job_dir/$d.root" ]
+    then
+        root -l -q 'job-reduce/csv_distr_TH1D.cc("'$distr'", "'$job_dir'", "'$d'", false)' >> "$job"_$distr
+    fi
+  done
+done
+
+
+-- the "Processin..." and "(int..)" are left from root shell run
+
+
+
+# Now, with good scripts
+
+Merge the jobs:
+
+./job-reduce/reduce.zsh v8.28_w2 job-reduce/dtag_xsecs
+
+And extract the weightflows:
+
+./job-reduce/extract_csv.zsh v8.28_w2 ./job-reduce/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu
+
+-- and fix them in vim...
+TODO: find how to stop ROOT from printing prompts
+
