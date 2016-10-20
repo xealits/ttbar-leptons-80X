@@ -1548,13 +1548,14 @@ The name of the measurements is
 
 // only 1 reader:
 
-// BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
-BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
+BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
+// BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
                              "central",             // central sys type
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_B,      // btag flavour
             "comb");               // measurement type
+//          "mujets");               // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_C,      // btag flavour
             "comb");              // measurement type
@@ -3514,7 +3515,9 @@ for(size_t f=0; f<urls.size();++f)
 				double sf;
 				if (abs(flavId)==5) {
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					// int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					// fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
@@ -3524,9 +3527,11 @@ for(size_t f=0; f<urls.size();++f)
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 				} else if(abs(flavId)==4) {
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
@@ -3536,9 +3541,11 @@ for(size_t f=0; f<urls.size();++f)
 					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 				} else {
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 
 					hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
 
@@ -3550,7 +3557,8 @@ for(size_t f=0; f<urls.size();++f)
 					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
+					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 				}
 			}
 
@@ -3792,7 +3800,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// TODO: more conditions for double-lepton channel? No veto leptons etc?
 		// in progress...
-		/*
+
+		// TODO: add selTaus.size() == 0?
 		if (selLeptons.size()==2 && clean_lep_conditions)
 			{
 			// so this should be a double-lepton channel
@@ -3852,7 +3861,7 @@ for(size_t f=0; f<urls.size();++f)
 				weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
 				}
 			}
-		*/
+
 
 
 
@@ -3862,8 +3871,8 @@ for(size_t f=0; f<urls.size();++f)
 		// unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
 		//unsigned int n_jets = selJets.size();
 		//unsigned int n_bjets = selBJets.size();
-		// unsigned int n_jets = selSingleLepJets.size();
-		unsigned int n_jets = selJetsNoLepNoTau.size();
+		unsigned int n_jets = selSingleLepJets.size();
+		// unsigned int n_jets = selJetsNoLepNoTau.size();
 		// unsigned int n_jets = selJetsNoLep.size(); // noLep jet as in jet fake-rate study
 		// unsigned int n_bjets = selSingleLepBJets.size();
 		unsigned int n_bjets = selBJets.size();
