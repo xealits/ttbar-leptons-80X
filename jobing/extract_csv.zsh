@@ -4,6 +4,9 @@ job=$1
 dtags_file=$2
 
 merged_dir=test/tests/outdir_test_v11_ttbar_"$job"/merged-sets/
+csv_dir=$merged_dir/jobsums/
+
+mkdir $csv_dir
 
 
 
@@ -27,14 +30,14 @@ do
   echo extracting $distr from $merged_dir
   templ_dtag=`find_existing_template_dtag $dtags_file $merged_dir`
   echo template dtag is $templ_dtag
-  root -l -q 'job-reduce/csv_distr_TH1D.cc("'$distr'", "'$merged_dir'", "'$templ_dtag'", true)' > "$job"_$distr
+  root -l -q 'jobing/csv_distr_TH1D.cc("'$distr'", "'$merged_dir'", "'$templ_dtag'", true)' | sed -e 's/^Proc.*$//' -e 's/^(int.*$//' -e '/^\s*$/d' > $csv_dir/$distr
 
   for d in `cat $dtags_file`
   do
     if [ -e "$merged_dir/$d.root" ]
     then
         echo $d
-        root -l -q 'job-reduce/csv_distr_TH1D.cc("'$distr'", "'$merged_dir'", "'$d'", false)' >> "$job"_$distr
+        root -l -q 'jobing/csv_distr_TH1D.cc("'$distr'", "'$merged_dir'", "'$d'", false)' | sed -e 's/^Proc.*$//' -e 's/^(int.*$//' -e '/^\s*$/d' >> $csv_dir/$distr
     fi
   done
 done

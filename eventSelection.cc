@@ -3871,9 +3871,8 @@ for(size_t f=0; f<urls.size();++f)
 		// unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
 		//unsigned int n_jets = selJets.size();
 		//unsigned int n_bjets = selBJets.size();
-		unsigned int n_jets = selSingleLepJets.size();
 		// unsigned int n_jets = selJetsNoLepNoTau.size();
-		// unsigned int n_jets = selJetsNoLep.size(); // noLep jet as in jet fake-rate study
+		unsigned int n_jets = selJetsNoLep.size(); // noLep jet as in jet fake-rate study
 		// unsigned int n_bjets = selSingleLepBJets.size();
 		unsigned int n_bjets = selBJets.size();
 
