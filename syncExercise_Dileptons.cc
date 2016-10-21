@@ -1275,9 +1275,21 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 // last muon POG talk:
 // https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
 
+
+// ------------------------------------- electron energy scale (smearing?)
 // Electron energy scale, based on https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer and adapted to this framework
-// v1
-//string EGammaEnergyCorrectionFile = "EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015";
+// for 2016
+ElectronEnergyCalibratorRun2 ElectronEnCorrector;
+EpCombinationTool theEpCombinationTool;
+
+string EleEnergyCorrectionFile = "UserCode/llvv_fwk/data/jec/80X_ichepV1_2016_ele";
+string PhoEnergyCorrectionFile = "UserCode/llvv_fwk/data/jec/80X_ichepV1_2016_pho";
+
+theEpCombinationTool.init((string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/GBRForest_data_25ns.root").c_str(), "gedelectron_p4combination_25ns");
+ElectronEnCorrector = ElectronEnergyCalibratorRun2(theEpCombinationTool, isMC, false, EleEnergyCorrectionFile);
+ElectronEnCorrector.initPrivateRng(new TRandom(1234));
+
+// string EGammaEnergyCorrectionFile = "EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015";
 //EpCombinationTool theEpCombinationTool;
 //theEpCombinationTool.init((string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/GBRForest_data_25ns.root").c_str(), "gedelectron_p4combination_25ns");  //got confirmation from Matteo Sani that this works for both data and MC 
 //ElectronEnergyCalibratorRun2 ElectronEnCorrector(theEpCombinationTool, isMC, false, EGammaEnergyCorrectionFile);
@@ -2417,7 +2429,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
-		for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
+		for(unsigned int n=0; n<electrons.size (); ++n)
 			{
 			pat::Electron& electron = electrons[n];
 
@@ -2425,18 +2437,15 @@ for(size_t f=0; f<urls.size();++f)
 				passKin(true),     passId(true),     passIso(true),
 				passVetoKin(true), passVetoId(true), passVetoIso(true);
 
-			int lid(electron.pdgId()); // should always be 11
+			// int lid(electron.pdgId()); // should always be 11
 
 			//apply electron corrections
-			/* no lepcorrs in 13.6
-			if(abs(lid)==11)
-				{
-				elDiff -= electron.p4();
-				ElectronEnCorrector.calibrate(electron, ev.eventAuxiliary().run(), edm::StreamID::invalidStreamID()); 
-				//electron = patUtils::GenericLepton(electron.el); //recreate the generic electron to be sure that the p4 is ok
-				elDiff += electron.p4();
-				}
-			*/
+			// the smearing procedure (as the Korean group did)
+
+			elDiff -= electron.p4();
+			ElectronEnCorrector.calibrate(electron, ev.eventAuxiliary().run(), edm::StreamID::invalidStreamID()); 
+			//electron = patUtils::GenericLepton(electron.el); //recreate the generic electron to be sure that the p4 is ok
+			elDiff += electron.p4();
 
 			//no need for charge info any longer
 			//lid = abs(lid);
