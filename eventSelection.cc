@@ -4962,30 +4962,6 @@ printf("End of (file loop) the job.\n");
 // Controls distributions of processed particles
 
 
-// CONTROLINFO
-/*
-*/
-
-FILE *csv_out;
-string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
-csv_out = fopen(FileName.c_str(), "w");
-
-fprintf(csv_out, "New output (sums per whole job!):\n");
-printout_counters(csv_out, job_def);
-printout_distrs(csv_out, job_def);
-
-// So, each job output contains for each value:
-// value_name,MC/Data,dtag,job_num,value
-// and the table for distr:
-// distr_name,MC/Data,dtag,job_num,bin,contents
-// simple grep/ack by first coloumn produces a ready data.frame for R
-// which should be summarised for each dataset -- easy with ddply
-// the only problem is:
-// FIXME: how to do MULTISELECT nicely here?
-
-fprintf(csv_out, "End of job output.\n\n");
-fclose(csv_out);
-
 if(saveSummaryTree)
 	{
 	TDirectory* cwd = gDirectory;
@@ -5001,32 +4977,13 @@ if(nMultiChannel>0) cout << "Warning! There were " << nMultiChannel << " multi-c
 printf ("\n");
 
 //##############################################
-//########     SAVING HISTO TO FILE     ########
+//########    SAVING HISTOs TO FILE     ########
 //##############################################
 //save control plots to file
 printf ("Results save in %s\n", outUrl.Data());
 
-// re-enabled the ROOT output
-// for resubmit option of the job script
 
-
-// singlelep_ttbar_initialevents->Write();
-// singlelep_ttbar_preselectedevents->Write();
-
-/*
-std::map<string, std::map<string, TH1D>> th1d_distr_control;
-*/
-
-/*
-// mc_channel -> TFile*
-std::map<string, TFile*> control_files;
-
-// open files
-for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
-	{
-	string channel = it->first;
-	}
-*/
+// CONTROL DISTRS, ROOT OUTPUT
 
 for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
 	{
@@ -5079,48 +5036,19 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 
 printf ("New output results saved in %s\n", (outdir.Data() + string("/") + dtag_s + string("_<channel>") + string("_") + job_num + string(".root")).c_str());
 
-/*
-// close files
-// open files
-for(std::map<string, TFile*>::iterator it = control_files.begin(); it != control_files.end(); ++it)
-	{
-	// string *channel = &it->first;
-	TFile * f = it->second;
-	f->Close();
-	}
-*/
 
+// JOB_DONE file
+// needed for precise accounting of done jobs, since a job can output many root files
 
+FILE *csv_out;
+string FileName = ((outUrl.ReplaceAll(".root",""))+".job_done").Data();
+csv_out = fopen(FileName.c_str(), "w");
 
-/*
-TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
+fprintf(csv_out, "The job is done!\n");
+// printout_counters(csv_out, job_def);
+// printout_distrs(csv_out, job_def);
 
-for(std::map<std::pair <string,string>, TH1I>::iterator it = th1i_distr_control.begin(); it != th1i_distr_control.end(); ++it)
-	{
-	const std::pair <string,string> *key = &it->first;
-	string mc_decay_suffix = key->first;
-	string name = key->second;
-
-	TH1I * distr = & it->second;
-
-	distr->Write();
-	}
-
-
-for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.begin(); it != th2d_distr_control.end(); ++it)
-	{
-	const std::pair <string,string> *key = &it->first;
-	string mc_decay_suffix = key->first;
-	string name = key->second;
-
-	TH2D * distr = & it->second;
-
-	distr->Write();
-	}
-
-ofile->Close();
-*/
-
+fclose(csv_out);
 
 if (outTxtFile) fclose (outTxtFile);
 
