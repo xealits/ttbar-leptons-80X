@@ -3518,6 +3518,8 @@ for(size_t f=0; f<urls.size();++f)
 					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
 					// int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
 					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
+					// jet_radius(pat::Jet& jet)
+					fill_1d(string("btag_radius_flavour_b"), 400, 0., 4.,   jet_radius(jet), weight);
 
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
 					// fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
@@ -3532,6 +3534,7 @@ for(size_t f=0; f<urls.size();++f)
 				} else if(abs(flavId)==4) {
 					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
 					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
+					fill_1d(string("btag_radius_flavour_c"), 400, 0., 4.,   jet_radius(jet), weight);
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
@@ -3546,6 +3549,7 @@ for(size_t f=0; f<urls.size();++f)
 				} else {
 					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
 					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
+					fill_1d(string("btag_radius_flavour_udsg"), 400, 0., 4.,   jet_radius(jet), weight);
 
 					hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
 
