@@ -2018,7 +2018,12 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 1, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 1, weight);
 
-		// ---------------------------------- Top pT reweighting
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   1, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   1, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 1, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 1, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 1, 1);
+		// ---------------------------------- Top pT reeventing
 		// find the produced tops,
 		// reweight according them
 		if (isTTbarMC && genHandle.isValid())
@@ -2063,7 +2068,12 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 2, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 2, weight);
 
-		// ---------------------------------- these are weird NLO -1 weights
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   2, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   2, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 2, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 2, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 2, 1);
+		// ---------------------------------- these are weird NLO -1 events
 		// TODO: figure out how exactly they correct for NLO
 		// Take into account the negative weights from some NLO generators (otherwise some phase space will be double counted)
 		if(isNLOMC)
@@ -2158,6 +2168,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 3, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 3, weight);
 
+		fill_1i(string("eventflow_el"), 300, 0, 300,   3, 1);
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   3, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 3, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 3, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 3, 1);
 		// ------------------------------- count N good verteces
 		// needed for particle selection/event classification later
 		// and pile-up control-distribution for data
@@ -2257,6 +2272,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 4, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 4, weight);
 
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   4, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   4, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 4, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 4, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 4, 1);
 
 		// pu distrs
 		fill_1d( string("pileup_passtrig_rawWeight_pergoodpv"), 100, 0, 100, nGoodPV, rawWeight);
@@ -2351,6 +2371,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 5, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 5, weight);
 
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   5, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   5, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 5, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 5, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 5, 1);
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
@@ -2478,7 +2503,12 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 6, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 6, weight);
 
-		// increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   6, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   6, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 6, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 6, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 6, 1);
+		// increment( string("eventflow_1_passed_trig"), weight ); // should not matter
 		// increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
 		// increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
@@ -2580,6 +2610,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("weightflow_elmu"), 300, 0, 300, 7, weight);
 		fill_1i(string("weightflow_mumu"), 300, 0, 300, 7, weight);
 
+		fill_1i(string("eventflow_mu"), 300, 0, 300,   7, 1);
+		fill_1i(string("eventflow_el"), 300, 0, 300,   7, 1);
+		fill_1i(string("eventflow_elel"), 300, 0, 300, 7, 1);
+		fill_1i(string("eventflow_elmu"), 300, 0, 300, 7, 1);
+		fill_1i(string("eventflow_mumu"), 300, 0, 300, 7, 1);
 
 		// ------------------------- event physics and the corresponding selection
 
@@ -4023,6 +4058,7 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("eventflow_mu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4294,6 +4330,7 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_el"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("eventflow_el"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4603,6 +4640,7 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_elel"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("eventflow_elel"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4729,6 +4767,7 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_mumu"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("eventflow_mumu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4855,6 +4894,7 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("eventflow_elmu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
