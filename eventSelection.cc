@@ -3533,9 +3533,14 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = selJetsNoLep[ijet];
 
+			double eta=jet.eta();
+
 			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
 			//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
 			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
+
+			fill_2d(string("all_b_tagging_candidate_jets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
+			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 
 			//update according to the SF measured by BTV
 			// new fency procedure with CSV files
@@ -3548,8 +3553,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(isMC){
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
-				double eta=jet.eta();
-				fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+				// fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
 
 				double sf;
 				if (abs(flavId)==5) {
@@ -3603,6 +3607,7 @@ for(size_t f=0; f<urls.size();++f)
 					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
 					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 				}
+			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged_after_mc_sfs"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 			}
 
 			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
