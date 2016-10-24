@@ -1728,7 +1728,7 @@ Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fa
 
 
 // generator token for event Gen weight call:
-edm::EDGetTokenT<GenEventInfoProduct> generatorToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")));
+//edm::EDGetTokenT<GenEventInfoProduct> generatorToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")));
 
 
 // ----------------------------
@@ -2101,8 +2101,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			if (debug) cout << "seting the NLOMC Gen weight\n";
 
-			//fwlite::Handle<GenEventInfoProduct> evt;
-			//evt.getByLabel(ev, "generator");
+			fwlite::Handle<GenEventInfoProduct> evt;
+			evt.getByLabel(ev, "generator");
 
 			// get by token maybe?
 			/*
@@ -2113,8 +2113,8 @@ for(size_t f=0; f<urls.size();++f)
 			iEvent.getByToken( generatorToken_,evt);
 			*/
 
-			edm::Handle<GenEventInfoProduct> evt;                                                                                           
-			iEvent.getByToken( generatorToken_,evt);
+			//edm::Handle<GenEventInfoProduct> evt;                                                                                           
+			//iEvent.getByToken( generatorToken_,evt);
 
 			if(evt.isValid())
 				{
