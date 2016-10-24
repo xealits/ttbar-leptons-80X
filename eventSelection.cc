@@ -2073,6 +2073,17 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1i(string("eventflow_elel"), 300, 0, 300, 2, 1);
 		fill_1i(string("eventflow_elmu"), 300, 0, 300, 2, 1);
 		fill_1i(string("eventflow_mumu"), 300, 0, 300, 2, 1);
+
+		// old bit on top pT reweighting:
+		// FIXME: Top pT reweighting to be reactivated as soon as corrections are released
+		// if(tPt>0 && tbarPt>0 && topPtWgt)
+		//   {
+		//   topPtWgt->computeWeight(tPt,tbarPt);
+		//   topPtWgt->getEventWeight(wgtTopPt, wgtTopPtUp, wgtTopPtDown);
+		//   wgtTopPtUp /= wgtTopPt;
+		//   wgtTopPtDown /= wgtTopPt;
+		//   }
+
 		// ---------------------------------- these are weird NLO -1 events
 		// TODO: figure out how exactly they correct for NLO
 		// Take into account the negative weights from some NLO generators (otherwise some phase space will be double counted)
@@ -2726,15 +2737,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		if(debug) cout << "DEBUG: Event was not stopped by the ttbar sample categorization (either success, or it was not ttbar)" << endl;
 */
-
-		// FIXME: Top pT reweighting to be reactivated as soon as corrections are released
-		// if(tPt>0 && tbarPt>0 && topPtWgt)
-		//   {
-		//   topPtWgt->computeWeight(tPt,tbarPt);
-		//   topPtWgt->getEventWeight(wgtTopPt, wgtTopPtUp, wgtTopPtDown);
-		//   wgtTopPtUp /= wgtTopPt;
-		//   wgtTopPtDown /= wgtTopPt;
-		//   }
 
 
 		// ------------------------------------ actual particles?
@@ -3782,6 +3784,7 @@ for(size_t f=0; f<urls.size();++f)
 		// if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), met.pt(), weight);
 		// if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), met.pt(), weight);
 
+		/* HLT efficiencies, redo them sometime
 		if (isSingleE)
 			{
 			fill_pt_e( string("singleel_electrons_pt"), selElectrons[0].pt(), weight);
@@ -3810,6 +3813,7 @@ for(size_t f=0; f<urls.size();++f)
 			Double_t muon_HLTeff_SF = 1;
 			weight *= muon_HLTeff_SF;
 			}
+		*/
 
 		if(debug){
 			cout << "assigned lepton channel" << endl;
@@ -3865,7 +3869,7 @@ for(size_t f=0; f<urls.size();++f)
 				Double_t electron_HLTeff_SF1 = 1;
 				Double_t electron_HLTeff_SF2 = 1;
 
-				weight *= 1 - (1 - electron_HLTeff_SF1)*(1 - electron_HLTeff_SF2);
+				//weight *= 1 - (1 - electron_HLTeff_SF1)*(1 - electron_HLTeff_SF2);
 				}
 			else if (fabs(dilep_ids) == 169 )
 				{
@@ -3883,7 +3887,7 @@ for(size_t f=0; f<urls.size();++f)
 				//Double_t muon_HLTeff_SF2 = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(l2_eta, l2_pt) );
 				Double_t muon_HLTeff_SF1 = 1;
 				Double_t muon_HLTeff_SF2 = 1;
-				weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
+				//weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
 				}
 			else
 				{
@@ -3899,7 +3903,7 @@ for(size_t f=0; f<urls.size();++f)
 				Double_t electron_HLTeff_SF = 1;
 				//Double_t muon_HLTeff_SF = muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(mu_eta, mu_pt) );
 				Double_t muon_HLTeff_SF = 1;
-				weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
+				//weight *= 1 - (1 - electron_HLTeff_SF)*(1 - muon_HLTeff_SF);
 				}
 			}
 
