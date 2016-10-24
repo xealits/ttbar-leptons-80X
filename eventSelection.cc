@@ -616,6 +616,7 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_t
 double top_pT_SF(double x)
 	{
 	// the SF function is SF(x)=exp(a+bx)
+	// where x is pT of the top quark (at generation?)
 	// sqrt(s) 	channel     	a     	b
 	// 7 TeV 	all combined 	0.199 	-0.00166
 	// 7 TeV 	l+jets      	0.174 	-0.00137
@@ -1971,7 +1972,7 @@ for(size_t f=0; f<urls.size();++f)
 		//   increment( "control_point_name", weight )
 
 
-		singlelep_ttbar_initialevents->Fill(1);
+		//singlelep_ttbar_initialevents->Fill(1);
 		iev++;
 		totalEntries++;
 		if (iev % treeStep == 0)
@@ -1986,18 +1987,18 @@ for(size_t f=0; f<urls.size();++f)
 		// MC is weighted according to distributions of a bunch of data properties
 
 		// NLO -1 corrections
-		double weightGen(1.);
+		double weight_Gen = 1.;
 
 		// Top pT reweighting
-		double topPtWgt = 1.;
+		double weight_TopPT = 1.;
 		// top_pT_SF
 
 		// there are also the (dissabled now, since NLO samples are used) HT-binned and pthat-binned stitching of LO and NLO
 
 		// ---------------------------------- pileup weight
-		double puWeight         (1.0);
-		double puWeight_up      (1.0);
-		double puWeight_down    (1.0);
+		double weight_PU         (1.0);
+		double weight_PU_up      (1.0);
+		double weight_PU_down    (1.0);
 
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
@@ -2038,27 +2039,24 @@ for(size_t f=0; f<urls.size();++f)
 				if (id == 6 && (!found_top))
 					{ // if it is first t quark
 					found_top = true;
-					topPtWgt *= TMath::Sqrt(top_pT_SF(p.pt()));
+					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
 					}
 
 				if (id == -6 && (!found_atop))
 					{ // if it is first anti-t quark
 					found_atop = true;
-					topPtWgt *= TMath::Sqrt(top_pT_SF(p.pt()));
+					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
 					}
 
 				if (found_top && found_atop) break;
 				// TODO: should I apply the reweighting only when both top-atop are found?
 				// it is always true in TTbar MC..
 				}
-
-			// similar range distribution
-			// fill_btag_sf(string("top_pT_reweighting_SF"), topPtWgt, 1);
-			fill_1d(string("top_pT_reweighting_SF"), 200, 0., 2., topPtWgt, weight);
-			// TODO: move all weights to a separate section?
 			}
 
-		weight *= topPtWgt; // how is the overall integral of MC?
+		fill_1d(string("weight_TopPT"), 200, 0., 2., weight_TopPT, 1);
+
+		weight *= weight_TopPT; // how is the overall integral of MC?
 		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
 		// wighttoppt 2
@@ -2094,8 +2092,8 @@ for(size_t f=0; f<urls.size();++f)
 			evt.getByLabel(ev, "generator");
 			if(evt.isValid())
 				{
-				//weightGen = (evt->weight() > 0 ) ? 1. : -1. ;
-				weightGen = evt->weight();
+				//weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
+				weight_Gen = evt->weight();
 				}
 
 			// FIXME: this is for PDF uncertainties, must reactivate it at some point.
@@ -2111,7 +2109,7 @@ for(size_t f=0; f<urls.size();++f)
 			//   //  EventInfo.ttbar_nw++;
 			//   //}
 			//  }
-			//cout << "Event " << iev << " has genweight: " << weightGen << " and LHE weight " << weightLhe << endl;
+			//cout << "Event " << iev << " has genweight: " << weight_Gen << " and LHE weight " << weightLhe << endl;
 
 			}
 
@@ -2163,14 +2161,16 @@ for(size_t f=0; f<urls.size();++f)
 			// getHTScaleFactor works on combining several LO datasets with NLO
 			// now one 1 NLO dataset is used for both WJets and DYJets
 			// thus it is commented out here
-			//weightGen *=   patUtils::getHTScaleFactor(dtag, lheHt);
+			//weight_Gen *=   patUtils::getHTScaleFactor(dtag, lheHt);
 			}
 		*/
 
-		weight *= weightGen;
-		weight_up *= weightGen;
-		weight_down *= weightGen;
-		rawWeight *=weightGen;
+		fill_1d(string("weight_Gen"), 200, 0., 2., weight_Gen, 1);
+
+		weight *= weight_Gen;
+		weight_up *= weight_Gen;
+		weight_down *= weight_Gen;
+		rawWeight *=weight_Gen;
 
 		// weightgen
 		fill_1i(string("weightflow_el"), 300, 0, 300,   3, weight);
@@ -2233,19 +2233,19 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 			//ngenITpu = nGoodPV; // based on nvtx
-			//puWeight = LumiWeights->weight (ngenITpu) * PUNorm[0];
+			//weight_PU = LumiWeights->weight (ngenITpu) * PUNorm[0];
 			// So, in Pietro's approach ngenITpu is number of vertices in the beam crossing?
-			//puWeight = direct_pileup_reweight[ngenITpu];
+			//weight_PU = direct_pileup_reweight[ngenITpu];
 			// Mara does:
 			//num_inters = puInfoH->at(0).getTrueNumInteractions(); // in 76 it seems to not work, returns 0 always
 			// Using Pietro's PU number vertices:
 			num_inters = ngenITpu;
 			if (num_inters<100) {
-				puWeight = direct_pileup_reweight[num_inters];
-				puWeight_up = direct_pileup_reweight_up[num_inters];
-				puWeight_down = direct_pileup_reweight_down[num_inters];
+				weight_PU = direct_pileup_reweight[num_inters];
+				weight_PU_up = direct_pileup_reweight_up[num_inters];
+				weight_PU_down = direct_pileup_reweight_down[num_inters];
 			}
-			else {//puWeight = 0; puWeight_up = 0; puWeight_down = 0;
+			else {//weight_PU = 0; weight_PU_up = 0; weight_PU_down = 0;
 				continue; // just move on
 			}
 
@@ -2265,9 +2265,11 @@ for(size_t f=0; f<urls.size();++f)
 			num_inters = vtx.size();
 			}
 
-		weight *= puWeight;
-		weight_up *= puWeight_up;
-		weight_down *= puWeight_down;
+		fill_1d(string("weight_PU"), 200, 0., 2., weight_PU, 1);
+
+		weight *= weight_PU;
+		weight_up *= weight_PU_up;
+		weight_down *= weight_PU_down;
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -2328,7 +2330,7 @@ for(size_t f=0; f<urls.size();++f)
 		// if (nGoodPV>100) nGoodPV = 99;
 		// event_pergoodpv_weight[nGoodPV] += weight;
 		// //if (num_inters<0)  num_inters = 0;
-		// if (weightGen<0)
+		// if (weight_Gen<0)
 		// 	{
 		// 	increment( string("negative_events"), 1 );
 		// 	fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
