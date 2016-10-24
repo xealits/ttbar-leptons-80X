@@ -2029,7 +2029,10 @@ for(size_t f=0; f<urls.size();++f)
 		// reweight according them
 		if (isTTbarMC && genHandle.isValid())
 			{
-			bool found_top, found_atop;
+			if (debug) cout << "finding tops for Top pT reweighting\n";
+
+			bool found_top=false, found_atop=false;
+			if (debug) cout << "found_top = " << found_top << ", found_atop = " << found_atop << "\n";
 			for(size_t i = 0; i < gen.size(); ++ i)
 				{
 				const reco::GenParticle & p = gen[i];
@@ -2038,14 +2041,18 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (id == 6 && (!found_top))
 					{ // if it is first t quark
+					if (debug) cout << "found top, pT = " << p.pt() << "\n";
 					found_top = true;
 					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
+					if (debug) cout << "now weight_TopPT = " << weight_TopPT << "\n";
 					}
 
 				if (id == -6 && (!found_atop))
 					{ // if it is first anti-t quark
+					if (debug) cout << "found atop, pT = " << p.pt() << "\n";
 					found_atop = true;
 					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
+					if (debug) cout << "now weight_TopPT = " << weight_TopPT << "\n";
 					}
 
 				if (found_top && found_atop) break;
@@ -2087,11 +2094,13 @@ for(size_t f=0; f<urls.size();++f)
 		// Take into account the negative weights from some NLO generators (otherwise some phase space will be double counted)
 		if(isNLOMC)
 			{
+			if (debug) cout << "seting the NLOMC Gen weight\n";
 
 			fwlite::Handle<GenEventInfoProduct> evt;
 			evt.getByLabel(ev, "generator");
 			if(evt.isValid())
 				{
+				if (debug) cout << "evt is valid, evt->weight() = " << evt->weight() << "\n";
 				//weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
 				weight_Gen = evt->weight();
 				}
@@ -2114,7 +2123,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		std::vector < TString > tags (1, "all"); // Inclusive inclusiveness
+		//std::vector < TString > tags (1, "all"); // Inclusive inclusiveness
 
 		//
 		// DERIVE WEIGHTS TO APPLY TO SAMPLE
