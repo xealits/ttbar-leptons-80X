@@ -1818,7 +1818,7 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
-			if(iev == debug_len)
+			if(iev > debug_len)
 				{
 				cout << "Got to the event " << iev << " in the file, exiting" << endl;
 				//return 0;
