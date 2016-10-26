@@ -3290,12 +3290,14 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug) cout << "jet eta pt e, e x y z" << endl;
 
 		// v6, adding jet corrections and b-tagging
-		LorentzVector jet_corr(0., 0., 0., 0.);
+		LorentzVector full_jet_corr(0., 0., 0., 0.);
 		for(size_t ijet=0; ijet<jets.size(); ijet++)
 			{
 			// TODO: so does this mean "in place"?
 			pat::Jet& jet = jets[ijet];
 			fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+
+			LorentzVector jet_corr(0., 0., 0., 0.);
 
 			LorentzVector jet_initial_momentum = jet.p4();
 
@@ -3303,15 +3305,9 @@ for(size_t f=0; f<urls.size();++f)
 			//correct JES
 			LorentzVector rawJet = jet.correctedP4("Uncorrected");
 
+			fill_2d(string("slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
+
 			if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
-
-			// here is the correct1 jet correction point
-
-			fill_pt_e( string("all_jets_pt_raw"), rawJet.pt(), weight);
-			if (ijet < 2)
-				{
-				fill_pt_e( string("top2pt_jets_pt_raw"), rawJet.pt(), weight);
-				}
 
 			//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
 			//LorentzVector rawJet(jet*toRawSF);
@@ -3326,15 +3322,6 @@ for(size_t f=0; f<urls.size();++f)
 
 			fill_2d(string("slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 			fill_1d(string("slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
-
-			// here is the correct2 jet correction point
-
-			fill_pt_e( string("all_jets_pt_corrected2"), jet.pt(), weight);
-			if (ijet < 2)
-				{
-				fill_pt_e( string("top2pt_jets_pt_corrected2"), jet.pt(), weight);
-				}
-
 
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
@@ -3388,9 +3375,10 @@ for(size_t f=0; f<urls.size();++f)
 
 			// Add the jet momentum correction:
 			// jet_cor propagation is on in 13.4
-			jet_corr += jet.p4() - jet_initial_momentum;
+			jet_corr = jet.p4() - jet_initial_momentum;
+			full_jet_corr += jet_corr;
 
-			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., jet_corr.pt(), jet_corr.eta(), weight);
+			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
 
 			if(debug)
 				{
@@ -3403,8 +3391,8 @@ for(size_t f=0; f<urls.size();++f)
 		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
 
 		// ----------------------------------- here is the correctF jet correction point
-		// Propagate jet_corr to MET:
-		met.setP4(met.p4() - jet_corr);
+		// Propagate full_jet_corr to MET:
+		met.setP4(met.p4() - full_jet_corr);
 		// TODO: uncertainties?
 		// for leptons they are done as:
 		//met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
