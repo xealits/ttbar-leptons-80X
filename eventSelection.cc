@@ -2119,8 +2119,8 @@ for(size_t f=0; f<urls.size();++f)
 			if(evt.isValid())
 				{
 				if (debug) cout << "evt is valid, evt->weight() = " << evt->weight() << "\n";
-				//weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
-				weight_Gen = evt->weight();
+				weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
+				// weight_Gen = evt->weight();
 				}
 
 			// FIXME: this is for PDF uncertainties, must reactivate it at some point.
