@@ -3086,10 +3086,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
-		int ntaus (0);
 		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 			{
 			pat::Tau& tau = taus[n];
+			fill_2d(string("taucontrol_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("taucontrol_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			// ---------- IDs
 					
@@ -3125,7 +3126,9 @@ for(size_t f=0; f<urls.size();++f)
 			// -- recommended for multi-object final states (ttH, H->tau-tau)
 			// -- not found in noHLT TTbar
 			
-			fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
+			fill_2d(string("taucontrol_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("taucontrol_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
 
 			// Pixel hits cut (will be available out of the box in new MINIAOD production)
 			//{
@@ -3140,19 +3143,23 @@ for(size_t f=0; f<urls.size();++f)
 			//if(nChHadPixelHits==0) continue;
 			//}
 
+			/*
 			fill_pt_e( string("all_taus_ided_pt"), tau.pt(), weight);
 			if (count_ided_taus<1)
 				{
 				fill_pt_e( string("top1pt_taus_ided_pt"), tau.pt(), weight);
 				count_ided_taus += 1;
 				}
+			*/
 
 			// --------- Kinematics
 			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
 
 			selTaus.push_back(tau);
-			ntaus++;
+			fill_2d(string("taucontrol_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("taucontrol_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 			}
+
 		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
 
 
