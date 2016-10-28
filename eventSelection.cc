@@ -2323,8 +2323,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d( string("pileup_passtrig_weight_pergoodpv"),    100, 0, 100, nGoodPV, weight);
 		// nGoodPV = vtx.size() now
 
-		fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
+		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
+		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
 
 		// inline control functions usage:
 		//   fill_pt_e( "control_point_name", value, weight)
@@ -3126,10 +3126,6 @@ for(size_t f=0; f<urls.size();++f)
 			// -- recommended for multi-object final states (ttH, H->tau-tau)
 			// -- not found in noHLT TTbar
 
-			if (isMC) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
-				weight *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
-			// TODO: should here be a normalization to all MC events?
-
 			fill_2d(string("taucontrol_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
 			fill_1d(string("taucontrol_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
@@ -3188,6 +3184,10 @@ for(size_t f=0; f<urls.size();++f)
 					{ overlapWithLepton=true; break; }
 				}
 			if (overlapWithLepton) continue;
+
+			if (isMC) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
+				weight *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
+			// TODO: should here be a normalization to all MC events?
 
 			selTausNoLep.push_back(tau);
 			// so these are the final taus we use in the selection
