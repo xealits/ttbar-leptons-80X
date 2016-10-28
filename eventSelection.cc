@@ -3125,7 +3125,11 @@ for(size_t f=0; f<urls.size();++f)
 			// byTightCombinedIsolationDeltaBetaCorr3HitsdR03
 			// -- recommended for multi-object final states (ttH, H->tau-tau)
 			// -- not found in noHLT TTbar
-			
+
+			if (isMC) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
+				weight *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
+			// TODO: should here be a normalization to all MC events?
+
 			fill_2d(string("taucontrol_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
 			fill_1d(string("taucontrol_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
