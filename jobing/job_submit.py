@@ -180,7 +180,7 @@ if "cern.ch" in hostname: local_tier = "T2_CH_CERN"
 # default file server is the global server:
 file_server = "root://cms-xrd-global.cern.ch/"
 
-n_files_per_job = 5
+n_files_per_job = 10
 
 for dset_group in dsets['proc']:
     isdata = dset_group.get('isdata', False)
@@ -223,6 +223,8 @@ for dset_group in dsets['proc']:
         print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
 
         # Finding full local sample
+        print("Command:")
+        print('das_client --query="site dataset={}" --format=JSON '.format(dset))
         status, out = commands.getstatusoutput('das_client --query="site dataset={}" --format=JSON '.format(dset))
         #sites = out.split('\n')
         if status != 0 or len(out) < 1:
@@ -233,10 +235,14 @@ for dset_group in dsets['proc']:
             continue
         sites_info = json.loads(out)
         sites = []
+        #print(sites_info['data'])
         for i in sites_info['data']:
             print(i['site'])
-            x = i['site'][0]
-            x.update(i['site'][1])
+            #x = i['site'][0]
+            #x.update(i['site'][1])
+            x = {}
+            for s in i['site']:
+                x.update(s)
             sites.append(x['name'] + ' ' + x['dataset_fraction'])
         #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
 
