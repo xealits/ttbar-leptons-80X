@@ -4031,6 +4031,9 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
 				fill_pt_e( string("singlelep_tau_met_pt"), met.pt(), weight);
+				fill_1i(string("slep_passtau_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
+				fill_1i(string("slep_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
+				fill_1i(string("slep_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
 				}
 
 			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
@@ -4058,10 +4061,16 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
 					fill_pt_e( string("singlemu_tau_met_pt"), 19, weight);
+					fill_1i(string("smu_passtau_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
+					fill_1i(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
+					fill_1i(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
 					fill_pt_e( string("singlemu_os_met_pt"), 19, weight);
+					fill_1i(string("smu_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
+					fill_1i(string("smu_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
+					fill_1i(string("smu_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
 					}
 
 				// the 5 geometrical for loops...
@@ -4397,6 +4406,9 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_pt_e( string("singleel_allbutmetsel_met_pt"), met.pt(), weight);
+					fill_1i(string("sel_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
+					fill_1i(string("sel_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
+					fill_1i(string("sel_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
 					}
 
 				increment(string("weightflow_e_") + to_string(multisel), weight);
