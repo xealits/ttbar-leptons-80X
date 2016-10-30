@@ -2005,6 +2005,9 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_PU_up      (1.0);
 		double weight_PU_down    (1.0);
 
+		// --------------------------------- tau ID SF
+		double weight_tauIDsf         (1.0);
+
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
 
@@ -3175,6 +3178,7 @@ for(size_t f=0; f<urls.size();++f)
 		for (size_t itau = 0; itau < selTaus.size(); ++itau)
 			{
 			pat::Tau& tau = selTaus[itau];
+			if(debug) cout << "selecting NoLep taus " << itau << endl;
 
 			// cross-cleaning taus with leptons
 			bool overlapWithLepton(false);
@@ -3186,7 +3190,7 @@ for(size_t f=0; f<urls.size();++f)
 			if (overlapWithLepton) continue;
 
 			if (isMC) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
-				weight *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
+				weight_tauIDsf *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
 			// TODO: should here be a normalization to all MC events?
 
 			selTausNoLep.push_back(tau);
@@ -3264,9 +3268,12 @@ for(size_t f=0; f<urls.size();++f)
 
 		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
 
+		weight *= weight_tauIDsf;
+		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   sf, weight_tauIDsf);
 
 		if(debug){
-			cout << "processed taus" << endl;
+			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
+			cout << "ID SF = " << weight_tauIDsf << endl;
 			}
 
 		//
