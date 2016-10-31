@@ -3997,9 +3997,11 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// weight_tauIDsf = 1 - (1 -  0.83 + r3->Gaus(0, 0.06))^n_taus;
 					weight_tauIDsf = 1 - pow(1 -  0.83 + r3->Gaus(0, 0.06), n_taus);
-					weight *= weight_tauIDsf;
+					// weight *= weight_tauIDsf;
 					}
 				}
+
+			fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 			bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
 			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
@@ -4133,6 +4135,8 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("weightflow_mu_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf_2);
+						fill_1d(string("tauIDSFs_in_weightflow_mu_") + string(multi), 200, 0., 2.,   weight_tauIDsf_2, 1);
 						fill_1i(string("eventflow_mu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
@@ -4405,6 +4409,8 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_el"), 300, 0, 300,   10 + multi, weight);
+						fill_1i(string("weightflow_el_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf_2);
+						fill_1d(string("tauIDSFs_in_weightflow_el_") + string(multi), 200, 0., 2.,   weight_tauIDsf_2, 1);
 						fill_1i(string("eventflow_el"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
