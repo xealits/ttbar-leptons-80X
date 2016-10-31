@@ -3274,7 +3274,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			weight *= weight_tauIDsf;
 			}
-		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   sf, weight_tauIDsf);
+		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 		if(debug){
 			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
