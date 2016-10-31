@@ -3270,11 +3270,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
 
-		if (withTauIDSFs)
-			{
-			weight *= weight_tauIDsf;
-			}
-		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);
+		// if (withTauIDSFs)
+		// 	{
+		// 	weight *= weight_tauIDsf;
+		// 	}
+		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);;
 
 		if(debug){
 			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
@@ -3993,6 +3993,12 @@ for(size_t f=0; f<urls.size();++f)
 			if(n_taus>0)
 				{
 				dileptonSystem = selLeptons[0].p4() + selTausNoLep[0].p4();
+				if (isMC && withTauIDSFs)
+					{
+					// weight_tauIDsf = 1 - (1 -  0.83 + r3->Gaus(0, 0.06))^n_taus;
+					weight_tauIDsf = 1 - pow(1 -  0.83 + r3->Gaus(0, 0.06), n_taus);
+					weight *= weight_tauIDsf;
+					}
 				}
 
 			bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
