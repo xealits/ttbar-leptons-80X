@@ -4135,8 +4135,8 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("weightflow_mu_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf_2);
-						fill_1d(string("tauIDSFs_in_weightflow_mu_") + string(multi), 200, 0., 2.,   weight_tauIDsf_2, 1);
+						fill_1i(string("weightflow_mu_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						fill_1i(string("eventflow_mu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
@@ -4409,8 +4409,8 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1i(string("weightflow_el"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("weightflow_el_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf_2);
-						fill_1d(string("tauIDSFs_in_weightflow_el_") + string(multi), 200, 0., 2.,   weight_tauIDsf_2, 1);
+						fill_1i(string("weightflow_el_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						fill_1i(string("eventflow_el"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
