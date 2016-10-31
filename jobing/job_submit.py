@@ -77,24 +77,43 @@ The dsets.json file structured as:
 
 """
 
-#TODO: import argparse
+import argparse
 
 from sys import argv, exit
-import json, os
+import json
+import os
 import commands # for some reason subprocess.check_output does not work with das_client
 import subprocess # trying it again
 import shutil
 
 
+parser = argparse.ArgumentParser(
+        formatter_class = argparse.RawDescriptionHelpFormatter,
+        description = "Submit jobs to LSF cluster on lxplus.",
+        epilog = "Example:\n$ python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.40/"
+        )
 
-if len(argv) != 5:
-    print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
-    exit(1)
+parser.add_argument("execname",   help="the name of the executable in cmssw project to run the jobs of")
+parser.add_argument("cfg",    help="the filename (relational path) of the cfg.py template for the jobs")
+parser.add_argument("dsets",  help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+parser.add_argument("outdir", help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
+parser.add_argument("--tausf", help="turn on tau ID efficiency SF in cfg.py of jobs",
+        action = "store_true")
 
+#if len(argv) != 5:
+    #print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
+    #exit(1)
 
 # Process input
 
-exec_name, cfg_templ_filename, dsets_json_filename, outdirname = argv[1:]
+#exec_name, cfg_templ_filename, dsets_json_filename, outdirname = argv[1:]
+
+args = parser.parse_args()
+
+exec_name = args.execname
+cfg_templ_filename = args.cfg
+dsets_json_filename = args.dsets
+outdirname = args.outdir
 outdirname = os.path.abspath(outdirname.strip()) + '/' # just in case
 
 with open(cfg_templ_filename) as t_f, open(dsets_json_filename) as d_f:
@@ -273,7 +292,8 @@ for dset_group in dsets['proc']:
             job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, job_num = i, isMC = not isdata,
                                        outfile = outdirname + dtag + '_' + str(i) + '.root',
                                        outdir = outdirname + '/',
-                                       project_dir = project_dir)
+                                       project_dir = project_dir,
+                                       withTauIDSFs = args.tausf)
             # job_cfg = cfg_templ.format(job_files = job_chunk, lumiCert = lumiMask, dtag = dtag, outdir = outdirname, jobID = i, isdata = isdata)
 
             job_cfg_filename = outdirname + dtag + '_' + str(i) + '_cfg.py'
