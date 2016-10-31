@@ -1333,6 +1333,8 @@ bool isW0JetsSet   (isMC && (dtag.Contains ("W0Jets")));
 //bool isNoHLT = runProcess.getParameter<bool>  ("isNoHLT");
 bool isNoHLT = dtag.Contains("noHLT");
 
+bool withTauIDSFs = runProcess.getParameter <bool> ("withTauIDSFs");
+
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
@@ -3268,7 +3270,10 @@ for(size_t f=0; f<urls.size();++f)
 
 		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
 
-		weight *= weight_tauIDsf;
+		if (withTauIDSFs)
+			{
+			weight *= weight_tauIDsf;
+			}
 		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   sf, weight_tauIDsf);
 
 		if(debug){
