@@ -4732,8 +4732,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1i(string("weightflow_elel"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("eventflow_elel"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_elel"), 300, 0, 300,   10 + multi, weight);
+						fill_1d(string("eventflow_elel"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4859,8 +4859,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1i(string("weightflow_mumu"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("eventflow_mumu"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_mumu"), 300, 0, 300,   10 + multi, weight);
+						fill_1d(string("eventflow_mumu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
@@ -4986,8 +4986,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1i(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("eventflow_elmu"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
+						fill_1d(string("eventflow_elmu"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
 					}
