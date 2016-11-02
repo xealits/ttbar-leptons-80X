@@ -3689,7 +3689,7 @@ for(size_t f=0; f<urls.size();++f)
 					// the ID should be in:
 					// jet_origin->pdgId();
 					//wjets_jet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(hlt_channel + string("wjets_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
+					fill_1d(hlt_channel + string("wjets_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
 					//wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// wjets_taujet_origin
 					}
@@ -3725,7 +3725,7 @@ for(size_t f=0; f<urls.size();++f)
 							// the ID should be in:
 							// jet_origin->pdgId();
 							//wjets_taujet_origin->Fill(abs( jet.partonFlavour() ));
-							fill_1d(hlt_channel + string("wjets_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
+							fill_1d(hlt_channel + string("wjets_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
 							//wjets_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// wjets_jet_origin
 							}
@@ -3799,7 +3799,7 @@ for(size_t f=0; f<urls.size();++f)
 					// the ID should be in:
 					// jet_origin->pdgId();
 					//qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(hlt_channel + string("qcd_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
+					fill_1d(hlt_channel + string("qcd_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
 					//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_taujet_origin
 					}
@@ -3834,7 +3834,7 @@ for(size_t f=0; f<urls.size();++f)
 							// the ID should be in:
 							// jet_origin->pdgId();
 							//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
-							fill_1d(hlt_channel + string("qcd_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
+							fill_1d(hlt_channel + string("qcd_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
 							//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// qcd_jet_origin
 							}
