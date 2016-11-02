@@ -3838,8 +3838,8 @@ fprintf(csv_out, "New output (sums per whole job!):\n");
 
 //printout_counters(csv_out, string(isMC ? "MC,": "Data,") + dtag_s + string(",") + job_num);
 //printout_distrs(csv_out, string(isMC ? "MC,": "Data,") + dtag_s + string(",") + job_num);
-printout_counters(csv_out, job_def);
-printout_distrs(csv_out, job_def);
+//printout_counters(csv_out, job_def);
+//printout_distrs(csv_out, job_def);
 
 // So, each job output contains for each value:
 // value_name,MC/Data,dtag,job_num,value
@@ -3876,6 +3876,7 @@ printf ("\n");
 //save control plots to file
 printf ("Results save in %s\n", outUrl.Data());
 
+/*
 // re-enabled the ROOT output
 // for resubmit option of the job script
 TFile *ofile = TFile::Open (outUrl + ".root", "recreate");
@@ -3937,6 +3938,68 @@ for(std::map<std::pair <string,string>, TH2D>::iterator it = th2d_distr_control.
 
 
 ofile->Close();
+*/
+
+for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
+	{
+	// const std::pair <string,string> *key = &it->first;
+	string channel = it->first;
+
+	//outUrl.Data() is dtag_jobnum
+	// use them separately, take from: dtag_s, job_num
+	// TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "CREATE");
+	TFile* out_f = TFile::Open (outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root")), "CREATE");
+	// string mc_decay_suffix = key->first;
+	std::map<string, TH1D> * th1d_controlpoints = & it->second;
+
+	for(std::map<string, TH1D>::iterator it = th1d_controlpoints->begin(); it != th1d_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH1D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	std::map<string, TH1I> * th1i_controlpoints = & th1i_distr_maps_control[channel];
+
+	for(std::map<string, TH1I>::iterator it = th1i_controlpoints->begin(); it != th1i_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH1I * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	std::map<string, TH2D> * th2d_controlpoints = & th2d_distr_maps_control[channel];
+
+	for(std::map<string, TH2D>::iterator it = th2d_controlpoints->begin(); it != th2d_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH2D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	std::map<string, TH3D> * th3d_controlpoints = & th3d_distr_maps_control[channel];
+
+	for(std::map<string, TH3D>::iterator it = th3d_controlpoints->begin(); it != th3d_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH3D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
+	out_f->Close();
+	}
 
 
 if (outTxtFile) fclose (outTxtFile);
