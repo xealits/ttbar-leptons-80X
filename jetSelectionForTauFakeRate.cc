@@ -743,8 +743,16 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 	{
 	// for tau (and other) fake-rates
 	// check if the key (mc_decay, control point) has been initialized
-	std::pair <string,string> key (mc_decay, control_point_name);
+	// std::pair <string,string> key (mc_decay, control_point_name);
 
+	// create channel map in th3d_distr_maps_control
+	if (th3d_distr_maps_control.find(mc_decay) == th3d_distr_maps_control.end() )
+		{
+		//
+		th3d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
+		}
+
+	/*
 	if (th3f_distr_control.find(key) == th3f_distr_control.end() )
 		{
 		// the control point distr has not been created/initialized
@@ -759,21 +767,47 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 		th3f_distr_control.insert( std::make_pair(key, TH3F(control_point_name.c_str(),      ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad)));
 		//cout << "creating " << control_point_name << endl;
 		}
+	*/
+
+	if (th3d_distr_maps_control[mc_decay].find(control_point_name) == th3d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th3d_distr_maps_control[mc_decay][control_point_name] = TH3D((control_point_name + mc_decay).c_str(), ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad);
+		// th3f_distr_control.insert( std::make_pair(key, TH3F(control_point_name.c_str(),      ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad)));
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
 
 	// fill the distribution:
 	// th1i_distr_control[key].Fill(value, weight);
 	// th3f_distr_control[key].Fill(value, weight);
 	// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-	th3f_distr_control[key].Fill(pt, eta, radius, weight);
+	// th3f_distr_control[key].Fill(pt, eta, radius, weight);
+	th3d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, radius, weight);
 
 	//cout << "filled " << control_point_name << endl;
 	//cout << th1i_distr_control[control_point_name].Integral() << endl;
 
+	/*
 	if (th3f_distr_control_headers.find(string("j_distr")) == th3f_distr_control_headers.end() )
 		{
 		// th3f_distr_control_headers[string("p_id")] = TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.);
 		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
 		th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
+		}
+	*/
+	if (th3d_distr_maps_control_headers.find(control_point_name) == th3d_distr_maps_control_headers.end() )
+		{
+		// th3d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
+		th3d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH3D((string("Header of ") + control_point_name).c_str(), ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
 		}
 
 	// return success:
@@ -3748,6 +3782,7 @@ for(size_t f=0; f<urls.size();++f)
 				pat::Jet& jet = selJetsNoLep[ijet];
 				// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
+				//fill_3d(hlt_channel + string("qcd_jets_distr"), 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad, 300, 0, 300,   20, weight);
 
 				// const reco::GenParticle* genParton()
 				if (isMC)
@@ -3830,6 +3865,7 @@ printf("End of (file loop) the job.\n");
 
 // CONTROLINFO
 
+/*
 FILE *csv_out;
 string FileName = ((outUrl.ReplaceAll(".root",""))+".csv").Data();
 csv_out = fopen(FileName.c_str(), "w");
@@ -3850,11 +3886,10 @@ fprintf(csv_out, "New output (sums per whole job!):\n");
 // the only problem is:
 // FIXME: how to do MULTISELECT nicely here?
 
-
 fprintf(csv_out, "End of job output.\n\n");
 
-
 fclose(csv_out);
+*/
 
 if(saveSummaryTree)
 	{
@@ -4001,6 +4036,9 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	out_f->Close();
 	}
 
+FILE *csv_out;
+string FileName = ((outUrl.ReplaceAll(".root",""))+".job_done").Data();
+csv_out = fopen(FileName.c_str(), "w");
 
 if (outTxtFile) fclose (outTxtFile);
 
