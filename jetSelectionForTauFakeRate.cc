@@ -557,6 +557,184 @@ Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0
 
 //TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 
+std::map<std::pair <string,string>, TH1D> th1d_distr_control;
+std::map<string, TH1D> th1d_distr_control_headers;
+
+std::map<std::pair <string,string>, TH1I> th1i_distr_control;
+std::map<string, TH1I> th1i_distr_control_headers;
+
+std::map<std::pair <string,string>, TH2D> th2d_distr_control;
+std::map<string, TH2D> th2d_distr_control_headers;
+
+std::map<std::pair <string,string>, TH3D> th3d_distr_control;
+std::map<string, TH3D> th3d_distr_control_headers;
+
+int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th1d_distr_maps_control
+	if (th1d_distr_maps_control.find(mc_decay) == th1d_distr_maps_control.end() )
+		{
+		//
+		th1d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1D>()));
+		}
+
+	if (th1d_distr_maps_control[mc_decay].find(control_point_name) == th1d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th1d_distr_maps_control[mc_decay][control_point_name] = TH1D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th1d_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
+
+	if (th1d_distr_maps_control_headers.find(control_point_name) == th1d_distr_maps_control_headers.end() )
+		{
+		// th1d_distr_maps_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th1i_distr_maps_control
+	if (th1i_distr_maps_control.find(mc_decay) == th1i_distr_maps_control.end() )
+		{
+		//
+		th1i_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1I>()));
+		}
+
+	if (th1i_distr_maps_control[mc_decay].find(control_point_name) == th1i_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th1i_distr_maps_control[mc_decay][control_point_name] = TH1I((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th1i_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
+
+	if (th1i_distr_maps_control_headers.find(control_point_name) == th1i_distr_maps_control_headers.end() )
+		{
+		// th1i_distr_maps_control_headers[control_point_name] = TH1I("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th1i_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1I((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th2d_distr_maps_control
+	if (th2d_distr_maps_control.find(mc_decay) == th2d_distr_maps_control.end() )
+		{
+		//
+		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH2D>()));
+		}
+
+	if (th2d_distr_maps_control[mc_decay].find(control_point_name) == th2d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th2d_distr_maps_control[mc_decay][control_point_name] = TH2D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th2d_distr_maps_control[mc_decay][control_point_name].Fill(x, y, weight);
+
+	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
+		{
+		// th2d_distr_maps_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, Int_t nbinsz, Double_t zlow, Double_t zup, double x, double y, double z, double weight)
+	{
+	// check if control point has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th3d_distr_maps_control
+	if (th3d_distr_maps_control.find(mc_decay) == th3d_distr_maps_control.end() )
+		{
+		//
+		th3d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
+		}
+
+	if (th3d_distr_maps_control[mc_decay].find(control_point_name) == th3d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th3d_distr_maps_control[mc_decay][control_point_name] = TH3D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup, nbinsz, zlow, zup );
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+	// fill the distribution:
+	th3d_distr_maps_control[mc_decay][control_point_name].Fill(x, y, z, weight);
+
+	if (th3d_distr_maps_control_headers.find(control_point_name) == th3d_distr_maps_control_headers.end() )
+		{
+		// th3d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		th3d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH3D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup, nbinsz, zlow, zup)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+
+
+
 int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius)
 	{
 	// for tau (and other) fake-rates
@@ -1665,14 +1843,14 @@ for(size_t f=0; f<urls.size();++f)
 		// MC is weighted according to distributions of a bunch of data properties
 
 		// NLO -1 corrections
-		double weightGen(1.);
+		double weight_Gen(1.);
 
 		// there are also the (dissabled now, since NLO samples are used) HT-binned and pthat-binned stitching of LO and NLO
 
 		// ---------------------------------- pileup weight
-		double puWeight         (1.0);
-		double puWeight_up      (1.0);
-		double puWeight_down    (1.0);
+		double weight_PU         (1.0);
+		double weight_PU_up      (1.0);
+		double weight_PU_down    (1.0);
 
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
@@ -1690,6 +1868,9 @@ for(size_t f=0; f<urls.size();++f)
 		// DERIVE WEIGHTS TO APPLY TO SAMPLE
 		//
 
+		// weight init 1
+		fill_1d(string("weightflow"), 300, 0, 300,   1, weight);
+
 		// ---------------------------------- these are weird NLO -1 weights
 		// TODO: figure out how exactly they correct for NLO
 		// Take into account the negative weights from some NLO generators (otherwise some phase space will be double counted)
@@ -1700,7 +1881,7 @@ for(size_t f=0; f<urls.size();++f)
 			evt.getByLabel(ev, "generator");
 			if(evt.isValid())
 				{
-				weightGen = (evt->weight() > 0 ) ? 1. : -1. ;
+				weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
 				}
 
 			// FIXME: this is for PDF uncertainties, must reactivate it at some point.
@@ -1716,18 +1897,21 @@ for(size_t f=0; f<urls.size();++f)
 			//   //  EventInfo.ttbar_nw++;
 			//   //}
 			//  }
-			//cout << "Event " << iev << " has genweight: " << weightGen << " and LHE weight " << weightLhe << endl;
+			//cout << "Event " << iev << " has genweight: " << weight_Gen << " and LHE weight " << weightLhe << endl;
 
 			}
 
 
-		std::vector < TString > tags (1, "all"); // Inclusive inclusiveness
+		//std::vector < TString > tags (1, "all"); // Inclusive inclusiveness
 
-		weight *= weightGen;
-		weight_up *= weightGen;
-		weight_down *= weightGen;
-		rawWeight *=weightGen;
-				
+		weight *= weight_Gen;
+		weight_up *= weight_Gen;
+		weight_down *= weight_Gen;
+		rawWeight *=weight_Gen;
+
+		// weight Gen 2
+		fill_1d(string("weightflow"), 300, 0, 300,   2, weight);
+
 		// ------------------------------- count N good verteces
 		// needed for particle selection/event classification later
 		// and pile-up control-distribution for data
@@ -1772,19 +1956,19 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 			//ngenITpu = nGoodPV; // based on nvtx
-			//puWeight = LumiWeights->weight (ngenITpu) * PUNorm[0];
+			//weight_PU = LumiWeights->weight (ngenITpu) * PUNorm[0];
 			// So, in Pietro's approach ngenITpu is number of vertices in the beam crossing?
-			//puWeight = direct_pileup_reweight[ngenITpu];
+			//weight_PU = direct_pileup_reweight[ngenITpu];
 			// Mara does:
 			//num_inters = puInfoH->at(0).getTrueNumInteractions(); // in 76 it seems to not work, returns 0 always
 			// Using Pietro's PU number vertices:
 			num_inters = ngenITpu;
 			if (num_inters<100) {
-				puWeight = direct_pileup_reweight[num_inters];
-				puWeight_up = direct_pileup_reweight_up[num_inters];
-				puWeight_down = direct_pileup_reweight_down[num_inters];
+				weight_PU = direct_pileup_reweight[num_inters];
+				weight_PU_up = direct_pileup_reweight_up[num_inters];
+				weight_PU_down = direct_pileup_reweight_down[num_inters];
 			}
-			else {//puWeight = 0; puWeight_up = 0; puWeight_down = 0;
+			else {//weight_PU = 0; weight_PU_up = 0; weight_PU_down = 0;
 				continue; // just move on
 			}
 
@@ -1804,9 +1988,12 @@ for(size_t f=0; f<urls.size();++f)
 			num_inters = vtx.size();
 			}
 
-		weight *= puWeight;
-		weight_up *= puWeight_up;
-		weight_down *= puWeight_down;
+		weight *= weight_PU;
+		weight_up *= weight_PU_up;
+		weight_down *= weight_PU_down;
+
+		// weight PU 3
+		fill_1d(string("weightflow"), 300, 0, 300,   3, weight);
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -1838,7 +2025,7 @@ for(size_t f=0; f<urls.size();++f)
 		if (num_inters>99) num_inters = 99;
 		if (nGoodPV>100) nGoodPV = 99;
 		//if (num_inters<0)  num_inters = 0;
-		if (weightGen<0)
+		if (weight_Gen<0)
 			{
 			increment( string("negative_events"), 1 );
 			fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
@@ -1873,10 +2060,19 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_weight_passed_lumi"), weight ); // should not matter
-		increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
-		increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
+		//increment( string("weightflow_weight_passed_lumi"), weight ); // should not matter
+		//increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
+		//increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
+		// passlumi 5
+		fill_1d(string("weightflow"), 300, 0, 300,   5, weight);
+		/*
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   5, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   5, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 5, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 5, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 5, weight);
+		*/
 
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -1968,9 +2164,12 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
-		increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
-		increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
+		// passtrig 6
+		fill_1d(string("weightflow"), 300, 0, 300,   6, weight);
+
+		//increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
+		//increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
+		//increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
 		if(debug)
 			{
@@ -2023,6 +2222,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter")) continue;
 		}
 		
+
+		// passmetfilters 7
+		fill_1d(string("weightflow"), 300, 0, 300,   7, weight);
 
 		if(debug)
 			{
@@ -3376,7 +3578,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// loop through probe jets and fill jets_distr
 		// loop through jets, find the ones close to taus -- fill tau_jets_distr
-		// TODO: do these distrs via standard way with some fill_jet dynamic function
+		// new standard function for jet distr
+		//int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, Int_t nbinsz, Double_t zlow, Double_t zup, double x, double y, double z, double weight)
 
 		// Check among 2 channels of selection:
 		//     QCD-channel -- 2 or more jets
@@ -3388,6 +3591,22 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (Wjets_selection)
 			{
+
+			// WJets, HLT channels
+			if (JetHLTTrigger && MuonHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   10, weight);
+				}
+			else if (JetHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   11, weight);
+				}
+			else if (MuonHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   12, weight);
+				}
+			else continue;
+
 			increment( hlt_channel + string("weightflow_wjets_selection"), weight );
 			// N jets, taus
 			increment( hlt_channel + string("wjets_selection_njets"), weight*jets.size() );
@@ -3488,6 +3707,22 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (QCD_selection)
 			{
+
+			// QCD, HLT channels
+			if (JetHLTTrigger && MuonHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   20, weight);
+				}
+			else if (JetHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   21, weight);
+				}
+			else if (MuonHLTTrigger)
+				{
+				fill_1d(string("weightflow"), 300, 0, 300,   22, weight);
+				}
+			else continue;
+
 			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
 			// N jets, taus
 			increment( hlt_channel + string("qcd_selection_njets"), weight*jets.size() );
