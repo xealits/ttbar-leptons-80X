@@ -3275,7 +3275,7 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);;
 
 		weight_without_tauIDsf = weight;
-		weight *= weight_tauIDsf;
+		// weight *= weight_tauIDsf;// apply tau weight at selection
 
 		if(debug){
 			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
@@ -4004,6 +4004,7 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				*/
 				}
+			weight *= weight_tauIDsf;
 			//fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 			bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
@@ -4080,6 +4081,11 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1i(string("smu_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
 					fill_1i(string("smu_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
 					fill_1i(string("smu_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
+
+					fill_1d( string("singlemu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
+					fill_1d( string("singlemu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
+					fill_1d( string("singlemu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau.size(), weight);
+					fill_1d( string("singlemu_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
 
 					// pts
 					fill_1d( string("singlemu_selection_muon_pt"), 200, 0, 200, selLeptons[0].pt(), weight);
@@ -4332,6 +4338,11 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1i(string("sel_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
 					fill_1i(string("sel_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
 					fill_1i(string("sel_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
+
+					fill_1d( string("singleel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
+					fill_1d( string("singleel_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
+					fill_1d( string("singleel_selection_njets"), 10, 0, 10, selJetsNoLepNoTau.size(), weight);
+					fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
 
 					// pts
 					fill_1d( string("singleel_selection_muon_pt"), 200, 0, 200, selLeptons[0].pt(), weight);
@@ -4681,6 +4692,13 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+
+					//fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
+					fill_1d( string("elel_selection_nleps"), 10, 0, 10, selElectrons.size(), weight);
+					//fill_1d( string("elel_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
+					fill_1d( string("elel_selection_njets"), 10, 0, 10, selJetsNoLepNoTau.size(), weight);
+					fill_1d( string("elel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
+
 					// pt
 					fill_1d( string("elel_selection_el1_pt"), 200, 0, 200, selElectrons[0].pt(), weight);
 					fill_1d( string("elel_selection_el2_pt"), 200, 0, 200, selElectrons[1].pt(), weight);
@@ -4815,6 +4833,13 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+
+					//fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
+					fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selMuons.size(), weight);
+					//fill_1d( string("mumu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
+					fill_1d( string("mumu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau.size(), weight);
+					fill_1d( string("mumu_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
+
 					// pt
 					fill_1d( string("mumu_selection_el1_pt"), 200, 0, 200, selMuons[0].pt(), weight);
 					fill_1d( string("mumu_selection_el2_pt"), 200, 0, 200, selMuons[1].pt(), weight);
@@ -4978,6 +5003,12 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+
+					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
+					//fill_1d( string("elmu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
+					fill_1d( string("elmu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau.size(), weight);
+					fill_1d( string("elmu_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
+
 					// pt
 					fill_1d( string("elmu_selection_el1_pt"), 200, 0, 200, selLeptons[0].pt(), weight);
 					fill_1d( string("elmu_selection_el2_pt"), 200, 0, 200, selLeptons[1].pt(), weight);
