@@ -2009,6 +2009,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------------------------- tau ID SF
 		double weight_tauIDsf         (1.0);
+		double weight_without_tauIDsf (1.0);
 
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
