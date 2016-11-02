@@ -4136,12 +4136,12 @@ for(size_t f=0; f<urls.size();++f)
 
 						fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight);
-						fill_1d(string("weightflow_mu_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight);
 						fill_1d(string("eventflow_mu"), 300, 0, 300,   10 + multi, 1);
 
-						fill_1i(string("weightflow_mu_I"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("weightflow_mu_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1i(string("weightflow_mu_I"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1i(string("weightflow_mu_without_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight);
 						fill_1i(string("eventflow_mu_I"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
@@ -4414,12 +4414,12 @@ for(size_t f=0; f<urls.size();++f)
 
 						fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_el"), 300, 0, 300,   10 + multi, weight);
-						fill_1d(string("weightflow_el_tauIDSFs"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("weightflow_el"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight);
 						fill_1d(string("eventflow_el"), 300, 0, 300,   10 + multi, 1);
 
-						fill_1i(string("weightflow_el_I"), 300, 0, 300,   10 + multi, weight);
-						fill_1i(string("weightflow_el_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1i(string("weightflow_el_I"), 300, 0, 300,   10 + multi, weight * weight_tauIDsf);
+						fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight);
 						fill_1i(string("eventflow_el_I"), 300, 0, 300,   10 + multi, 1);
 						}
 					}
