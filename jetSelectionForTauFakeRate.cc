@@ -1216,6 +1216,7 @@ std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vecto
 //      outFileUrl += mctruthmode;
 //    }
 TString outUrl = runProcess.getParameter<std::string>("outfile");
+TString outdir = runProcess.getParameter<std::string>("outdir");
 	
 // Good lumi mask
 // v2
