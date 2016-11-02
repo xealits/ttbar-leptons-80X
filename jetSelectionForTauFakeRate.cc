@@ -557,17 +557,21 @@ Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0
 
 //TH3F* wjets_jets_distr      = (TH3F*) new TH3F("wjets_jets_distr",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad);
 
-std::map<std::pair <string,string>, TH1D> th1d_distr_control;
-std::map<string, TH1D> th1d_distr_control_headers;
+std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
+std::map<string, TH1D> th1d_distr_maps_control_headers;
 
-std::map<std::pair <string,string>, TH1I> th1i_distr_control;
-std::map<string, TH1I> th1i_distr_control_headers;
+std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
+std::map<string, TH1I> th1i_distr_maps_control_headers;
 
-std::map<std::pair <string,string>, TH2D> th2d_distr_control;
-std::map<string, TH2D> th2d_distr_control_headers;
+std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
+std::map<string, TH2D> th2d_distr_maps_control_headers;
 
-std::map<std::pair <string,string>, TH3D> th3d_distr_control;
-std::map<string, TH3D> th3d_distr_control_headers;
+std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
+std::map<string, TH3D> th3d_distr_maps_control_headers;
+
+
+
+
 
 int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
 	{
