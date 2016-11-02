@@ -3688,7 +3688,8 @@ for(size_t f=0; f<urls.size();++f)
 					// there is also hadronFlavor..
 					// the ID should be in:
 					// jet_origin->pdgId();
-					wjets_jet_origin->Fill(abs( jet.partonFlavour() ));
+					//wjets_jet_origin->Fill(abs( jet.partonFlavour() ));
+					fill_1d(hlt_channel + string("wjets_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
 					//wjets_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// wjets_taujet_origin
 					}
@@ -3703,16 +3704,19 @@ for(size_t f=0; f<urls.size();++f)
 					//{
 					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
 					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
-					wjets_taujet_distance->Fill(fake_distance);
+					//wjets_taujet_distance->Fill(fake_distance);
+					fill_1d(hlt_channel + string("wjets_taujet_distance"), 100, 0, 2,   fake_distance, weight);
+
 					if (fake_distance <= tau_fake_distance)
 						{
 						// the tau is fake by this jet -- save distr
 						// wjets_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("wjets_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
-						fill_pt_pt(hlt_channel + string("wjets_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						//fill_pt_pt(hlt_channel + string("wjets_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						fill_2d(hlt_channel + string("wjets_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// N tau-jets
-						increment( hlt_channel + string("wjets_selection_ntaujet"), weight );
+						//increment( hlt_channel + string("wjets_selection_ntaujet"), weight );
 
 						// const reco::GenParticle* genParton()
 						if (isMC)
@@ -3720,7 +3724,8 @@ for(size_t f=0; f<urls.size();++f)
 							//const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
 							// the ID should be in:
 							// jet_origin->pdgId();
-							wjets_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							//wjets_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							fill_1d(hlt_channel + string("wjets_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
 							//wjets_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// wjets_jet_origin
 							}
@@ -3782,27 +3787,32 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				pat::Jet& jet = selJetsNoLep[ijet];
 				// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
+				// selection jets
 				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 				//fill_3d(hlt_channel + string("qcd_jets_distr"), 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad, 300, 0, 300,   20, weight);
 
 				// const reco::GenParticle* genParton()
+				// jet parton origin
 				if (isMC)
 					{
 					//const reco::GenParticle* jet_origin = jet.genParton();
 					// the ID should be in:
 					// jet_origin->pdgId();
-					qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
+					//qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
+					fill_1d(hlt_channel + string("qcd_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
 					//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_taujet_origin
 					}
 
 				for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
 					{
+					// selection taus (fake taus)
 					//for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 					//{
 					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
 					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
-					qcd_taujet_distance->Fill(fake_distance);
+					//qcd_taujet_distance->Fill(fake_distance);
+					fill_1d(hlt_channel + string("qcd_taujet_distance"), 100, 0, 2,   fake_distance, weight);
 
 					if (fake_distance <= tau_fake_distance)
 						{
@@ -3810,18 +3820,21 @@ for(size_t f=0; f<urls.size();++f)
 						//qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
 						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
 						// fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
-						fill_pt_pt(hlt_channel + string("qcd_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						//fill_pt_pt(hlt_channel + string("qcd_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
+						fill_2d(hlt_channel + string("qcd_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTausNoLep[itau].pt(), weight);
 
 						// N tau-jets
-						increment( hlt_channel + string("qcd_selection_ntaujet"), weight );
+						//increment( hlt_channel + string("qcd_selection_ntaujet"), weight );
 
 						// const reco::GenParticle* genParton()
+						// jet parton origin for faking jet (just in case)
 						if (isMC)
 							{
 							//const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
 							// the ID should be in:
 							// jet_origin->pdgId();
-							qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
+							fill_1d(hlt_channel + string("qcd_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour), weight);
 							//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 							// qcd_jet_origin
 							}
