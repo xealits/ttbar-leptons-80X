@@ -2849,6 +2849,10 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Electron& electron = electrons[n];
 
+			fill_2d(string("elcontrol_slimmedelectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
+			fill_1d(string("elcontrol_slimmedelectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
+			//fill_1d(string("taucontrol_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+
 			bool 
 				passKin(true),     passId(true),     passIso(true),
 				passVetoKin(true), passVetoId(true), passVetoIso(true);
@@ -2915,40 +2919,14 @@ for(size_t f=0; f<urls.size();++f)
 			if (leta > 1.4442 && leta < 1.5660) passVetoKin = false; // Crack veto
 
 
-			if     (passKin     && passId     && passIso)     selElectrons.push_back(electron);
+			if     (passKin     && passId     && passIso)
+				{
+				selElectrons.push_back(electron);
+				fill_2d(string("elcontrol_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
+				fill_1d(string("elcontrol_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
+				}
 			else if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
 
-			// TODO: ------------ ID/Iso scale factors:
-			// https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Efficiencies_and_scale_factors
-			// if it is MC and ID tight electron is found -- multiply weight by factor,
-			// corresponding to its' tight scale factor distr
-			// if loose -- loose scale factor
-
-			/* TODO: add ID/Iso and run
-			if (isMC) {
-				if (passId) {
-					// NOTE: scale factors are given for absolute eta
-					weight *= eID_Tight_sf.GetBinContent( eID_Tight_sf.FindBin(fabs(leta), electron.pt()) );
-				} else if (passVetoId) {
-					weight *= eID_Loose_sf.GetBinContent( eID_Loose_sf.FindBin(fabs(leta), electron.pt()) );
-				}
-				if (passIso) {
-					// NOTE: scale factors are given for absolute eta
-					weight *= eIso_Tight_sf.GetBinContent( eIso_Tight_sf.FindBin(fabs(leta), electron.pt()) );
-				} else if (passVetoIso) {
-					weight *= eIso_Loose_sf.GetBinContent( eIso_Loose_sf.FindBin(fabs(leta), electron.pt()) );
-				}
-			}
-			*/
-
-
-			// TODO: this kind of thing
-			// if (passId && passIso)
-			// 	{
-			// 	fill_pt_e( string("all_electrons_idiso_pt"), electron.pt(), weight);
-			// 	if (count_idiso_electrons < 2) fill_pt_e( string("top2pt_electrons_idiso_pt"), electron.pt(), weight);
-			// 	count_idiso_electrons += 1;
-			// 	}
 			}
 
 		// TODO: there should be no need to sort selected electrons here again -- they are in order of Pt
@@ -2976,6 +2954,9 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// patUtils::GenericLepton& lepton = leptons[n];
 			pat::Muon& muon = muons[n];
+
+			fill_2d(string("mucontrol_slimmedmions_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
+			fill_1d(string("mucontrol_slimmedmions_phi"), 128, -3.2, 3.2, muon.phi(), weight);
 
 			bool
 				passKin(true),     passId(true),     passIso(true),
@@ -3045,7 +3026,12 @@ for(size_t f=0; f<urls.size();++f)
 			if (muon.pt () < 10)  passVetoKin = false;
 			if (leta > 2.5)       passVetoKin = false;
 
-			if     (passKin     && passId     && passIso)     selMuons.push_back(muon);
+			if     (passKin     && passId     && passIso)
+				{
+				selMuons.push_back(muon);
+				fill_2d(string("mucontrol_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
+				fill_1d(string("mucontrol_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
+				}
 			else if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
 
 			// TODO: ------------ ID/Iso scale factors:
@@ -3094,6 +3080,7 @@ for(size_t f=0; f<urls.size();++f)
 		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 			{
 			pat::Tau& tau = taus[n];
+
 			fill_2d(string("taucontrol_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
 			fill_1d(string("taucontrol_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
@@ -3193,13 +3180,16 @@ for(size_t f=0; f<urls.size();++f)
 
 			selTausNoLep.push_back(tau);
 			// so these are the final taus we use in the selection
+			fill_2d(string("taucontrol_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("taucontrol_selTausNoLep_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			// for the fake-rate counts (in MC)
 			// let's save how many taus we find:
-			increment(string("number_of_tausnolep_found"), 1);
+			//increment(string("number_of_tausnolep_found"), 1);
 
 			// for MC find the generated candidate closest to the tau
 			// to get the fakeness
+			/*
 			if (isMC)
 				{
 				double min_deltaR = 99999.9;
@@ -3243,7 +3233,7 @@ for(size_t f=0; f<urls.size();++f)
 					// (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Electron_to_tau_fake_rate)
 					// for tight working points it is 1.80 +- 0.23 in barrel (eta < 1.460)
 					// and 1.3 +- 0.42 in endcaps (eta > 1.558)
-					/* repeating 13.4, no electron-to-tau sf
+					// repeating 13.4, no electron-to-tau sf
 					if (fabs(tau.eta()) < 1.460)
 						{
 						weight *= 1.8 + r3->Gaus(0, 0.2);  // gaussian +- 0.2
@@ -3252,7 +3242,7 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						weight *= 1.3 + r3->Gaus(0, 0.42); // gaussian +- 0.42
 						}
-					*/
+					//
 					// TODO: and then I need to renormalize the MC integral??
 					}
 
@@ -3262,6 +3252,7 @@ for(size_t f=0; f<urls.size();++f)
 					// TODO: add muon-tau fake rate?
 					}
 				}
+			*/
 			}
 
 		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
@@ -3312,7 +3303,9 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// TODO: so does this mean "in place"?
 			pat::Jet& jet = jets[ijet];
-			fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_2d(string("jetcontrol_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 			LorentzVector jet_corr(0., 0., 0., 0.);
 
@@ -3337,8 +3330,8 @@ for(size_t f=0; f<urls.size();++f)
 			float jes_correction = jesCor->getCorrection();
 			jet.setP4(rawJet*jes_correction);
 
-			fill_2d(string("slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
+			fill_2d(string("jetcontrol_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
 
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
@@ -3369,7 +3362,7 @@ for(size_t f=0; f<urls.size();++f)
 					jet.addUserFloat("_res_jup", 1.0);
 					jet.addUserFloat("_res_jdown", 1.0 );
 					}
-				fill_2d(string("slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_2d(string("jetcontrol_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 
 
@@ -3395,7 +3388,7 @@ for(size_t f=0; f<urls.size();++f)
 			jet_corr = jet.p4() - jet_initial_momentum;
 			full_jet_corr += jet_corr;
 
-			fill_2d(string("slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
+			fill_2d(string("jetcontrol_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
 
 			if(debug)
 				{
@@ -3459,6 +3452,9 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = jets[ijet];
 
+			fill_2d(string("jetcontrol_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+
 			// TODO: what do we do here exactly?
 			// a loose selection on jets, and then tighten it later?
 			// if (jet.pt() < 15 || fabs (jet.eta()) > 3.0) continue;
@@ -3477,12 +3473,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (passPFloose)
 				{
-				fill_pt_e( string("all_jets_ided_pt"), jet.pt(), weight);
-				if (count_ided_jets < 2)
-					{
-					fill_pt_e( string("top2pt_jets_ided_pt"), jet.pt(), weight);
-					count_ided_jets += 1;
-					}
+				fill_2d(string("jetcontrol_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("jetcontrol_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 
 			// and now the tighter final selection
@@ -3512,6 +3504,9 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				selJets.push_back(jet);
 
+				fill_2d(string("jetcontrol_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("jetcontrol_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+
 				// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
 				double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
 				if (dphijmet < mindphijmet) mindphijmet = dphijmet;
@@ -3539,6 +3534,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (minDRlj < 0.4) continue;
 
 			selJetsNoLep.push_back(jet);
+
+			fill_2d(string("jetcontrol_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 			}
 
 
@@ -3558,6 +3556,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (minDRtj < 0.4) continue;
 
 			selJetsNoLepNoTau.push_back(jet);
+
+			fill_2d(string("jetcontrol_selJetsNoLepNoTau_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_selJetsNoLepNoTau_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 			}
 
 
@@ -3573,6 +3574,9 @@ for(size_t f=0; f<urls.size();++f)
 		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
 			{
 			pat::Jet& jet = selJetsNoLep[ijet];
+
+			fill_2d(string("jetcontrol_bjetCandidates_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("jetcontrol_bjetCandidates_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 			double eta=jet.eta();
 
@@ -3654,6 +3658,8 @@ for(size_t f=0; f<urls.size();++f)
 			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
 				{
 				selBJets.push_back(jet);
+				fill_2d(string("jetcontrol_selBJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("jetcontrol_selBJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 			}
 
@@ -3680,6 +3686,9 @@ for(size_t f=0; f<urls.size();++f)
 			// the taus, far from leptons and jets
 			selTausNoLepNoJet.push_back(tau);
 
+			fill_2d(string("taucontrol_selTausNoLepNoJet_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("taucontrol_selTausNoLepNoJet_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+
 			// for the fake-rate counts (in MC)
 			// let's save how many taus we find:
 			// increment(string("number_of_tausNoLepNoJet_found"), weight);
@@ -3691,94 +3700,31 @@ for(size_t f=0; f<urls.size();++f)
 
 		// -------------------------------------------------- cCONTROL VALUES
 
-		// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
+		// fill_1d(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
 
-		fill_1i(string("n_slimmedjets"),  20, 0, 20,   jets.size(), weight);
-		fill_1i(string("n_selJets"),      20, 0, 20,   selJets.size(), weight);
-		fill_1i(string("n_selJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
-		fill_1i(string("n_selJetsNoLepNoTau"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+		fill_1d(string("n_slimmedjets"),  10, 0, 10,   jets.size(), weight);
+		fill_1d(string("n_selJets"),      10, 0, 10,   selJets.size(), weight);
+		fill_1d(string("n_selJetsNoLep"), 10, 0, 10,   selJetsNoLep.size(), weight);
+		fill_1d(string("n_selJetsNoLepNoTau"), 10, 0, 10,   selJetsNoLepNoTau.size(), weight);
 
-		fill_1i(string("n_selBJets"), 20, 0, 20,   selBJets.size(), weight);
+		fill_1d(string("n_selBJets"), 10, 0, 10,   selBJets.size(), weight);
 
-		fill_1i(string("n_slimmedtaus"),  20, 0, 20,   taus.size(), weight);
-		fill_1i(string("n_selTaus"),      20, 0, 20,   selTaus.size(), weight);
-		fill_1i(string("n_selTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-		fill_1i(string("n_selTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weight);
+		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weight);
+		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weight);
+		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weight);
 
-		fill_1i(string("n_slimmedtaus"),  20, 0, 20,   taus.size(), weight);
-		fill_1i(string("n_selTaus"),      20, 0, 20,   selTaus.size(), weight);
-		fill_1i(string("n_selTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-		fill_1i(string("n_selTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weight);
+		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weight);
+		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weight);
+		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weight);
 
-		fill_1i(string("n_slimmedmuons"),  20, 0, 20,   muons.size(), weight);
-		fill_1i(string("n_selMuons"),      20, 0, 20,   selMuons.size(), weight);
+		fill_1d(string("n_slimmedmuons"),  10, 0, 10,   muons.size(), weight);
+		fill_1d(string("n_selMuons"),      10, 0, 10,   selMuons.size(), weight);
 
-		fill_1i(string("n_slimmedelectrons"),  20, 0, 20,   electrons.size(), weight);
-		fill_1i(string("n_selElectrons"),      20, 0, 20,   selElectrons.size(), weight);
+		fill_1d(string("n_slimmedelectrons"),  10, 0, 10,   electrons.size(), weight);
+		fill_1d(string("n_selElectrons"),      10, 0, 10,   selElectrons.size(), weight);
 
-
-		// Control values for processed individual taus:
-		for(size_t n=0; n<selTaus.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_individual_pt"), selTaus[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_individual_pt"), selTaus[n].pt(), weight);
-				}
-			}
-
-		// Control values for processed taus cleaned of leptons:
-		for(size_t n=0; n<selTausNoLep.size(); ++n)
-			{
-			fill_pt_e( string("all_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-			if (n == 0)
-				{
-				fill_pt_e( string("top1pt_taus_leptoncleaned_pt"), selTausNoLep[n].pt(), weight);
-				// this kind of thing:
-				// if (isSingleE)  fill_pt_e( string("top1pt_taus_lepcleaned_singleel_pt"), selTausNoLep[n].pt(), weight);
-				// if (isSingleMu) fill_pt_e( string("top1pt_taus_lepcleaned_singlemu_pt"), selTausNoLep[n].pt(), weight);
-				}
-			}
-
-		// Control values for processed jets cleaned of leptons and taus:
-		for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
-			{
-
-			fill_pt_e( string("all_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
-			if (n < 2)
-				{
-				fill_pt_e( string("top2pt_jets_taucleaned_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				}
-
-			/* this kind of thing
-			if (isSingleMu)
-				{
-				fill_pt_e( string("all_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("top2pt_jets_taucleaned_singlemu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-
-			if (isSingleE)
-				{
-				fill_pt_e( string("all_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("top2pt_jets_taucleaned_singleel_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-
-			if (isEMu)
-				{
-				fill_pt_e( string("jets_all_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-				if (n < 2)
-					{
-					fill_pt_e( string("jets_top2pt_taucleaned_emu_pt"), selJetsNoLepNoTau[n].pt(), weight);
-					}
-				}
-			*/
-			}
 
 
 
