@@ -3191,10 +3191,6 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			if (overlapWithLepton) continue;
 
-			if (isMC) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
-				weight_tauIDsf *= 0.83 + r3->Gaus(0, 0.06); // gaussian +- 0.06
-			// TODO: should here be a normalization to all MC events?
-
 			selTausNoLep.push_back(tau);
 			// so these are the final taus we use in the selection
 
@@ -3268,12 +3264,14 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-		increment(string("weightflow_weight_after_tausnolep_fakerates_sf"), weight);
-
-		// if (withTauIDSFs)
-		// 	{
-		// 	weight *= weight_tauIDsf;
-		// 	}
+		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
+			{
+			double pre_weight_tauIDsf = 1;
+			for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+				pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
+			weight_tauIDsf = 1 - pre_weight_tauIDsf;
+			}
+			// TODO: should here be a normalization to all MC events?
 		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);;
 
 		if(debug){
@@ -3993,6 +3991,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(n_taus>0)
 				{
 				dileptonSystem = selLeptons[0].p4() + selTausNoLep[0].p4();
+				/*
 				if (isMC && withTauIDSFs)
 					{
 					// weight_tauIDsf = 1 - (1 -  0.83 + r3->Gaus(0, 0.06))^n_taus;
@@ -4000,9 +3999,9 @@ for(size_t f=0; f<urls.size();++f)
 					//weight_tauIDsf = 0.83;
 					// weight *= weight_tauIDsf;
 					}
+				*/
 				}
-
-			fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
+			//fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 			bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
 			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
