@@ -4,6 +4,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TCanvas.h"
+#include "TLegend.h"
 #include "THStack.h"
 #include "TH1F.h"                                                                                                                                       
 #include "TH2F.h"
@@ -155,15 +156,18 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	{
 	if (dtag.Contains("Data")) return std::make_pair("data", kWhite);
 	else if(dtag.Contains("DYJets")) return std::make_pair("dyjets", kGray);
-	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("wjets", kOrange);
+	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("wjets", kRed+1);
 	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return std::make_pair("dibosons", kCyan);
 	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return std::make_pair("singletop", kAzure);
 	else if(dtag.Contains("TT"))
 		{
 		if (dtag.Contains("qqbar")) return std::make_pair("tt_jj", kGreen+4);
 		else if (dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return std::make_pair("tt_lj", kGreen+3);
-		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar") ||dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_lt", kGreen-6);
-		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_ll", kGreen-9);
+		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
+		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
+		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
+		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar")) return std::make_pair("tt_et", kOrange+2);
+		else if (dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_mt", kOrange+1);
 		else return std::make_pair("tt_other", kYellow+1);
 		}
 	else return std::make_pair("other", kBlack);
@@ -215,6 +219,12 @@ std::map<TString, TH1D *> nicknamed_mc_histos;
 //THStack *hs = new THStack("hs","Stacked 1D histograms");
 THStack *hs      = new THStack("hs", "");
 TH1D    *hs_data = NULL;
+
+TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
+
+//TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
+//leg = new TLegend(0.845, 0.2, 0.99, 0.99);
+TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 
 for (int i = 4; i<argc; i++)
 	{
@@ -288,19 +298,60 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	distr->Print();
 
 	hs->Add(distr, "HIST");
+
+	//TLegendEntry *entry=leg->AddEntry("NULL","","h");
+	//entry=leg->AddEntry("singlemu_altstep4rho3","Single top","F");
+	leg->AddEntry(distr, nick, "F");
+
 	//distr->SetName(controlpoint_name.c_str());
 	//distr->Write();
 	//out_f->Write(controlpoint_name.c_str());
 	//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 	}
 
-TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //cst->SetFillColor(41);
-cst->Divide(1,1);
+//cst->Divide(1,1);
 // in top left pad, draw the stack with defaults
-cst->cd(1);
+//cst->cd(1);
+
+cout << "setting title" << endl;
+
+//hs->GetXaxis()->SetTitle(distr);
+//cst->SetXaxisTile(distr);
+//hs_data->GetXaxis()->SetTitle(distr);
+
+/*
+TIter next(gDirectory->GetList());
+TObject *obj;
+while ((obj=next())) {
+	if (obj->InheritsFrom("TH1")) {
+		TH1 *h = (TH1*)obj;
+		h->GetXaxis()->SetTitle(distr);
+		}
+	}
+*/
+
+
+TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
+h->SetXTitle("x");
+//cst->Update();
+//cst->Modified();
+
+cout << "drawing" << endl;
+
 hs->Draw();
 hs_data->Draw("e p same");
+
+leg->Draw();
+
+//MC_stack_124->GetXaxis()->SetTitle("#rho");
+//mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
+
+
+hs->GetXaxis()->SetTitle(distr);
+hs_data->SetXTitle(distr);
+
+cst->Modified();
 
 cst->SaveAs("./teststack.png");
 
