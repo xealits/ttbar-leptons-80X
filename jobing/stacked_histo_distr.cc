@@ -166,7 +166,7 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
 		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
 		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
-		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar")) return std::make_pair("tt_et", kOrange+2);
+		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar")) return std::make_pair("tt_et", kOrange+4);
 		else if (dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_mt", kOrange+1);
 		else return std::make_pair("tt_other", kYellow+1);
 		}
