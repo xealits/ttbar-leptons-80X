@@ -1,3 +1,24 @@
+#include <iostream>
+
+#include "TSystem.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TCanvas.h"
+#include "TH1F.h"                                                                                                                                       
+#include "TH2F.h"
+#include "TH3F.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include "TEventList.h"
+#include "TROOT.h"
+#include "TNtuple.h"
+#include <Math/VectorUtil.h>
+
+#include <map>
+#include <string>
+
+using namespace std;
+
 /*
 int stacked_histo_distr (int argc, char *argv[])
 
@@ -14,7 +35,8 @@ and overlay it with data histo
 
 */
 
-int stacked_histo_distr (int argc, char *argv[])
+//int stacked_histo_distr (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 if (argc < 4)
 	{
@@ -25,8 +47,22 @@ if (argc < 4)
 gROOT->Reset();
 
 TString distr(argv[1]);
-
+TString dir(argv[2]);
+TString dtag1(argv[3]);
 cout << distr << endl;
+cout << dir   << endl;
+cout << dtag1 << endl;
+
+
+std::vector < TString > dtags;
+
+for (int i = 3; i<argc; i++)
+	{
+	TString dtag(argv[i]);
+	dtags.push_back(dtag);
+	cout << dtags[i] << endl;
+	// awesome C++ -- this doesn't work like dtag1....
+	}
 
 /*
 TFile *file = TFile::Open(dir + "/" + dtag + ".root");

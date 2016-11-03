@@ -643,6 +643,15 @@ string mc_decay("");
 
 std::map<std::pair <string,string>, double> weight_flow_control;
 
+// good bins 1
+// Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
+Float_t bins_pt[11] = { 0, 30, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
+// Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
+Float_t bins_eta[8] = { -3, -2.5, -1.5, -0.45, 0.45, 1.5, 2.5, 3 }; // 7 bins, 8 edges
+int n_bins_eta = 7;
+Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
+	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
+
 // channel -> {control_point, TH}
 // 1 job = 1 dtag,
 // 1 dtag may have several channels
@@ -654,6 +663,9 @@ std::map<string, TH1I> th1i_distr_maps_control_headers;
 
 std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
 std::map<string, TH2D> th2d_distr_maps_control_headers;
+
+std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
+std::map<string, TH3D> th3d_distr_maps_control_headers;
 
 
 
