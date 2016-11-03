@@ -46,8 +46,8 @@ double W_qar_br2 = 0.676*0.676;
 std::map<TString, double> xsecs = {
 {"Data13TeV_SingleElectron2016D_PromptRecoV2_", 1},
 {"Data13TeV_SingleMuon2016D_PromptRecoV2_", 1},
-{"MC2016_noHLT_DYJetsToLL_10to50_amcatnlo.root", 18610},
-{"MC2016_noHLT_DYJetsToLL_50toInf_amcatnlo.root", 6025.2},
+{"MC2016_noHLT_DYJetsToLL_10to50_amcatnlo", 18610},
+{"MC2016_noHLT_DYJetsToLL_50toInf_amcatnlo", 6025.2},
 { "MC2016_noHLT_TTJets_powheg_scaleup_elelbar"         , 831.76 * W_lep_br2 / 2},
 { "MC2016_noHLT_TTJets_powheg_scaleup_elmubar"         , 831.76 * W_lep_br2 / 2},
 { "MC2016_noHLT_TTJets_powheg_scaleup_elqbar"          , 831.76 * W_qar_br*W_lep_br / 2},
@@ -80,19 +80,19 @@ std::map<TString, double> xsecs = {
 { "MC2016_noHLT_TTJets_powheg_scaledown_taumubar"      , 831.76 * W_lep_br2 / 2},
 { "MC2016_noHLT_TTJets_powheg_scaledown_tauqbar"       , 831.76 * W_qar_br*W_lep_br / 2},
 { "MC2016_noHLT_TTJets_powheg_scaledown_tautaubar"     , 831.76 * W_lep_br2 / 2},
-{"MC2016_noHLT_W0Jets_amcatnlo.root", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
-{"MC2016_noHLT_W1Jets_madgraph.root", 9493},
-{"MC2016_noHLT_W2Jets_madgraph.root", 3120},
-{"MC2016_noHLT_W3Jets_madgrapg.root", 942.3},
-{"MC2016_noHLT_W4Jets_madgraph.root", 524.2},
-{"MC2016_noHLT_WW.root", 113.89},
-{"MC2016_noHLT_WZ.root", 47.13},
-{"MC2016_noHLT_ZZ.root", 16.52},
-{"MC2016_noHLT_SingleT_tW_5FS_powheg.root",    35.6},
-{"MC2016_noHLT_SingleTbar_tW_5FS_powheg.root", 35.6},
-{"MC2016_noHLT_schannel_4FS_leptonicDecays_amcatnlo.root", 3.36},
-{"MC2016_noHLT_tchannel_antitop_4f_leptonicDecays_powheg.root", 70.69/2},
-{"MC2016_noHLT_tchannel_top_4f_leptonicDecays_powheg.root", 70.69/2}
+{"MC2016_noHLT_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_noHLT_W1Jets_madgraph", 9493},
+{"MC2016_noHLT_W2Jets_madgraph", 3120},
+{"MC2016_noHLT_W3Jets_madgrapg", 942.3},
+{"MC2016_noHLT_W4Jets_madgraph", 524.2},
+{"MC2016_noHLT_WW", 113.89},
+{"MC2016_noHLT_WZ", 47.13},
+{"MC2016_noHLT_ZZ", 16.52},
+{"MC2016_noHLT_SingleT_tW_5FS_powheg",    35.6},
+{"MC2016_noHLT_SingleTbar_tW_5FS_powheg", 35.6},
+{"MC2016_noHLT_schannel_4FS_leptonicDecays_amcatnlo", 3.36},
+{"MC2016_noHLT_tchannel_antitop_4f_leptonicDecays_powheg", 70.69/2},
+{"MC2016_noHLT_tchannel_top_4f_leptonicDecays_powheg", 70.69/2}
 };
 
 
@@ -150,20 +150,23 @@ std::map<TString, EColor> dtag_colours = {
 };
 */
 
-Color_t dtag_colours(TString dtag)
+// nick and colour
+std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	{
-	if (dtag.Contains("Data")) return kWhite;
-	else if(dtag.Contains("DYJets")) return kGray;
-	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return kOrange;
-	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return kCyan;
-	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return kAzure;
+	if (dtag.Contains("Data")) return std::make_pair("data", kWhite);
+	else if(dtag.Contains("DYJets")) return std::make_pair("dyjets", kGray);
+	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("wjets", kOrange);
+	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return std::make_pair("dibosons", kCyan);
+	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return std::make_pair("singletop", kAzure);
 	else if(dtag.Contains("TT"))
 		{
-		if (dtag.Contains("qqbar")) return kGreen+4;
-		else if (dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return kGreen+3;
-		else return kGreen-10;
+		if (dtag.Contains("qqbar")) return std::make_pair("tt_jj", kGreen+4);
+		else if (dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return std::make_pair("tt_lj", kGreen+3);
+		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar") ||dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_lt", kGreen-6);
+		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_ll", kGreen-9);
+		else return std::make_pair("tt_other", kYellow+1);
 		}
-	else return kBlack;
+	else return std::make_pair("other", kBlack);
 
 	}
 
@@ -200,6 +203,8 @@ std::vector < TString > dtags;
 std::vector < TFile * > files;
 std::vector < TH1D * > histos;
 std::vector < TH1D * > weightflows;
+// nick->summed histo
+std::map<TString, TH1D *> nicknamed_mc_histos;
 //vector<int> dtags;
 //dtags.reserve();
 
@@ -209,7 +214,7 @@ std::vector < TH1D * > weightflows;
 
 //THStack *hs = new THStack("hs","Stacked 1D histograms");
 THStack *hs      = new THStack("hs", "");
-THStack *hs_data = new THStack("hs", "");
+TH1D    *hs_data = NULL;
 
 for (int i = 4; i<argc; i++)
 	{
@@ -230,26 +235,63 @@ for (int i = 4; i<argc; i++)
 
 	histos.push_back((TH1D*) files.back()->Get(distr));
 	histos.back()->Print();
-	if (dtags.back().Contains("Data"))
+	if (dtag.Contains("Data"))
 		{
 		cout << "summing data-stack" << endl;
 		histos.back()->SetMarkerStyle(9);
 		//histos.back()->SetFillColor(kRed + i);
-		hs_data->Add(histos.back());
+
+		if (hs_data == NULL)
+			{
+			cout << "creating data histo" << endl;
+			hs_data = (TH1D*) histos.back()->Clone();
+			}
+		else
+			{
+			cout << "add histo to data histo" << endl;
+			hs_data->Add(histos.back());
+			}
 		}
 	else
 		{
-		cout << "scaling and adding a stack histo" << endl;
-		histos.back()->Scale(lumi * xsecs[dtags.back()] / weightflows.back()->GetBinContent(5));
+		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(5);
+		histos.back()->Scale(ratio);
+		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 		histos.back()->Print();
 		//histos.back()->SetFillColor(kRed );
-		histos.back()->SetFillColor( dtag_colours(dtag) );
+
+		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
+		TString nick = nick_colour.first;
+		Color_t col = nick_colour.second;
+		histos.back()->SetFillColor( col );
+
 		histos.back()->SetMarkerStyle(20);
 		histos.back()->SetLineStyle(0);
 		histos.back()->SetMarkerColor(i);
-		hs->Add(histos.back(), "HIST");
-		}
 
+		//std::map<TString, TH1D *> nicknamed_mc_histos;
+		if (nicknamed_mc_histos.find(nick) == nicknamed_mc_histos.end())
+			nicknamed_mc_histos[nick] = (TH1D*) histos.back()->Clone();
+			//nicknamed_mc_histos[nick] = new TH1D(nick, "");
+		else
+			nicknamed_mc_histos[nick]->Add(histos.back());
+		//hs->Add(histos.back(), "HIST");
+		}
+	}
+
+//std::map<TString, TH1D *> nicknamed_mc_histos;
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+	{
+	TString nick = it->first;
+	TH1D * distr = it->second;
+	cout << "adding to mc stack: " << nick << endl;
+	distr->Print();
+
+	hs->Add(distr, "HIST");
+	//distr->SetName(controlpoint_name.c_str());
+	//distr->Write();
+	//out_f->Write(controlpoint_name.c_str());
+	//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 	}
 
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
