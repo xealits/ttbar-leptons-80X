@@ -2283,7 +2283,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		*/
 
-		fill_1d(string("weight_Gen"), 200, 0., 2., weight_Gen, 1);
+		fill_1d(string("weight_Gen"), 200, -2., 2., weight_Gen, 1);
 
 		weight *= weight_Gen;
 		weight_up *= weight_Gen;
@@ -3725,14 +3725,14 @@ for(size_t f=0; f<urls.size();++f)
 					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
 					fill_1d(string("btag_radius_flavour_udsg"), 400, 0., 4.,   jet_radius(jet), weight);
 
-					hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
+					// hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
 
 					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
 					// fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
 					fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
 
-					//btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
+					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
 					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
