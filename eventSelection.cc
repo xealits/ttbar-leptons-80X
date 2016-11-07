@@ -2580,16 +2580,25 @@ for(size_t f=0; f<urls.size();++f)
 		else if (tr.isValid())
 			{
 			eTrigger =    ( isMC ?
+			/* more triggers:
+			for Run2016B,C, D, E, F and G 25 ns data with RunIISpring16reHLT80 MC (7th October Update)
+			https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger#Run2016B_C_D_E_F_and_G_25_ns_dat
+			          Data                              MC
+			Muon      HLT_Iso(Tk)Mu24_v*                HLT_Iso(Tk)Mu24_v2
+			Electron  HLT_Ele32_eta2p1_WPTight_Gsf_v*   HLT_Ele32_eta2p1_WPTight_Gsf_v3 
+			*/
+
 			// 2015, 76X MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
 			// 2016, 80X MC
 			//true : // for noHLT MC
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // tecommended inn ttbar trig for reHLT
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // tecommended inn ttbar trig for reHLT
+			utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v3") : // tecommended inn ttbar trig for reHLT
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
 			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
-			 utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
+			 utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v*") );
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") ); // Using no-reHLT Data for now
 			muTrigger =   ( isMC ?
 			// 2015, 76X MC
@@ -2598,9 +2607,9 @@ for(size_t f=0; f<urls.size();++f)
 			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
 			// 2016, 80X MC
 			//true : // for noHLT MC
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") : // tecommended inn ttbar trig for reHLT
+			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
+			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*")
 			);
 			}
 		else return 233;
