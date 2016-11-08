@@ -42,7 +42,7 @@ Job submittion is done with:
 
 The cfg.template has the fields `@field` to fill in:
     theLumiMask = path.expandvars(@lumiMask)
-    
+
     runProcess = cms.PSet(
         dtag  = cms.string("@dtag"),
         job_num  = cms.string("@job_num"),
@@ -55,7 +55,7 @@ The cfg.template has the fields `@field` to fill in:
 The dsets.json file structured as:
     {
       "proc":[
-    
+
         {
           "tag":"data",
           "isdata":true,
@@ -63,14 +63,14 @@ The dsets.json file structured as:
           "fill":0,
           "comment":"real split 17",
            "data":[
-    
+
             { "dtag":"Data13TeV_SingleMuon2016B_PromptRecoV2", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
               "dset":"/SingleElectron/Run2016B-PromptReco-v2/MINIAOD",
               "lumiMask":"/afs/cern.ch/user/o/otoldaie/work/private/project/CMSSW_7_6_3/src/UserCode/llvv_fwk/data/json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt" }
-    
+
           ]
         }
-    
+
       ]
     }
 
@@ -86,60 +86,6 @@ import commands # for some reason subprocess.check_output does not work with das
 import subprocess # trying it again
 import shutil
 
-
-parser = argparse.ArgumentParser(
-        formatter_class = argparse.RawDescriptionHelpFormatter,
-        description = "Submit jobs to LSF cluster on lxplus.",
-        epilog = "Example:\n$ python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.40/"
-        )
-
-parser.add_argument("execname",   help="the name of the executable in cmssw project to run the jobs of")
-parser.add_argument("cfg",    help="the filename (relational path) of the cfg.py template for the jobs")
-parser.add_argument("dsets",  help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
-parser.add_argument("outdir", help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
-parser.add_argument("--tausf", help="turn on tau ID efficiency SF in cfg.py of jobs",
-        action = "store_true")
-
-#if len(argv) != 5:
-    #print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
-    #exit(1)
-
-# Process input
-
-#exec_name, cfg_templ_filename, dsets_json_filename, outdirname = argv[1:]
-
-args = parser.parse_args()
-
-exec_name = args.execname
-cfg_templ_filename = args.cfg
-dsets_json_filename = args.dsets
-outdirname = args.outdir
-outdirname = os.path.abspath(outdirname.strip()) + '/' # just in case
-
-with open(cfg_templ_filename) as t_f, open(dsets_json_filename) as d_f:
-    dsets = json.load(d_f)
-    cfg_templ = t_f.read()
-
-
-job_dir = outdirname + "/FARM/inputs/"
-job_outs = outdirname + "/FARM/outputs/"
-
-
-# Make job FARM directories
-
-print("Making the task (job batch) area in {}".format(outdirname))
-
-try:
-    os.makedirs(job_dir)
-    os.makedirs(job_outs)
-except OSError, e:
-    if e.errno == 17:
-        print("The directories exist, no need to make them.")
-    else:
-        raise
-
-project_dir = os.getcwd() + '/' # just in case
-print("Project dir  is set to:", project_dir)
 
 # Job templates
 
@@ -158,169 +104,237 @@ ulimit -c 0;
 
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
 
-# could use list comprehension instead of this
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
-        yield l[i:i+n]
+def get_dset_files(dset):
+    #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
+    # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
+    #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
+    # -- no! the output of the command is the list of files
+    #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+    status, out = 0, subprocess.check_output( 'das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
 
-# Create proxy for working with LSF jobs
-# Go through dsets.json
-# Create jobs.sh
-# Submit them
+    # the correct approach
+    #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
+    #out, err = p.communicate()
+    #status = 0 # TODO: extract exit status
 
-proxy_file = outdirname + "/FARM/inputs/x509_proxy"
-print("Initializing proxy in " + proxy_file)
-#status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
-# os.system handles the hidden input well
-# subprocess.check_output(shell=True) and .Popen(shell=True)
-# had some issues
-status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
+    # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
+    out_rows = out.split('\n')
+    dset_files = out.split('\n')
+    
+    if status != 0 or dset_files < 1:
+        print("Failed fetch _files_ of {} dataset".format(dset))
+        print("das_client status = " + str(status))
+        print("           output = " + out)
+        print("Continue to other dsets")
+        return None
 
-if status !=0:
-    print("Proxy initialization failed:")
-    print("    status = " + str(status))
-    print("    output =\n" + output)
-    exit(2)
+    return dset_files
 
-#os.system('export X509_USER_PROXY=' + proxy_file)
-#my_env = os.environ.copy()
-#my_env["X509_USER_PROXY"] = proxy_file
-os.environ["X509_USER_PROXY"] = proxy_file
+def get_dset_site(dset):
+    # Finding full local sample
+    print("Command:")
+    print('das_client --query="site dataset={}" --format=JSON '.format(dset))
+    status, out = commands.getstatusoutput('das_client --query="site dataset={}" --format=JSON '.format(dset))
+    #sites = out.split('\n')
+    if status != 0 or len(out) < 1:
+        print("Failed to fetch _sites_ of {} dataset".format(dset))
+        print("das_client status = " + str(status))
+        print("           output = " + out)
+        print("Continue to other dsets")
+        return None
+    sites_info = json.loads(out)
+    sites = []
+    #print(sites_info['data'])
+    for i in sites_info['data']:
+        print(i['site'])
+        #x = i['site'][0]
+        #x.update(i['site'][1])
+        x = {}
+        for s in i['site']:
+            x.update(s)
+        sites.append(x['name'] + ' ' + x['dataset_fraction'])
+    #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
+    
+    if any(local_tier in s and "100.00%" in s for s in sites):
+        print("The full dataset is found on local tier " + local_tier)
+        file_server = "root://eoscms//eos/cms/"
+        print("using " + file_server + " fileserver")
+    else:
+        file_server = "root://cms-xrd-global.cern.ch/"
+        print("using default " + file_server + " fileserver")
+    return file_server
 
-print("Proxy is ready.")
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        formatter_class = argparse.RawDescriptionHelpFormatter,
+        description = "Submit jobs to LSF cluster on lxplus.",
+        epilog = "Example:\n$ python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.40/"
+        )
+
+    parser.add_argument("execname", help="the name of the executable in cmssw project to run the jobs of")
+    parser.add_argument("cfg",      help="the filename (relational path) of the cfg.py template for the jobs")
+    parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+    parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
+    parser.add_argument("--tausf",  help="turn on tau ID efficiency SF in cfg.py of jobs",
+        action = "store_true")
+
+    #if len(argv) != 5:
+        #print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
+        #exit(1)
+
+    # Process input
+
+    #exec_name, cfg_templ_filename, dsets_json_filename, outdirname = argv[1:]
+
+    args = parser.parse_args()
+
+    exec_name = args.execname
+    cfg_templ_filename = args.cfg
+    dsets_json_filename = args.dsets
+    outdirname = args.outdir
+    outdirname = os.path.abspath(outdirname.strip()) + '/' # just in case
+
+    with open(cfg_templ_filename) as t_f, open(dsets_json_filename) as d_f:
+        dsets = json.load(d_f)
+        cfg_templ = t_f.read()
 
 
-# finding local computing resourses
-local_tier = "foo"
-hostname = commands.getstatusoutput("hostname -f")[1]
-if "cern.ch" in hostname: local_tier = "T2_CH_CERN"
+    job_dir = outdirname + "/FARM/inputs/"
+    job_outs = outdirname + "/FARM/outputs/"
 
-# default file server is the global server:
-file_server = "root://cms-xrd-global.cern.ch/"
 
-n_files_per_job = 10
+    # Make job FARM directories
 
-for dset_group in dsets['proc']:
-    isdata = dset_group.get('isdata', False)
-    # TODO: other parameters?
-        # two required parameters of a dset
-    for d in dset_group['data']:
-        dtag = d['dtag']
-        dset = d['dset']
-        print("Submitting dtag " + dtag)
-        print(dset)
+    print("Making the task (job batch) area in {}".format(outdirname))
 
-        lumiMask = d.get('lumiMask', '')
-        # TODO: other parameters as well?
-
-        # get files of the dset
-        #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
-        # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
-        #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
-        # -- no! the output of the command is the list of files
-        #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
-        status, out = 0, subprocess.check_output( 'das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
-
-        # the correct approach
-        #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
-        #out, err = p.communicate()
-        #status = 0 # TODO: extract exit status
-
-        # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
-        out_rows = out.split('\n')
-        dset_files = out.split('\n')
-
-        if status != 0 or dset_files < 1:
-            print("Failed fetch _files_ of {} dataset".format(dset))
-            print("das_client status = " + str(status))
-            print("           output = " + out)
-            print("Continue to other dsets")
-            continue
-
-        #dset_files = out_rows[3:]
-        print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
-
-        # Finding full local sample
-        print("Command:")
-        print('das_client --query="site dataset={}" --format=JSON '.format(dset))
-        status, out = commands.getstatusoutput('das_client --query="site dataset={}" --format=JSON '.format(dset))
-        #sites = out.split('\n')
-        if status != 0 or len(out) < 1:
-            print("Failed to fetch _sites_ of {} dataset".format(dset))
-            print("das_client status = " + str(status))
-            print("           output = " + out)
-            print("Continue to other dsets")
-            continue
-        sites_info = json.loads(out)
-        sites = []
-        #print(sites_info['data'])
-        for i in sites_info['data']:
-            print(i['site'])
-            #x = i['site'][0]
-            #x.update(i['site'][1])
-            x = {}
-            for s in i['site']:
-                x.update(s)
-            sites.append(x['name'] + ' ' + x['dataset_fraction'])
-        #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
-
-        if any(local_tier in s and "100.00%" in s for s in sites):
-            print("The full dataset is found on local tier " + local_tier)
-            file_server = "root://eoscms//eos/cms/"
-            print("using " + file_server + " fileserver")
+    try:
+        os.makedirs(job_dir)
+        os.makedirs(job_outs)
+    except OSError, e:
+        if e.errno == 17:
+            print("The directories exist, no need to make them.")
         else:
-            file_server = "root://cms-xrd-global.cern.ch/"
-            print("using default " + file_server + " fileserver")
+            raise
 
-        #sites = sites_rows[3:]
+    project_dir = os.getcwd() + '/' # just in case
+    print("Project dir  is set to:", project_dir)
 
-        # the list of bsubs job submition commands
-        dset_bsubs = []
+    # could use list comprehension instead of this
+    def chunks(l, n):
+        """Yield successive n-sized chunks from l."""
+        for i in xrange(0, len(l), n):
+            yield l[i:i+n]
 
-        # make jobs per file chunks
-        for i, job_chunk in enumerate(chunks(dset_files, n_files_per_job)):
-            job_name = exec_name + '_' + dtag + '_' + str(i) + '_'
+    # Create proxy for working with LSF jobs
+    # Go through dsets.json
+    # Create jobs.sh
+    # Submit them
 
-            # if the site of dataset is CERN -- can run directly on from eos
-            #root://eoscms//eos/cms/
-            # finding "physical" files via root://cms-xrd-global.cern.ch/
-            input_files = ',\n'.join('"%s/%s"' % (file_server, s) for s in job_chunk)
+    proxy_file = outdirname + "/FARM/inputs/x509_proxy"
+    print("Initializing proxy in " + proxy_file)
+    #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
+    # os.system handles the hidden input well
+    # subprocess.check_output(shell=True) and .Popen(shell=True)
+    # had some issues
+    status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
-            #if i < 5: print(input_files)
+    if status !=0:
+        print("Proxy initialization failed:")
+        print("    status = " + str(status))
+        print("    output =\n" + output)
+        exit(2)
 
-            job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, job_num = i, isMC = not isdata,
-                                       outfile = outdirname + dtag + '_' + str(i) + '.root',
-                                       outdir = outdirname + '/',
-                                       project_dir = project_dir,
-                                       withTauIDSFs = args.tausf)
-            # job_cfg = cfg_templ.format(job_files = job_chunk, lumiCert = lumiMask, dtag = dtag, outdir = outdirname, jobID = i, isdata = isdata)
+    #os.system('export X509_USER_PROXY=' + proxy_file)
+    #my_env = os.environ.copy()
+    #my_env["X509_USER_PROXY"] = proxy_file
+    os.environ["X509_USER_PROXY"] = proxy_file
 
-            job_cfg_filename = outdirname + dtag + '_' + str(i) + '_cfg.py'
-            with open(job_cfg_filename, 'w') as cfg_file:
-                cfg_file.write(job_cfg)
+    print("Proxy is ready.")
 
-            job_sh = job_template.format(project_dir = project_dir, exec_name = exec_name, job_cfg = job_cfg_filename)
-            job_sh_filename = outdirname + '/FARM/inputs/' + dtag + '_' + str(i) + '.sh'
-            with open(job_sh_filename, 'w') as sh_file:
-                sh_file.write(job_sh)
-                os.system("chmod 777 " + sh_file.name)
 
-            job_stdout = outdirname + '/FARM/outputs/' + dtag + '_' + str(i) + '.cout'
-            dset_bsubs.append(job_command_template.format(job_name = job_name, job_stdout = job_stdout, jobsh = job_sh_filename))
+    # finding local computing resourses
+    local_tier = "foo"
+    hostname = commands.getstatusoutput("hostname -f")[1]
+    if "cern.ch" in hostname: local_tier = "T2_CH_CERN"
 
-        print("Created {} jobs. Ready to submit.".format(len(dset_bsubs)))
-        with open(outdirname + '/FARM/inputs/' + dtag + '_' + 'bsub.sh', 'w') as bsub_file:
-            bsub_file.write('\n'.join(dset_bsubs))
-            print("Wrote the bsub commands to {}".format(bsub_file.name))
+    # default file server is the global server:
+    file_server = "root://cms-xrd-global.cern.ch/"
 
-        print("Ready to submit.")
-        #print("No submit in the test run.")
-        #print("printing the bsubs instead")
+    n_files_per_job = 10
 
-        for bsub in dset_bsubs:
-            #print(bsub)
-            print(commands.getstatusoutput(bsub))
+    for dset_group in dsets['proc']:
+        isdata = dset_group.get('isdata', False)
+        # TODO: other parameters?
+            # two required parameters of a dset
+        for d in dset_group['data']:
+            dtag = d['dtag']
+            dset = d['dset']
+            print("Submitting dtag " + dtag)
+            print(dset)
+
+            lumiMask = d.get('lumiMask', '')
+            # TODO: other parameters as well?
+
+            # get files of the dset
+            dset_files = get_dset_files(dset)
+            if not dset_files: continue
+
+            #dset_files = out_rows[3:]
+            print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
+
+            file_server = get_dset_site(dset)
+            if not file_server: continue
+
+            #sites = sites_rows[3:]
+
+            # the list of bsubs job submition commands
+            dset_bsubs = []
+
+            #make_jobs(dtag, dset_files, n_files_per_job)
+            # make jobs per file chunks
+            for i, job_chunk in enumerate(chunks(dset_files, n_files_per_job)):
+                job_name = exec_name + '_' + dtag + '_' + str(i) + '_'
+
+                # if the site of dataset is CERN -- can run directly on from eos
+                #root://eoscms//eos/cms/
+                # finding "physical" files via root://cms-xrd-global.cern.ch/
+                input_files = ',\n'.join('"%s/%s"' % (file_server, s) for s in job_chunk)
+
+                #if i < 5: print(input_files)
+
+                job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, job_num = i, isMC = not isdata,
+                                           outfile = outdirname + dtag + '_' + str(i) + '.root',
+                                           outdir = outdirname + '/',
+                                           project_dir = project_dir,
+                                           withTauIDSFs = args.tausf)
+                # job_cfg = cfg_templ.format(job_files = job_chunk, lumiCert = lumiMask, dtag = dtag, outdir = outdirname, jobID = i, isdata = isdata)
+
+                job_cfg_filename = outdirname + dtag + '_' + str(i) + '_cfg.py'
+                with open(job_cfg_filename, 'w') as cfg_file:
+                    cfg_file.write(job_cfg)
+
+                job_sh = job_template.format(project_dir = project_dir, exec_name = exec_name, job_cfg = job_cfg_filename)
+                job_sh_filename = outdirname + '/FARM/inputs/' + dtag + '_' + str(i) + '.sh'
+                with open(job_sh_filename, 'w') as sh_file:
+                    sh_file.write(job_sh)
+                    os.system("chmod 777 " + sh_file.name)
+
+                job_stdout = outdirname + '/FARM/outputs/' + dtag + '_' + str(i) + '.cout'
+                dset_bsubs.append(job_command_template.format(job_name = job_name, job_stdout = job_stdout, jobsh = job_sh_filename))
+
+            print("Created {} jobs. Ready to submit.".format(len(dset_bsubs)))
+            with open(outdirname + '/FARM/inputs/' + dtag + '_' + 'bsub.sh', 'w') as bsub_file:
+                bsub_file.write('\n'.join(dset_bsubs))
+                print("Wrote the bsub commands to {}".format(bsub_file.name))
+
+            print("Ready to submit.")
+            #print("No submit in the test run.")
+            #print("printing the bsubs instead")
+
+            for bsub in dset_bsubs:
+                #print(bsub)
+                print(commands.getstatusoutput(bsub))
 
 
 
