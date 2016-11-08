@@ -3354,7 +3354,10 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			double pre_weight_tauIDsf = 1;
 			for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-				pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
+				//pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
+				// recommendations update (noticed 8-11-2016, last page update 2016-11-07)
+				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
+				pre_weight_tauIDsf *= (1 - 0.9 + r3->Gaus(0, 0.1)); // gaussian +- 0.1
 			weight_tauIDsf = 1 - pre_weight_tauIDsf;
 			}
 			// TODO: should here be a normalization to all MC events?
