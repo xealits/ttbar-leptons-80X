@@ -4219,6 +4219,7 @@ for(size_t f=0; f<urls.size();++f)
 					// pre-tau selection
 
 					//
+					/*
 					increment(string("singlemu_pretauselection_nRawJets"),  weight * jets.size());
 					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
 					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
@@ -4227,6 +4228,16 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
 					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
 					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					*/
+
+					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singlemu_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singlemu_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singlemu_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singlemu_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singlemu_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singlemu_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_no_fake_prob = 1.0;
@@ -4294,19 +4305,32 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2_q << "\n";
 						}
 
+					/*
 					increment(string("singlemu_pretauselection_jettotaufakerate"),  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
 					increment(string("singlemu_pretauselection_jettotaufakerate1_q"), weight * (jet_to_tau_fake_rate1_q < 1. ? jet_to_tau_fake_rate1_q : 1.));
 					increment(string("singlemu_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
 					increment(string("singlemu_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
 					increment(string("singlemu_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
+					*/
+
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 1,  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 2,  weight * (jet_to_tau_fake_rate1_q  < 1. ? jet_to_tau_fake_rate1_q  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 3,  weight * (jet_to_tau_fake_rate1_w  < 1. ? jet_to_tau_fake_rate1_w  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 4,  weight * (jet_to_tau_fake_rate2_q  < 1. ? jet_to_tau_fake_rate2_q  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
+					//increment(string("singlemu_pretauselection_jettotaufakerate1_q"), weight * (jet_to_tau_fake_rate1_q < 1. ? jet_to_tau_fake_rate1_q : 1.));
+					//increment(string("singlemu_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
+					//increment(string("singlemu_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
+					//increment(string("singlemu_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
+
 					}
 
-				/*
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
 					{
 					// post-tau selection
 
 					//
+					/*
 					increment(string("singlemu_posttauselection_nRawJets"),  weight * jets.size());
 					increment(string("singlemu_posttauselection_njets"),  weight * selJets.size());
 					increment(string("singlemu_posttauselection_njetsNoLep"),  weight * selJetsNoLep.size());
@@ -4315,8 +4339,19 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singlemu_posttauselection_ntaus"),  weight * selTaus.size());
 					increment(string("singlemu_posttauselection_ntausNoLep"),  weight * selTausNoLep.size());
 					increment(string("singlemu_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					*/
+
+					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singlemu_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singlemu_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singlemu_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singlemu_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singlemu_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singlemu_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 					}
 
+				/*
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_particle_ids(string("nearest_particle_around_tau_singlemu_fullselection"), closest_totaunolep_particle_id, weight);
@@ -4534,14 +4569,15 @@ for(size_t f=0; f<urls.size();++f)
 					// pre-tau selection
 
 					//
-					increment(string("singleel_pretauselection_nRawJets"),  weight * jets.size());
-					increment(string("singleel_pretauselection_njets"),  weight * selJets.size());
-					increment(string("singleel_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
-					increment(string("singleel_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
-					increment(string("singleel_pretauselection_nRawTaus"),  weight * taus.size());
-					increment(string("singleel_pretauselection_ntaus"),  weight * selTaus.size());
-					increment(string("singleel_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
-					increment(string("singleel_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
+					fill_1d(string("singleel_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singleel_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singleel_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singleel_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singleel_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singleel_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singleel_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singleel_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 
 					// calculate jet-to-tau fake rate per all jets and save the sum
 					double jet_to_tau_no_fake_prob = 1.0;
@@ -4602,18 +4638,24 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2_q << "\n";
 						}
 
+					/*
 					increment(string("singleel_pretauselection_jettotaufakerate"),  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate1_q"), weight * (jet_to_tau_fake_rate1_q < 1. ? jet_to_tau_fake_rate1_q : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
 					increment(string("singleel_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
+					*/
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 1,  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 2,  weight * (jet_to_tau_fake_rate1_q  < 1. ? jet_to_tau_fake_rate1_q  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 3,  weight * (jet_to_tau_fake_rate1_w  < 1. ? jet_to_tau_fake_rate1_w  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 4,  weight * (jet_to_tau_fake_rate2_q  < 1. ? jet_to_tau_fake_rate2_q  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
 					}
 
-				/*
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
 					{
 					// post-tau selection
-
+					/*
 					increment(string("singleel_posttauselection_nRawJets"),  weight * jets.size());
 					increment(string("singleel_posttauselection_njets"),  weight * selJets.size());
 					increment(string("singleel_posttauselection_njetsNoLep"),  weight * selJetsNoLep.size());
@@ -4622,8 +4664,19 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singleel_posttauselection_ntaus"),  weight * selTaus.size());
 					increment(string("singleel_posttauselection_ntausNoLep"),  weight * selTausNoLep.size());
 					increment(string("singleel_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
+					*/
+
+					fill_1d(string("singleel_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singleel_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singleel_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singleel_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singleel_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singleel_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singleel_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singleel_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 					}
 
+				/*
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 					{
 					fill_particle_ids(string("nearest_particle_around_tau_singleel_fullselection"), closest_totaunolep_particle_id, weight);
