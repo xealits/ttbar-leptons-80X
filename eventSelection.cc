@@ -4116,15 +4116,22 @@ for(size_t f=0; f<urls.size();++f)
 				{
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
-					fill_1i(string("smu_passtau_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
-					fill_1i(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
-					fill_1i(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
+					fill_1d(string("smu_passtau_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+
+					fill_1d(string("smu_passtau_selection_njets"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
-					fill_1i(string("smu_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
-					fill_1i(string("smu_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
-					fill_1i(string("smu_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
+					fill_1d(string("smu_passos_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("smu_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("smu_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("smu_passos_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
 					fill_1d( string("singlemu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("singlemu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
@@ -4413,10 +4420,23 @@ for(size_t f=0; f<urls.size();++f)
 			if (isSingleE)
 				{
 
+				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
+					fill_1d(string("sel_passtau_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+
+					fill_1d(string("sel_passtau_selection_njets"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+					}
+
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
-					fill_1i(string("sel_passos_selection_ntaus"), 20, 0, 20,   taus.size(), 1);
-					fill_1i(string("sel_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), 1);
-					fill_1i(string("sel_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), 1);
+					fill_1d(string("sel_passos_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("sel_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("sel_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("sel_passos_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
 					fill_1d( string("singleel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("singleel_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
