@@ -4199,7 +4199,7 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
+						//fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
 						fill_1d(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight );
 						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
@@ -4341,14 +4341,14 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singlemu_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
 					*/
 
-					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
-					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
-					fill_1d(string("singlemu_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
-					fill_1d(string("singlemu_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
-					fill_1d(string("singlemu_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
-					fill_1d(string("singlemu_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
-					fill_1d(string("singlemu_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
-					fill_1d(string("singlemu_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
+					fill_1d(string("singlemu_posttauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singlemu_posttauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singlemu_posttauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singlemu_posttauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singlemu_posttauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singlemu_posttauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singlemu_posttauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singlemu_posttauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 					}
 
 				/*
@@ -4490,7 +4490,7 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s4 ? 8 : 0);
 						multi += (s5 ? 16 : 0);
 
-						fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
+						//fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
 						fill_1d(string("weightflow_el"), 300, 0, 300,   10 + multi, weight );
 						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
@@ -4666,14 +4666,14 @@ for(size_t f=0; f<urls.size();++f)
 					increment(string("singleel_posttauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
 					*/
 
-					fill_1d(string("singleel_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
-					fill_1d(string("singleel_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
-					fill_1d(string("singleel_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
-					fill_1d(string("singleel_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
-					fill_1d(string("singleel_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
-					fill_1d(string("singleel_pretauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
-					fill_1d(string("singleel_pretauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
-					fill_1d(string("singleel_pretauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
+					fill_1d(string("singleel_posttauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
+					fill_1d(string("singleel_posttauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					fill_1d(string("singleel_posttauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
+					fill_1d(string("singleel_posttauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("singleel_posttauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
+					fill_1d(string("singleel_posttauselection_ntaus"),           10, 0,10,  selTaus.size(),           weight);
+					fill_1d(string("singleel_posttauselection_ntausNoLep"),      10, 0,10,  selTausNoLep.size(),      weight);
+					fill_1d(string("singleel_posttauselection_ntausNoLepNoJet"), 10, 0,10,  selTausNoLepNoJet.size(), weight);
 					}
 
 				/*
