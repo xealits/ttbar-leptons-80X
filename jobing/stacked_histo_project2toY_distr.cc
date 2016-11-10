@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+#define INPUT_DTAGS_START 5
+
 using namespace std;
 
 /*
@@ -182,7 +184,7 @@ int main (int argc, char *argv[])
 {
 if (argc < 5)
 	{
-	std::cout << "Usage : " << argv[0] << " lumi, distr, dir, dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " lumi distr projection dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -190,8 +192,9 @@ gROOT->Reset();
 
 double lumi = atof(argv[1]);
 TString distr(argv[2]);
-TString dir(argv[3]);
-TString dtag1(argv[4]);
+TString projection(argv[3]);
+TString dir(argv[4]);
+TString dtag1(argv[INPUT_DTAGS_START]);
 
 cout << lumi  << endl;
 cout << distr << endl;
@@ -229,7 +232,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 
-for (int i = 4; i<argc; i++)
+for (int i = INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
 	cout << "processing " << dtag << endl;
@@ -246,7 +249,7 @@ for (int i = 4; i<argc; i++)
 	weightflows.push_back((TH1D*) files.back()->Get("weightflow_el"));
 	weightflows.back()->Print();
 
-	histos.push_back((TH1D*) files.back()->Get(distr));
+	histos.push_back((TH1D*) ((TH2D*) files.back()->Get(distr))->ProjectionY(projection));
 	histos.back()->Print();
 	if (dtag.Contains("Data"))
 		{
