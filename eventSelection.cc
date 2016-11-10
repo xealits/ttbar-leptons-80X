@@ -2902,6 +2902,8 @@ for(size_t f=0; f<urls.size();++f)
 		pat::MET met = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
+		fill_1d(string("control_met_slimmedMETs_pt"), 200, 0., 200., met.pt(), weight);
+
 
 		if(debug){
 			// MET try:
@@ -2944,9 +2946,9 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Electron& electron = electrons[n];
 
-			fill_2d(string("elcontrol_slimmedelectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-			fill_1d(string("elcontrol_slimmedelectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
-			//fill_1d(string("taucontrol_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_el_slimmedelectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
+			fill_1d(string("control_el_slimmedelectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
+			//fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			bool 
 				passKin(true),     passId(true),     passIso(true),
@@ -3017,8 +3019,8 @@ for(size_t f=0; f<urls.size();++f)
 			if     (passKin     && passId     && passIso)
 				{
 				selElectrons.push_back(electron);
-				fill_2d(string("elcontrol_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-				fill_1d(string("elcontrol_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
+				fill_2d(string("control_el_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
+				fill_1d(string("control_el_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
 				}
 			else if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
 
@@ -3050,8 +3052,8 @@ for(size_t f=0; f<urls.size();++f)
 			// patUtils::GenericLepton& lepton = leptons[n];
 			pat::Muon& muon = muons[n];
 
-			fill_2d(string("mucontrol_slimmedmions_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-			fill_1d(string("mucontrol_slimmedmions_phi"), 128, -3.2, 3.2, muon.phi(), weight);
+			fill_2d(string("control_mu_slimmedmions_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
+			fill_1d(string("control_mu_slimmedmions_phi"), 128, -3.2, 3.2, muon.phi(), weight);
 
 			bool
 				passKin(true),     passId(true),     passIso(true),
@@ -3124,8 +3126,8 @@ for(size_t f=0; f<urls.size();++f)
 			if     (passKin     && passId     && passIso)
 				{
 				selMuons.push_back(muon);
-				fill_2d(string("mucontrol_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-				fill_1d(string("mucontrol_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
+				fill_2d(string("control_mu_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
+				fill_1d(string("control_mu_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
 				}
 			else if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
 
@@ -3176,8 +3178,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Tau& tau = taus[n];
 
-			fill_2d(string("taucontrol_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("taucontrol_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_tau_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			// ---------- IDs
 					
@@ -3213,8 +3215,8 @@ for(size_t f=0; f<urls.size();++f)
 			// -- recommended for multi-object final states (ttH, H->tau-tau)
 			// -- not found in noHLT TTbar
 
-			fill_2d(string("taucontrol_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("taucontrol_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_tau_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("control_tau_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
 
 			// Pixel hits cut (will be available out of the box in new MINIAOD production)
@@ -3243,8 +3245,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
 
 			selTaus.push_back(tau);
-			fill_2d(string("taucontrol_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("taucontrol_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_tau_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("control_tau_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 			}
 
 		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
@@ -3275,8 +3277,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			selTausNoLep.push_back(tau);
 			// so these are the final taus we use in the selection
-			fill_2d(string("taucontrol_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("taucontrol_selTausNoLep_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_tau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("control_tau_selTausNoLep_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			// for the fake-rate counts (in MC)
 			// let's save how many taus we find:
@@ -3402,8 +3404,8 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: so does this mean "in place"?
 			pat::Jet& jet = jets[ijet];
 			//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_2d(string("jetcontrol_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			fill_2d(string("control_jet_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 			LorentzVector jet_corr(0., 0., 0., 0.);
 
@@ -3413,7 +3415,7 @@ for(size_t f=0; f<urls.size();++f)
 			//correct JES
 			LorentzVector rawJet = jet.correctedP4("Uncorrected");
 
-			fill_2d(string("slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
+			fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
 
 			if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
 
@@ -3428,8 +3430,8 @@ for(size_t f=0; f<urls.size();++f)
 			float jes_correction = jesCor->getCorrection();
 			jet.setP4(rawJet*jes_correction);
 
-			fill_2d(string("jetcontrol_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
+			fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
 
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
@@ -3445,7 +3447,7 @@ for(size_t f=0; f<urls.size();++f)
 					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
 					double jer_smearing = smearJER[0];
 					jet.setP4(jet.p4()*jer_smearing);
-					fill_1d(string("slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
+					fill_1d(string("control_jet_slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
 					
 					//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smearJER[0], smearJER[1], smearJER[2]);
 					// //set the JER up/down alternatives
@@ -3460,7 +3462,7 @@ for(size_t f=0; f<urls.size();++f)
 					jet.addUserFloat("_res_jup", 1.0);
 					jet.addUserFloat("_res_jdown", 1.0 );
 					}
-				fill_2d(string("jetcontrol_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_2d(string("control_jet_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 
 
@@ -3486,7 +3488,7 @@ for(size_t f=0; f<urls.size();++f)
 			jet_corr = jet.p4() - jet_initial_momentum;
 			full_jet_corr += jet_corr;
 
-			fill_2d(string("jetcontrol_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
+			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
 
 			if(debug)
 				{
@@ -3520,7 +3522,8 @@ for(size_t f=0; f<urls.size();++f)
 		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), n_met.pt(), weight);
 		//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
 		//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
-		fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
+		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
+		fill_1d(string("control_met_allcorr_pt"), 200, 0., 200., met.pt(), weight);
 
 		if(debug) cout << "Jet Energy Corrections updated" << endl;
 
@@ -3550,8 +3553,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = jets[ijet];
 
-			fill_2d(string("jetcontrol_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			fill_2d(string("control_jet_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 			// TODO: what do we do here exactly?
 			// a loose selection on jets, and then tighten it later?
@@ -3571,8 +3574,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (passPFloose)
 				{
-				fill_2d(string("jetcontrol_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("jetcontrol_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+				fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 
 			// and now the tighter final selection
@@ -3602,8 +3605,8 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				selJets.push_back(jet);
 
-				fill_2d(string("jetcontrol_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("jetcontrol_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+				fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 				// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
 				double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
@@ -3633,8 +3636,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			selJetsNoLep.push_back(jet);
 
-			fill_2d(string("jetcontrol_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 			}
 
 
@@ -3655,8 +3658,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			selJetsNoLepNoTau.push_back(jet);
 
-			fill_2d(string("jetcontrol_selJetsNoLepNoTau_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_selJetsNoLepNoTau_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			fill_2d(string("control_jet_selJetsNoLepNoTau_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_selJetsNoLepNoTau_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 			}
 
 
@@ -3673,8 +3676,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = selJetsNoLep[ijet];
 
-			fill_2d(string("jetcontrol_bjetCandidates_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("jetcontrol_bjetCandidates_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			fill_2d(string("control_jet_bjetCandidates_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_bjetCandidates_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 
 			double eta=jet.eta();
 
@@ -3756,8 +3759,8 @@ for(size_t f=0; f<urls.size();++f)
 			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
 				{
 				selBJets.push_back(jet);
-				fill_2d(string("jetcontrol_selBJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("jetcontrol_selBJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+				fill_2d(string("control_jet_selBJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("control_jet_selBJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 			}
 
@@ -3784,8 +3787,8 @@ for(size_t f=0; f<urls.size();++f)
 			// the taus, far from leptons and jets
 			selTausNoLepNoJet.push_back(tau);
 
-			fill_2d(string("taucontrol_selTausNoLepNoJet_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("taucontrol_selTausNoLepNoJet_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			fill_2d(string("control_tau_selTausNoLepNoJet_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			fill_1d(string("control_tau_selTausNoLepNoJet_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 
 			// for the fake-rate counts (in MC)
 			// let's save how many taus we find:
