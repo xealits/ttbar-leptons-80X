@@ -4293,7 +4293,7 @@ for(size_t f=0; f<urls.size();++f)
 							//cout << "BBB " << abs( jet_origin.pdgId() ) << "\n";
 							//fill_particle_ids(string("smu_pretau_jet_origin_ids"), 1, weight);
 
-							fill_particle_ids(string("smu_pretau_jet_origin_ids"), partID, weight);
+							fill_1d(string("smu_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
 							}
 
 						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
@@ -4640,7 +4640,8 @@ for(size_t f=0; f<urls.size();++f)
 							{
 							int partID = jet.partonFlavour();
 							//fill_particle_ids(string("sel_pretau_jet_origin_ids"), selJetsNoLep[n].genParton()->pdgId(), weight);
-							fill_particle_ids(string("sel_pretau_jet_origin_ids"), partID, weight);
+							//fill_particle_ids(string("sel_pretau_jet_origin_ids"), partID, weight);
+							fill_1d(string("sel_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
 							}
 
 						jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
