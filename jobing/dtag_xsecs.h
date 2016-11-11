@@ -1,7 +1,10 @@
 #ifndef DTAG_XSECS_H_   /* Include guard */
 #define DTAG_XSECS_H_
 
+
 #include <map>
+
+#include "TString.h"
 
 using namespace std;
 
@@ -9,12 +12,12 @@ using namespace std;
 const double W_lep_br = 0.108;
 const double W_qar_br = 0.676;
 
-double W_lep_br2 = 0.108*0.108;
-double W_qar_br2 = 0.676*0.676;
+const double W_lep_br2 = 0.108*0.108;
+const double W_qar_br2 = 0.676*0.676;
 
 const double ttbar_xsec = 831.76;
 
-std::map<string, double> xsecs = {
+std::map<TString, double> xsecs = {
 {"Data13TeV_SingleElectron2016B_PromptRecoV2" , 1.0},
 {"Data13TeV_SingleMuon2016B_PromptRecoV2" , 1.0},
 {"Data13TeV_SingleElectron2016D_PromptRecoV2_", 1},
@@ -148,6 +151,6 @@ std::map<string, double> xsecs = {
 {"MC2016_noHLT_QCD_HT-1000-1500",  1206},
 {"MC2016_noHLT_QCD_HT-1500-2000",  120.4},
 {"MC2016_noHLT_QCD_HT-2000-Inf",  25.25},
-}
+};
 
 #endif // DTAG_XSECS_H_
