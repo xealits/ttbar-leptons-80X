@@ -96,7 +96,15 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_SingleTbar_tW_5FS_powheg", 35.6},
 {"MC2016_noHLT_schannel_4FS_leptonicDecays_amcatnlo", 3.36},
 {"MC2016_noHLT_tchannel_antitop_4f_leptonicDecays_powheg", 70.69/2},
-{"MC2016_noHLT_tchannel_top_4f_leptonicDecays_powheg", 70.69/2}
+{"MC2016_noHLT_tchannel_top_4f_leptonicDecays_powheg", 70.69/2},
+{"MC2016_noHLT_QCD_HT-100-200",  27540000},
+{"MC2016_noHLT_QCD_HT-200-300",  1717000},
+{"MC2016_noHLT_QCD_HT-300-500",  351300},
+{"MC2016_noHLT_QCD_HT-500-700",  31630},
+{"MC2016_noHLT_QCD_HT-700-1000",  6802},
+{"MC2016_noHLT_QCD_HT-1000-1500",  1206},
+{"MC2016_noHLT_QCD_HT-1500-2000",  120.4},
+{"MC2016_noHLT_QCD_HT-2000-Inf",  25.25},
 };
 
 
