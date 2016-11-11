@@ -1253,6 +1253,8 @@ bool isW0JetsSet   (isMC && (dtag.Contains ("W0Jets")));
 // WJets have NUP = all those numbers
 // for W0Jets one takes NUP = 5
 
+bool isNoHLT = dtag.Contains("noHLT");
+
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
@@ -2116,34 +2118,50 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
-		if (!tr.isValid ()){
-			//cout << "Trigger HLT is not valid, trying HLT2" << endl;
-			tr = ev.triggerResultsByName ("HLT2");
-			if (!tr.isValid ()){
-				cout << "Trigger HLT2 is not valid, exiting" << endl;
-				return false;
-				}
-			}
 
-		if(debug){
-			cout << "Printing HLT trigger list" << endl;
-			//cout << "-- Commented out --" << endl;
-			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
-				cout << *trnames << endl;
-			cout << "----------- End of trigger list ----------" << endl;
-			//return 0;
-			}
+			if (!tr.isValid ()){
+				//cout << "Trigger HLT is not valid, trying HLT2" << endl;
+				tr = ev.triggerResultsByName ("HLT2");
+				if (!tr.isValid ()){
+					cout << "Trigger HLT2 is not valid, exiting" << endl;
+					return false;
+					}
+				}
+
+			if(debug){
+				cout << "Printing HLT trigger list" << endl;
+				//cout << "-- Commented out --" << endl;
+				for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
+					cout << *trnames << endl;
+				cout << "----------- End of trigger list ----------" << endl;
+				//return 0;
+				}
 
 		// Need either to simulate the HLT (https://twiki.cern.ch/twiki/bin/view/CMS/TopTrigger#How_to_easily_emulate_HLT_paths) to match triggers.
 		// trigger for Jet-heavy events in analysis note AN-2012-489: HLT_Jet30_v1
 
 		// TODO: find the corresponding trigger in 2016
 
-		// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
-		//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
-		// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
-		bool JetHLTTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*") );
-		bool MuonHLTTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
+		bool JetHLTTrigger = false;
+		bool MuonHLTTrigger = false;
+
+		if (isNoHLT)
+			{
+			JetHLTTrigger = true;
+			MuonHLTTrigger = true;
+			}
+		else if (tr.isValid())
+			{
+			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
+			//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
+			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
+			JetHLTTrigger = utils::passTriggerPatterns(tr, "HLT_PFJet40_v*");
+			MuonHLTTrigger = (isMC ?
+				//utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*");
+				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
+				//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
+				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*"));
+			}
 
 		// if (!(JetHLTTrigger || MuonHLTTrigger)) continue; // No orthogonalization -- run on only 1 trigger type of datasets
 
@@ -2604,7 +2622,7 @@ for(size_t f=0; f<urls.size();++f)
 			// ---------------------- Main muon kin
 			// if(muon.pt() < 30.)   passKin = false;
 			// if(leta > 2.1)        passKin = false;
-			if(muon.pt() < 26.)   passKin = false;
+			if(muon.pt() < 30.)   passKin = false;
 			if(leta > 2.4)        passKin = false;
 
 			// ---------------------- Veto muon kin
