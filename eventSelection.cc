@@ -2993,8 +2993,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			// ------------------------- electron isolation
 
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut);
+			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
+			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
 
 
 			// ---------------------------- kinematics
