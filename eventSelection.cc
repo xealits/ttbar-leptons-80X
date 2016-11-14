@@ -1325,6 +1325,8 @@ int printout_counters(FILE * out, JobDef JD)
 
 
 
+
+
 int main (int argc, char *argv[])
 {
 //##############################################
@@ -2953,6 +2955,7 @@ for(size_t f=0; f<urls.size();++f)
 			bool 
 				passKin(true),     passId(true),     passIso(true),
 				passVetoKin(true), passVetoId(true), passVetoIso(true);
+			bool passSigma(false), passSigmaVeto(false);
 
 			int lid(electron.pdgId()); // should always be 11
 
@@ -2988,8 +2991,24 @@ for(size_t f=0; f<urls.size();++f)
 
 			// ------------------------- electron IDs
 			//Cut based identification
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+			//https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+			// full5x5_sigmaIetaIeta is forgotten in our passId for electrons
+			// getting high MC/Data in electrons now -- maybe due to photons,
+			// checking sigmaIetaIeta, then photon rejection (hasPixelSeed()) and cross-cleaning with photons
+			float eta = std::abs(electron.superCluster()->position().eta());
+			float sigmaIetaIeta = electron.full5x5_sigmaIetaIeta();
+			if (eta <= 1.479) // barrel, newer selection is precise?
+				{
+				passSigma =     sigmaIetaIeta < 0.00998; // Tight WP
+				passSigmaVeto = sigmaIetaIeta < 0.0115;  // Veto WP
+				}
+			else if (eta > 1.479) // endcap
+				{
+				passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
+				passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
+				}
+			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma;
+			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto;
 
 			// ------------------------- electron isolation
 
