@@ -104,13 +104,41 @@ ulimit -c 0;
 
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
 
-def get_dset_files(dset):
+
+def restore_dset(dsets_dir, dset):
+    """restore_dset_files(dsets_dir, dset)
+
+    format:
+    dsets/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/T2_CH_CERN
+
+    returns [files], file_server
+    """
+
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',')
+    print(dset_dir)
+    print(os.listdir(dset_dir))
+    all_subdirs = [dset_dir + '/' + d for d in os.listdir(dset_dir) if os.path.isdir(dset_dir + '/' + d)]
+    print(all_subdirs)
+    newest_dir = max(all_subdirs, key=os.path.getmtime)
+
+    file_server = "root://cms-xrd-global.cern.ch/" # default
+    if os.path.isfile(newest_dir + '/T2_CH_CERN'):
+        file_server = "root://eoscms//eos/cms/"
+
+    with open(newest_dir + '/files', 'r') as fs:
+        files = [f.strip() for f in fs.readlines()]
+
+    return files, file_server
+
+
+#def get_dset_files(dset):
+def get_dset(dset):
     #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
     # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
     #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
     # -- no! the output of the command is the list of files
     #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
-    status, out = 0, subprocess.check_output( 'das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+    status, out = 0, subprocess.check_output( './das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
 
     # the correct approach
     #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
@@ -126,22 +154,24 @@ def get_dset_files(dset):
         print("das_client status = " + str(status))
         print("           output = " + out)
         print("Continue to other dsets")
-        return None
+        return None, None
 
-    return dset_files
+    #return dset_files
 
-def get_dset_site(dset):
+    # And now find the fileserver
+
+    #def get_dset_site(dset):
     # Finding full local sample
     print("Command:")
-    print('das_client --query="site dataset={}" --format=JSON '.format(dset))
-    status, out = commands.getstatusoutput('das_client --query="site dataset={}" --format=JSON '.format(dset))
+    print('./das_client --query="site dataset={}" --format=JSON '.format(dset))
+    status, out = commands.getstatusoutput('./das_client --query="site dataset={}" --format=JSON '.format(dset))
     #sites = out.split('\n')
     if status != 0 or len(out) < 1:
         print("Failed to fetch _sites_ of {} dataset".format(dset))
         print("das_client status = " + str(status))
         print("           output = " + out)
         print("Continue to other dsets")
-        return None
+        return None, None
     sites_info = json.loads(out)
     sites = []
     #print(sites_info['data'])
@@ -162,7 +192,8 @@ def get_dset_site(dset):
     else:
         file_server = "root://cms-xrd-global.cern.ch/"
         print("using default " + file_server + " fileserver")
-    return file_server
+
+    return dset_files, file_server
 
 if __name__ == "__main__":
 
@@ -176,6 +207,7 @@ if __name__ == "__main__":
     parser.add_argument("cfg",      help="the filename (relational path) of the cfg.py template for the jobs")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
+    parser.add_argument("-d", "--dsets-dir",  help="use local directory for dsets files")
     parser.add_argument("--tausf",  help="turn on tau ID efficiency SF in cfg.py of jobs",
         action = "store_true")
 
@@ -189,11 +221,22 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    #print(dir(args))
+    #print(args.dsets_dir)
+    #exit(1) # will crash
+
     exec_name = args.execname
     cfg_templ_filename = args.cfg
     dsets_json_filename = args.dsets
     outdirname = args.outdir
     outdirname = os.path.abspath(outdirname.strip()) + '/' # just in case
+
+    # if retrieve dsets file info from local directory
+    # or use DAS CLI client (failes from time to time)
+    if args.dsets_dir:
+        file_info_source = lambda dset: restore_dset(args.dsets_dir + '/', dset)
+    else:
+        file_info_source = get_dset
 
     with open(cfg_templ_filename) as t_f, open(dsets_json_filename) as d_f:
         dsets = json.load(d_f)
@@ -277,14 +320,15 @@ if __name__ == "__main__":
             # TODO: other parameters as well?
 
             # get files of the dset
-            dset_files = get_dset_files(dset)
-            if not dset_files: continue
+            #dset_files = get_dset_files(dset)
+            #file_server = get_dset_site(dset)
+            #dset_files, file_server = get_dset(dset)
+            dset_files, file_server = file_info_source(dset)
+            if not (dset_files and file_server): continue
 
             #dset_files = out_rows[3:]
             print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
 
-            file_server = get_dset_site(dset)
-            if not file_server: continue
 
             #sites = sites_rows[3:]
 
