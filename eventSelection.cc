@@ -2938,6 +2938,26 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "got objects from the event, starting the analysis" << endl;
 			}
 
+
+		pat::PhotonCollection selPhotons;
+		//pat::PhotonCollection photons;
+		for(unsigned int n=0; n<photons.size (); ++n)
+			{
+			pat::Photon& photon = photons[n];
+
+			fill_2d(string("control_ph_slimmedphotons_pt_eta"), 250, 0., 500., 200, -3., 3., photon.pt(), photon.eta(), weight);
+			fill_1d(string("control_ph_slimmedphotons_phi"), 128, -3.2, 3.2, photon.phi(), weight);
+
+			if(photon.pt()<55)continue;
+			if(fabs(photon.superCluster()->eta())>1.4442 ) continue;
+			if(!patUtils::passId(photon, rho, patUtils::llvvPhotonId::Tight)) continue;
+
+			fill_2d(string("control_ph_photonsIDed_pt_eta"), 250, 0., 500., 200, -3., 3., photon.pt(), photon.eta(), weight);
+			fill_1d(string("control_ph_photonsIDed_phi"), 128, -3.2, 3.2, photon.phi(), weight);
+
+			selPhotons.push_back(photon); 
+			}
+
 		//
 		// LEPTON SELECTION
 		//
@@ -2969,6 +2989,15 @@ for(size_t f=0; f<urls.size();++f)
 			//bool hasPixelSeed = electron.hasPixelSeed();
 			// but electrons don't have this method
 			// will have to cross-clean with photons or etc
+
+			// removing all electrons close to tight Photons
+			// actually, people do it the other way around, testing v9.5
+			double minDRlg(9999.);
+			for(size_t i=0; i<selPhotons.size(); i++)
+				{
+				minDRlg = TMath::Min(minDRlg, deltaR(electron.p4(), selPhotons[i].p4()));
+				}
+			if(minDRlg<0.1) continue;
 
 			int lid(electron.pdgId()); // should always be 11
 
