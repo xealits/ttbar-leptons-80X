@@ -70,12 +70,14 @@ cout << distr << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
 
+/*
 for(std::map<TString, double>::iterator it = xsecs.begin(); it != xsecs.end(); ++it)
 	{
 	TString dtag = it->first;
 	double xsec  = it->second;
 	cout << "For dtag " << dtag << " xsec " << xsec << "\n";
 	}
+*/
 
 
 std::vector < TString > dtags;

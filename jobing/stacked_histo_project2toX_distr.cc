@@ -22,7 +22,7 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 5
+#define INPUT_DTAGS_START 6
 
 using namespace std;
 
@@ -55,7 +55,7 @@ int main (int argc, char *argv[])
 {
 if (argc < 5)
 	{
-	std::cout << "Usage : " << argv[0] << " lumi distr projection dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " lumi distr projection rebin_factor dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -64,7 +64,8 @@ gROOT->Reset();
 double lumi = atof(argv[1]);
 TString distr(argv[2]);
 TString projection(argv[3]);
-TString dir(argv[4]);
+Int_t rebin_factor(atoi(argv[4]));
+TString dir(argv[5]);
 TString dtag1(argv[INPUT_DTAGS_START]);
 
 cout << lumi  << endl;
@@ -72,12 +73,14 @@ cout << distr << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
 
+/*
 for(std::map<TString, double>::iterator it = xsecs.begin(); it != xsecs.end(); ++it)
 	{
 	TString dtag = it->first;
 	double xsec  = it->second;
 	cout << "For dtag " << dtag << " xsec " << xsec << "\n";
 	}
+*/
 
 
 std::vector < TString > dtags;
@@ -121,6 +124,7 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 	weightflows.back()->Print();
 
 	histos.push_back((TH1D*) ((TH2D*) files.back()->Get(distr))->ProjectionX(projection));
+	histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
 	histos.back()->Print();
 	if (dtag.Contains("Data"))
 		{
