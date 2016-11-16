@@ -232,7 +232,7 @@ The steps of Pietro's code with changes.
         https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
         https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
 
-      * good: P_T > 26, eta < 2.4, tight muon
+      * good: P_T > 30, eta < 2.4, tight muon
         veto: P_T > 10, eta < 2.5, loose muon
 
       * IDs are according to
@@ -266,10 +266,13 @@ The steps of Pietro's code with changes.
         veto: P_T > 15, eta < 2.5,
       * both have window at leta > 1.4442 && leta < 1.5660
         IDs and isolation are done with cut-based procedure according to
-        https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2
+	https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+        (
+	https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2
         https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
         used:
         https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria
+	)
         "recipes for regular users":
         `egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium`
         (how to access it?)
@@ -283,7 +286,8 @@ The steps of Pietro's code with changes.
 * select the taus -> **0 leave as is**
   + 4 tau ID discriminators (**check if up to date**) from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV:
     decayModeFinding > 0.5
-    byMediumCombinedIsolationDeltaBetaCorr3Hits > 0.5
+    (byMediumCombinedIsolationDeltaBetaCorr3Hits > 0.5)
+    byMediumIsolationMVArun2v1DBoldDMwLT > 0.5
     againstMuonTight3 > 0.5
     (old againstElectronMediumMVA6 > 0.5)
     againstElectronTightMVA6 > 0.5
