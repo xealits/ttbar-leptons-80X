@@ -230,7 +230,7 @@ hs_data->SetXTitle(distr);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr + "_X.png" );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);
