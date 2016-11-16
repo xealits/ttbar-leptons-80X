@@ -183,7 +183,16 @@ The selection steps.
 * basic event selection
   + **outdated** remove Run2015B[Orthogonalize Run2015B PromptReco+17Jul15 mix]
   + Skip bad lumi -> **check for lumicert for new datasets 1**
-    using: `Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt`
+    > for DoubleElectron (Ele23_12) and SingleElectron (Ele27_WPTight) cases,
+    > due to L1 prescales at the beginning of the fills,
+    > these paths have some L1 seeds disabled for some significant amount of lumi.
+    > Since the loss is significant in the E+F+G eras,
+    > alternatively you can use HLT_SingleEle27_WPTight_Gsf_v* path in the periods were at least the L1_SingleIsoEG26 was unprescaled,
+    > so sufficient to have a balanced path with lower L1 threshold but worse turn-on
+    > (use at your own risk and check trigger efficiencies with alternative methods like T&P) with this json:
+    `/afs/cern.ch/user/j/jfernan/public/TOPtriggerJSONS2016/7Oct/LSfor_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26.json` (23.13 fb-1)
+
+    gloden: `Cert_271036-282092_13TeV_PromptReco_Collisions16_JSON.txt` (29.82 fb^-1)
     (RunD is about 4.3 fp^-1)
     unprescaled certificate for the top triggers:
     `TOP_Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_UnprescaledPaths.txt`
@@ -191,9 +200,11 @@ The selection steps.
     (2015 RunD is about 2160.8 pb^-1 RunC ~ 17.2 pb^-1,
     `Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt`
     `Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt`)
+
   + apply trigger
-    electrons --- `HLT_Ele27_WPTight_Gsf_v*` and `HLT_Ele27_WPTight_Gsf_v2` MC
-    muons --- `HLT_IsoMu22_v*, HLT_IsoTkMu22_v*` or `v3` for MC
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger
+    electrons --- `HLT_Ele32_eta2p1_WPTight_Gsf_v*` and `HLT_Ele32_eta2p1_WPTight_Gsf_v3` MC
+    muons --- `HLT_IsoMu24_v*, HLT_IsoTkMu24_v*` or `v2` for MC
     The dilepton HLTs are not used --- should consider adding them (people regard this option as efficiency improvement \url{https://hypernews.cern.ch/HyperNews/CMS/get/top-trigger/180.html})
     (2015:
      muons --- `HLT_IsoMu20` or `HLT_IsoTkMu20` for data and MC
@@ -315,6 +326,7 @@ The selection steps.
   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Jets
   + corrections `Spring16_25nsV6_*` (2015: `Fall15_25nsV2_*`)
     https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#Jet_Energy_Corrections_in_Run2
+    with FactorizedJetCorrector
     - uncorrect with `jet.correctedP4("Uncorrected")`
     - apply `FactorizedJetCorrector` for JES (jet energy scale) corrections
       https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
