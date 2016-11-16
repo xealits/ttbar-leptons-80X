@@ -2956,6 +2956,15 @@ for(size_t f=0; f<urls.size();++f)
 				passKin(true),     passId(true),     passIso(true),
 				passVetoKin(true), passVetoId(true), passVetoIso(true);
 			bool passSigma(false), passSigmaVeto(false);
+			// from passId( pat::Photon .. ) of PatUtils:
+			//bool elevto = photon.hasPixelSeed();  //LQ  REACTIVATED FOR TIGHT ID, OTHERWISE MANY ELECtRONS pass the photon Id
+			// and then, in Tight ID, they include:
+			// && !elevto 
+			//
+			// So, it would be nice to add it to Tight Electron ID:
+			//bool hasPixelSeed = electron.hasPixelSeed();
+			// but electrons don't have this method
+			// will have to cross-clean with photons or etc
 
 			int lid(electron.pdgId()); // should always be 11
 
