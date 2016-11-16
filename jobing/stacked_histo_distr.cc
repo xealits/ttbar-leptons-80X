@@ -22,6 +22,7 @@
 
 #include "dtag_xsecs.h"
 
+#define DTAG_ARGS_START 5
 using namespace std;
 
 // nick and colour
@@ -52,7 +53,7 @@ int main (int argc, char *argv[])
 {
 if (argc < 5)
 	{
-	std::cout << "Usage : " << argv[0] << " lumi, distr, dir, dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " lumi distr rebin_factor dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -60,8 +61,9 @@ gROOT->Reset();
 
 double lumi = atof(argv[1]);
 TString distr(argv[2]);
-TString dir(argv[3]);
-TString dtag1(argv[4]);
+Int_t rebin_factor(atoi(argv[3]));
+TString dir(argv[4]);
+TString dtag1(argv[5]);
 
 cout << lumi  << endl;
 cout << distr << endl;
@@ -99,7 +101,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 
-for (int i = 4; i<argc; i++)
+for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
 	cout << "processing " << dtag << endl;
@@ -117,6 +119,7 @@ for (int i = 4; i<argc; i++)
 	weightflows.back()->Print();
 
 	histos.push_back((TH1D*) files.back()->Get(distr));
+	histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
 	histos.back()->Print();
 	if (dtag.Contains("Data"))
 		{
