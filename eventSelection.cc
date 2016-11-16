@@ -159,6 +159,7 @@ namespace utils
 			//else if (eta<5.0) { ptSF=1.216; ptSF_err=0.050; }
 
 			// 2016 80X
+			// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
 			//abs(eta) region 	0.0–0.5 	0.5-0.8 	0.8–1.1 	1.1-1.3 	1.3–1.7 	1.7 - 1.9 	1.9–2.1 	2.1 - 2.3 	2.3 - 2.5 	2.5–2.8 	2.8-3.0 	3.0-3.2 	3.2-5.0
 			//Data/MC SF
 			//1.122 +-0.026
@@ -1546,6 +1547,7 @@ TString jecDir = runProcess.getParameter < std::string > ("jecDir");
 gSystem->ExpandPathName (jecDir);
 // v1
 // getJetCorrector(TString baseDir, TString pf, bool isMC)
+//https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
 FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
 //TString pf(isMC ? "MC" : "DATA");
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
@@ -2122,7 +2124,9 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 1, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 1, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 1, 1);
+
 		// ---------------------------------- Top pT reeventing
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting<Paste>
 		// find the produced tops,
 		// reweight according them
 		if (isTTbarMC && genHandle.isValid())
@@ -3412,7 +3416,7 @@ for(size_t f=0; f<urls.size();++f)
 		// up to here jets were not processed in any way
 		// now goes the procedure of corrections to jets and then METs
 
-		// ----------------------- JET CORRECTIONS, JEC, JER
+		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
 
 		//void updateJEC(pat::JetCollection& jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC){
@@ -3464,6 +3468,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
 			//smear JER
+			//https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
 			//double newJERSF(1.0);
 			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
 			if(isMC)
@@ -3609,7 +3614,7 @@ for(size_t f=0; f<urls.size();++f)
 			// and now the tighter final selection
 			double eta = jet.eta();
 			double pt  = jet.pt();
-			bool passKino = pt > 30. && fabs(eta) < 2.5;
+			bool passKino = pt > 30. && fabs(eta) < 2.4;
 
 			// corrections:
 			// TODO: are they MC-only?

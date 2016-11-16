@@ -154,19 +154,22 @@ channel selection & selection steps.
 
 ## Event loop, application of config parameters and selection
 
-The steps of Pietro's code with changes.
+The selection steps.
 
 * MC shaping to data properties
-  + NLO -1 weights for powheg and amcatnlo datasets -> Just multiply the weight now
+  + Top pT reweighting (https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting)
+  + NLO -1 weights for powheg and amcatnlo datasets (only amcatnlo is affected)
   + *removed* merging-stitching of LO and NLO sets (via HT/phat binning)
   + count N good verteces (used as pile-up in data?) **has it changed again?**
   + Apply pileup reweighting -> **manual reweight**
     pileup_latest.txt in
     `/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/`
     https://twiki.cern.ch/twiki/bin/view/CMS/PileupJSONFileforData#Pileup_JSON_Files_For_Run_II
-    
+  + (TODO?) PDF weights from \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#How_to_use_weights}
+
+* Efficiency SFs (done latter, in particles selection)
   + (TODO) HLT trigger efficiency
-  + (TODO) lepton ID/Iso efficiencies
+  + (TODO) lepton, tau ID/Iso efficiencies
   + B-tag efficiency (updated according to \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X})
     ichep 80X v2 csv files
     medium WP b-tag SF for b and c = 0.90 +- 10^-5 -- it is practically constant
@@ -176,10 +179,9 @@ The steps of Pietro's code with changes.
     **which contradicts the slides of the B-tag working group**
     \url{http://cds.cern.ch/record/2202967/files/DP2016_042.pdf?version=1}
     (but contradicts in good way -- less MC gets b-tags)
-  + (TODO?) PDF weights from \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#How_to_use_weights}
-  + Top reweighting?
+
 * basic event selection
-  + remove Run2015B[Orthogonalize Run2015B PromptReco+17Jul15 mix]
+  + **outdated** remove Run2015B[Orthogonalize Run2015B PromptReco+17Jul15 mix]
   + Skip bad lumi -> **check for lumicert for new datasets 1**
     using: `Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt`
     (RunD is about 4.3 fp^-1)
@@ -205,40 +207,41 @@ The steps of Pietro's code with changes.
     "Flag_goodVertices"
     "Flag_eeBadScFilter"
     --- they all are in "PAR" or "RECO" triggers
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#Analysis_Recommendations_for_ana
     #using now DoubleEG_csc2015.txt, MuonEG_csc2015.txt etc
     # TODO: check csc2016!
     #https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss_filters
     #https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
+
 * load all the objects we will need to access
 * "TODO: what is this??" thing -> **0 commented out**
    (it should be the electron-muon split)
+
 * actual particles:
+  - photons
   - muons,
   - electrons,
   - jets,
   - METs (collection of MET -- there are different MET algorithms!)
      **we use the 0th MET of slimmedMETs collection in 76x MINIAODs v2 -- it is type 1 MET**
   - taus
+
+* photons are not considered at all
+
 * leptons selection
-  + muon corrections are applied with rochester correction procedure
+  + TODO: muon corrections are applied with rochester correction procedure
     implemented in https://github.com/cms2l2v/2l2v_fwk/blob/master/interface/rochcor2015.h
-  + electron corrections applied with CMSSW
+  + TODO: electron corrections applied with CMSSW
     `EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibratorRun2.h`
     https://github.com/cms-sw/cmssw/blob/CMSSW_8_1_X/EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibratorRun2.h
     according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer
+
   + kinematics, good and veto, lepton IDs and isolation -> **new isolation**
     - muons:
-      * corrected with Rochester Corrector
-        https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
-        https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
-
-      * good: P_T > 30, eta < 2.4, tight muon
-        veto: P_T > 10, eta < 2.5, loose muon
-
       * IDs are according to
         https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2
         These IDs are assigned to muons in data for CMSSW_7_4_2 and above.
-        They are combinations of selectiors:
+        The provided selectors are used, they are equivalent to:
         - loose muon:
           recoMu.isPFMuon() & (recoMu.isGlobalMuon() || recoMu.isTrackerMuon())
         - tight muon:
@@ -258,15 +261,16 @@ The steps of Pietro's code with changes.
         by the scheme called
         "PF-based combined relative isolation with deltaBeta correction."
 
+      * TODO: corrected with Rochester Corrector
+        https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
+        https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
+
+      * good: P_T > 30, eta < 2.4, tight muon
+        veto: P_T > 10, eta < 2.5, loose muon
+
     - electrons:
-      * Corrected with `ElectronEnergyCalibratorRun2` from
-        `#include "EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibratorRun2.h"`
-        https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer
-      * good: P_T > 30, eta < 2.4,
-        veto: P_T > 15, eta < 2.5,
-      * both have window at leta > 1.4442 && leta < 1.5660
-        IDs and isolation are done with cut-based procedure according to
-	https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+      * IDs and isolation are done with cut-based procedure according to
+        https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
         (
 	https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2
         https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
@@ -282,7 +286,15 @@ The steps of Pietro's code with changes.
         and the tag for the HEEP ID recommended for 2016 data:
         `egmGsfElectronIDs:heepElectronID-HEEPV60`
         (Isolation twiki requested)
+      * TODO: Corrected with `ElectronEnergyCalibratorRun2` from
+        `#include "EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibratorRun2.h"`
+        https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer
+      * good: P_T > 35, eta < 2.4,
+        veto: P_T > 15, eta < 2.5,
+      * both have window at leta > 1.4442 && leta < 1.5660
+
 * Merged electrons and muons for later convenience
+
 * select the taus -> **0 leave as is**
   + 4 tau ID discriminators (**check if up to date**) from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV:
     decayModeFinding > 0.5
@@ -296,38 +308,47 @@ The steps of Pietro's code with changes.
     have at least 1 element with numberOfPixelHits > 0
   + tau pt > 20, eta < 2.3
   + overlap with selLeptons $\delta R > 0.4 $
-  + check closeness to an electron at gen level
+  + NOT DONE check closeness to an electron at gen level
     -- multiply event weight with the fake-rate scale factor
-* jets
+
+* AK4 jets ("made from ak4PFJetsCHS")
+  https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Jets
   + corrections `Spring16_25nsV6_*` (2015: `Fall15_25nsV2_*`)
+    https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#Jet_Energy_Corrections_in_Run2
     - uncorrect with `jet.correctedP4("Uncorrected")`
     - apply `FactorizedJetCorrector` for JES (jet energy scale) corrections
       https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
     - smear JER (jet energy resolution) in MC
       https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
   + individual jet selection
-    - IDs from https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
+    - Loose ID from https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
     loose jet is required
-    - pt > 30, eta < 2.5
+    - pt > 30, eta < 2.5 (changed eta to < 2.4, since b-tag SFs are given for this region)
   + dphijmet = fabs( deltaPhi(curr_jet, met) ) -- and save the min
   + cross-clean of leptons and taus with deltaR > 0.4
-* b-jets via "pfCombinedInclusiveSecondaryVertexV2BJetTags" > 0.89 (medium working point)
-  from https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X
-  (move to https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X)
-  TODO: the new 80X b-jetting and b-jet-SFing is done now -- update
+
+* b-jets via "pfCombinedInclusiveSecondaryVertexV2BJetTags" > 0.80 (medium working point)
+  https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
+  (from https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X
+  move to https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X)
+  + comb for B and C flavours
+    incl for light jets
+  + SF csv CSVv2_ichep.csv
 
 * MET
-  + MET 0 from slimmedMETs is used (TODO: confirm correction type)
-    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss
+  + MET 0 from slimmedMETs is used (type1 corrected) (TODO: confirm correction type)
+    ("The type1 corrections is computed from ak4PFJetsCHS jets with pT > 15 GeV, as per the updated prescribed by the JetMET group.")
+    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#ETmiss
   + (disabled new procedure due to large mismatch) propagate lepton corrections to MET
-  + propagate jet and lepton corrections to MET with getMETvariations
+  + propagate jet corrections to MET
     (TODO: check getMETvariations -- there is some electron-muon difference)
     (it seems getMETvariations does not propagate the jet corrections,
      it only variates the MET for systematics)
+
 * ASSIGN CHANNEL
   + single lepton:
     only 1 good lepton, no veto, number of good PV > 0
-    2 or more jets
+    3 or more jets
     MET $p_T > 40 GeV$
     1 or more b-taged jets
     Only 1 tau
@@ -356,7 +377,6 @@ Other Mara's steps:
   + MC weights twiki/bin/viewauth/CMS/LHEReaderCMSSW#How_to_use_weights (PDF and others?)
   + pile-up weighting -- **the same now**
   + Muon eff, isolation, ID, trigger (TODO)
-  + b-tagging efficiencies twiki/bin/viewauth/CMS/BtagRecommendation76X (TO UPDATE)
 * different datasets (**using them now**)
 
 What about trigger efficiency? Do data and MC really match above the threshold?
