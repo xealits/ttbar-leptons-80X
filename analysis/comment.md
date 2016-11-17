@@ -169,7 +169,10 @@ The selection steps.
 
 * Efficiency SFs (done latter, in particles selection)
   + (TODO) HLT trigger efficiency
-  + (TODO) lepton, tau ID/Iso efficiencies
+  + (TODO) lepton
+  + tau ID/Iso efficiencies
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
+    in 2016 = 0.9+-0.1 (Data/MC)
   + B-tag efficiency (updated according to \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X})
     ichep 80X v2 csv files
     medium WP b-tag SF for b and c = 0.90 +- 10^-5 -- it is practically constant
@@ -192,7 +195,7 @@ The selection steps.
     > (use at your own risk and check trigger efficiencies with alternative methods like T&P) with this json:
     `/afs/cern.ch/user/j/jfernan/public/TOPtriggerJSONS2016/7Oct/LSfor_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26.json` (23.13 fb-1)
 
-    gloden: `Cert_271036-282092_13TeV_PromptReco_Collisions16_JSON.txt` (29.82 fb^-1)
+    golden: `Cert_271036-282092_13TeV_PromptReco_Collisions16_JSON.txt` (29.82 fb^-1)
     (RunD is about 4.3 fp^-1)
     unprescaled certificate for the top triggers:
     `TOP_Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_UnprescaledPaths.txt`
@@ -292,7 +295,7 @@ The selection steps.
         `egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium`
         (how to access it?)
         and
-        HLT e,ulation
+        HLT emulation
         `egmGsfElectronIDs:cutBasedElectronHLTPreselection-Summer16-V1`
         and the tag for the HEEP ID recommended for 2016 data:
         `egmGsfElectronIDs:heepElectronID-HEEPV60`
@@ -314,7 +317,9 @@ The selection steps.
     againstMuonTight3 > 0.5
     (old againstElectronMediumMVA6 > 0.5)
     againstElectronTightMVA6 > 0.5
-  + pixel hits cut (*"should be available out of the mox in new MINIAOD"* --- ?):
+  + tau ID efficiency SF is in 2016: 0.9 +- 0.1
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
+  + REMOVED pixel hits cut (*"should be available out of the mox in new MINIAOD"* --- ?):
     basically now we check if tau.signalChargedHadrCands
     have at least 1 element with numberOfPixelHits > 0
   + tau pt > 20, eta < 2.3
