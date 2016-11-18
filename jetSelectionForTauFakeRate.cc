@@ -1890,6 +1890,10 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_PU_up      (1.0);
 		double weight_PU_down    (1.0);
 
+		// --------------------------------- tau ID SF
+		double weight_tauIDsf         (1.0);
+		double weight_without_tauIDsf (1.0);
+
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
 
@@ -2369,12 +2373,15 @@ for(size_t f=0; f<urls.size();++f)
 
 			// removing all electrons close to tight Photons
 			// actually, people do it the other way around, testing v9.5
+			// nope, it doesn't fix anything
+			/*
 			double minDRlg(9999.);
 			for(size_t i=0; i<selPhotons.size(); i++)
 				{
 				minDRlg = TMath::Min(minDRlg, deltaR(electron.p4(), selPhotons[i].p4()));
 				}
 			if(minDRlg<0.1) continue;
+			*/
 
 			int lid(electron.pdgId()); // should always be 11
 
@@ -3256,7 +3263,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Tau& tau = selTausNoLep[itau];
 
-			// cross-cleaning taus with leptons
+			// cross-cleaning taus from selected jets
 			bool overlapWithJet(false);
 			for(int n=0; n<(int)selJetsNoLep.size();++n)
 				{
@@ -3273,6 +3280,7 @@ for(size_t f=0; f<urls.size();++f)
 			increment(string("weight_of_tausnolepnojet_found"), weight);
 			}
 
+		/*
 		double selTausNoLep_noAnyJets = 0;
 		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
 			{
@@ -3342,6 +3350,7 @@ for(size_t f=0; f<urls.size();++f)
 			// let's save how many taus we find:
 			// increment(string("weight_of_tausnolepnojet_found"), weight);
 			}
+		*/
 
 
 		// -------------------------------------------------- All particles are selected
@@ -3424,6 +3433,10 @@ for(size_t f=0; f<urls.size();++f)
 		//     QCD-channel -- 2 or more jets
 		//     W+jets      -- only 1 iso muon, one or more jets
 
+		bool clean_lep_conditions = nVetoE==0 && nVetoMu==0 && nGoodPV != 0;
+
+		bool isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
+		//bool isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
 
 		bool Wjets_selection = clean_lep_conditions && isSingleMu && (selJetsNoLep.size() > 0);
 		bool QCD_selection  = selJetsNoLep.size() > 1;
