@@ -3984,10 +3984,10 @@ for(size_t f=0; f<urls.size();++f)
 		met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
 		*/
 
-		fill_pt_e( string("met0_all_leptoncorr_pt"), met.pt(), weight);
+		//fill_pt_e( string("met0_all_leptoncorr_pt"), met.pt(), weight);
 
-		if (isSingleE)  fill_pt_e( string("met0_singleel_leptoncorr_pt"), met.pt(), weight);
-		if (isSingleMu) fill_pt_e( string("met0_singlemu_leptoncorr_pt"), met.pt(), weight);
+		//if (isSingleE)  fill_pt_e( string("met0_singleel_leptoncorr_pt"), met.pt(), weight);
+		//if (isSingleMu) fill_pt_e( string("met0_singlemu_leptoncorr_pt"), met.pt(), weight);
 
 		if(debug){
 			cout << "propagated lepton corrections to met" << endl;
@@ -4178,19 +4178,26 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 
+			fill_2d(string("control_met_singlelepton_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+			fill_2d(string("control_jet_singlelepton_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
+			fill_2d(string("control_tau_singlelepton_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
+
 			if (isSingleMu)
 				{
+				fill_2d(string("control_met_singlemu_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_jet_singlemu_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
+				fill_2d(string("control_tau_singlemu_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
-					fill_1d(string("smu_passtau_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("smu_passtau_selection_njets"), 20, 0, 20,   jets.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJets"), 20, 0, 20,   selJets.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
 
-					fill_1d(string("smu_passtau_selection_njets"), 20, 0, 20,   taus.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-					fill_1d(string("smu_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+					fill_1d(string("smu_passtau_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("smu_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
@@ -4485,17 +4492,20 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleE)
 				{
+				fill_2d(string("control_met_singleel_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_jet_singleel_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
+				fill_2d(string("control_tau_singleel_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
-					fill_1d(string("sel_passtau_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+					fill_1d(string("sel_passtau_selection_njets"), 20, 0, 20,   jets.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJets"), 20, 0, 20,   selJets.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
 
-					fill_1d(string("sel_passtau_selection_njets"), 20, 0, 20,   taus.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-					fill_1d(string("sel_passtau_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+					fill_1d(string("sel_passtau_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+					fill_1d(string("sel_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
