@@ -16,6 +16,12 @@ do
   stacked_histo_distr 3304 $h test/tests/outdir_v9.3/merged-sets/ `cat dtags`                        
 done
 
+$ for h in `cat cur_th1d_histos_pt_eta_energy`                                                                                                                                  
+do
+  stacked_histo_distr 23004.3 $h 4 test/tests/outdir_v9.3-4/merged-sets/ `cat dtags_v9.3-4`
+done
+
+
 -- TODO: automate the file with distr names!
 
 
