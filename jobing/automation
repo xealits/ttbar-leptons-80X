@@ -1,3 +1,12 @@
+# Reduce jobs
+
+Reduce jobs int dtags:
+
+./jobing/reduce.zsh v9.5 jobing/dtag_xsecs
+
+Extract weightflows, fakertes, pileup distrs:
+
+./jobing/extract_csv.zsh v9.3 jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
 
 # Getting dtags of the job
 

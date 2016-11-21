@@ -4179,14 +4179,18 @@ for(size_t f=0; f<urls.size();++f)
 			*/
 
 			fill_2d(string("control_met_singlelepton_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
-			fill_2d(string("control_jet_singlelepton_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
-			fill_2d(string("control_tau_singlelepton_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
+			for (int i=0; i<selJetsNoLep.size(); i++)
+				fill_2d(string("control_jet_singlelepton_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
+			for (int i=0; i<selTausNoLep.size(); i++)
+				fill_2d(string("control_tau_singlelepton_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
 
 			if (isSingleMu)
 				{
 				fill_2d(string("control_met_singlemu_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
-				fill_2d(string("control_jet_singlemu_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
-				fill_2d(string("control_tau_singlemu_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
+				for (int i=0; i<selJetsNoLep.size(); i++)
+					fill_2d(string("control_jet_singlemu_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
+				for (int i=0; i<selTausNoLep.size(); i++)
+					fill_2d(string("control_tau_singlemu_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
 					fill_1d(string("smu_passtau_selection_njets"), 20, 0, 20,   jets.size(), weight);
@@ -4493,8 +4497,10 @@ for(size_t f=0; f<urls.size();++f)
 			if (isSingleE)
 				{
 				fill_2d(string("control_met_singleel_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
-				fill_2d(string("control_jet_singleel_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep.pt(), selJetsNoLep.eta(), weight);
-				fill_2d(string("control_tau_singleel_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep.pt(), selTausNoLep.eta(), weight);
+				for (int i=0; i<selJetsNoLep.size(); i++)
+					fill_2d(string("control_jet_singleel_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
+				for (int i=0; i<selTausNoLep.size(); i++)
+					fill_2d(string("control_tau_singleel_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
 					fill_1d(string("sel_passtau_selection_njets"), 20, 0, 20,   jets.size(), weight);
