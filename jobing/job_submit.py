@@ -82,6 +82,8 @@ import argparse
 from sys import argv, exit
 import json
 import os
+from datetime import datetime, timedelta
+
 import commands # for some reason subprocess.check_output does not work with das_client
 import subprocess # trying it again
 import shutil
@@ -90,6 +92,7 @@ import shutil
 # Job templates
 
 # TODO: add SCRAM_ARCH and other parameters
+# TODO: make it LSF_job_template -- for other job-systems in future (GRID, LIP's NCG)
 job_template = """#!/bin/sh
 pwd
 export SCRAM_ARCH={SCRAM_ARCH}
@@ -105,34 +108,95 @@ ulimit -c 0;
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
 
 
-def restore_dset(dsets_dir, dset):
-    """restore_dset_files(dsets_dir, dset)
+def restore_dset_files_info(dsets_dir, dset):
+    """restore_dset_files_info(dsets_dir, dset)
 
     format:
-    dsets/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/T2_CH_CERN
+    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/{files,file_servers}
 
-    returns [files], file_server
+    returns [files], [file_servers]
+        --- [file_servers] contains names of tiers (T2_CH_CERN etc) with 100% of the dataset
+
+    EXAMPLE:
+    restore_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
     """
+    # t.strftime("%d-%m-%Y")
 
     dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',')
     print(dset_dir)
     print(os.listdir(dset_dir))
-    all_subdirs = [dset_dir + '/' + d for d in os.listdir(dset_dir) if os.path.isdir(dset_dir + '/' + d)]
+    all_subdirs = [dset_dir + '/' + d for d in os.listdir(dset_dir) if os.path.isdir(dset_dir + '/' + d) and d[0] != '.']
     print(all_subdirs)
     newest_dir = max(all_subdirs, key=os.path.getmtime)
+    print(newest_dir)
 
-    file_server = "root://cms-xrd-global.cern.ch/" # default
-    if os.path.isfile(newest_dir + '/T2_CH_CERN'):
-        file_server = "root://eoscms//eos/cms/"
+    stored_dset_time = datetime.strptime(os.path.basename(newest_dir), "%d-%m-%Y")
+    #datetime.datetime.now() - datetime.timedelta(days=7) < datetime.datetime.strptime("15-11-2016", "%d-%m-%Y")
+    if datetime.now() - timedelta(days=7) > stored_dset_time:
+        print("restoring a more than a week old dset")
+        # TODO: spawn a process to update the record
+
+    #file_server = "root://cms-xrd-global.cern.ch/" # default
+    #if os.path.isfile(newest_dir + '/T2_CH_CERN'):
+        #file_server = "root://eoscms//eos/cms/"
+    file_servers = [d for d in os.listdir(newest_dir + '/file_servers') if os.path.isfile(newest_dir + '/file_servers/' + d) and d[0] != '.']
+    print("100% file_servers: %s" % file_servers)
 
     with open(newest_dir + '/files', 'r') as fs:
         files = [f.strip() for f in fs.readlines()]
 
-    return files, file_server
+    return files, file_servers
 
+
+def fetch_n_store_dset(dsets_dir, dset):
+    """fetch_n_store_dset(dsets_dir, dset)
+    fetch_n_store_dset("./dsets/", "/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD")
+    """
+    # fetch info from DAS
+    dset_files, dset_file_servers = get_dset(dset)
+
+    if not (dset_files and dset_file_servers):
+        print("Failed to fetch dset files info from DAS")
+        return False
+
+    return store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers)
+
+def store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers):
+    """store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers)
+
+    format:
+    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/T2_CH_CERN
+
+    returns True # on success
+
+    EXAMPLE:
+    store_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD", ["file1", "file2"], ["T2_CH_CERN", "T2_DE_DESY"])
+    """
+
+    today = datetime.strftime(datetime.now(), "%d-%m-%Y")
+
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/' + today
+
+    if not os.path.isdir(dset_dir):
+        os.makedirs(dset_dir)
+    os.mkdir(dset_dir + '/file_servers/')
+
+    with open(dset_dir + '/files', 'w') as f:
+        f.write('\n'.join(dset_files))
+
+    for s in dset_file_servers:
+        s_file = open(dset_dir + '/file_servers/' + s, 'a')
+        s_file.close()
+
+    return True
 
 #def get_dset_files(dset):
 def get_dset(dset):
+    """get_dset(dset)
+
+    EXAMPLE:
+    get_dset("/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
+    """
     #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
     # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
     #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
@@ -155,8 +219,7 @@ def get_dset(dset):
         print("           output = " + out)
         print("Continue to other dsets")
         return None, None
-
-    #return dset_files
+    #dset_files = None # FIXME: remove
 
     # And now find the fileserver
 
@@ -182,9 +245,14 @@ def get_dset(dset):
         x = {}
         for s in i['site']:
             x.update(s)
-        sites.append(x['name'] + ' ' + x['dataset_fraction'])
+        sites.append((x['name'], x['dataset_fraction']))
     #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
-    
+
+    print("Found sites and completeness:")
+    for s in sites:
+        print(s)
+
+    '''
     if any(local_tier in s and "100.00%" in s for s in sites):
         print("The full dataset is found on local tier " + local_tier)
         file_server = "root://eoscms//eos/cms/"
@@ -192,8 +260,24 @@ def get_dset(dset):
     else:
         file_server = "root://cms-xrd-global.cern.ch/"
         print("using default " + file_server + " fileserver")
+    '''
+    # return all tier names, which have 100% of the dataset
+    return dset_files, [s[0] for s in sites if "100.00%" in s]
 
-    return dset_files, file_server
+known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
+"""dictionary holding
+    {hostname: (TIER_NAME, tier_file_server), ...}
+
+EXAMPLE:
+    known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
+
+Use with default file_server:
+    local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
+"""
+
+# default file server is the global server:
+default_file_server = "root://cms-xrd-global.cern.ch/"
+
 
 if __name__ == "__main__":
 
@@ -234,7 +318,7 @@ if __name__ == "__main__":
     # if retrieve dsets file info from local directory
     # or use DAS CLI client (failes from time to time)
     if args.dsets_dir:
-        file_info_source = lambda dset: restore_dset(args.dsets_dir + '/', dset)
+        file_info_source = lambda dset: restore_dset_files_info(args.dsets_dir + '/', dset)
     else:
         file_info_source = get_dset
 
@@ -297,12 +381,9 @@ if __name__ == "__main__":
 
 
     # finding local computing resourses
-    local_tier = "foo"
     hostname = commands.getstatusoutput("hostname -f")[1]
-    if "cern.ch" in hostname: local_tier = "T2_CH_CERN"
-
-    # default file server is the global server:
-    file_server = "root://cms-xrd-global.cern.ch/"
+    #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
+    local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
 
     n_files_per_job = 10
 
@@ -323,8 +404,21 @@ if __name__ == "__main__":
             #dset_files = get_dset_files(dset)
             #file_server = get_dset_site(dset)
             #dset_files, file_server = get_dset(dset)
-            dset_files, file_server = file_info_source(dset)
-            if not (dset_files and file_server): continue
+            # file_info_source returns list of files of the dataset
+            # and list of data tiers (file servers), which contain 100% files of this dataset
+            dset_files, file_tiers = file_info_source(dset)
+            if not (dset_files and file_tiers):
+                print("FAILED INFO on dset %s" % dset)
+                print("dset files      = %s" % dset_files)
+                print("dset 100% tiers = %s" % file_tiers)
+                continue
+
+            if local_tier in file_tiers:
+                file_server = local_file_server
+            else:
+                file_server = default_file_server
+            # could do file_server = local_file_server if local_tier in file_tiers else default_file_server
+            # but afraid for Python versions
 
             #dset_files = out_rows[3:]
             print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
