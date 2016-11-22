@@ -131,18 +131,20 @@ if __name__ == "__main__":
             # file_info_source returns list of files of the dataset
             # and list of data tiers (file servers), which contain 100% files of this dataset
             dset_files, file_tiers = file_info_source(dset)
-            if not (dset_files and file_tiers):
-                print("FAILED INFO on dset %s" % dset)
-                print("dset files      = %s" % dset_files)
+            if not dset_files:
+                print("FAILED to fetch files on dset %s" % dset)
+                print("dset files len  = %s" % len(dset_files))
                 print("dset 100% tiers = %s" % file_tiers)
                 continue
 
+            # if there are no 100% full data tier, the default server is used
             if local_tier in file_tiers:
                 file_server = local_file_server
             else:
                 file_server = default_file_server
             # could do file_server = local_file_server if local_tier in file_tiers else default_file_server
             # but afraid for Python versions
+            print("Chose file_server %s" % file_server)
 
             #dset_files = out_rows[3:]
             print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
