@@ -3591,15 +3591,15 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			else continue;
 
-			fill_1d(string(hlt_channel + "wjets_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
 
-			fill_1d(string(hlt_channel + "wjets_selection_njets"), 20, 0, 20,   taus.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_njets"), 20, 0, 20,   taus.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
 			/*
 			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
