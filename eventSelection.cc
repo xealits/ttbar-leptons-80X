@@ -1892,6 +1892,11 @@ int nMultiChannel(0);
 // increment( string("weight_passed_oursel"), 0. );
 
 unsigned int iev = 0;
+double weightflow_control_el_selection = 0;
+double weightflow_control_mu_selection = 0;
+double weightflow_control_elel_selection = 0;
+double weightflow_control_mumu_selection = 0;
+double weightflow_control_elmu_selection = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
@@ -4202,6 +4207,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("smu_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
 					fill_1d(string("smu_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
 					fill_1d(string("smu_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+
+					fill_1d( string("weightflow_control_mu_passtau"),  300, -3, 3, weight, weight);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
@@ -4241,6 +4248,9 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_bjet_eta"), 300, -3, 3, selBJets[0].eta(), weight);
 					// fill_1d( string("singlemu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("singlemu_selection_met_eta"),  300, -3, 3, met.eta(), weight);
+
+					weightflow_control_mu_selection += weight;
+					fill_1d( string("weightflow_control_mu_selection"),  300, -3, 3, weight, weight);
 					}
 
 				// the 5 geometrical for loops...
@@ -4512,6 +4522,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("sel_passtau_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
 					fill_1d(string("sel_passtau_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
 					fill_1d(string("sel_passtau_selection_nselTausNoLepNoJet"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+
+					fill_1d( string("weightflow_control_el_passtau"),  300, -3, 3, weight, weight);
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
@@ -4551,6 +4563,9 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_bjet_eta"), 300, -3, 3, selBJets[0].eta(), weight);
 					// fill_1d( string("singleel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("singleel_selection_met_eta"),  300, -3, 3, met.eta(), weight);
+
+					weightflow_control_el_selection += weight;
+					fill_1d( string("weightflow_control_el_selection"),  300, -3, 3, weight, weight);
 					}
 
 				// the 5 geometrical for loops...
@@ -4928,6 +4943,9 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elel_selection_bjet_eta"), 300, -3, 3, selBJets[0].eta(), weight);
 					// fill_1d( string("elel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("elel_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+
+					weightflow_control_elel_selection += weight;
+					fill_1d( string("weightflow_control_elel_selection"),  300, -3, 3, weight, weight);
 					}
 
 				// the 5 geometrical for loops...
@@ -5069,6 +5087,9 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("mumu_selection_bjet_eta"), 300, -3, 3, selBJets[0].eta(), weight);
 					// fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+
+					weightflow_control_mumu_selection += weight;
+					fill_1d( string("weightflow_control_mumu_selection"),  300, -3, 3, weight, weight);
 					}
 
 				// the 5 geometrical for loops...
@@ -5238,6 +5259,9 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elmu_selection_bjet_eta"), 300, -3, 3, selBJets[0].eta(), weight);
 					// fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+
+					weightflow_control_elmu_selection += weight;
+					fill_1d( string("weightflow_control_elmu_selection"),  300, -3, 3, weight, weight);
 					}
 
 				// the 5 geometrical for loops...
@@ -5478,7 +5502,15 @@ FILE *csv_out;
 string FileName = ((outUrl.ReplaceAll(".root",""))+".job_done").Data();
 csv_out = fopen(FileName.c_str(), "w");
 
-fprintf(csv_out, "The job is done!\n");
+fprintf(csv_out, "The job is done!\n\n");
+fprintf(csv_out, "# wheightflow control with plain doubles\n");
+fprintf(csv_out, "job_num,channel,weight\n");
+fprintf(csv_out, "%s,weightflow_control_el_selection,%g\n",   job_num.c_str(), weightflow_control_el_selection);
+fprintf(csv_out, "%s,weightflow_control_mu_selection,%g\n",   job_num.c_str(), weightflow_control_mu_selection);
+fprintf(csv_out, "%s,weightflow_control_elel_selection,%g\n", job_num.c_str(), weightflow_control_elel_selection);
+fprintf(csv_out, "%s,weightflow_control_mumu_selection,%g\n", job_num.c_str(), weightflow_control_mumu_selection);
+fprintf(csv_out, "%s,weightflow_control_elmu_selection,%g\n", job_num.c_str(), weightflow_control_elmu_selection);
+
 // printout_counters(csv_out, job_def);
 // printout_distrs(csv_out, job_def);
 
