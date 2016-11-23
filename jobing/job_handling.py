@@ -268,7 +268,7 @@ def get_dset(dset):
         x = {}
         for s in i['site']:
             x.update(s)
-        sites.append((x['name'], x['dataset_fraction']))
+        sites.append((x['name'], x.get('dataset_fraction')))
     #sites = [i['site'][0]['name'] + ' ' + i['site'][0]['dataset_fraction'] for i in 
 
     print("Found sites and completeness:")
