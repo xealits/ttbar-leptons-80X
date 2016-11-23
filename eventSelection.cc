@@ -3556,6 +3556,10 @@ for(size_t f=0; f<urls.size();++f)
 			full_jet_corr += jet_corr;
 
 			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
+			// so, jes & jer shouldn't change the eta of the jet -- only the energy (pt)
+			// record the correction per jet's eta and per original pt
+			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
+			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_pt"), 400, 0., 400., 200, -4., 4.,  full_jet_corr.pt(), jet_initial_momentum.eta(), weight);
 
 			if(debug)
 				{
