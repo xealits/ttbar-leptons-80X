@@ -106,6 +106,10 @@ if __name__ == "__main__":
 
     # finding local computing resourses
     hostname = commands.getstatusoutput("hostname -f")[1]
+    print("hostname = %s" % hostname)
+    hostname = '.'.join(hostname.split('.')[1:])
+    print("hostname = %s" % hostname)
+    # on lxplus hostnames are lxplusNNN.cern.ch
     #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
     local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
 
@@ -134,7 +138,7 @@ if __name__ == "__main__":
             if not dset_files:
                 print("FAILED to fetch files on dset %s" % dset)
                 print("dset files len  = %s" % len(dset_files))
-                print("dset 100% tiers = %s" % file_tiers)
+                print("dset 100p tiers = %s" % file_tiers)
                 continue
 
             # if there are no 100% full data tier, the default server is used

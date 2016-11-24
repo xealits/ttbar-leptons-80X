@@ -115,7 +115,7 @@ def restore_dset_files_info(dsets_dir, dset):
     dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/{files,file_servers}
 
     returns [files], [file_servers]
-        --- [file_servers] contains names of tiers (T2_CH_CERN etc) with 100% of the dataset
+        --- [file_servers] contains names of tiers (T2_CH_CERN etc) with 100\% of the dataset
 
     EXAMPLE:
     restore_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
@@ -140,7 +140,7 @@ def restore_dset_files_info(dsets_dir, dset):
     #if os.path.isfile(newest_dir + '/T2_CH_CERN'):
         #file_server = "root://eoscms//eos/cms/"
     file_servers = [d for d in os.listdir(newest_dir + '/file_servers') if os.path.isfile(newest_dir + '/file_servers/' + d) and d[0] != '.']
-    print("100% file_servers: %s" % file_servers)
+    print("100p file_servers: %s" % str(file_servers))
 
     with open(newest_dir + '/files', 'r') as fs:
         files = [f.strip() for f in fs.readlines()]
