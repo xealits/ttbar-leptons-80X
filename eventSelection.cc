@@ -4122,7 +4122,7 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				*/
 				}
-			//weight *= weight_tauIDsf;
+			weight *= weight_tauIDsf;
 			//fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 			//bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
