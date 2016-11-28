@@ -1,19 +1,113 @@
+
+export job=v9.7
+export jet_job=j6.3
+
+
 # Reduce jobs
+
 
 Reduce jobs int dtags:
 
-./jobing/reduce.zsh v9.5 jobing/dtag_xsecs
+./jobing/reduce.zsh $job jobing/dtag_xsecs
 
 Extract weightflows, fakertes, pileup distrs:
 
-./jobing/extract_csv.zsh v9.3 jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
+./jobing/extract_csv.zsh $job jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
+
+
+
+
 
 # Getting dtags of the job
 
-$ ls test/tests/outdir_v9.3/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$//' > dtags
+$ ls test/tests/outdir_"$job"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$//' > dtags
+
+## dtags from a json file
+
+grep dtag bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json | sed -e 's/^.*dtag":"//' -e 's/".*$//'
+
+check dtags which are not in the default tag list:
+
+for d in `grep dtag bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json | sed -e 's/^.*dtag":"//' -e 's/".*$//'`
+  do
+    grep $d jobing/dtag_xsecs > /dev/null && echo $d
+done
 
 
 
+# X509 proxy
+
+voms-proxy-init --voms cms --out ~/x509_proxy && export X509_USER_PROXY=`readlink -e ~/x509_proxy `
+
+-- made it into executable script make-x509-proxy in ~/bin/
+
+
+# Resubmit
+
+ls test/tests/outdir_"$job"/*cfg.py | sed 's/_cfg.py/.job_done/' > submitted_jobs
+
+for j in `cat submitted_jobs`                                                                                 
+do
+  if [ ! -e $j ]
+  then
+      echo $j
+  fi
+done > missing_jobs
+
+for j in `cat submitted_jobs`                                                                                 
+do
+  if [ ! -e $j ]
+  then
+      echo $j
+  fi
+done | sed -e 's/job_done/sh/' -e "s_"$job"_"$job"//FARM/inputs_" > missing_jobs
+
+for j in `cat missing_jobs`                                                                                   
+do
+  grep -h $j test/tests/outdir_"$job"//FARM/inputs/*bsub.sh
+done > missing_jobs_bsubs
+
+wc -l missing_jobs*
+
+then maybe make-x509-proxy
+
+source missing_jobs_bsubs
+
+
+
+# Calculate luminosity
+
+cat test/tests/outdir_"$job"/*json > "$job"_prejson
+
+vim "$job"_prejson
+% s/}{/,/g
+% s/,,,*/,/g
+% s/ ,"/,\r"/g
+% s/"[0-9]/["/
+% s/]]/]]]/
+% s/{/[/
+% s/}/]/
+% s/:/,/
+
+in sed:
+
+sed -i 's/}{/,/g'     "$job"_prejson
+sed -i 's/,,,*/,/g'   "$job"_prejson
+sed -i 's/ ,"/,\n"/g' "$job"_prejson
+sed -i 's/"[0-9]/[&/
+s/]]/]]]/
+s/{/[/
+s/}/]/
+s/:/,/
+' "$job"_prejson 
+
+mv "$job"_prejson analysis/job-lumis
+cd analysis/job-lumis
+./merge_json.py "$job"_prejson "$job".json
+brilcalc lumi -u /pb --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json -i "$job".json | tee "$job".brilcalc.out
+cd -
+
+RODO: register normtag!
 
 
 # Plotting distrs
@@ -22,12 +116,12 @@ $ ls test/tests/outdir_v9.3/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root
 
 $ for h in `cat cur_th1d_histos`
 do
-  stacked_histo_distr 3304 $h test/tests/outdir_v9.3/merged-sets/ `cat dtags`                        
+  stacked_histo_distr 3304 $h test/tests/outdir_"$job"/merged-sets/ `cat dtags`                        
 done
 
 $ for h in `cat cur_th1d_histos_pt_eta_energy`                                                                                                                                  
 do
-  stacked_histo_distr 23004.3 $h 4 test/tests/outdir_v9.3-4/merged-sets/ `cat dtags_v9.3-4`
+  stacked_histo_distr 23004.3 $h 4 test/tests/outdir_"$job"/merged-sets/ `cat dtags_v9.3-4`
 done
 
 
@@ -38,5 +132,25 @@ done
 
 
 # Jet origins from the jet fakerate selection
+
+ls test/tests/outdir_"$jet_job"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$//' > test_dtags
+jet_origins test/tests/outdir_"$jet_job"/merged-sets/ `cat test_dtags | sed -n '/^MC/p' `
+
+
+# Ratio plots
+
+https://root.cern.ch/root/html/tutorials/hist/ratioplot.C.html
+
+
+
+# jet fakerate projection histograms
+
+histo_project3toN_ratio_distr x HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0 150   test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root       
+histo_project3toN_ratio_distr y HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1 -2.5 2.5 test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root       
+histo_project3toN_ratio_distr z HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0   0.4 test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root       
+
+histo_project3toN_ratio_distr x HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0 150   test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+histo_project3toN_ratio_distr y HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1 -2.5 2.5 test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+histo_project3toN_ratio_distr z HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0   0.4 test/tests/outdir_"$jet_job"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 
 
