@@ -3061,6 +3061,13 @@ for(size_t f=0; f<urls.size();++f)
 			// and say "The 2 mm cut preserves efficiency for muons from decays of b and c hadrons"
 			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookPATExampleTopQuarks
 			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
+			//
+			// the electron ID from parUtils has the impact parameter commented out:
+			//                  //dxy             < 0.05     &&
+			//                  //dz              < 0.10     &&
+			// -- dxy should be the same as dB
+			// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
+
 
 			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma && passImpactParameter;
 			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto && passImpactParameterVeto;
