@@ -2985,6 +2985,7 @@ for(size_t f=0; f<urls.size();++f)
 				passKin(true),     passId(true),     passIso(true),
 				passVetoKin(true), passVetoId(true), passVetoIso(true);
 			bool passSigma(false), passSigmaVeto(false);
+			bool passImpactParameter(false), passImpactParameterVeto(true);
 			// from passId( pat::Photon .. ) of PatUtils:
 			//bool elevto = photon.hasPixelSeed();  //LQ  REACTIVATED FOR TIGHT ID, OTHERWISE MANY ELECtRONS pass the photon Id
 			// and then, in Tight ID, they include:
@@ -3054,8 +3055,15 @@ for(size_t f=0; f<urls.size();++f)
 				passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
 				passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
 				}
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma;
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto;
+			passImpactParameter = electron.dB() < 0.2;
+			// what units is this? in the PAT example on top they say "we use < 0.02cm",
+			// in recommendations for muons it is < 0.2 
+			// and say "The 2 mm cut preserves efficiency for muons from decays of b and c hadrons"
+			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookPATExampleTopQuarks
+			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
+
+			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma && passImpactParameter;
+			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto && passImpactParameterVeto;
 
 			// ------------------------- electron isolation
 
