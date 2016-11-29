@@ -7,31 +7,44 @@ SHELL:=/bin/bash
 reduce:
 	./jobing/reduce.zsh ${job} jobing/dtag_xsecs
 
-extract:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
+extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_fakerates extract_pileup
+	# DONE
+
+extract_eventflow:
+	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs eventflow_mu eventflow_el eventflow_elel eventflow_elmu eventflow_mumu
+
+extract_weightflow:
+	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu
+
+extract_jet_origins:
+	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids
+
+extract_fakerates:
+	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
+
+extract_pileup:
+	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
 
 get_dtags:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags
 
-resubmit:
-	ls test/tests/outdir_"${job}"/*cfg.py | sed 's/_cfg.py/.job_done/' > submitted_jobs
-	for j in `cat submitted_jobs`                                                                                 
-	do
-	  if [ ! -e $j ]
-	  then
-	      echo $j
-	  fi
-	done > missing_jobs
-	for j in `cat submitted_jobs`                                                                                 
-	do
-	  if [ ! -e $j ]
-	  then
-	      echo $j
-	  fi
+done_ck:
+	ls test/tests/outdir_"${job}"/*job_done | wc -l
+	ls test/tests/outdir_"${job}"/*cfg.py | wc -l
+
+.PHONY:missing_jobs
+missing_jobs:
+	ls test/tests/outdir_${job}/*cfg.py | sed 's/_cfg.py/.job_done/' > submitted_jobs
+	for j in `cat submitted_jobs`;        \
+	do                                    \
+	if [ ! -e $$j ]; then echo $$j; fi;   \
 	done | sed -e 's/job_done/sh/' -e "s_"${job}"_"${job}"//FARM/inputs_" > missing_jobs
-	for j in `cat missing_jobs`                                                                                   
-	do
-	  grep -h $j test/tests/outdir_"${job}"//FARM/inputs/*bsub.sh
+	wc -l missing_jobs
+
+resubmit: missing_jobs
+	for j in `cat missing_jobs`;                                    \
+	do                                                              \
+	  grep -h $$j test/tests/outdir_"${job}"//FARM/inputs/*bsub.sh; \
 	done > missing_jobs_bsubs
 	wc -l missing_jobs*
 	source missing_jobs_bsubs
