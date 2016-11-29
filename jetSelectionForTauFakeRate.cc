@@ -2442,7 +2442,7 @@ for(size_t f=0; f<urls.size();++f)
 			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
 
 
-			// ---------------------------- kinematics
+			// ---------------------------- Electron Kinematics
 			//double leta(fabs(lid==11 ? lepton.el.superCluster()->eta() : lepton.eta()));
 			double leta( electron.superCluster()->eta() );
 
@@ -2551,7 +2551,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 
-			// ---------------------------- kinematics
+			// ---------------------------- Muon Kinematics
 			double leta( muon.eta());
 
 			// ---------------------- Main muon kin
@@ -2709,7 +2709,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 
-			// --------- Kinematics
+			// --------- Tau Kinematics
 			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
 
 			selTaus.push_back(tau);
@@ -3060,7 +3060,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 
-			// and now the tighter final selection
+			// Jet Kinematics
 			double eta = jet.eta();
 			double pt  = jet.pt();
 			bool passKino = pt > 30. && fabs(eta) < 2.4;
@@ -3460,14 +3460,14 @@ for(size_t f=0; f<urls.size();++f)
 			else continue;
 
 			fill_1d(string(hlt_channel + "wjets_selection_ntaus"), 20, 0, 20,   jets.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTaus"), 20, 0, 20,   selJets.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselJets"), 20, 0, 20,   selJets.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
 
 			fill_1d(string(hlt_channel + "wjets_selection_njets"), 20, 0, 20,   taus.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJets"), 20, 0, 20,   selTaus.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
-			fill_1d(string(hlt_channel + "wjets_selection_nselJetsNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
+			fill_1d(string(hlt_channel + "wjets_selection_nselTausNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
 			/*
 			// N jets, taus

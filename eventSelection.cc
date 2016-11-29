@@ -3078,7 +3078,7 @@ for(size_t f=0; f<urls.size();++f)
 			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
 
 
-			// ---------------------------- kinematics
+			// ---------------------------- Electron Kinematics
 			//double leta(fabs(lid==11 ? lepton.el.superCluster()->eta() : lepton.eta()));
 			double leta( electron.superCluster()->eta() );
 
@@ -3189,7 +3189,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 
-			// ---------------------------- kinematics
+			// ---------------------------- Muon Kinematics
 			double leta( muon.eta());
 
 			// ---------------------- Main muon kin
@@ -3322,7 +3322,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 
-			// --------- Kinematics
+			// --------- Tau Kinematics
 			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
 
 			selTaus.push_back(tau);
@@ -3664,7 +3664,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 
-			// and now the tighter final selection
+			// Jet Kinematics
 			double eta = jet.eta();
 			double pt  = jet.pt();
 			bool passKino = pt > 30. && fabs(eta) < 2.4;
