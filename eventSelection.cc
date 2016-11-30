@@ -3055,7 +3055,7 @@ for(size_t f=0; f<urls.size();++f)
 				passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
 				passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
 				}
-			passImpactParameter = electron.dB() < 0.2;
+			passImpactParameter = electron.dB() < 0.02;
 			// what units is this? in the PAT example on top they say "we use < 0.02cm",
 			// in recommendations for muons it is < 0.2 
 			// and say "The 2 mm cut preserves efficiency for muons from decays of b and c hadrons"
