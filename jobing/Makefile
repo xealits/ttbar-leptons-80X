@@ -26,7 +26,18 @@ extract_pileup:
 	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
 
 get_dtags:
-	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags
+	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
+
+selection_control_histos:
+	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
+	do                                                \
+	stacked_histo_distr ${lumi} $$h 4 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+	for h in `cat cur_th1d_histos_other`;             \
+	do                                                \
+	stacked_histo_distr ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+
 
 done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l

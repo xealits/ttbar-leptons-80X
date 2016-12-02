@@ -129,9 +129,17 @@ done
 
 $ for h in `cat cur_th1d_histos_pt_eta_energy`                                                                                                                                  
 do
-  stacked_histo_distr 23004.3 $h 4 test/tests/outdir_"$job"/merged-sets/ `cat dtags_v9.3-4`
+  stacked_histo_distr 23004.3 $h 4 test/tests/outdir_"$job"/merged-sets/ `cat dtags_"$job"`
 done
 
+
+$ for h in `cat cur_th1d_histos_other`
+do
+  stacked_histo_distr 23004.3 $h 1 test/tests/outdir_"$job"/merged-sets/ `cat dtags_"$job"`
+done
+
+
+stacked_histo_distr 17202 control_met_slimmedMETs_pt 2 test/tests/outdir_v9.3-4/merged-sets/ `cat dtags_v9.3-4_CDEFG_NoQCD`
 
 -- TODO: automate the file with distr names!
 

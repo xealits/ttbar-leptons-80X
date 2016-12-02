@@ -229,6 +229,7 @@ leg->Draw();
 hs->GetXaxis()->SetTitle(distr);
 hs_data->SetXTitle(distr);
 
+cst->SetLogy();
 cst->Modified();
 
 cst->SaveAs( dir + "/jobsums/" + distr + ".png" );
