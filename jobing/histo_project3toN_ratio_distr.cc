@@ -88,6 +88,8 @@ cout << filename   << endl;
 TFile * file = TFile::Open(filename);
 TH1D * h1 = (TH1D*) ((TH3D*) file->Get(distr1))->Project3D(proj);
 TH1D * h2 = (TH1D*) ((TH3D*) file->Get(distr2))->Project3D(proj);
+h1->Sumw2();
+h2->Sumw2();
 
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);

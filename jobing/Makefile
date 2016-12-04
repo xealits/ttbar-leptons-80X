@@ -5,7 +5,7 @@
 SHELL:=/bin/bash
 
 reduce:
-	./jobing/reduce.zsh ${job} jobing/dtag_xsecs
+	./jobing/reduce.zsh ${job} jobing/dtags/${dtags}
 
 extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_fakerates extract_pileup
 	# DONE
@@ -88,11 +88,11 @@ jet_fakerate_plots:
 	# || { echo foo; exit 1 }
 	histo_project3toN_ratio_distr x HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
 	histo_project3toN_ratio_distr y HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr z HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0   0.4 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+	histo_project3toN_ratio_distr z HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
 	#
 	histo_project3toN_ratio_distr x HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 	histo_project3toN_ratio_distr y HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr z HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0   0.4 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+	histo_project3toN_ratio_distr z HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 
 
 
