@@ -430,20 +430,6 @@ bool hasTauAsMother(const reco::GenParticle  p)
 	}
 
 
-double jet_radius(pat::Jet& jet)
-	{
-	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
-	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
-	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
-	}
-
-double jet_radius(pat::Tau& jet)
-	{
-	//return sqrt(jet.EtaPhiMoments::etaEtaMoment + jet.EtaPhiMoments::phiPhiMoment);
-	//return sqrt(jet.etaEtaMoment() + jet.phiPhiMoment());
-	return sqrt(jet.etaetaMoment() + jet.phiphiMoment());
-	}
-
 
 /*
  * string find_W_decay(const reco::Candidate * W) {
@@ -3408,7 +3394,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		//TH3F jets_distr;
 		//TH3F tau_jets_distr;
-		float tau_fake_distance = 0.1; // the distance to tau for a jet to be considered tau's origin
 
 		// loop through probe jets and fill jets_distr
 		// loop through jets, find the ones close to taus -- fill tau_jets_distr
@@ -3429,6 +3414,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (Wjets_selection)
 			{
+			string selection("wjets");
 
 			// WJets, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
@@ -3478,6 +3464,9 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
 
+			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
+
+			/*
 			// loop through all jets,
 			// save them
 			// if it is MC save also the gluon/quark composition
@@ -3544,6 +3533,7 @@ for(size_t f=0; f<urls.size();++f)
 					//}
 					}
 				}
+				*/
 
 				// and the fakerate of "distinct taus"
 				/* TODO: apparently pat:Tau-s may not have phiphi/etaeta momenta for the radius
@@ -3561,6 +3551,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (QCD_selection)
 			{
+			string selection("qcd");
 
 			// QCD, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
@@ -3604,79 +3595,8 @@ for(size_t f=0; f<urls.size();++f)
 			increment( hlt_channel + string("qcd_selection_nselTausNoLepNoJet"), weight*selTausNoLepNoJet.size() );
 			*/
 
-
-			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-				{
-				pat::Jet& jet = selJetsNoLep[ijet];
-				// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-				// selection jets
-				fill_jet_distr(hlt_channel + string("qcd_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
-				//fill_3d(hlt_channel + string("qcd_jets_distr"), 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad, 300, 0, 300,   20, weight);
-
-				// const reco::GenParticle* genParton()
-				// jet parton origin
-				if (isMC)
-					{
-					//const reco::GenParticle* jet_origin = jet.genParton();
-					// the ID should be in:
-					// jet_origin->pdgId();
-					//qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(hlt_channel + string("qcd_jet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
-					//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
-					// qcd_taujet_origin
-					}
-
-				for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
-					{
-					// selection taus (fake taus)
-					//for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-					//{
-					//double fake_distance = reco::deltaR(selJetsNoLep[ijet], selTausNoLep[itau]);
-					double fake_distance = reco::deltaR(jet, selTausNoLep[itau]);
-					//qcd_taujet_distance->Fill(fake_distance);
-					fill_1d(hlt_channel + string("qcd_taujet_distance"), 100, 0, 2,   fake_distance, weight);
-
-					if (fake_distance <= tau_fake_distance)
-						{
-						// the tau is fake by this jet -- save distr
-						//qcd_tau_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-						fill_jet_distr(hlt_channel + string("qcd_tau_jets_distr"), weight, jet.pt(), jet.eta(), jet_radius(jet));
-						// fill_pt_pt(string control_point_name, double pt1, double pt2, double weight)
-						//fill_pt_pt(hlt_channel + string("qcd_tau_taujet_pts"), jet.pt(), selTausNoLep[itau].pt(), weight);
-						fill_2d(hlt_channel + string("qcd_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTausNoLep[itau].pt(), weight);
-
-						// N tau-jets
-						//increment( hlt_channel + string("qcd_selection_ntaujet"), weight );
-
-						// const reco::GenParticle* genParton()
-						// jet parton origin for faking jet (just in case)
-						if (isMC)
-							{
-							//const reco::GenParticle* jet_origin = selJetsNoLep[ijet].genParton();
-							// the ID should be in:
-							// jet_origin->pdgId();
-							//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
-							fill_1d(hlt_channel + string("qcd_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), weight);
-							//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
-							// qcd_jet_origin
-							}
-						continue;
-						}
-					//}
-					}
-				}
-
-				// and the fakerate of "distinct taus"
-				/* TODO: apparently pat:Tau-s may not have phiphi/etaeta momenta for the radius
-				for(size_t itau=0; itau < selTausNoLepNoJet.size(); ++itau)
-					{
-					//
-					pat::Tau& tau = selTausNoLepNoJet[itau];
-					// qcd_distinct_tau_distr->Fill(tau.pt(), tau.eta(), jet_radius(tau));
-					fill_jet_distr(hlt_channel + string("qcd_distinct_tau_distr"), weight, tau.pt(), tau.eta(), jet_radius(tau));
-					// there is no partonFlavour origin for taus..........
-					}
-				*/
+			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
+			//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus)
 			}
 
 		/*
