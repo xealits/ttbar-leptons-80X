@@ -4153,6 +4153,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singlemu_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
+					record_jets_fakerate_distrs(string("singlemu_"), string("passjet"), selJetsNoLep, selTausNoLep, weight, isMC);
+
 					fill_2d(string("control_met_singlemu_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
 						fill_2d(string("control_jet_singlemu_passjet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
@@ -4284,6 +4286,7 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, weight, isMC);
 
 					//
 					/*
@@ -4430,6 +4433,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singleel_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
+					record_jets_fakerate_distrs(string("singleel_"), string("passjet"), selJetsNoLep, selTausNoLep, weight, isMC);
+
 					fill_2d(string("control_met_singleel_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
 						fill_2d(string("control_jet_singleel_passjet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
@@ -4560,6 +4565,8 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
+					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, weight, isMC);
 
 					//
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
