@@ -11,19 +11,19 @@ extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_fa
 	# DONE
 
 extract_eventflow:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs eventflow_mu eventflow_el eventflow_elel eventflow_elmu eventflow_mumu
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} eventflow_mu eventflow_el eventflow_elmu eventflow_elel eventflow_mumu
 
 extract_weightflow:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs weightflow_mu weightflow_el weightflow_elel weightflow_elmu weightflow_mumu
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu weightflow_el weightflow_elmu weightflow_elel weightflow_mumu
 
 extract_jet_origins:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids
 
 extract_fakerates:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
 
 extract_pileup:
-	./jobing/extract_csv.zsh ${job} jobing/dtag_xsecs pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
 
 get_dtags:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
