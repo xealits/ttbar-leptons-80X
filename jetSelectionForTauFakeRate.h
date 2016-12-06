@@ -122,7 +122,7 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 
 
 
-int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
+int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
 	{
 
 	for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
