@@ -83,6 +83,8 @@
 #include <map>
 #include <string>
 
+#include "jetSelectionForTauFakeRate.h"
+
 using namespace std;
 
 namespace utils
@@ -644,6 +646,7 @@ string mc_decay("");
 
 std::map<std::pair <string,string>, double> weight_flow_control;
 
+/* goodbins are in the header
 // good bins 1
 // Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
 Float_t bins_pt[11] = { 0, 30, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
@@ -652,6 +655,7 @@ Float_t bins_eta[8] = { -3, -2.5, -1.5, -0.45, 0.45, 1.5, 2.5, 3 }; // 7 bins, 8
 int n_bins_eta = 7;
 Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
 	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
+*/
 
 // channel -> {control_point, TH}
 // 1 job = 1 dtag,
@@ -810,6 +814,7 @@ int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 	}
 
 
+/*
 int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius)
 	{
 	// for tau (and other) fake-rates
@@ -822,23 +827,6 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 		//
 		th3d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
 		}
-
-	/*
-	if (th3f_distr_control.find(key) == th3f_distr_control.end() )
-		{
-		// the control point distr has not been created/initialized
-		// create it:
-		//th1i_distr_control[control_point_name] = (TH1D*) new TH1D(control_point_name.c_str(), ";;Pt/E(GeV)", 400, 0., 200.);
-		//th1i_distr_control[key] = TH1I(control_point_name.c_str(), ";;N", 100, 0., 100.);
-		// particle counters are broken here
-		// trying TH1D for v13.5
-		// th3f_distr_control[key] = TH1D(control_point_name.c_str(), ";;ID", 600, -300., 300.);
-		//cout << "creating " << mc_decay << " - " << control_point_name << endl;
-		// th3f_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;ID", 600, -300., 300.)));
-		th3f_distr_control.insert( std::make_pair(key, TH3F(control_point_name.c_str(),      ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad)));
-		//cout << "creating " << control_point_name << endl;
-		}
-	*/
 
 	if (th3d_distr_maps_control[mc_decay].find(control_point_name) == th3d_distr_maps_control[mc_decay].end() )
 		{
@@ -855,25 +843,8 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 		//cout << "creating " << control_point_name << endl;
 		}
 
-
-	// fill the distribution:
-	// th1i_distr_control[key].Fill(value, weight);
-	// th3f_distr_control[key].Fill(value, weight);
-	// qcd_jets_distr->Fill(jet.pt(), jet.eta(), jet_radius(jet));
-	// th3f_distr_control[key].Fill(pt, eta, radius, weight);
 	th3d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, radius, weight);
 
-	//cout << "filled " << control_point_name << endl;
-	//cout << th1i_distr_control[control_point_name].Integral() << endl;
-
-	/*
-	if (th3f_distr_control_headers.find(string("j_distr")) == th3f_distr_control_headers.end() )
-		{
-		// th3f_distr_control_headers[string("p_id")] = TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.);
-		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH1D("Header of particle ID distributions", ";;ID", 600, -300., 300.)));
-		th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
-		}
-	*/
 	if (th3d_distr_maps_control_headers.find(control_point_name) == th3d_distr_maps_control_headers.end() )
 		{
 		// th3d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
@@ -884,6 +855,7 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 	// return success:
 	return 0;
 	}
+*/
 
 
 
