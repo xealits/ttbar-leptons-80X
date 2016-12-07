@@ -340,7 +340,7 @@ The selection steps.
   + individual jet selection
     - Loose ID from https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
     loose jet is required
-    - pt > 30, eta < 2.5 (changed eta to < 2.4, since b-tag SFs are given for this region)
+    - pt > 20, eta < 2.5 (changed eta to < 2.4, since b-tag SFs are given for this region)
   + dphijmet = fabs( deltaPhi(curr_jet, met) ) -- and save the min
   + cross-clean of leptons and taus with deltaR > 0.4
 
