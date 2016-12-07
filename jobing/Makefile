@@ -82,7 +82,27 @@ jet_origins:
 	ls test/tests/outdir_"${jet_job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
 	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${jet_job}"/merged-sets/ $$d; done
 
-jet_fakerate_plots:
+.PHONY:fakerate_ratio_plots
+fakerate_ratio_plots:
+	#test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+	test -s test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	# make stops if a command in the recipe fails...
+	# || { echo foo; exit 1 }
+	histo_project3toN_ratio_distr x ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	histo_project3toN_ratio_distr y ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	histo_project3toN_ratio_distr z ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/${file}
+
+jet_fakerate_plots_JetHT: file=Data13TeV_JetHT2016X_23Sep2016_v1.root
+jet_fakerate_plots_JetHT: selection=HLT_jet_qcd
+jet_fakerate_plots_JetHT: fakerate_ratio_plots
+
+jet_fakerate_plots_SingleMu: file=Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+jet_fakerate_plots_SingleMu: selection=HLTmu_wjets
+jet_fakerate_plots_SingleMu: fakerate_ratio_plots
+
+jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
+
+jet_fakerate_plots_old:
 	test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 	# make stops if a command in the recipe fails...
 	# || { echo foo; exit 1 }
@@ -93,7 +113,5 @@ jet_fakerate_plots:
 	histo_project3toN_ratio_distr x HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 	histo_project3toN_ratio_distr y HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 	histo_project3toN_ratio_distr z HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-
-
 
 

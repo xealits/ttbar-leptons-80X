@@ -2044,7 +2044,7 @@ for(size_t f=0; f<urls.size();++f)
 		if (iev % treeStep == 0)
 			{
 			printf (".");
-			if(!debug) fflush (stdout); // Otherwise debug messages are flushed
+			//if(!debug) fflush (stdout); // Otherwise debug messages are flushed
 			}
 
 		edm::EventBase const & myEvent = ev;
@@ -3896,16 +3896,46 @@ for(size_t f=0; f<urls.size();++f)
 		// -------------------------------------------------- ASSIGN CHANNEL
 		//
 
-		for (int i=0; i<selTausNoLep.size(); i++)
-			{
-			//reco::GenJet * tau__gen_jet = selTausNoLep[i].genJet();
-			cout << "tau " << i << " ";
-			std::vector<const GenParticle *> tau__gen_jet = selTausNoLep[i].genJet()->getGenConstituents();
-			for (int u=0; u<tau__gen_jet.size(); u++)
+		//if (debug && isMC) {
+		if (isMC && selTaus.size() > 0) {
+			cout << iev << " printing pdgId-s of tau consitutes for MC" << endl;
+			//cout << "A" << endl;
+			for (int i=0; i<selTaus.size(); i++)
 				{
-				cout << " " << tau__gen_jet[u]->pdgId();
+				cout << "printing tau";
+				//cout << "AAAAAAAAAAAAAAAAAAAA" << endl;
+				const reco::GenJet * tau_gen_jet = selTaus[i].genJet();
+				if (tau_gen_jet == NULL)
+					{
+					cout << " failed tau_gen_jet";
+					continue;
+					}
+				//cout << tau_gen_jet->print() << endl;
+				//cout << "tau " << i << " ";
+				std::vector<const reco::GenParticle *> tau__gen_jet = tau_gen_jet->getGenConstituents();
+				//cout << "C" << endl;
+
+				for (int u=0; u<tau__gen_jet.size(); u++)
+				//for (int u=0; u<tau_gen_jet->numberOfDaughters(); u++)
+					{
+					//cout << "D" << endl;
+					if (tau__gen_jet[u] == NULL)
+						{
+						cout << " NULL!";
+						continue;
+						}
+					//const reco::GenParticle * jet_mem = tau_gen_jet->getGenConstituent(u);
+
+					printf(" %d", tau__gen_jet[u]->pdgId());
+					if (tau__gen_jet[u]->numberOfMothers()>0) printf("(%d)", tau__gen_jet[u]->mother()->pdgId());
+					else cout << "()";
+					//
+					//cout << " " << jet_mem->pdgId();
+					//if (jet_mem->numberOfMothers()>0) cout << "(" << jet_mem->mother()->pdgId() << ")";
+					//else cout << "()";
+					}
+				cout << endl;
 				}
-			cout << endl;
 			}
 
 		if(debug){
@@ -3956,7 +3986,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	//outUrl.Data() is dtag_jobnum
 	// use them separately, take from: dtag_s, job_num
 	// TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "CREATE");
-	TFile* out_f = TFile::Open (outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root")), "CREATE");
+	TFile* out_f = TFile::Open (outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root")), "RECREATE");
 	// string mc_decay_suffix = key->first;
 	std::map<string, TH1D> * th1d_controlpoints = & it->second;
 

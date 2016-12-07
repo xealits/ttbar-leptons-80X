@@ -111,6 +111,12 @@ h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-201
 h3->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 h3->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 
+TFile f( filename.ReplaceAll(".root","") + "_" + distr1 + "_over_" + distr2 + "_" + proj + ".root" );
+h3->Write();
+f.Write();
+f.Close();
+
+
 h3->Draw("ep");       // Draw the ratio plot
 
 cst->SetLogy();
