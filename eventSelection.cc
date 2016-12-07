@@ -5179,6 +5179,18 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
+	std::map<string, TH3D> * th3d_controlpoints = & th3d_distr_maps_control[channel];
+
+	for(std::map<string, TH3D>::iterator it = th3d_controlpoints->begin(); it != th3d_controlpoints->end(); ++it)
+		{
+		string controlpoint_name = it->first;
+		TH3D * distr = & it->second;
+		distr->SetName(controlpoint_name.c_str());
+		distr->Write();
+		out_f->Write(controlpoint_name.c_str());
+		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+		}
+
 	out_f->Close();
 	}
 
