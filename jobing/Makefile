@@ -85,18 +85,19 @@ jet_origins:
 .PHONY:fakerate_ratio_plots
 fakerate_ratio_plots:
 	#test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-	test -s test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	#test -s test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	test -s ${file}
 	# make stops if a command in the recipe fails...
 	# || { echo foo; exit 1 }
-	histo_project3toN_ratio_distr x ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/${file}
-	histo_project3toN_ratio_distr y ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/${file}
-	histo_project3toN_ratio_distr z ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	histo_project3toN_ratio_distr x pT     ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   ${file}
+	histo_project3toN_ratio_distr y eta    ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 ${file}
+	histo_project3toN_ratio_distr z radius ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 ${file}
 
-jet_fakerate_plots_JetHT: file=Data13TeV_JetHT2016X_23Sep2016_v1.root
-jet_fakerate_plots_JetHT: selection=HLT_jet_qcd
+jet_fakerate_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+jet_fakerate_plots_JetHT: selection=HLTjet_qcd
 jet_fakerate_plots_JetHT: fakerate_ratio_plots
 
-jet_fakerate_plots_SingleMu: file=Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+jet_fakerate_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
 jet_fakerate_plots_SingleMu: selection=HLTmu_wjets
 jet_fakerate_plots_SingleMu: fakerate_ratio_plots
 

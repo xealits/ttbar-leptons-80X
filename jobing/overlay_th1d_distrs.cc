@@ -55,87 +55,60 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 5)
+if (argc < 4)
 	{
 	//std::cout << "Usage : " << argv[0] << " lumi distr projection rebin_factor dir dtags" << std::endl;
-	std::cout << "Usage : " << argv[0] << " x|y|z proj_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
+	//std::cout << "Usage : " << argv[0] << " x|y|z proj_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
+	std::cout << "Usage : " << argv[0] << "outfilename name filename distrname [name filename distrname]*" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString proj(argv[1]);
-if (proj != TString("x") && proj != TString("y") && proj != TString("z"))
-	{
-	printf("UNKNOWN PROJECTION GIVEN\n");
-	printf("supported: x, y, z\n");
-	return 2;
-	}
+TString outfilename(argv[1]);
 
-TString proj_name(argv[2]);
-TString distr1(argv[3]);
-TString distr2(argv[4]);
-Int_t rebin_factor(atoi(argv[5]));
-double x_axis_min_range = atof(argv[6]);
-double x_axis_max_range = atof(argv[7]);
-TString filename(argv[8]);
+TString name(argv[2]);
+TString filename(argv[3]);
+TString distrname(argv[4]);
 
-cout << distr1 << endl;
-cout << distr2 << endl;
-cout << "x axis minimum limit = " << x_axis_min_range << endl; // apparently, it doesn't work histogram's X axis -- you cannot zoom in within the histogram
-cout << "x axis maximum limit = " << x_axis_max_range << endl; // apparently, it doesn't work histogram's X axis -- you cannot zoom in within the histogram
-cout << filename   << endl;
+cout << argc << endl;
+cout << filename    << endl;
+cout << distrname   << endl;
 
 TFile * file = TFile::Open(filename);
-TH1D * h1 = (TH1D*) ((TH3D*) file->Get(distr1))->Project3D(proj);
-TH1D * h2 = (TH1D*) ((TH3D*) file->Get(distr2))->Project3D(proj);
-h1->Sumw2();
-h2->Sumw2();
+TH1D * h = (TH1D*) file->Get(distrname);
 
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
-//TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
+TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 
-TH1D *h3 = (TH1D*)h1->Clone("h3");
-h3->SetLineColor(kBlack);
-//h3->SetMinimum(0.8);  // Define Y ..
-//h3->SetMaximum(1.35); // .. range
-h3->Sumw2();
-h3->SetStats(0);      // No statistics on lower plot
-h3->Divide(h2);
-h3->SetMarkerStyle(21);
+h->Draw("ep");       // Draw the ratio plot
+leg->AddEntry(h, name, "F");
 
-h3->SetTitle("ratio " + distr1 + " / " + distr2);
-h3->SetXTitle(proj_name);
+for (int i=5; i<argc; i+=3)
+	{
+	TString name(argv[i]);
+	TString filename(argv[i+1]);
+	TString distrname(argv[i+2]);
 
-h3->Draw("ep");       // Draw the ratio plot
+	TFile * file = TFile::Open(filename);
+	TH1D * h = (TH1D*) file->Get(distrname);
 
-h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
-h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
-h3->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-h3->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+	leg->AddEntry(h, name, "F");
 
-TFile f( filename.ReplaceAll(".root","") + "_" + distr1 + "_over_" + distr2 + "_" + proj + ".root", "create" );
-h3->Write();
-f.Write();
-f.Close();
+	h->SetLineColor(kOrange + i - 4);
+	h->SetMarkerColor(kOrange + i - 4);
+	h->Draw("epsame");       // Draw the ratio plot
+	}
 
-
-h3->Draw("ep");       // Draw the ratio plot
+leg->Draw();
 
 cst->SetLogy();
-//leg->Draw();
-
-//MC_stack_124->GetXaxis()->SetTitle("#rho");
-//mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
 
 cst->Update();
 
-//hs->GetXaxis()->SetTitle(distr);
-//hs_data->SetXTitle(distr);
-
 cst->Modified();
 
-cst->SaveAs( filename.ReplaceAll(".root","") + "_" + distr1 + "_over_" + distr2 + "_" + proj + ".png" );
+cst->SaveAs(outfilename);
 
 return 0;
 }
