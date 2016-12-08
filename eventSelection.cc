@@ -3632,7 +3632,7 @@ for(size_t f=0; f<urls.size();++f)
 			// Jet Kinematics
 			double eta = jet.eta();
 			double pt  = jet.pt();
-			bool passKino = pt > 30. && fabs(eta) < 2.4;
+			bool passKino = pt > 20. && fabs(eta) < 2.4;
 
 			// corrections:
 			// TODO: are they MC-only?
