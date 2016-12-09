@@ -2294,6 +2294,16 @@ for(size_t f=0; f<urls.size();++f)
 		tausHandle.getByLabel(ev, "slimmedTaus");
 		if(tausHandle.isValid() ) taus = *tausHandle;
 
+		// triggered objects:
+		//const TriggerObjectStandAloneCollection pat::PATObject< ObjectType >::triggerObjectMatchesByPath
+		// returns a collection of trigger objects for a pat::Jet?
+		if (debug) for (int i=0; i<jets.size(); i++)
+			{
+			const TriggerObjectStandAloneCollection trig_objects jets[i].triggerObjectMatchesByPath();
+			for (int u=0; u<trig_objects.size(); u++)
+				cout << " " << trig_objects[u].pdgId();
+			cout << endl;
+			}
 
 		// CONTROLINFO
 		// Control values for raw particles:
