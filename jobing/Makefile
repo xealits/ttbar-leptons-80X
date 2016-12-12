@@ -60,7 +60,7 @@ resubmit: missing_jobs
 	wc -l missing_jobs*
 	source missing_jobs_bsubs
 
-make_proxy:
+proxy:
 	# for consistency
 	make-x509-proxy
 
@@ -82,6 +82,37 @@ jet_origins:
 	ls test/tests/outdir_"${jet_job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
 	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${jet_job}"/merged-sets/ $$d; done
 
+.PHONY:fakerate_distr_plots
+fakerate_distr_plots:
+	#test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+	#test -s test/tests/outdir_"${jet_job}"/merged-sets/${file}
+	test -s ${file}
+	# make stops if a command in the recipe fails...
+	# || { echo foo; exit 1 }
+	histo_project3toN_distr x "pT (GeV)" ${content_name}    ${distr} 1  0 150   ${file}
+	histo_project3toN_distr y eta        ${content_name}    ${distr} 1 -2.5 2.5 ${file}
+	histo_project3toN_distr z radius     ${content_name}    ${distr} 1  0   0.3 ${file}
+
+jet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+jet_distr_plots_JetHT: distr=HLTjet_qcd_jets_distr
+jet_distr_plots_JetHT: content_name="N jets"
+jet_distr_plots_JetHT: fakerate_distr_plots
+
+jet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+jet_distr_plots_SingleMu: distr=HLTmu_wjets_jets_distr
+jet_distr_plots_SingleMu: content_name="N jets"
+jet_distr_plots_SingleMu: fakerate_distr_plots
+
+taujet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+taujet_distr_plots_JetHT: distr=HLTjet_qcd_tau_jets_distr
+taujet_distr_plots_JetHT: content_name="N tau jets"
+taujet_distr_plots_JetHT: fakerate_distr_plots
+
+taujet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+taujet_distr_plots_SingleMu: distr=HLTmu_wjets_tau_jets_distr
+taujet_distr_plots_SingleMu: content_name="N tau jets"
+taujet_distr_plots_SingleMu: fakerate_distr_plots
+
 .PHONY:fakerate_ratio_plots
 fakerate_ratio_plots:
 	#test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
@@ -89,9 +120,9 @@ fakerate_ratio_plots:
 	test -s ${file}
 	# make stops if a command in the recipe fails...
 	# || { echo foo; exit 1 }
-	histo_project3toN_ratio_distr x pT     ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   ${file}
-	histo_project3toN_ratio_distr y eta    ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 ${file}
-	histo_project3toN_ratio_distr z radius ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 ${file}
+	histo_project3toN_ratio_distr x pT     "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   ${file}
+	histo_project3toN_ratio_distr y eta    "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 ${file}
+	histo_project3toN_ratio_distr z radius "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 ${file}
 
 jet_fakerate_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
 jet_fakerate_plots_JetHT: selection=HLTjet_qcd

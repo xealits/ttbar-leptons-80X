@@ -13,6 +13,10 @@
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
 
+// for trigger matching:
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+
 //Load here all the dataformat that we will need
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
@@ -1160,6 +1164,7 @@ TRandom *r3 = new TRandom3();
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
 
 bool debug           = runProcess.getParameter<bool>  ("debug");
+int debug_len        = runProcess.getParameter<int>  ("debug_len");
 bool runSystematics  = runProcess.getParameter<bool>  ("runSystematics");
 bool saveSummaryTree = runProcess.getParameter<bool>  ("saveSummaryTree");
 bool isMC            = runProcess.getParameter<bool>  ("isMC");
@@ -1704,7 +1709,7 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
-			if(iev == 5)
+			if(iev > debug_len)
 				{
 				cout << "Got to the event " << iev << " in the file, exiting" << endl;
 				//return 0;
@@ -2090,8 +2095,7 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
 			//cout << "-- Commented out --" << endl;
-			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames)
-				cout << *trnames << endl;
+			//for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames) cout << *trnames << endl;
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
 			}
@@ -2297,13 +2301,68 @@ for(size_t f=0; f<urls.size();++f)
 		// triggered objects:
 		//const TriggerObjectStandAloneCollection pat::PATObject< ObjectType >::triggerObjectMatchesByPath
 		// returns a collection of trigger objects for a pat::Jet?
-		if (debug) for (int i=0; i<jets.size(); i++)
+		if (debug && JetHLTTrigger)
 			{
-			const TriggerObjectStandAloneCollection trig_objects jets[i].triggerObjectMatchesByPath();
-			for (int u=0; u<trig_objects.size(); u++)
-				cout << " " << trig_objects[u].pdgId();
-			cout << endl;
+			cout << "JetHLTTrigger matched" << endl;
+			for (int i=0; i<jets.size(); i++)
+				{
+				//const pat::TriggerObjectStandAloneCollection trig_objects = jets[i].triggerObjectMatchesByPath("HLT_PFJet40_v*");
+				const pat::TriggerObjectStandAloneCollection trig_objects = jets[i].triggerObjectMatches();
+				cout << "trig objects matching jet " << i;
+				for (int u=0; u<trig_objects.size(); u++)
+					cout << " " << trig_objects[u].pdgId();
+				cout << endl;
+				}
 			}
+		// this doesn't return any objects for any jet in JetHT matched events
+
+		// triggered objects for muons:
+		//const TriggerObjectStandAloneCollection pat::PATObject< ObjectType >::triggerObjectMatchesByPath
+		// returns a collection of trigger objects for a pat::Jet?
+		if (debug && MuonHLTTrigger)
+			{
+			cout << "MuonHLTTrigger matched" << endl;
+			for (int i=0; i<muons.size(); i++)
+				{
+				//const pat::TriggerObjectStandAloneCollection trig_objects = muons[i].triggerObjectMatchesByPath("HLT_IsoMu24_v*");
+				const pat::TriggerObjectStandAloneCollection trig_objects = muons[i].triggerObjectMatches();
+				cout << "trig objects matching muon " << i;
+				for (int u=0; u<trig_objects.size(); u++)
+					cout << " " << trig_objects[u].pdgId();
+				cout << endl;
+				}
+			}
+		// this doesn't return any objects for any jet in JetHT matched events
+
+
+
+		/*
+		// in pat exercises they use this:
+		fwlite::Handle< pat::TriggerEvent > triggerEventHandle;
+		triggerEventHandle.getByLabel(ev, "patTriggerEvent" );
+		pat::TriggerEvent triggerEvent = *triggerEventHandle;
+		if (debug) cout << "TriggerEvent beamMode = " << triggerEvent.beamMode() << endl;
+		*/
+
+		//edm::Handle< pat::TriggerEvent > triggerEventHandle;
+		//ev.getByLabel( "patTriggerEvent", triggerEvent );
+		//iEvent.getByLabel( "patTriggerEvent", triggerEvent );
+		// and go manually over the matching procedure
+		/*
+		pat::TriggerAlgorithmRefVector::const_iterator itrBit = algoBits.begin();   
+		int nbit = 0;
+		while ( itrBit != algoBits.end())
+			{
+			// put here the logic of your analysis (compare and check decision)
+			// consult the documentation for the TriggerAlgorithm class        
+			itrBit++;    
+			nbit++;
+			}
+		if (debug)
+			{
+			cout << "bla bits " << nbit << endl;
+			}
+		*/
 
 		// CONTROLINFO
 		// Control values for raw particles:
