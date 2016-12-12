@@ -39,26 +39,32 @@ extern int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Doubl
 // good bins 1, 2
 // Float_t bins_pt[11] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
 //Float_t bins_pt[11] = { 0, 30, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
-static Float_t bins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 50, 60, 80, 150, 500 }; // 11 bins, 12 edges
-static int n_bins_pt = 11;
+//static Float_t bins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 50, 60, 80, 150, 500 }; // 11 bins, 12 edges
+//static int n_bins_pt = 11;
 // bins 3 (exactly from AN489)
 //Float_t bins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 100, 150, 500 }; // 13 bins, 14 edges
 //int n_bins_pt = 13;
+// bins 4 (based on j6.5 distributions)
+static Float_t bins_pt[15] = { 0, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 100, 150, 500 }; // 14 bins 15 edges
+static int n_bins_pt = 14;
+
 
 // Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
 //Float_t bins_eta[8] = { -3, -2.5, -1.5, -0.45, 0.45, 1.5, 2.5, 3 }; // 7 bins, 8 edges
 //int n_bins_eta = 7;
-static Float_t bins_eta[8] = { -3, -2.4, -1.5, -0.45, 0.45, 1.5, 2.4, 3 }; // 7 bins, 8 edges
-static int n_bins_eta = 7;
+static Float_t bins_eta[10] = { -3, -2.4, 2.3, -1.5, -0.45, 0.45, 1.5, 2.3, 2.4, 3 }; // 9 bins 10 edges
+static int n_bins_eta = 9;
 
 //Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
 	//0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
 //int n_bins_rad = 15;
 // exactly from AN489:
-static Float_t bins_rad[10] = { 0, 0.04, 0.08, 0.12, 0.16, 0.2, 0.24, 0.28, 0.32, 2 }; // 9 bins, 10 edges
-static int n_bins_rad = 9;
+static Float_t bins_rad[12] = { 0, 0.04, 0.08, 0.12, 0.16, 0.2, 0.24, 0.28, 0.32, 0.4, 1, 2 }; // 11 bins 12 edges
+static int n_bins_rad = 11;
 
-float tau_fake_distance = 0.1; // the distance to tau for a jet to be considered tau's origin
+
+//float tau_fake_distance = 0.1; // first-try distance
+float tau_fake_distance = 0.3; // the distance to tau for a jet to be considered tau's origin
 
 
 double jet_radius(pat::Jet& jet)

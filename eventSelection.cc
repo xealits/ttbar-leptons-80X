@@ -3750,6 +3750,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(isMC){
 				// int flavId=jet.partonFlavour();
 				int flavId=jet.hadronFlavour();
+				// also: patJet->genParton().pdgId()
 				// fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
 
 				double sf;
