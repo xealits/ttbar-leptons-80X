@@ -1870,12 +1870,12 @@ for(size_t f=0; f<urls.size();++f)
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 
-	iev++;
-
 	int treeStep (ev.size()/50);
 
 	for (ev.toBegin(); !ev.atEnd(); ++ev)
 		{
+		iev++;
+
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;

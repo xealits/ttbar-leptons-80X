@@ -105,6 +105,15 @@ h3->SetStats(0);      // No statistics on lower plot
 //h3->Divide(h2);
 h3->SetMarkerStyle(21);
 
+// normalize h3 for bin width
+for (Int_t i=0; i<=h3->GetSize(); i++)
+	{
+	//yAxis->GetBinLowEdge(3)
+	double content = h3->GetBinContent(i);
+	double width   = h3->GetXaxis()->GetBinUpEdge(i) - h3->GetXaxis()->GetBinLowEdge(i);
+	h3->SetBinContent(i, content/width);
+	}
+
 h3->SetTitle(distr1);
 h3->SetXTitle(proj_name);
 h3->SetYTitle(cont_name);

@@ -92,6 +92,7 @@ fakerate_distr_plots:
 	histo_project3toN_distr x "pT (GeV)" ${content_name}    ${distr} 1  0 150   ${file}
 	histo_project3toN_distr y eta        ${content_name}    ${distr} 1 -2.5 2.5 ${file}
 	histo_project3toN_distr z radius     ${content_name}    ${distr} 1  0   0.3 ${file}
+	histo_project3toN_distr_atslice x "pT (GeV)" ${content_name}    ${distr} 1  0 150   y 2 3 ${file}
 
 jet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
 jet_distr_plots_JetHT: distr=HLTjet_qcd_jets_distr
