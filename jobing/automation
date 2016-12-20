@@ -156,6 +156,87 @@ do
   jet_origins test/tests/outdir_"$jet_job"/merged-sets/ $d
 done
 
+fake rates in ttbar:
+
+record_jets_fakerate_distrs(string("singlemu_"), string("passjet"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("singleel_"), string("passjet"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("dilep_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+
+distrs of jet origins:
+
+_jet_partonFlavour
+_jet_hadronFlavour
+_jet_genParton_pdgId
+
+singlemu_passjet_jet_partonFlavour
+singlemu_passjet_jet_hadronFlavour
+singlemu_passjet_jet_genParton_pdgId
+singlemu_pretau_jet_partonFlavour
+singlemu_pretau_jet_hadronFlavour
+singlemu_pretau_jet_genParton_pdgId
+singleel_passjet_jet_partonFlavour
+singleel_passjet_jet_hadronFlavour
+singleel_passjet_jet_genParton_pdgId
+singleel_pretau_jet_partonFlavour
+singleel_pretau_jet_hadronFlavour
+singleel_pretau_jet_genParton_pdgId
+dilep_pass2leps_jet_partonFlavour
+dilep_pass2leps_jet_hadronFlavour
+dilep_pass2leps_jet_genParton_pdgId
+dilep_passjets_jet_partonFlavour
+dilep_passjets_jet_hadronFlavour
+dilep_passjets_jet_genParton_pdgId
+dilep_passjetsNbtag_jet_partonFlavour
+dilep_passjetsNbtag_jet_hadronFlavour
+dilep_passjetsNbtag_jet_genParton_pdgId
+dilep_passbtagfinal_jet_partonFlavour
+dilep_passbtagfinal_jet_hadronFlavour
+dilep_passbtagfinal_jet_genParton_pdgId
+elel_passjets_jet_partonFlavour
+elel_passjets_jet_hadronFlavour
+elel_passjets_jet_genParton_pdgId
+elel_passjetsNbtag_jet_partonFlavour
+elel_passjetsNbtag_jet_hadronFlavour
+elel_passjetsNbtag_jet_genParton_pdgId
+elel_passbtagfinal_jet_partonFlavour
+elel_passbtagfinal_jet_hadronFlavour
+elel_passbtagfinal_jet_genParton_pdgId
+mumu_passjets_jet_partonFlavour
+mumu_passjets_jet_hadronFlavour
+mumu_passjets_jet_genParton_pdgId
+mumu_passjetsNbtag_jet_partonFlavour
+mumu_passjetsNbtag_jet_hadronFlavour
+mumu_passjetsNbtag_jet_genParton_pdgId
+mumu_passbtagfinal_jet_partonFlavour
+mumu_passbtagfinal_jet_hadronFlavour
+mumu_passbtagfinal_jet_genParton_pdgId
+elmu_passjets_jet_partonFlavour
+elmu_passjets_jet_hadronFlavour
+elmu_passjets_jet_genParton_pdgId
+elmu_passjetsNbtag_jet_partonFlavour
+elmu_passjetsNbtag_jet_hadronFlavour
+elmu_passjetsNbtag_jet_genParton_pdgId
+elmu_passbtagfinal_jet_partonFlavour
+elmu_passbtagfinal_jet_hadronFlavour
+elmu_passbtagfinal_jet_genParton_pdgId
+
+
+
+
 
 # Ratio plots
 
