@@ -2570,6 +2570,7 @@ for(size_t f=0; f<urls.size();++f)
 			//true : // for noHLT MC
 			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // tecommended inn ttbar trig for reHLT
 			utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v3") : // tecommended inn ttbar trig for reHLT
+			// TODO: update to _v8
 			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
 			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
 			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
@@ -2584,6 +2585,7 @@ for(size_t f=0; f<urls.size();++f)
 			// 2016, 80X MC
 			//true : // for noHLT MC
 			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
+			// TODO: update to _v4
 			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
 			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*")
 			);
