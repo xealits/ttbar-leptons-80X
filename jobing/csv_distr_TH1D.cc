@@ -17,17 +17,17 @@ if (print_header)
 		}
 	cout << "\n";
 	}
-
-{ // print the contents of the distr
-cout << dtag << "," << distr;
-for (int x=1; x<size_x; x++)
-	{
-	//double bin_center = h->GetXaxis()->GetBinCenter(x);
-	double global_bin = h->GetBin(x);
-	cout << "," << h->GetBinContent(global_bin);
+else
+	{ // print the contents of the distr
+	cout << dtag << "," << distr;
+	for (int x=1; x<size_x; x++)
+		{
+		//double bin_center = h->GetXaxis()->GetBinCenter(x);
+		double global_bin = h->GetBin(x);
+		cout << "," << h->GetBinContent(global_bin);
+		}
+	cout << "\n";
 	}
-cout << "\n";
-}
 
 return 0;
 }
