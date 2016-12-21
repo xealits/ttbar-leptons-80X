@@ -149,7 +149,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
 			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   abs(jet.partonFlavour()), event_weight);
 			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
-			fill_1d(channel + selection + ("_jet_genParton_pdgId"), 100, 0, 100,   abs(jet.genParton().pdgId()), event_weight);
+			fill_1d(channel + selection + ("_jet_genParton_pdgId"), 100, 0, 100,   abs(jet.genParton()->pdgId()), event_weight);
 			//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 			// qcd_taujet_origin
 			}
