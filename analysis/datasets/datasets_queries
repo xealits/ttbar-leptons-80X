@@ -71,3 +71,23 @@ das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISpring16MiniAODv2*r
 das_client --limit=0 --query="dataset=/QCD*HT*/RunIISpring16MiniAODv2*reHLT*/MINIAODSIM"
 } | tee reHLT_datasets
 
+
+
+Summer16 datasets
+
+allHLT datasets
+
+{
+das_client --limit=0 --query="dataset=/TT_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/W*Jets*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/DYJets*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WW_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/WZ_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ZZ_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/ST_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*MuEnriched*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD_*EMEnriched*/RunIISummer16MiniAODv2*/MINIAODSIM" 
+das_client --limit=0 --query="dataset=/QCD*HT*/RunIISummer16MiniAODv2*/MINIAODSIM"
+} | tee allHLT_datasets
+
+

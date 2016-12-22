@@ -1491,3 +1491,32 @@ file_size: 3755243950424
 
 
 
+22-12-2016 Summer16 MC datasets
+===============================
+
+
+Comparison of TTbar to Spring16 TTbar:
+
+$ das_client --query="summary dataset=/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"                                                           
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 984
+nevents  : 77229341
+nblocks  : 54
+nlumis   : 482081
+file_size: 3410338159456
+
+$ das_client --query="summary dataset=/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/MINIAODSIM"                                                        
+
+Showing 1-10 out of 1 results, for more results use --idx/--limit options
+
+nfiles   : 2124
+nevents  : 92925926
+nblocks  : 73
+nlumis   : 466566
+file_size: 3755243950424
+
+-- so why nfiles are so small, but nevents/nlumis are ok?
+
+
