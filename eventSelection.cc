@@ -3597,6 +3597,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ------------------------------- JETS SELECTION
 		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
 		pat::JetCollection selJets;
+		pat::JetCollection selJets20GeV, selJets30GeV;
 		// TODO: do all jet selection right here
 		// now selBJets are not used anywhere
 		// selJets pass cross-cleaning with taus later
@@ -3634,7 +3635,7 @@ for(size_t f=0; f<urls.size();++f)
 			// Jet Kinematics
 			double eta = jet.eta();
 			double pt  = jet.pt();
-			bool passKino = pt > 30. && fabs(eta) < 2.4;
+			//bool passKino = pt > 30. && fabs(eta) < 2.4;
 
 			// corrections:
 			// TODO: are they MC-only?
@@ -3654,17 +3655,30 @@ for(size_t f=0; f<urls.size();++f)
 			// if (passPFloose && (pt > 30. || pt_values[0] > 30. || pt_values[1] > 30.) && fabs(eta) < 2.5)
 
 
-			if (passPFloose && passKino)
+			//if (passPFloose && passKino)
+			if (passPFloose && (fabs(eta) < 2.4))
 				{
-				selJets.push_back(jet);
+				if (pt > 30.)
+					{
+					// trying new fake rate application:
+					// if there are only 2 30GeV jets -- they are not considered for faking taus
+					// TODO: and what to do with 20GeV jets? in selection and in fake rates?
+					//  --- for now I will just add 20-30 GeV jets for fake rates..
+					//      one should actually try without them
+					selJets30GeV.push_back(jet);
+					selJets.push_back(jet);
 
-				fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-				// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
-				double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
-				if (dphijmet < mindphijmet) mindphijmet = dphijmet;
-				// FIXME: mindphijmet is not used anywhere now
+					fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+					fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+					// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
+					//double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
+					//if (dphijmet < mindphijmet) mindphijmet = dphijmet;
+					// FIXME: mindphijmet is not used anywhere now
+					}
+				else if (pt > 20.)
+					{
+					selJets20GeV.push_back(jet);
+					}
 				}
 			}
 
@@ -3692,6 +3706,40 @@ for(size_t f=0; f<urls.size();++f)
 			fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
 			fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 			}
+
+		// so, just for the fake rates:
+
+		pat::JetCollection selJets30GeVNoLep;
+		for (size_t ijet = 0; ijet < selJets30GeV.size(); ++ijet)
+			{
+			pat::Jet& jet = selJets30GeV[ijet];
+
+			double minDRlj (9999.);
+
+			for (size_t ilep = 0; ilep < selLeptons.size(); ilep++)
+				minDRlj = TMath::Min(minDRlj, reco::deltaR (jet, selLeptons[ilep]));
+
+			if (minDRlj < 0.4) continue;
+
+			selJets30GeVNoLep.push_back(jet);
+			}
+
+		pat::JetCollection selJets20GeVNoLep;
+		for (size_t ijet = 0; ijet < selJets20GeV.size(); ++ijet)
+			{
+			pat::Jet& jet = selJets20GeV[ijet];
+
+			double minDRlj (9999.);
+
+			for (size_t ilep = 0; ilep < selLeptons.size(); ilep++)
+				minDRlj = TMath::Min(minDRlj, reco::deltaR (jet, selLeptons[ilep]));
+
+			if (minDRlj < 0.4) continue;
+
+			selJets20GeVNoLep.push_back(jet);
+			}
+
+
 
 
 
@@ -4342,10 +4390,14 @@ for(size_t f=0; f<urls.size();++f)
 							}
 						}
 
-					for(size_t n=0; n<selJetsNoLep.size(); ++n)
+					//for(size_t n=0; n<selJetsNoLep.size(); ++n)
+					// new fake rates are calculated
+					// from all 20GeV jets
+					// and all 30GeV, if there are not 2 of them... (yeah..)
+					for(size_t n=0; n<selJets20GeVNoLep.size(); ++n)
 						// TODO: selJetsNoLepNoTau ???
 						{
-						pat::Jet& jet = selJetsNoLep[n];
+						pat::Jet& jet = selJets20GeVNoLep[n];
 						if (isMC)
 							{
 							int partID = jet.partonFlavour();
@@ -4365,6 +4417,27 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
+
+					if (selJets30GeVNoLep.size() != 2)
+						for(size_t n=0; n<selJets30GeVNoLep.size(); ++n)
+							// TODO: selJetsNoLepNoTau ???
+							{
+							pat::Jet& jet = selJets30GeVNoLep[n];
+							if (isMC)
+								{
+								int partID = jet.partonFlavour();
+
+								fill_1d(string("smu_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
+								}
+
+							jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							}
+
+
 
 					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;
 					jet_to_tau_fake_rate1_q = 1.0 - jet_to_tau_no_fake_prob1_q; // done with only histo 1
@@ -4611,9 +4684,10 @@ for(size_t f=0; f<urls.size();++f)
 							}
 						}
 
-					for(size_t n=0; n<selJetsNoLep.size(); ++n)
+					//for(size_t n=0; n<selJetsNoLep.size(); ++n)
+					for(size_t n=0; n<selJets20GeVNoLep.size(); ++n)
 						{
-						pat::Jet& jet = selJetsNoLep[n];
+						pat::Jet& jet = selJets20GeVNoLep[n];
 						if (debug) cout << n << ":\n";
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						if (isMC)
@@ -4630,6 +4704,27 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
+
+					if (selJets30GeVNoLep.size() != 2)
+						for(size_t n=0; n<selJets30GeVNoLep.size(); ++n)
+						{
+							pat::Jet& jet = selJets30GeVNoLep[n];
+							if (debug) cout << n << ":\n";
+							// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
+							if (isMC)
+								{
+								int partID = jet.partonFlavour();
+								fill_1d(string("sel_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
+								}
+
+							jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+							}
+
+
 
 					jet_to_tau_fake_rate  = 1.0 - jet_to_tau_no_fake_prob;
 					jet_to_tau_fake_rate1_q = 1.0 - jet_to_tau_no_fake_prob1_q; // done with only histo 1
