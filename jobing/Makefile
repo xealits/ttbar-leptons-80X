@@ -19,6 +19,49 @@ extract_weightflow:
 extract_jet_origins:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids
 
+extract_all_jet_origins:
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids \
+	dilep_pass2leps_jet_partonFlavour       \
+	dilep_pass2leps_jet_hadronFlavour       \
+	dilep_passjets_jet_partonFlavour        \
+	dilep_passjets_jet_hadronFlavour        \
+	dilep_passjetsNbtag_jet_partonFlavour   \
+	dilep_passjetsNbtag_jet_hadronFlavour   \
+	dilep_passbtagfinal_jet_partonFlavour   \
+	dilep_passbtagfinal_jet_hadronFlavour   \
+	elel_passjets_jet_partonFlavour         \
+	elel_passjets_jet_hadronFlavour         \
+	elel_passjetsNbtag_jet_partonFlavour    \
+	elel_passjetsNbtag_jet_hadronFlavour    \
+	elel_passbtagfinal_jet_partonFlavour    \
+	elel_passbtagfinal_jet_hadronFlavour    \
+	mumu_passjets_jet_partonFlavour         \
+	mumu_passjets_jet_hadronFlavour         \
+	mumu_passjetsNbtag_jet_partonFlavour    \
+	mumu_passjetsNbtag_jet_hadronFlavour    \
+	mumu_passbtagfinal_jet_partonFlavour    \
+	mumu_passbtagfinal_jet_hadronFlavour    \
+	elmu_passjets_jet_partonFlavour         \
+	elmu_passjets_jet_hadronFlavour         \
+	elmu_passjetsNbtag_jet_partonFlavour    \
+	elmu_passjetsNbtag_jet_hadronFlavour    \
+	elmu_passbtagfinal_jet_partonFlavour    \
+	elmu_passbtagfinal_jet_hadronFlavour
+	#elmu_passbtagfinal_jet_genParton_pdgId
+	#dilep_pass2leps_jet_genParton_pdgId
+	#elmu_passjetsNbtag_jet_genParton_pdgId
+	#elmu_passjets_jet_genParton_pdgId
+	#mumu_passbtagfinal_jet_genParton_pdgId
+	#mumu_passjetsNbtag_jet_genParton_pdgId
+	#mumu_passjets_jet_genParton_pdgId
+	#elel_passbtagfinal_jet_genParton_pdgId
+	#elel_passjetsNbtag_jet_genParton_pdgId
+	#elel_passjets_jet_genParton_pdgId
+	#dilep_passbtagfinal_jet_genParton_pdgId
+	#dilep_passjets_jet_genParton_pdgId
+	#dilep_passjetsNbtag_jet_genParton_pdgId
+
+
 extract_fakerates:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
 
@@ -60,6 +103,21 @@ resubmit: missing_jobs
 	wc -l missing_jobs*
 	source missing_jobs_bsubs
 
+.PHONY:completeness
+completeness:
+	printf "dtag\tjob\tjson\troot\tcfg\n"
+	printf "\n"
+	for d in `echo ${dtags}`; \
+	do                        \
+	printf "%s\t%d\t%d\t%d\t%d\n" $$d `ls test/tests/outdir_${job}/Data13TeV_"$$d"*job_done | wc -l` `ls test/tests/outdir_${job}/Data13TeV_"$$d"*json | wc -l`  `ls test/tests/outdir_${job}/Data13TeV_"$$d"*root | wc -l` `ls test/tests/outdir_${job}/Data13TeV_"$$d"*cfg.py | wc -l`;  \
+	done
+
+#job=v9.15
+#outdir=test/tests/outdir_${job}
+#echo $outdir
+#dtags="SingleElectron2016B SingleElectron2016C SingleElectron2016D SingleElectron2016E SingleElectron2016F SingleElectron2016G SingleElectron2016H"
+
+
 proxy:
 	# for consistency
 	make-x509-proxy
@@ -79,8 +137,8 @@ calculate_luminosity:
 
 
 jet_origins:
-	ls test/tests/outdir_"${jet_job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
-	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${jet_job}"/merged-sets/ $$d; done
+	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
+	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d; done
 
 .PHONY:fakerate_distr_plots
 fakerate_distr_plots:
@@ -94,22 +152,22 @@ fakerate_distr_plots:
 	histo_project3toN_distr z radius     ${content_name}    ${distr} 1  0   0.3 ${file}
 	histo_project3toN_distr_atslice x "pT (GeV)" ${content_name}    ${distr} 1  0 150   y 2 3 ${file}
 
-jet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+jet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016.root
 jet_distr_plots_JetHT: distr=HLTjet_qcd_jets_distr
 jet_distr_plots_JetHT: content_name="N jets"
 jet_distr_plots_JetHT: fakerate_distr_plots
 
-jet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+jet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016.root
 jet_distr_plots_SingleMu: distr=HLTmu_wjets_jets_distr
 jet_distr_plots_SingleMu: content_name="N jets"
 jet_distr_plots_SingleMu: fakerate_distr_plots
 
-taujet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+taujet_distr_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016.root
 taujet_distr_plots_JetHT: distr=HLTjet_qcd_tau_jets_distr
 taujet_distr_plots_JetHT: content_name="N tau jets"
 taujet_distr_plots_JetHT: fakerate_distr_plots
 
-taujet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+taujet_distr_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016.root
 taujet_distr_plots_SingleMu: distr=HLTmu_wjets_tau_jets_distr
 taujet_distr_plots_SingleMu: content_name="N tau jets"
 taujet_distr_plots_SingleMu: fakerate_distr_plots
@@ -125,11 +183,13 @@ fakerate_ratio_plots:
 	histo_project3toN_ratio_distr y eta    "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 ${file}
 	histo_project3toN_ratio_distr z radius "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 ${file}
 
-jet_fakerate_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
+.PHONY:jet_fakerate_plots_JetHT
+jet_fakerate_plots_JetHT: file=test/tests/outdir_${job}/merged-sets/Data13TeV_JetHT2016X_23Sep2016.root
 jet_fakerate_plots_JetHT: selection=HLTjet_qcd
 jet_fakerate_plots_JetHT: fakerate_ratio_plots
 
-jet_fakerate_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
+.PHONY:jet_fakerate_plots_SingleMu
+jet_fakerate_plots_SingleMu: file=test/tests/outdir_${job}/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016.root
 jet_fakerate_plots_SingleMu: selection=HLTmu_wjets
 jet_fakerate_plots_SingleMu: fakerate_ratio_plots
 

@@ -104,7 +104,7 @@ eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
 {{exec_name}} {{job_cfg}}
-""".format(x509_proxy="/afs/cern.ch/user/o/otoldaie/x509_proxy").format(**os.environ)
+""".format(x509_proxy="/afs/cern.ch/user/o/otoldaie/x509_proxy", **os.environ)
 
 
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""

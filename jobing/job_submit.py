@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--dsets-dir",  help="use local directory for dsets files")
     parser.add_argument("--tausf",  help="turn on tau ID efficiency SF in cfg.py of jobs",
         action = "store_true")
+    parser.add_argument("-s", "--file-server",  help='set file-server for the jobs, example: "root://eoscms//eos/cms/"')
 
     #if len(argv) != 5:
         #print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
     local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
 
-    n_files_per_job = 10
+    n_files_per_job = 5
 
     for dset_group in dsets['proc']:
         isdata = dset_group.get('isdata', False)
@@ -141,8 +142,10 @@ if __name__ == "__main__":
                 print("dset 100p tiers = %s" % file_tiers)
                 continue
 
+            if args.file_server
+                file_server = args.file_server
             # if there are no 100% full data tier, the default server is used
-            if local_tier in file_tiers:
+            elif local_tier in file_tiers:
                 file_server = local_file_server
             else:
                 file_server = default_file_server
