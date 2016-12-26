@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 print("dset 100p tiers = %s" % file_tiers)
                 continue
 
-            if args.file_server
+            if args.file_server:
                 file_server = args.file_server
             # if there are no 100% full data tier, the default server is used
             elif local_tier in file_tiers:
