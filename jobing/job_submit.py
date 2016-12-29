@@ -114,7 +114,7 @@ if __name__ == "__main__":
     #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
     local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
 
-    n_files_per_job = 5
+    n_files_per_job = 10
 
     for dset_group in dsets['proc']:
         isdata = dset_group.get('isdata', False)

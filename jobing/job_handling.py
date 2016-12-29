@@ -227,6 +227,8 @@ def get_dset(dset):
     #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
     # -- no! the output of the command is the list of files
     #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+    print("Command:")
+    print('./das_client --limit=0 --query="file dataset={}"'.format(dset))
     status, out = 0, subprocess.check_output( './das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
 
     # the correct approach
@@ -236,7 +238,7 @@ def get_dset(dset):
 
     # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
     out_rows = out.split('\n')
-    dset_files = out.split('\n')
+    dset_files = out.strip().split('\n')
     
     if status != 0 or dset_files < 1:
         print("Failed fetch _files_ of {} dataset".format(dset))
