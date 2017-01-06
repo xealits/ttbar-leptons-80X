@@ -1723,6 +1723,20 @@ for(size_t f=0; f<urls.size();++f)
 
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
 
+		/*
+		edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+		edm::InputTag trigResultsTag("TriggerResults","","HLT"); //make sure have correct process on MC
+		//data process=HLT, MC depends, Spring11 is REDIGI311X
+		iEvent.getByLabel(trigResultsTag,trigResults);
+		const edm::TriggerNames& trigNames = iEvent.triggerNames(*trigResults);   
+		*/
+		edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+		edm::InputTag trigResultsTag("TriggerResults","","HLT"); //make sure have correct process on MC
+		//edm::TriggerResults trigger_results = ev.triggerResults ("HLT");
+		ev.getByLabel(trigResultsTag, trigResults);
+		const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
+
+
 		if (!tr.isValid())
 			tr = ev.triggerResultsByName ("HLT2"); // Spring16 reHLT MCs
 
@@ -2038,11 +2052,21 @@ for(size_t f=0; f<urls.size();++f)
 
 				cout << ijet << "jet " << jet.pt() << closest_trigger_object_i << " obj " << obj.pt() << " dist " << minDRtj << " col " << obj.collection() << " ids ";
 				for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
+
+				cout << " pathnames " ;
+				// Exception Message:
+				// This TriggerObjectStandAlone object has packed trigger path names.
+				// Before accessing path names you must call unpackPathNames with an edm::TriggerNames object.
+				// You can get the latter from the edm::Event or fwlite::Event and the TriggerResults
+				obj.unpackPathNames(trigNames);
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h) std::cout << " " << obj.pathNames()[h];
+				// HLT_PFJet40_v6
 				cout << endl;
 
 				//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
 				//fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
+
 			}
 
 

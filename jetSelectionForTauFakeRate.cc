@@ -3416,7 +3416,6 @@ for(size_t f=0; f<urls.size();++f)
 		bool selection_QCD_jets = (n_jets > 1);
 
 
-		pat::JetCollection probeJets;
 		// select jets:
 		//   - don't consider the jet if it is the only one matching HLT jet
 		// compare with taus
@@ -3457,17 +3456,6 @@ for(size_t f=0; f<urls.size();++f)
 			probeJets = // selected_jets
 			}
 		*/
-
-		// for now just take all jets:
-		probeJets = selJetsNoLep;
-
-		//TH3F jets_distr;
-		//TH3F tau_jets_distr;
-
-		// loop through probe jets and fill jets_distr
-		// loop through jets, find the ones close to taus -- fill tau_jets_distr
-		// new standard function for jet distr
-		//int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, Int_t nbinsz, Double_t zlow, Double_t zup, double x, double y, double z, double weight)
 
 		// Check among 2 channels of selection:
 		//     QCD-channel -- 2 or more jets
@@ -3622,6 +3610,97 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			string selection("qcd");
 
+			// remove the trigger jet:
+			// find matching trig objects (dR < 0.3)
+			// if there is only 1 matching trig object with the name ~ HLT_PFJet40*
+			// skip the corresponding jet
+			// otherwise use all jets
+			// TODO: check this scheme, if it doesn't remove the 40GeV bump -- try removing closest matching jet
+			if (debug) cout << "Trigger objects from MiniAOD workbook" << endl;
+			//#include <InputTag.h>
+			fwlite::Handle< vector<pat::TriggerObjectStandAlone> > triggerObjectsHandle;
+			//myEvent.getByLabel( edm::InputTag("selectedPatTrigger"), triggerObjects );
+			triggerObjectsHandle.getByLabel( ev, "selectedPatTrigger" );
+
+			if (!triggerObjectsHandle.isValid())
+				{
+				cout << "!triggerObjectsHandle.isValid()" << endl;
+				}
+			vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+
+			// get TriggerNames (needed to "unpack" the trigger path names of TriggerObject
+			edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+			edm::InputTag trigResultsTag("TriggerResults","","HLT"); //make sure have correct process on MC
+			//edm::TriggerResults trigger_results = ev.triggerResults ("HLT");
+			ev.getByLabel(trigResultsTag, trigResults);
+			const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
+
+			/*
+			// to unpack the TriggerNames in the triggerobject:
+			pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
+			obj.unpackPathNames(trigNames);
+			// maybe one can loop and unpack all names beforehand?
+			*/
+
+			pat::JetCollection probeJets;
+			pat::JetCollection probeJets_our_hlt;
+			//for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
+			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+				{
+				pat::Jet& jet = selJetsNoLep[ijet];
+
+				// find trigger object closest to the jet
+				double minDRtj (9999.);
+				int closest_trigger_object_i = 0;
+				for (size_t i = 0; i < trig_objs.size(); i++)
+					{
+					double jet_trig_distance = TMath::Min(minDRtj, reco::deltaR (jet, trig_objs[i]));
+					if (jet_trig_distance<minDRtj)
+						{
+						closest_trigger_object_i = i;
+						minDRtj = jet_trig_distance;
+						}
+					}
+
+				// jet matches to trigger object, if dR < 0.3
+				// if a jet doesn't match to any object -- add it to probeJets
+				if (minDRtj > 0.3)
+					{
+					probeJets.push_back(jet);
+					continue;
+					}
+
+				// jets that match to trigger objects
+				// are probeJets, if the trigger objects don't correspond to the chosen HLT trigger
+				// jets matching to the chosen HLT trigger will bias the distributions
+				// (with HLT_PFJet40_* the jet and tau distrs have a bump at about 40GeV)
+				// thus the jet corresponding to the HLT should be removed
+				// now the procedure is:
+				//   skip the jet if it is only 1 matching to HLT
+				//   if many jets match to HLT -- add them all to probeJets
+				pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
+				obj.unpackPathNames(trigNames);
+
+				// test if the matching trigger object corresponds to our HLT
+				bool is_our_hlt = false;
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+					{
+					// HLT_PFJet40_v*
+					// TODO: make it a global parameter for the whole program -- cfg.py parameter
+					is_our_hlt |= (obj.pathNames()[h].find("HLT_PFJet40") != std::string::npos);
+					}
+				if (is_our_hlt) probeJets_our_hlt.push_back(jet);
+				else probeJets.push_back(jet);
+
+				//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				//fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+				}
+
+			// if there is only 1 jet matching to our HLT -- skip it
+			// otherwise -- add all of them to the probeJets
+			if (probeJets_our_hlt.size() > 1)
+				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets[i]);
+
 			// QCD, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
 				{
@@ -3641,30 +3720,15 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d(string(hlt_channel + "qcd_selection_nselJets"), 20, 0, 20,   selJets.size(), weight);
 			fill_1d(string(hlt_channel + "qcd_selection_nselJetsNoLep"), 20, 0, 20,   selJetsNoLep.size(), weight);
 			fill_1d(string(hlt_channel + "qcd_selection_nselJetsNoLepNoJet"), 20, 0, 20,   selJetsNoLepNoTau.size(), weight);
+			fill_1d(string(hlt_channel + "qcd_selection_nprobeJets"), 20, 0, 20,   probeJets.size(), weight);
 
 			fill_1d(string(hlt_channel + "qcd_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
 			fill_1d(string(hlt_channel + "qcd_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
 			fill_1d(string(hlt_channel + "qcd_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
 			fill_1d(string(hlt_channel + "qcd_selection_nselTausNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
-			/*
-			increment( hlt_channel + string("weightflow_qcd_selection"), weight );
-			// N jets, taus
-			increment( hlt_channel + string("qcd_selection_njets"), weight*jets.size() );
-			increment( hlt_channel + string("qcd_selection_nidJets"), weight*idJets.size() );
-			increment( hlt_channel + string("qcd_selection_nselLowPtJets"), weight*selLowPtJets.size() );
-			increment( hlt_channel + string("qcd_selection_nselJetsNoLep"), weight*selJetsNoLep.size() );
-			increment( hlt_channel + string("qcd_selection_nselJetsNoLepNoTau"), weight*selJetsNoLepNoTau.size() );
-
-			increment( hlt_channel + string("qcd_selection_ntaus"), weight*taus.size() );
-			increment( hlt_channel + string("qcd_selection_nselTausNoLep"), weight*selTausNoLep.size() );
-			//
-			increment( hlt_channel + string("qcd_selection_nselTausNoLep_noIdJets"), selTausNoLep_noIdJets );
-			increment( hlt_channel + string("qcd_selection_nselTausNoLep_noSelLowPtJets"), selTausNoLep_noSelLowPtJets );
-			increment( hlt_channel + string("qcd_selection_nselTausNoLepNoJet"), weight*selTausNoLepNoJet.size() );
-			*/
-
-			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
+			//record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
+			record_jets_fakerate_distrs(hlt_channel, selection, probeJets, selTausNoLep, weight, isMC);
 			//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus)
 			}
 

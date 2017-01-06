@@ -1730,7 +1730,8 @@ for(size_t f=0; f<urls.size();++f)
 			{ // TODO: make a separate executable
 			cout << "Printing HLT trigger list" << endl;
 			cout << "-- Commented out --" << endl;
-			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames) cout << *trnames << endl;
+			int i = 0;
+			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames, ++i) cout << i << "\t" << *trnames << endl;
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
 			}
