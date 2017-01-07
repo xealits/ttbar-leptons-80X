@@ -3698,8 +3698,33 @@ for(size_t f=0; f<urls.size();++f)
 
 			// if there is only 1 jet matching to our HLT -- skip it
 			// otherwise -- add all of them to the probeJets
+			// DIDNT WORK
+			/*
 			if (probeJets_our_hlt.size() > 1)
 				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
+			*/
+			// skip the smallest-pT jet of our-HLT jets
+			std::sort (probeJets_our_hlt.begin(),  probeJets_our_hlt.end(),  utils::sort_CandidatesByPt);
+			// now the highest-pT is first
+			// anyway, test it:
+			if (debug && probeJets_our_hlt.size() > 0)
+				{
+				cout << "QCD selection, our-HLT jets " << probeJets_our_hlt.size();
+				cout << ", largest pT, smallest pT [check]" << endl;
+				//cout << probeJets_our_hlt[0].pt() << "\t" << probeJets_our_hlt[probeJets_our_hlt.size()-1].pt() << endl;
+				cout << probeJets_our_hlt[0] << "\t" << probeJets_our_hlt[probeJets_our_hlt.size()-1] << endl;
+				}
+			if (probeJets_our_hlt.size() > 1)
+				{
+				for (int i = 0; i<probeJets_our_hlt.size()-1; i++) probeJets.push_back(probeJets_our_hlt[i]);
+				}
+			// also record the pT and eta distr of the skipped jet:
+			if (probeJets_our_hlt.size() > 0)
+				{
+				fill_1d(hlt_channel + string("skiped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-1].pt(),  weight);
+				fill_1d(hlt_channel + string("skiped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-1].eta(), weight);
+				}
+
 
 			// QCD, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
