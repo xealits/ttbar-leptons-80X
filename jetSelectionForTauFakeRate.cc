@@ -3699,7 +3699,7 @@ for(size_t f=0; f<urls.size();++f)
 			// if there is only 1 jet matching to our HLT -- skip it
 			// otherwise -- add all of them to the probeJets
 			if (probeJets_our_hlt.size() > 1)
-				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets[i]);
+				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
 
 			// QCD, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
