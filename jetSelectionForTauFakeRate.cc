@@ -3707,6 +3707,7 @@ for(size_t f=0; f<urls.size();++f)
 			std::sort (probeJets_our_hlt.begin(),  probeJets_our_hlt.end(),  utils::sort_CandidatesByPt);
 			// now the highest-pT is first
 			// anyway, test it:
+			/*
 			if (debug && probeJets_our_hlt.size() > 0)
 				{
 				cout << "QCD selection, our-HLT jets " << probeJets_our_hlt.size();
@@ -3723,6 +3724,24 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				fill_1d(hlt_channel + string("skiped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-1].pt(),  weight);
 				fill_1d(hlt_channel + string("skiped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-1].eta(), weight);
+				}
+			*/
+			// it didn't work -- it removes the whole slope at low pT with small part of the bump
+
+			// let's try removing 2-nd smallest jet
+			if (probeJets_our_hlt.size() > 1)
+				{
+				// all jets up to one-before-last
+				for (int i = 0; i<probeJets_our_hlt.size()-2; i++) probeJets.push_back(probeJets_our_hlt[i]);
+				// last jet
+				probeJets.push_back(probeJets_our_hlt[probeJets_our_hlt.size()-1]);
+				}
+			// else {if there is only 1 our_hlt jet -- skip it}
+			// also record the pT and eta distr of the skipped jet:
+			if (probeJets_our_hlt.size() > 1)
+				{
+				fill_1d(hlt_channel + string("skiped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-2].pt(),  weight);
+				fill_1d(hlt_channel + string("skiped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-2].eta(), weight);
 				}
 
 
