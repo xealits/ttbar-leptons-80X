@@ -3927,8 +3927,13 @@ for(size_t f=0; f<urls.size();++f)
 					//const reco::GenParticle * jet_mem = tau_gen_jet->getGenConstituent(u);
 
 					printf(" %d", tau__gen_jet[u]->pdgId());
-					if (tau__gen_jet[u]->numberOfMothers()>0) printf("(%d)", tau__gen_jet[u]->mother()->pdgId());
-					else cout << "()";
+					cout << "(";
+					for (int j = 0 ; j < tau__gen_jet[u]->numberOfMothers(); ++j) {
+						cout << " " << tau__gen_jet[u]->mother(j)->pdgId();
+						}
+					cout << ")" << endl;
+					//if (tau__gen_jet[u]->numberOfMothers()>0) printf("(%d)", tau__gen_jet[u]->mother()->pdgId());
+					//else cout << "()";
 					//
 					//cout << " " << jet_mem->pdgId();
 					//if (jet_mem->numberOfMothers()>0) cout << "(" << jet_mem->mother()->pdgId() << ")";
