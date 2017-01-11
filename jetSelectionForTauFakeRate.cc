@@ -1761,7 +1761,9 @@ for(size_t f=0; f<urls.size();++f)
 		//   follow along W and find decay vertex to leptons or quarks
 		// -- thus recursion is needed
 
-		// traversing separate t quarks
+		/* no need for ttbar channels in jet-tau fake rate study
+		// extract the TTbar decay in this file
+		// by traversing separate t quarks
 		//if (debug) {
 		if (isTTbarMC && genHandle.isValid()) {
 			//string mc_decay(""); // move to all job parameters
@@ -1809,6 +1811,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
+		*/
 
 		//* List of mother-daughters for all particles
 		//* TODO: make it into a separate function
