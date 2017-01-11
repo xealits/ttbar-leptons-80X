@@ -109,7 +109,7 @@ completeness:
 	printf "\n"
 	for d in `echo ${dtags}`; \
 	do                        \
-	printf "%s\t%d\t%d\t%d\t%d\n" $$d `ls test/tests/outdir_${job}/Data13TeV_"$$d"*job_done | wc -l` `ls test/tests/outdir_${job}/Data13TeV_"$$d"*json | wc -l`  `ls test/tests/outdir_${job}/Data13TeV_"$$d"*root | wc -l` `ls test/tests/outdir_${job}/Data13TeV_"$$d"*cfg.py | wc -l`;  \
+	printf "%s\t%d\t%d\t%d\t%d\n" $$d `ls test/tests/outdir_${job}/"$$d"*job_done | wc -l` `ls test/tests/outdir_${job}/"$$d"*json | wc -l`  `ls test/tests/outdir_${job}/"$$d"*root | wc -l` `ls test/tests/outdir_${job}/"$$d"*cfg.py | wc -l`;  \
 	done
 
 #job=v9.15
@@ -195,16 +195,8 @@ jet_fakerate_plots_SingleMu: fakerate_ratio_plots
 
 jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
 
-jet_fakerate_plots_old:
-	test -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root -a -s test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-	# make stops if a command in the recipe fails...
-	# || { echo foo; exit 1 }
-	histo_project3toN_ratio_distr x HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr y HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr z HLTjet_qcd_tau_jets_distr HLTjet_qcd_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1.root
-	#
-	histo_project3toN_ratio_distr x HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0 150   test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr y HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1 -2.5 2.5 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-	histo_project3toN_ratio_distr z HLTmu_wjets_tau_jets_distr HLTmu_wjets_jets_distr 1  0   0.3 test/tests/outdir_"${jet_job}"/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1.root
-
+overlay_fakerates:
+	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-x-pt_overlayed.png     qcd-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_x.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_x.root h3 dilep-sel test/tests/outdir_v9.16/merged-sets/Data13TeV_SingleMuon2016X_dilep_passjets_tau_jets_distr_over_dilep_passjets_jets_distr_x.root h3
+	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-y-eta_overlayed.png    qcd-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_y.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_y.root h3 dilep-sel test/tests/outdir_${ttjob}/merged-sets/Data13TeV_SingleMuon2016X_dilep_passjets_tau_jets_distr_over_dilep_passjets_jets_distr_y.root h3
+	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-z-radius_overlayed.png qcd-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_z.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_z.root h3 dilep-sel test/tests/outdir_${ttjob}/merged-sets/Data13TeV_SingleMuon2016X_dilep_passjets_tau_jets_distr_over_dilep_passjets_jets_distr_z.root h3
 

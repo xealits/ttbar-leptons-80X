@@ -2084,13 +2084,13 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------------------------------------- apply trigger
 		// ---------------- and require compatibilitiy of the event with the PD
-		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
+		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 
 		if (!tr.isValid ()){
-			//cout << "Trigger HLT is not valid, trying HLT2" << endl;
-			tr = ev.triggerResultsByName ("HLT2");
+			//cout << "Trigger HLT2 is not valid, trying HLT" << endl;
+			tr = ev.triggerResultsByName ("HLT");
 			if (!tr.isValid ()){
-				cout << "Trigger HLT2 is not valid, exiting" << endl;
+				cout << "Trigger HLT is not valid, exiting" << endl;
 				return false;
 				}
 			}
