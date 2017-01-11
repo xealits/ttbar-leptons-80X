@@ -2013,7 +2013,7 @@ for(size_t f=0; f<urls.size();++f)
 			 * 1 with its' (possible) mothers (pdgId & status)
 			 * 2 and (possible) daughters
 			 *
-			 * N_part: id status [<- mom1_id status;[ mom2...]]
+			 * N_part: particle_string id status [<- mom1_id status;[ mom2...]]
 			 * [	|-> daught1_id status;[ daught2...]]
 			 */
 			for(size_t i = 0; i < gen.size(); ++ i) {
@@ -2021,23 +2021,95 @@ for(size_t f=0; f<urls.size();++f)
 				int id = p.pdgId();
 				int st = p.status();
 				int n = p.numberOfDaughters();
-				cout << i << ": " << id << " " << st;
+				cout << i << ": " << id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass() << endl;
 				if (p.numberOfMothers() != 0) cout << " <- " ;
 				for (int j = 0 ; j < p.numberOfMothers(); ++j) {
 					const reco::Candidate * mom = p.mother(j);
 					cout << " " << mom->pdgId() << " " << mom->status() << ";";
 					}
-				cout << "\n";
+				cout << endl;
 				if (n>0) {
 					cout << "\t|-> " ;
 					for (int j = 0; j < n; ++j) {
 						const reco::Candidate * d = p.daughter( j );
 						cout << d->pdgId() << " " << d->status() << "; " ;
 						}
-					cout << "\n";
+					cout << endl;
 					}
 				}
 			}
+
+
+		// JETS, their generation hadron/parton IDs
+
+		pat::JetCollection jets;
+		fwlite::Handle<pat::JetCollection>jetsHandle;
+		jetsHandle.getByLabel(ev, "slimmedJets");
+		if(jetsHandle.isValid() ) jets = *jetsHandle;
+
+		if (debug) {
+			cout << "partonFlavour and hadronFlavour of slimmedJets" << endl;
+			for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
+				{
+				pat::Jet& jet = jets[ijet];
+				cout << jet.partonFlavour() << "\t" << jet.hadronFlavour() << endl;
+				}
+			}
+
+		/*
+		pat::JetCollection selJets;
+		for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
+			{
+			pat::Jet& jet = jets[ijet];
+
+			fill_2d(string("control_jet_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+
+			//jet id
+			bool passPFloose = passPFJetID("Loose", jet); 
+			// bool passPFloose = passPFJetID("Tight", jet); 
+			//if (label=="Tight")
+			// FIXME: check when pileup ID will come out
+
+			if (passPFloose)
+				{
+				fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+				}
+
+			// Jet Kinematics
+			double eta = jet.eta();
+			double pt  = jet.pt();
+			//bool passKino = pt > 30. && fabs(eta) < 2.4;
+
+
+			//if (passPFloose && passKino)
+			if (passPFloose && (fabs(eta) < 2.4))
+				{
+				if (pt > 30.)
+					{
+					// trying new fake rate application:
+					// if there are only 2 30GeV jets -- they are not considered for faking taus
+					// TODO: and what to do with 20GeV jets? in selection and in fake rates?
+					//  --- for now I will just add 20-30 GeV jets for fake rates..
+					//      one should actually try without them
+					selJets30GeV.push_back(jet);
+					selJets.push_back(jet);
+
+					fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+					fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+					// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
+					//double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
+					//if (dphijmet < mindphijmet) mindphijmet = dphijmet;
+					// FIXME: mindphijmet is not used anywhere now
+					}
+				else if (pt > 20.)
+					{
+					selJets20GeV.push_back(jet);
+					}
+				}
+			}
+		*/
 
 		if(debug){
 			cout << "end of event" << endl;
