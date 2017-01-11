@@ -4814,16 +4814,19 @@ for(size_t f=0; f<urls.size();++f)
 			multisel += (passOS ? 8 : 0);
 			multisel += (passBtagsSelection ? 16 : 0);
 
-			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJetsNoLep, selTausNoLep, weight, isMC);
+			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 
 			if (passJetSelection)
 				{
-				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 				}
 
 			if (passJetSelection && passBtagsSelection)
 				{
-				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 				}
 
 			/*
@@ -4838,17 +4841,20 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 
 					//fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4946,17 +4952,20 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 
 					//fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -5053,17 +5062,20 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, weight, isMC);
 
 					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("elmu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
