@@ -3706,9 +3706,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (probeJets_our_hlt.size() > 1)
 				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
 			*/
-			// skip the smallest-pT jet of our-HLT jets
 			std::sort (probeJets_our_hlt.begin(),  probeJets_our_hlt.end(),  utils::sort_CandidatesByPt);
 			// now the highest-pT is first
+
 			// anyway, test it:
 			/*
 			if (debug && probeJets_our_hlt.size() > 0)
@@ -3718,6 +3718,8 @@ for(size_t f=0; f<urls.size();++f)
 				//cout << probeJets_our_hlt[0].pt() << "\t" << probeJets_our_hlt[probeJets_our_hlt.size()-1].pt() << endl;
 				cout << probeJets_our_hlt[0] << "\t" << probeJets_our_hlt[probeJets_our_hlt.size()-1] << endl;
 				}
+
+			// skip the smallest-pT jet of our-HLT jets
 			if (probeJets_our_hlt.size() > 1)
 				{
 				for (int i = 0; i<probeJets_our_hlt.size()-1; i++) probeJets.push_back(probeJets_our_hlt[i]);
@@ -3732,6 +3734,8 @@ for(size_t f=0; f<urls.size();++f)
 			// it didn't work -- it removes the whole slope at low pT with small part of the bump
 
 			// let's try removing 2-nd smallest jet
+			// [worked pretty well, but not perfect]
+			/*
 			if (probeJets_our_hlt.size() > 1)
 				{
 				// all jets up to one-before-last
@@ -3745,6 +3749,17 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				fill_1d(hlt_channel + string("skiped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-2].pt(),  weight);
 				fill_1d(hlt_channel + string("skiped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[probeJets_our_hlt.size()-2].eta(), weight);
+				}
+			*/
+
+			// skip leading pt jet of our-hlt jets
+			if (probeJets_our_hlt.size() > 0)
+				{
+				// record the pT and eta distr of the skipped jet:
+				fill_1d(hlt_channel + string("skiped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
+				fill_1d(hlt_channel + string("skiped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[0].eta(), weight);
+				// all jets, except the highest pT (first one)
+				for (int i = 1; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
 				}
 
 

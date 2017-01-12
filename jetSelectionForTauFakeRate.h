@@ -52,8 +52,12 @@ static int n_bins_pt = 14;
 // Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
 //Float_t bins_eta[8] = { -3, -2.5, -1.5, -0.45, 0.45, 1.5, 2.5, 3 }; // 7 bins, 8 edges
 //int n_bins_eta = 7;
-static Float_t bins_eta[10] = { -3, -2.4, -2.3, -1.5, -0.45, 0.45, 1.5, 2.3, 2.4, 3 }; // 9 bins 10 edges
-static int n_bins_eta = 9;
+//static Float_t bins_eta[10] = { -3, -2.4, -2.3, -1.5, -0.45, 0.45, 1.5, 2.3, 2.4, 3 }; // 9 bins 10 edges
+//static int n_bins_eta = 9;
+// AN bins go in 0.5, and are done for abs eta
+// I will use 0.5, but for both signs of eta:
+static Float_t bins_eta[15] = { -3, -2.4, -2.3, -2., -1.5, -1, -0.5, 0, 0.5, 1., 1.5, 2., 2.3, 2.4, 3 }; // 14 bins 15 edges
+static int n_bins_eta = 14;
 
 //Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0.12,
 	//0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
@@ -138,6 +142,10 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 		// selection jets
 		fill_jet_distr(channel + selection + ("_jets_distr"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 		//fill_3d(channel + selection + ("_jets_distr"), 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad, 300, 0, 300,   20, event_weight);
+
+		// study jet_R ~ jet_eta -- does calculation of R depend on eta of jet?
+		// (maybe it would be nice to use bins of the 3d jet distr?)
+		fill_2d(channel + selection + ("_jet_radius_vs_eta"), 100, 0., 2., 120, -3., 3., jet_radius(jet), jet.eta(), event_weight);
 
 		// const reco::GenParticle* genParton()
 		// jet parton origin
