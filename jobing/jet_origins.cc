@@ -226,9 +226,9 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 3)
+if (argc < 4)
 	{
-	std::cout << "Usage : " << argv[0] << " job_dir dtag" << std::endl;
+	std::cout << "Usage : " << argv[0] << " job_dir dtag origin_channel [origins_channels]" << std::endl;
 	exit (0);
 	}
 
@@ -237,27 +237,43 @@ gROOT->Reset();
 TString job_dir(argv[1]);
 TString dtag(argv[2]);
 
-//cout << job_dir  << endl;
-//cout << dtag << endl;
-
-TFile * file = TFile::Open(job_dir + "/" + dtag + ".root");
-//TH1D * weightflow = (TH1D*) file->Get("weightflow");
-// for ttbar dileptons
-TH1D * weightflow = (TH1D*) file->Get("weightflow_elel");
-
-double xsec = xsecs[dtag];
-Double_t ratio = xsec / weightflow->GetBinContent(4);
-
-//cout << "dtag " << dtag << " ratio = " << ratio << endl;
-
-
 //std::vector <TString> channels = {"HLTjet_qcd_jet_origins", "HLTmu_qcd_jet_origins", "HLTjetmu_qcd_jet_origins",
 //	"HLTjet_wjets_jet_origins", "HLTmu_wjets_jet_origins", "HLTjetmu_wjets_jet_origins" };
 
 //std::vector <TString> channels = {"HLTjet_qcd_jet_partonFlavour", "HLTmu_qcd_jet_partonFlavour", "HLTjetmu_qcd_jet_partonFlavour",
 //	"HLTjet_wjets_jet_partonFlavour", "HLTmu_wjets_jet_partonFlavour", "HLTjetmu_wjets_jet_partonFlavour" };
 // in ttbar dieptons:
-std::vector <TString> channels = {"dilep_passjets_jet_partonFlavour", "dilep_passjetsNbtag_jet_partonFlavour", "elel_passjets_jet_partonFlavour"};
+//std::vector <TString> channels = {"dilep_passjets_jet_partonFlavour", "dilep_passjetsNbtag_jet_partonFlavour", "elel_passjets_jet_partonFlavour"};
+
+std::vector<TString> channels;
+for (int i=3; i<argc; i++)
+	{
+	TString a_channel(argv[i]);
+	channels.push_back(a_channel);
+	}
+
+//cout << job_dir  << endl;
+//cout << dtag << endl;
+
+TFile * file = TFile::Open(job_dir + "/" + dtag + ".root");
+//TH1D * weightflow = (TH1D*) file->Get("weightflow");
+TH1D * weightflow;
+// for ttbar dileptons
+if (file->GetListOfKeys()->Contains("weightflow_elel"))
+	weightflow = (TH1D*) file->Get("weightflow_elel");
+else if (file->GetListOfKeys()->Contains("weightflow"))
+	weightflow = (TH1D*) file->Get("weightflow");
+else
+	{
+	cerr << "no weightflow distro" << endl;
+	return 1;
+	}
+
+
+double xsec = xsecs[dtag];
+Double_t ratio = xsec / weightflow->GetBinContent(4);
+
+//cout << "dtag " << dtag << " ratio = " << ratio << endl;
 
 
 cout << "dtag,ratio";

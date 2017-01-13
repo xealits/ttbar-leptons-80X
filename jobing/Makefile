@@ -137,8 +137,10 @@ calculate_luminosity:
 
 
 jet_origins:
+	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
+	# "dilep_passjets_jet_partonFlavour dilep_passjetsNbtag_jet_partonFlavour elel_passjets_jet_partonFlavour"
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
-	for d in `cat test_dtags | sed -n '/^MC/p' `; do echo $$d ; jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d; done
+	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d ${channels}; done
 
 .PHONY:fakerate_distr_plots
 fakerate_distr_plots:
