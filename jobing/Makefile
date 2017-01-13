@@ -138,7 +138,7 @@ calculate_luminosity:
 
 jet_origins:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
-	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d; done
+	for d in `cat test_dtags | sed -n '/^MC/p' `; do echo $$d ; jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d; done
 
 .PHONY:fakerate_distr_plots
 fakerate_distr_plots:
