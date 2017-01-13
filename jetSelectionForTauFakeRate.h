@@ -176,6 +176,17 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//fill_1d(channel + selection + ("_jet_genParton_pdgId"), 100, 0, 100,   abs(jet.genParton()->pdgId()), event_weight);
 			//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
 			// qcd_taujet_origin
+
+			int jet_origin = abs(jet.partonFlavour());
+			// per-jet-origin distrs
+			if (jet_origin == 21) // gluons
+				fill_jet_distr(channel + selection + ("_jets_distr_g"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 5) // b-quarks
+				fill_jet_distr(channel + selection + ("_jets_distr_b"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 0) // other stuff (taus probably)
+				fill_jet_distr(channel + selection + ("_jets_distr_o"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else // other (light) quarks
+				fill_jet_distr(channel + selection + ("_jets_distr_q"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			}
 
 		for(size_t itau=0; itau < selTaus.size(); ++itau)
@@ -204,13 +215,24 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 				// jet parton origin for faking jet (just in case)
 				if (isMC)
 					{
+					int jet_origin = abs(jet.partonFlavour());
 					//const reco::GenParticle* jet_origin = selJets[ijet].genParton();
 					// the ID should be in:
 					// jet_origin->pdgId();
 					//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(channel + selection + ("_taujet_origins"), 100, 0, 100,   abs(jet.partonFlavour()), event_weight);
+					fill_1d(channel + selection + ("_taujet_origins"), 100, 0, 100,   jet_origin, event_weight);
 					//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_jet_origin
+
+					// per-jet-origin distrs
+					if (jet_origin == 21) // gluons
+						fill_jet_distr(channel + selection + ("_tau_jets_distr_g"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else if (jet_origin == 5) // b-quarks
+						fill_jet_distr(channel + selection + ("_tau_jets_distr_b"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else if (jet_origin == 0) // other stuff (taus probably)
+						fill_jet_distr(channel + selection + ("_tau_jets_distr_o"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else // other (light) quarks
+						fill_jet_distr(channel + selection + ("_tau_jets_distr_q"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 					}
 				continue;
 				}
