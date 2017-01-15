@@ -1988,13 +1988,17 @@ for(size_t f=0; f<urls.size();++f)
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
 						mc_decay += find_W_decay(W);
-						mc_decay += string("bar");
+						// mc_decay += string("bar");
+						// removing the difference between two branches
+						// to reduce the jobs produced for TTbar
 					}
 				}
 			}
 			// so, mc_decay will be populated with strings matching t decays
 			// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
 		}
+
+		std::sort(mc_decay.begin(), mc_decay.end()); // no dif between elmu and muel etc
 
 		if (debug) {
 			cout << "MC suffix " << mc_decay << " is found\n";

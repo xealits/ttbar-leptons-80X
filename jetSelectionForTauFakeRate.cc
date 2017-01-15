@@ -2086,14 +2086,45 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------- and require compatibilitiy of the event with the PD
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 
+		// in QCD selection the trigger jet is removed:
+		// find matching trig objects (dR < 0.3)
+		// if there is only 1 matching trig object with the name ~ HLT_PFJet40*
+		// skip the corresponding jet
+		// otherwise use all jets
+		// TODO: check this scheme, if it doesn't remove the 40GeV bump -- try removing closest matching jet
+		if (debug) cout << "Trigger objects from MiniAOD workbook" << endl;
+		//#include <InputTag.h>
+		fwlite::Handle< vector<pat::TriggerObjectStandAlone> > triggerObjectsHandle;
+		//myEvent.getByLabel( edm::InputTag("selectedPatTrigger"), triggerObjects );
+		triggerObjectsHandle.getByLabel( ev, "selectedPatTrigger" );
+
+		if (!triggerObjectsHandle.isValid())
+			{
+			cout << "!triggerObjectsHandle.isValid()" << endl;
+			}
+		vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+
+		// get TriggerNames (needed to "unpack" the trigger path names of TriggerObject
+		edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+		edm::InputTag * trigResultsTag;
+		//edm::TriggerResults trigger_results = ev.triggerResults ("HLT");
+
 		if (!tr.isValid ()){
 			//cout << "Trigger HLT2 is not valid, trying HLT" << endl;
 			tr = ev.triggerResultsByName ("HLT");
+			trigResultsTag = new edm::InputTag("TriggerResults","","HLT"); //make sure have correct process on MC
 			if (!tr.isValid ()){
 				cout << "Trigger HLT is not valid, exiting" << endl;
 				return false;
 				}
 			}
+		else
+			{
+			trigResultsTag = new edm::InputTag("TriggerResults","","HLT2"); //make sure have correct process on MC
+			}
+
+		ev.getByLabel(*trigResultsTag, trigResults);
+		const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
 
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
@@ -3612,32 +3643,6 @@ for(size_t f=0; f<urls.size();++f)
 		if (QCD_selection)
 			{
 			string selection("qcd");
-
-			// remove the trigger jet:
-			// find matching trig objects (dR < 0.3)
-			// if there is only 1 matching trig object with the name ~ HLT_PFJet40*
-			// skip the corresponding jet
-			// otherwise use all jets
-			// TODO: check this scheme, if it doesn't remove the 40GeV bump -- try removing closest matching jet
-			if (debug) cout << "Trigger objects from MiniAOD workbook" << endl;
-			//#include <InputTag.h>
-			fwlite::Handle< vector<pat::TriggerObjectStandAlone> > triggerObjectsHandle;
-			//myEvent.getByLabel( edm::InputTag("selectedPatTrigger"), triggerObjects );
-			triggerObjectsHandle.getByLabel( ev, "selectedPatTrigger" );
-
-			if (!triggerObjectsHandle.isValid())
-				{
-				cout << "!triggerObjectsHandle.isValid()" << endl;
-				}
-			vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
-
-			// get TriggerNames (needed to "unpack" the trigger path names of TriggerObject
-			edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
-			edm::InputTag trigResultsTag("TriggerResults","","HLT"); //make sure have correct process on MC
-			//edm::TriggerResults trigger_results = ev.triggerResults ("HLT");
-			ev.getByLabel(trigResultsTag, trigResults);
-			const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
-
 			/*
 			// to unpack the TriggerNames in the triggerobject:
 			pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
