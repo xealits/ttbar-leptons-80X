@@ -3652,6 +3652,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			pat::JetCollection probeJets;
 			pat::JetCollection probeJets_our_hlt;
+			std::vector<pat::TriggerObjectStandAlone> our_hlt_probeJets;
 			//for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
 			for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
 				{
@@ -3697,7 +3698,11 @@ for(size_t f=0; f<urls.size();++f)
 					// TODO: make it a global parameter for the whole program -- cfg.py parameter
 					is_our_hlt |= (obj.pathNames()[h].find("HLT_PFJet40") != std::string::npos);
 					}
-				if (is_our_hlt) probeJets_our_hlt.push_back(jet);
+				if (is_our_hlt)
+					{
+					probeJets_our_hlt.push_back(jet);
+					our_hlt_probeJets.push_back(obj)
+					}
 				else probeJets.push_back(jet);
 
 				//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
@@ -3711,7 +3716,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (probeJets_our_hlt.size() > 1)
 				for (int i = 0; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
 			*/
-			std::sort (probeJets_our_hlt.begin(),  probeJets_our_hlt.end(),  utils::sort_CandidatesByPt);
+			//std::sort (probeJets_our_hlt.begin(),  probeJets_our_hlt.end(),  utils::sort_CandidatesByPt);
+			//don't sort -- need max pt of matched trigger object
 			// now the highest-pT is first
 
 			// anyway, test it:
@@ -3758,13 +3764,32 @@ for(size_t f=0; f<urls.size();++f)
 			*/
 
 			// skip leading pt jet of our-hlt jets
-			if (probeJets_our_hlt.size() > 0)
+			if (probeJets_our_hlt.size() == 1)
 				{
-				// record the pT and eta distr of the skipped jet:
 				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
 				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[0].eta(), weight);
-				// all jets, except the highest pT (first one)
-				for (int i = 1; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
+				}
+			if (probeJets_our_hlt.size() > 1)
+				{
+				// find highest pt jet:
+				int highest_pt_n = 0;
+				double highest_pt = probeJets_our_hlt[0].pt();
+				for (int i = 1; i<probeJets_our_hlt.size(); i++)
+					{
+					if (probeJets_our_hlt[i].pt() > highest_pt)
+						{
+						highest_pt = probeJets_our_hlt[i].pt();
+						highest_pt_n = i;
+						}
+					}
+				// record the pT and eta distr of the skipped jet:
+				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[highest_pt_n].pt(),  weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[highest_pt_n].eta(), weight);
+				// all jets, except the highest pT
+				for (int i = 0; i<probeJets_our_hlt.size(); i++)
+					{
+					if (i != highest_pt_n) probeJets.push_back(probeJets_our_hlt[i]);
+					}
 				}
 
 
