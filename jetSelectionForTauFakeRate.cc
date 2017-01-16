@@ -3701,7 +3701,7 @@ for(size_t f=0; f<urls.size();++f)
 				if (is_our_hlt)
 					{
 					probeJets_our_hlt.push_back(jet);
-					our_hlt_probeJets.push_back(obj)
+					our_hlt_probeJets.push_back(obj);
 					}
 				else probeJets.push_back(jet);
 
@@ -3769,19 +3769,22 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
 				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[0].eta(), weight);
 				}
+
 			if (probeJets_our_hlt.size() > 1)
 				{
-				// find highest pt jet:
+				// find highest pt trig object:
 				int highest_pt_n = 0;
-				double highest_pt = probeJets_our_hlt[0].pt();
-				for (int i = 1; i<probeJets_our_hlt.size(); i++)
+				double highest_pt = our_hlt_probeJets[0].pt();
+				for (int i = 1; i<our_hlt_probeJets.size(); i++)
 					{
-					if (probeJets_our_hlt[i].pt() > highest_pt)
+					if (our_hlt_probeJets[i].pt() > highest_pt)
 						{
-						highest_pt = probeJets_our_hlt[i].pt();
+						highest_pt = our_hlt_probeJets[i].pt();
 						highest_pt_n = i;
 						}
 					}
+
+				// and skip the jet corresponding to this object
 				// record the pT and eta distr of the skipped jet:
 				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[highest_pt_n].pt(),  weight);
 				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[highest_pt_n].eta(), weight);
