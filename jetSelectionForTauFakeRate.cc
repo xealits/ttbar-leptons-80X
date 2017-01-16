@@ -3761,8 +3761,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (probeJets_our_hlt.size() > 0)
 				{
 				// record the pT and eta distr of the skipped jet:
-				fill_1d(hlt_channel + selection + string("skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
-				fill_1d(hlt_channel + selection + string("skipped_jet_eta"), 200, 0, 200,   probeJets_our_hlt[0].eta(), weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[0].eta(), weight);
 				// all jets, except the highest pT (first one)
 				for (int i = 1; i<probeJets_our_hlt.size(); i++) probeJets.push_back(probeJets_our_hlt[i]);
 				}

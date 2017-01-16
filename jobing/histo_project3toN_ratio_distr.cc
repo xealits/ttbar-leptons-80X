@@ -93,6 +93,9 @@ TH1D * h2 = (TH1D*) ((TH3D*) file->Get(distr2))->Project3D(proj);
 h1->Sumw2();
 h2->Sumw2();
 
+h1->Rebin(rebin_factor);
+h2->Rebin(rebin_factor);
+
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 
@@ -104,6 +107,7 @@ h3->Sumw2();
 h3->SetStats(0);      // No statistics on lower plot
 h3->Divide(h2);
 h3->SetMarkerStyle(21);
+
 
 /* the division takes care of bin units
 // normalize h3 for bin width

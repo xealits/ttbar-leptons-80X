@@ -71,6 +71,9 @@ extract_pileup:
 get_dtags:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
 
+get_job_dtags:
+	ls test/tests/outdir_"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*.root//' | sort | uniq > dtags_job_${job}
+
 selection_control_histos:
 	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
 	do                                                \
@@ -141,6 +144,12 @@ jet_origins:
 	# "dilep_passjets_jet_partonFlavour dilep_passjetsNbtag_jet_partonFlavour elel_passjets_jet_partonFlavour"
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
 	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_origins test/tests/outdir_"${job}"/merged-sets/ $$d ${channels}; done
+
+jet_weightflow:
+	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
+	# "dilep_passjets_jet_partonFlavour dilep_passjetsNbtag_jet_partonFlavour elel_passjets_jet_partonFlavour"
+	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
+	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_weightflow test/tests/outdir_"${job}"/merged-sets/ $$d; done
 
 .PHONY:fakerate_distr_plots
 fakerate_distr_plots:
