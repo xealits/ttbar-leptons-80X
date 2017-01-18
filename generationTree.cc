@@ -2006,36 +2006,58 @@ for(size_t f=0; f<urls.size();++f)
 		//* List of mother-daughters for all particles
 		//* TODO: make it into a separate function
 
-		if (debug) {
-			/*
-			 * Prints the nodes of decay tree:
-			 * 0 each GenParticle is printed (pdgId & status)
-			 * 1 with its' (possible) mothers (pdgId & status)
-			 * 2 and (possible) daughters
-			 *
-			 * N_part: particle_string id status [<- mom1_id status;[ mom2...]]
-			 * [	|-> daught1_id status;[ daught2...]]
-			 */
-			for(size_t i = 0; i < gen.size(); ++ i) {
-				const reco::GenParticle & p = gen[i];
-				int id = p.pdgId();
-				int st = p.status();
-				int n = p.numberOfDaughters();
-				cout << i << ": " << id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass() << endl;
-				if (p.numberOfMothers() != 0) cout << " <- " ;
-				for (int j = 0 ; j < p.numberOfMothers(); ++j) {
-					const reco::Candidate * mom = p.mother(j);
-					cout << " " << mom->pdgId() << " " << mom->status() << ";";
+		/*
+		 * Prints the nodes of decay tree:
+		 * 0 each GenParticle is printed (pdgId & status)
+		 * 1 with its' (possible) mothers (pdgId & status)
+		 * 2 and (possible) daughters
+		 *
+		 * N_part: particle_string id status [<- mom1_id status;[ mom2...]]
+		 * [	|-> daught1_id status;[ daught2...]]
+		 */
+
+		vector<LorentzVector> vis_taus;
+		for(size_t i = 0; i < gen.size(); ++ i) {
+			const reco::GenParticle & p = gen[i];
+			int id = p.pdgId();
+			int st = p.status();
+			int n_daughters = p.numberOfDaughters();
+			cout << i << ": " << id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass() << endl;
+			if (p.numberOfMothers() != 0) cout << " <- " ;
+			for (int j = 0 ; j < p.numberOfMothers(); ++j) {
+				const reco::Candidate * mom = p.mother(j);
+				cout << " " << mom->pdgId() << " " << mom->status() << ";";
+				}
+			cout << endl;
+			if (n_daughters>0) {
+				cout << "\t|-> " ;
+				for (int j = 0; j < n_daughters; ++j) {
+					const reco::Candidate * d = p.daughter( j );
+					cout << d->pdgId() << " " << d->status() << "; " ;
 					}
 				cout << endl;
-				if (n>0) {
-					cout << "\t|-> " ;
-					for (int j = 0; j < n; ++j) {
-						const reco::Candidate * d = p.daughter( j );
-						cout << d->pdgId() << " " << d->status() << "; " ;
-						}
-					cout << endl;
+				}
+
+			// if it is a final state tau
+			//  the status is 1 or 2
+			//  1. (final state, not decays)
+			//  2. (decayed or fragmented -- the case for tau)
+			if (fabs(id) == 15 && (st == 1 || st == 2))
+				{
+				cout << "A final state tau!" << endl;
+				cout << p << endl;
+				cout << "visible daughters:" << endl;
+				LorentzVector vis_ds(0,0,0,0);
+				for (int j = 0; j < n_daughters; ++j) {
+					const reco::Candidate * d = p.daughter(j);
+					unsigned int d_id = fabs(d->pdgId());
+					if (d_id == 12 || d_id == 14 || d_id == 16) continue;
+					cout << d->pdgId() << " (" << d->status() << ", " << d->numberOfDaughters() << "); " ;
+					vis_ds += d->p4();
 					}
+				vis_taus.push_back(vis_ds);
+				cout << endl << "sum = " << vis_ds << endl;
+				//cout << "sum = " << vis_ds.pt() << " " << vis_ds.eta() << endl;
 				}
 			}
 
@@ -2046,14 +2068,30 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<pat::JetCollection>jetsHandle;
 		jetsHandle.getByLabel(ev, "slimmedJets");
 		if(jetsHandle.isValid() ) jets = *jetsHandle;
+		else
+			{
+			cout << "ooops" << endl;
+			continue;
+			}
 
-		if (debug) {
-			cout << "partonFlavour and hadronFlavour of slimmedJets" << endl;
-			for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
+		cout << "partonFlavour, hadronFlavour, dR-match-to-taus of slimmedJets" << endl;
+		for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
+			{
+			pat::Jet& jet = jets[ijet];
+			cout << jet.partonFlavour() << "\t" << jet.hadronFlavour() << "\t";
+
+			double minDRtj (9999.);
+			unsigned int closest_tau = -1;
+			for (size_t i = 0; i < vis_taus.size(); i++)
 				{
-				pat::Jet& jet = jets[ijet];
-				cout << jet.partonFlavour() << "\t" << jet.hadronFlavour() << endl;
+				double jet_tau_distance = TMath::Min(minDRtj, reco::deltaR (jet, vis_taus[i]));
+				if (jet_tau_distance<minDRtj)
+					{
+					closest_tau = i;
+					minDRtj = jet_tau_distance;
+					}
 				}
+			cout << minDRtj << endl;
 			}
 
 		/*

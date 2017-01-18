@@ -148,7 +148,7 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 
 
 
-int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
+int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC)
 	{
 
 	for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
@@ -170,14 +170,28 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//const reco::GenParticle* jet_origin = jet.genParton();
 			// the ID should be in:
 			// jet_origin->pdgId();
-			//qcd_jet_origin->Fill(abs( jet.partonFlavour() ));
-			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   abs(jet.partonFlavour()), event_weight);
-			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
-			//fill_1d(channel + selection + ("_jet_genParton_pdgId"), 100, 0, 100,   abs(jet.genParton()->pdgId()), event_weight);
-			//qcd_jet_origin->Fill(abs( jet_origin->pdgId() ));
-			// qcd_taujet_origin
-
 			int jet_origin = abs(jet.partonFlavour());
+
+			// match to visible_gen_taus
+			// if partonFlavour == 0 and matches to a tau (dR < 1)
+			// add it as 15 --- tau
+
+			double minDRtj (9999.);
+			unsigned int closest_tau = -1;
+			for (size_t i = 0; i < visible_gen_taus.size(); i++)
+				{
+				double jet_tau_distance = TMath::Min(minDRtj, reco::deltaR (jet, visible_gen_taus[i]));
+				if (jet_tau_distance<minDRtj)
+					{
+					closest_tau = i;
+					minDRtj = jet_tau_distance;
+					}
+				}
+			if (jet_origin == 0 && (minDRtj < 1)) jet_origin = 15;
+
+			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
+			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
+
 			// per-jet-origin distrs
 			if (jet_origin == 21) // gluons
 				fill_jet_distr(channel + selection + ("_jets_distr_g"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
@@ -185,6 +199,8 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 				fill_jet_distr(channel + selection + ("_jets_distr_b"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			else if (jet_origin == 0) // other stuff (taus probably)
 				fill_jet_distr(channel + selection + ("_jets_distr_o"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 15) // the matched to gen_taus (dR < 1) jets
+				fill_jet_distr(channel + selection + ("_jets_distr_t"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			else // other (light) quarks
 				fill_jet_distr(channel + selection + ("_jets_distr_q"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			}

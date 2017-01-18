@@ -1725,6 +1725,38 @@ for(size_t f=0; f<urls.size();++f)
 		genHandle.getByLabel(ev, "prunedGenParticles");
 		if(genHandle.isValid() ) gen = *genHandle;
 
+                vector<LorentzVector> visible_gen_taus;
+		if (isMC)
+			for(size_t i = 0; i < gen.size(); ++ i)
+				{
+				const reco::GenParticle & p = gen[i];
+				unsigned int id = fabs(p.pdgId());
+				int st = p.status();
+				int n_daughters = p.numberOfDaughters();
+
+				// if it is a final state tau
+				//  the status is 1 or 2
+				//  1. (final state, not decays)
+				//  2. (decayed or fragmented -- the case for tau)
+				if (id == 15 && st == 1)
+					visible_gen_taus.push_back(p.p4()); 
+				else if (id == 15 && st == 2)
+					{
+					// it's a final state tau
+					// select its' daughters, skipping neutrinos
+					// add their momenta -- use the sum as a visible_gen_tau
+					LorentzVector vis_ds(0,0,0,0);
+					for (int j = 0; j < n_daughters; ++j)
+						{
+						const reco::Candidate * d = p.daughter(j);
+						unsigned int d_id = fabs(d->pdgId());
+						if (d_id == 12 || d_id == 14 || d_id == 16) continue;
+						vis_ds += d->p4();
+						}
+					visible_gen_taus.push_back(vis_ds); 
+					}
+				}
+
 		fwlite::Handle < LHEEventProduct > lheEPHandle;
 		lheEPHandle.getByLabel (ev, "externalLHEProducer");
 
@@ -3555,7 +3587,7 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: make only 1 loop through jets,
 			// checking closeness to taus along the way
 
-			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
+			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 			/*
 			// loop through all jets,
@@ -3774,12 +3806,24 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				// find highest pt trig object:
 				int highest_pt_n = 0;
+				/*
 				double highest_pt = our_hlt_probeJets[0].pt();
 				for (int i = 1; i<our_hlt_probeJets.size(); i++)
 					{
 					if (our_hlt_probeJets[i].pt() > highest_pt)
 						{
 						highest_pt = our_hlt_probeJets[i].pt();
+						highest_pt_n = i;
+						}
+					}
+				*/
+				// returning back to removing highest-reco-pT jet
+				double highest_pt = probeJets_our_hlt[0].pt();
+				for (int i = 1; i<probeJets_our_hlt.size(); i++)
+					{
+					if (probeJets_our_hlt[i].pt() > highest_pt)
+						{
+						highest_pt = probeJets_our_hlt[i].pt();
 						highest_pt_n = i;
 						}
 					}
@@ -3823,7 +3867,7 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d(string(hlt_channel + "qcd_selection_nselTausNoLepNoTau"), 20, 0, 20,   selTausNoLepNoJet.size(), weight);
 
 			//record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
-			record_jets_fakerate_distrs(hlt_channel, selection, probeJets, selTausNoLep, weight, isMC);
+			record_jets_fakerate_distrs(hlt_channel, selection, probeJets, selTausNoLep, visible_gen_taus, weight, isMC);
 			//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus)
 			}
 
