@@ -2050,7 +2050,7 @@ for(size_t f=0; f<urls.size();++f)
 
 				pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
 
-				cout << ijet << "jet " << jet.pt() << closest_trigger_object_i << " obj " << obj.pt() << " dist " << minDRtj << " col " << obj.collection() << " ids ";
+				cout << ijet << "jet " << jet.pt() << " (" << jet.energy() << ") " << closest_trigger_object_i << " obj " << obj.pt() << " (" << obj.energy() << ") " << " dist " << minDRtj << " col " << obj.collection() << " ids ";
 				for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
 
 				cout << " pathnames " ;

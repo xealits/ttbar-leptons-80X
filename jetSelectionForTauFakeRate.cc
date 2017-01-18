@@ -3805,37 +3805,52 @@ for(size_t f=0; f<urls.size();++f)
 			if (probeJets_our_hlt.size() > 1)
 				{
 				// find highest pt trig object:
-				int highest_pt_n = 0;
+				int leading_jet_n = 0;
 				/*
-				double highest_pt = our_hlt_probeJets[0].pt();
+				double leading_jet = our_hlt_probeJets[0].pt();
 				for (int i = 1; i<our_hlt_probeJets.size(); i++)
 					{
-					if (our_hlt_probeJets[i].pt() > highest_pt)
+					if (our_hlt_probeJets[i].pt() > leading_jet)
 						{
-						highest_pt = our_hlt_probeJets[i].pt();
-						highest_pt_n = i;
+						leading_jet = our_hlt_probeJets[i].pt();
+						leading_jet_n = i;
 						}
 					}
 				*/
+
 				// returning back to removing highest-reco-pT jet
-				double highest_pt = probeJets_our_hlt[0].pt();
+				/*
+				double leading_jet = probeJets_our_hlt[0].pt();
 				for (int i = 1; i<probeJets_our_hlt.size(); i++)
 					{
-					if (probeJets_our_hlt[i].pt() > highest_pt)
+					if (probeJets_our_hlt[i].pt() > leading_jet)
 						{
-						highest_pt = probeJets_our_hlt[i].pt();
-						highest_pt_n = i;
+						leading_jet = probeJets_our_hlt[i].pt();
+						leading_jet_n = i;
+						}
+					}
+				*/
+
+				// removing highest-reco-E jet
+				double leading_jet = probeJets_our_hlt[0].energy();
+				for (int i = 1; i<probeJets_our_hlt.size(); i++)
+					{
+					if (probeJets_our_hlt[i].energy() > leading_jet)
+						{
+						leading_jet = probeJets_our_hlt[i].energy();
+						leading_jet_n = i;
 						}
 					}
 
 				// and skip the jet corresponding to this object
 				// record the pT and eta distr of the skipped jet:
-				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[highest_pt_n].pt(),  weight);
-				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[highest_pt_n].eta(), weight);
-				// all jets, except the highest pT
+				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[leading_jet_n].pt(),  weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_energy"),  200, 0, 200,   probeJets_our_hlt[leading_jet_n].energy(),  weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[leading_jet_n].eta(), weight);
+				// all jets, except the leading jet (considered the main trigger jet)
 				for (int i = 0; i<probeJets_our_hlt.size(); i++)
 					{
-					if (i != highest_pt_n) probeJets.push_back(probeJets_our_hlt[i]);
+					if (i != leading_jet_n) probeJets.push_back(probeJets_our_hlt[i]);
 					}
 				}
 
