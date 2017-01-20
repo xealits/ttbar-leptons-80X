@@ -84,6 +84,14 @@ selection_control_histos:
 	stacked_histo_distr ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
+stacked_fakerate_histos:
+	for h in HLTjetmu_wjets_jets_distr;  \
+	do                                                           \
+	stacked_histo_project3toX_distr ${lumi} $$h x 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_project3toX_distr ${lumi} $$h y 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_project3toX_distr ${lumi} $$h z 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+	#jobing/stacked_histo_project3toX_distr.cc
 
 done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
