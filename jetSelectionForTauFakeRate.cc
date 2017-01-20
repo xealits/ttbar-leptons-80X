@@ -3812,8 +3812,9 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (probeJets_our_hlt.size() > 1)
 				{
-				// find highest pt trig object:
+				// find "leading" trig object (the one to remove):
 				int leading_jet_n = 0;
+
 				/*
 				double leading_jet = our_hlt_probeJets[0].pt();
 				for (int i = 1; i<our_hlt_probeJets.size(); i++)
@@ -3827,7 +3828,6 @@ for(size_t f=0; f<urls.size();++f)
 				*/
 
 				// returning back to removing highest-reco-pT jet
-				/*
 				double leading_jet = probeJets_our_hlt[0].pt();
 				for (int i = 1; i<probeJets_our_hlt.size(); i++)
 					{
@@ -3837,9 +3837,10 @@ for(size_t f=0; f<urls.size();++f)
 						leading_jet_n = i;
 						}
 					}
-				*/
 
 				// removing highest-reco-E jet
+				// worse then highest-reco-pT
+				/*
 				double leading_jet = probeJets_our_hlt[0].energy();
 				for (int i = 1; i<probeJets_our_hlt.size(); i++)
 					{
@@ -3849,6 +3850,7 @@ for(size_t f=0; f<urls.size();++f)
 						leading_jet_n = i;
 						}
 					}
+				*/
 
 				// and skip the jet corresponding to this object
 				// record the pT and eta distr of the skipped jet:
