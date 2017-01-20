@@ -2114,8 +2114,16 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("weightflow_mumu"), 300, 0, 300, 5, weight);
 		*/
 
-		// --------------------------------------------- apply trigger
+		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
+
+		string jetHLT("HLT_AK4PFJet30_v*"), // jetHLT("HLT_PFJet40_v*"),
+			muHLT_MC1("HLT_IsoMu24_v2"), muHLT_MC2("HLT_IsoTkMu24_v2"),
+			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
+
+		// Spring16 MC has these couple issues with HLT
+		// some sets don't have it at all -- noHLT (madgraf QCD, DY)
+		// some have it, but under HLT2 process -- reHLT (aMCatNLO WJets, powheg TTbar)
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 
 		// in QCD selection the trigger jet is removed:
@@ -2184,12 +2192,12 @@ for(size_t f=0; f<urls.size();++f)
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 			//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
-			JetHLTTrigger = utils::passTriggerPatterns(tr, "HLT_PFJet40_v*");
+			JetHLTTrigger = utils::passTriggerPatterns(tr, jetHLT);
 			MuonHLTTrigger = (isMC ?
 				//utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*");
-				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
+				utils::passTriggerPatterns (tr, muHLT_MC1, muHLT_MC2) : // tecommended inn ttbar trig for reHLT
 				//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*"));
+				utils::passTriggerPatterns (tr, muHLT_Data1, muHLT_Data2));
 			}
 
 		// if (!(JetHLTTrigger || MuonHLTTrigger)) continue; // No orthogonalization -- run on only 1 trigger type of datasets

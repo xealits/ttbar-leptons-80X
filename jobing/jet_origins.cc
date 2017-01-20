@@ -286,7 +286,7 @@ for(std::vector<TString>::iterator ch = channels.begin(); ch != channels.end(); 
 		continue;
 		}
 	*/
-	cout << "," << *ch << "_o," << *ch << "_b," << *ch << "_g," << *ch << "_a";
+	cout << "," << *ch << "_o," << *ch << "_t," << *ch << "_b," << *ch << "_g," << *ch << "_a";
 	}
 cout << endl;
 
@@ -297,14 +297,14 @@ for(std::vector<TString>::iterator ch = channels.begin(); ch != channels.end(); 
 	if (!file->GetListOfKeys()->Contains(*ch))
 		{
 		//cerr << "no " << *ch << endl;
-		cout << ",NA,NA,NA,NA";
+		cout << ",NA,NA,NA,NA,NA";
 		continue;
 		}
 
 	TH1D * jet_origins = (TH1D*) file->Get(*ch);
 
 	//Double_t gluons_to_all = jet_origins->GetBinContent(22) / jet_origins->Integral();
-	cout << "," << jet_origins->GetBinContent(1) << "," << jet_origins->GetBinContent(6) << "," << jet_origins->GetBinContent(22) << "," << jet_origins->Integral();
+	cout << "," << jet_origins->GetBinContent(1) << "," << jet_origins->GetBinContent(16) << "," << jet_origins->GetBinContent(6) << "," << jet_origins->GetBinContent(22) << "," << jet_origins->Integral();
 	}
 cout << endl;
 
