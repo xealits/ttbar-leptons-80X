@@ -2519,8 +2519,49 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 5, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 5, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 5, 1);
-		// --------------------------------------------- apply trigger
+
+		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
+
+		string //jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
+			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
+			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*"),
+			elHLT_MC("HLT_Ele32_eta2p1_WPTight_Gsf_v8"), elHLT_Data("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+
+			/* more triggers:
+			for Run2016B,C, D, E, F and G 25 ns data with RunIISpring16reHLT80 MC (7th October Update)
+			https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger#Run2016B_C_D_E_F_and_G_25_ns_dat
+			          Data                              MC
+			Muon      HLT_Iso(Tk)Mu24_v*                HLT_Iso(Tk)Mu24_v2
+			Electron  HLT_Ele32_eta2p1_WPTight_Gsf_v*   HLT_Ele32_eta2p1_WPTight_Gsf_v3 
+			*/
+
+			/*
+			// 2015, 76X MC
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
+			// 2016, 80X MC
+			//true : // for noHLT MC
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // recommended inn ttbar trig for reHLT
+			//utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v3") : // recommended inn ttbar trig for reHLT Spring 16 MC
+			utils::passTriggerPatterns(tr, "") : // recommended inn ttbar trig for Summer16 MC
+			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
+			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
+			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
+			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
+			utils::passTriggerPatterns(tr, "*")
+
+			// 2015, 76X MC
+			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
+			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
+			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
+			// 2016, 80X MC
+			//true : // for noHLT MC
+			//utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // recommended in ttbar trig for reHLT Spring16 MC
+			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v4", "HLT_IsoTkMu24_v4") : // recommended in ttbar trig Summer16 MC
+			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
+			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*")
+			*/
+
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 		if (!tr.isValid ()){
 			if(debug){
@@ -2592,38 +2633,12 @@ for(size_t f=0; f<urls.size();++f)
 		else if (tr.isValid())
 			{
 			eTrigger =    ( isMC ?
-			/* more triggers:
-			for Run2016B,C, D, E, F and G 25 ns data with RunIISpring16reHLT80 MC (7th October Update)
-			https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger#Run2016B_C_D_E_F_and_G_25_ns_dat
-			          Data                              MC
-			Muon      HLT_Iso(Tk)Mu24_v*                HLT_Iso(Tk)Mu24_v2
-			Electron  HLT_Ele32_eta2p1_WPTight_Gsf_v*   HLT_Ele32_eta2p1_WPTight_Gsf_v3 
-			*/
-
-			// 2015, 76X MC
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
-			// 2016, 80X MC
-			//true : // for noHLT MC
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // recommended inn ttbar trig for reHLT
-			utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v3") : // recommended inn ttbar trig for reHLT
-			// TODO: for Summer16 MC datasets utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v8") : // recommended inn ttbar trig for reHLT
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
-			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
-			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
-			 utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v*") );
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") ); // Using no-reHLT Data for now
+			utils::passTriggerPatterns(tr, elHLT_MC) :
+			utils::passTriggerPatterns(tr, elHLT_Data)
+			);
 			muTrigger =   ( isMC ?
-			// 2015, 76X MC
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
-			// 2016, 80X MC
-			//true : // for noHLT MC
-			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
-			// TODO: Summer16 MC? utils::passTriggerPatterns (tr, "HLT_IsoMu24_v4", "HLT_IsoTkMu24_v4") : // tecommended inn ttbar trig for reHLT
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*")
+			utils::passTriggerPatterns (tr, muHLT_MC1, muHLT_MC2) :
+			utils::passTriggerPatterns (tr, muHLT_Data1, muHLT_Data2)
 			);
 			}
 		else return 233;

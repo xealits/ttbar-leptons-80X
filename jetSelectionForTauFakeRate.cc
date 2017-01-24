@@ -2118,7 +2118,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------- and require compatibilitiy of the event with the PD
 
 		string jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
-			muHLT_MC1("HLT_IsoMu24_v2"), muHLT_MC2("HLT_IsoTkMu24_v2"),
+			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
 
 		// Spring16 MC has these couple issues with HLT

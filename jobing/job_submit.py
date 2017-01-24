@@ -15,6 +15,8 @@ if __name__ == "__main__":
     parser.add_argument("cfg",      help="the filename (relational path) of the cfg.py template for the jobs")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
+    parser.add_argument("--no-submit",  help="don't submit the generated jobs",
+        action = "store_true")
     parser.add_argument("-d", "--dsets-dir",  help="use local directory for dsets files")
     parser.add_argument("--tausf",  help="turn on tau ID efficiency SF in cfg.py of jobs",
         action = "store_true")
@@ -203,9 +205,12 @@ if __name__ == "__main__":
             #print("No submit in the test run.")
             #print("printing the bsubs instead")
 
-            for bsub in dset_bsubs:
-                #print(bsub)
-                print(commands.getstatusoutput(bsub))
+            if args.no_submit:
+                print("NO SUBMIT, as requested on command line.")
+            else:
+                for bsub in dset_bsubs:
+                    #print(bsub)
+                    print(commands.getstatusoutput(bsub))
 
 
 
