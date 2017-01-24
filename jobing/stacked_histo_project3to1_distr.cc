@@ -27,30 +27,6 @@
 using namespace std;
 
 
-// nick and colour
-std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
-	{
-	if (dtag.Contains("Data")) return std::make_pair("data", kWhite);
-	else if(dtag.Contains("DYJets")) return std::make_pair("dyjets", kGray);
-	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("wjets", kRed+1);
-	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return std::make_pair("dibosons", kCyan);
-	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return std::make_pair("singletop", kAzure);
-	else if(dtag.Contains("TT"))
-		{
-		if (dtag.Contains("qqbar")) return std::make_pair("tt_jj", kGreen+4);
-		else if (dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return std::make_pair("tt_lj", kGreen+3);
-		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
-		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
-		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
-		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar")) return std::make_pair("tt_et", kOrange+4);
-		else if (dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_mt", kOrange+1);
-		else return std::make_pair("tt_other", kYellow+1);
-		}
-	else if(dtag.Contains("QCD")) return std::make_pair("qcd", kViolet);
-	else return std::make_pair("other", kBlack);
-
-	}
-
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
