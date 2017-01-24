@@ -2117,7 +2117,7 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
-		string jetHLT("HLT_AK4PFJet30_v*"), // jetHLT("HLT_PFJet40_v*"),
+		string jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
 			muHLT_MC1("HLT_IsoMu24_v2"), muHLT_MC2("HLT_IsoTkMu24_v2"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
 
