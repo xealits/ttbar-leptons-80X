@@ -1743,6 +1743,11 @@ for(size_t f=0; f<urls.size();++f)
 		bool JetHLTTrigger = false;
 		bool MuonHLTTrigger = false;
 
+		// TRIGGER
+		string jetHLT("HLT_PFJet40_v"),
+			muHLT1_MC("HLT_IsoMu24_v4"), muHLT2_MC("HLT_IsoTkMu24_v4"),
+			muHLT1_Data("HLT_IsoMu24_v*"), muHLT2_Data("HLT_IsoTkMu24_v*");
+
 		if (isNoHLT)
 			{
 			JetHLTTrigger = true;
@@ -1753,7 +1758,7 @@ for(size_t f=0; f<urls.size();++f)
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 			//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
-			JetHLTTrigger = utils::passTriggerPatterns(tr, "HLT_PFJet40_v*");
+			JetHLTTrigger = utils::passTriggerPatterns(tr, jetHLT + "*"); // NOTICE: the pattern matching wild card -- *
 			/* PFJet40 is the lowest value
 			 * there are also
 			 * HLT_AK4CaloJet30_v4
@@ -1765,9 +1770,14 @@ for(size_t f=0; f<urls.size();++f)
 			 */
 			MuonHLTTrigger = (isMC ?
 				//utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*");
-				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // tecommended inn ttbar trig for reHLT
+				utils::passTriggerPatterns (tr, muHLT1_MC, muHLT2_MC) : // tecommended inn ttbar trig for reHLT
 				//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-				utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*"));
+				utils::passTriggerPatterns (tr, muHLT1_Data, muHLT2_Data));
+			}
+		else
+			{
+			cout << "HLT is invalid" << endl;
+			continue;
 			}
 
 		string hlt_channel("");
@@ -2053,13 +2063,18 @@ for(size_t f=0; f<urls.size();++f)
 				cout << ijet << "jet " << jet.pt() << " (" << jet.energy() << ") " << closest_trigger_object_i << " obj " << obj.pt() << " (" << obj.energy() << ") " << " dist " << minDRtj << " col " << obj.collection() << " ids ";
 				for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
 
-				cout << " pathnames " ;
+				cout << " pathnames" ;
 				// Exception Message:
 				// This TriggerObjectStandAlone object has packed trigger path names.
 				// Before accessing path names you must call unpackPathNames with an edm::TriggerNames object.
 				// You can get the latter from the edm::Event or fwlite::Event and the TriggerResults
 				obj.unpackPathNames(trigNames);
-				for (unsigned h = 0; h < obj.pathNames().size(); ++h) std::cout << " " << obj.pathNames()[h];
+				cout << " (searching " << jetHLT << ")";
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+					{
+					std::cout << " " << obj.pathNames()[h];
+					if ((obj.pathNames()[h]).find(jetHLT) != std::string::npos) cout << " (OUR HLT)";
+					}
 				// HLT_PFJet40_v6
 				cout << endl;
 

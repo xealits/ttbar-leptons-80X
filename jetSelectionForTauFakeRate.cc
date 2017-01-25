@@ -2120,7 +2120,7 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
-		string jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
+		string jetHLT("HLT_PFJet40_v"), // jetHLT("HLT_AK4PFJet30_v*"),
 			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
 
@@ -2195,7 +2195,7 @@ for(size_t f=0; f<urls.size();++f)
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_Jet30_v*") );
 			//bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") );
 			// bool hltTrigger( utils::passTriggerPatterns(tr, "HLT_PFJet40_v*", "HLT_IsoMu22*", "HLT_IsoTkMu22*") );
-			JetHLTTrigger = utils::passTriggerPatterns(tr, jetHLT);
+			JetHLTTrigger = utils::passTriggerPatterns(tr, jetHLT + "*"); // NOTICE the pattern-matching wild card *
 			MuonHLTTrigger = (isMC ?
 				//utils::passTriggerPatterns(tr, "HLT_IsoMu22*", "HLT_IsoTkMu22*");
 				utils::passTriggerPatterns (tr, muHLT_MC1, muHLT_MC2) : // tecommended inn ttbar trig for reHLT
@@ -3699,6 +3699,8 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			string hlt_channel = hlt_channels[i];
 			string selection("qcd");
+
+			// In QCD selection we need to skip the biasing triggered jet
 			/*
 			// to unpack the TriggerNames in the triggerobject:
 			pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
@@ -3752,7 +3754,7 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// HLT_PFJet40_v*
 					// TODO: make it a global parameter for the whole program -- cfg.py parameter
-					is_our_hlt |= (obj.pathNames()[h].find("HLT_PFJet40") != std::string::npos);
+					is_our_hlt |= (obj.pathNames()[h].find(jetHLT) != std::string::npos);
 					}
 				if (is_our_hlt)
 					{

@@ -155,7 +155,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	// hack to merge HLTmu & HLTjetmu
-	//string distr_selections[2] = {"HLTmu_qcd", "HLTjetmu_qcd"};
+	//string distr_selections[2] = {"HLTmu_wjets", "HLTjetmu_wjets"};
 	//for (int i = 0; i<2; i++){
 	//TString distr_selection(distr_selections[i]);
 	if (dtag.Contains("Data"))
@@ -338,6 +338,14 @@ hs_data->Draw("e p");
 hs->Draw("same");
 hs_data->Draw("e p same"); // to draw it _over_ MC
 
+bool set_logy = false;
+
+if (projection == string("x") || projection == string("z"))
+	set_logy = true;
+
+if (set_logy)
+	cst->SetLogy();
+
 leg->Draw();
 
 //MC_stack_124->GetXaxis()->SetTitle("#rho");
@@ -349,7 +357,7 @@ hs_data->SetXTitle(distr_selection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "" ) + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);
