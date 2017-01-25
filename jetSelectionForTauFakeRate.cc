@@ -3708,6 +3708,32 @@ for(size_t f=0; f<urls.size();++f)
 			// maybe one can loop and unpack all names beforehand?
 			*/
 
+			if (debug)
+				cout << "selecting " << jetHLT << " trigger objects" << endl;
+
+			// select only our_hlt_trigger_objects
+			std::vector<pat::TriggerObjectStandAlone> our_hlt_trigger_objects;
+			for (size_t i = 0; i < trig_objs.size(); i++)
+				{
+				pat::TriggerObjectStandAlone& obj = trig_objs[i];
+				obj.unpackPathNames(trigNames);
+
+				bool is_our_hlt = false;
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+					{
+					// HLT_PFJet40_v
+					is_our_hlt |= (obj.pathNames()[h].find(jetHLT) != std::string::npos);
+					}
+
+				if (is_our_hlt)
+					our_hlt_trigger_objects.push_back(obj);
+				}
+
+			// if a jet matches to our_hlt_trigger_objects add it to separate collection
+			// afterwards there is a procedure removing the "leading jet" from this collection
+			// thus the "leading triggering jet" is removed
+			// --- it's done due to presence of many triggering jets (matching to our jetHLT)
+			//     and no 1 jet can be removed simply due to it matching to trigger
 			pat::JetCollection probeJets;
 			pat::JetCollection probeJets_our_hlt;
 			std::vector<pat::TriggerObjectStandAlone> our_hlt_probeJets;
@@ -3719,9 +3745,9 @@ for(size_t f=0; f<urls.size();++f)
 				// find trigger object closest to the jet
 				double minDRtj (9999.);
 				int closest_trigger_object_i = 0;
-				for (size_t i = 0; i < trig_objs.size(); i++)
+				for (size_t i = 0; i < our_hlt_trigger_objects.size(); i++)
 					{
-					double jet_trig_distance = TMath::Min(minDRtj, reco::deltaR (jet, trig_objs[i]));
+					double jet_trig_distance = TMath::Min(minDRtj, reco::deltaR (jet, our_hlt_trigger_objects[i]));
 					if (jet_trig_distance<minDRtj)
 						{
 						closest_trigger_object_i = i;
@@ -3736,7 +3762,17 @@ for(size_t f=0; f<urls.size();++f)
 					probeJets.push_back(jet);
 					continue;
 					}
+				// in case there are no our trigger objects
+				// this will catch all jets
 
+				// the jet matches to an object of our trigger within minimum dR
+				// save the jet
+				// and also save the matching object -- in case it is needed for "leading" jet procedure
+				pat::TriggerObjectStandAlone& obj = our_hlt_trigger_objects[closest_trigger_object_i];
+				probeJets_our_hlt.push_back(jet);
+				our_hlt_probeJets.push_back(obj);
+
+				// TODO: remove this outdated comment
 				// jets that match to trigger objects
 				// are probeJets, if the trigger objects don't correspond to the chosen HLT trigger
 				// jets matching to the chosen HLT trigger will bias the distributions
@@ -3745,26 +3781,6 @@ for(size_t f=0; f<urls.size();++f)
 				// now the procedure is:
 				//   skip the jet if it is only 1 matching to HLT
 				//   if many jets match to HLT -- add them all to probeJets
-				pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
-				obj.unpackPathNames(trigNames);
-
-				// test if the matching trigger object corresponds to our HLT
-				bool is_our_hlt = false;
-				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
-					{
-					// HLT_PFJet40_v*
-					// TODO: make it a global parameter for the whole program -- cfg.py parameter
-					is_our_hlt |= (obj.pathNames()[h].find(jetHLT) != std::string::npos);
-					}
-				if (is_our_hlt)
-					{
-					probeJets_our_hlt.push_back(jet);
-					our_hlt_probeJets.push_back(obj);
-					}
-				else probeJets.push_back(jet);
-
-				//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				//fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 				}
 
 			// if there is only 1 jet matching to our HLT -- skip it
@@ -3825,6 +3841,7 @@ for(size_t f=0; f<urls.size();++f)
 			if (probeJets_our_hlt.size() == 1)
 				{
 				fill_1d(hlt_channel + selection + string("_skipped_jet_pt"),  200, 0, 200,   probeJets_our_hlt[0].pt(),  weight);
+				fill_1d(hlt_channel + selection + string("_skipped_jet_energy"),  200, 0, 200,   probeJets_our_hlt[0].energy(),  weight);
 				fill_1d(hlt_channel + selection + string("_skipped_jet_eta"), 200, -2.5, 2.5,   probeJets_our_hlt[0].eta(), weight);
 				}
 

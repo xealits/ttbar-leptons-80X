@@ -1983,7 +1983,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			cout << "!triggerObjectsHandle.isValid()" << endl;
 			}
-		vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+		vector<pat::TriggerObjectStandAlone> all_trig_objs = *triggerObjectsHandle;
 
 
 		if (debug)
@@ -1993,11 +1993,11 @@ for(size_t f=0; f<urls.size();++f)
 			if (triggerObjectsHandle.isValid())
 				{
 				cout << "The trig obj handle is valid" << endl;
-				vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
-				cout << "size of the vector = " << trig_objs.size() << endl;
-				for (int i=0; i<trig_objs.size(); i++)
+				vector<pat::TriggerObjectStandAlone> all_trig_objs = *triggerObjectsHandle;
+				cout << "size of the vector = " << all_trig_objs.size() << endl;
+				for (int i=0; i<all_trig_objs.size(); i++)
 					{
-					pat::TriggerObjectStandAlone& obj = trig_objs[i];
+					pat::TriggerObjectStandAlone& obj = all_trig_objs[i];
 					cout << "pbj pt, eta, phi: " << obj.pt() << " " << obj.eta() << " " << obj.phi() << endl;
 					cout << "obj collection: " << obj.collection() << endl;
 					for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
@@ -2022,68 +2022,84 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		*/
 
-		if (debug)
+
+		/*
+		 * Select trigger objects, which correspond to our HLT.
+		 * Later match in dR only to them -- don't stick to other objects, close by dR.
+		 */
+		vector<pat::TriggerObjectStandAlone> our_HLT_trigger_objects;
+		for (size_t i = 0; i < all_trig_objs.size(); i++)
 			{
-			/*
-			 * Print closest of trig_objs for each jet
-			 * the distance (reco::deltaR) and the object collection and filterIds
-			 * 
-			 */
-			//pat::JetCollection selJetsNoLep;
-			for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
-				{
-				pat::Jet& jet = selJets[ijet];
+			pat::TriggerObjectStandAlone& obj = all_trig_objs[i];
+			obj.unpackPathNames(trigNames);
 
-				double minDRtj (9999.);
+			bool is_our_hlt = false;
+                        for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+                                {
+				is_our_hlt |= (obj.pathNames()[h].find(jetHLT) != std::string::npos);
+                                }
 
-				/*
-				for (int i=0; i<trig_objs.size(); i++)
-					{
-					pat::TriggerObjectStandAlone& obj = trig_objs[i];
-					cout << "pbj pt, eta, phi: " << obj.pt() << " " << obj.eta() << " " << obj.phi() << endl;
-					cout << "obj collection: " << obj.collection() << endl;
-					for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
-					cout << endl;
-					}
-				*/
-
-				int closest_trigger_object_i = 0;
-				for (size_t i = 0; i < trig_objs.size(); i++)
-					{
-					double jet_trig_distance = TMath::Min(minDRtj, reco::deltaR (jet, trig_objs[i]));
-					if (jet_trig_distance<minDRtj)
-						{
-						closest_trigger_object_i = i;
-						minDRtj = jet_trig_distance;
-						}
-					}
-
-				pat::TriggerObjectStandAlone& obj = trig_objs[closest_trigger_object_i];
-
-				cout << ijet << "jet " << jet.pt() << " (" << jet.energy() << ") " << closest_trigger_object_i << " obj " << obj.pt() << " (" << obj.energy() << ") " << " dist " << minDRtj << " col " << obj.collection() << " ids ";
-				for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
-
-				cout << " pathnames" ;
-				// Exception Message:
-				// This TriggerObjectStandAlone object has packed trigger path names.
-				// Before accessing path names you must call unpackPathNames with an edm::TriggerNames object.
-				// You can get the latter from the edm::Event or fwlite::Event and the TriggerResults
-				obj.unpackPathNames(trigNames);
-				cout << " (searching " << jetHLT << ")";
-				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
-					{
-					std::cout << " " << obj.pathNames()[h];
-					if ((obj.pathNames()[h]).find(jetHLT) != std::string::npos) cout << " (OUR HLT)";
-					}
-				// HLT_PFJet40_v6
-				cout << endl;
-
-				//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				//fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-				}
-
+			if (is_our_hlt) our_HLT_trigger_objects.push_back(obj);
 			}
 
+		cout << "found " << our_HLT_trigger_objects.size() << " our trigger objects" << endl;
+
+		/*
+		 * Print closest of our_HLT_trigger_objects for each jet
+		 * the distance (reco::deltaR) and the object collection and filterIds
+		 * 
+		 */
+		//pat::JetCollection selJetsNoLep;
+		for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
+			{
+			pat::Jet& jet = selJets[ijet];
+			cout << ijet << "jet " << jet.pt() << " (" << jet.energy() << ") ";
+
+			if (our_HLT_trigger_objects.size() == 0)
+				{
+				cout << "(no our trigger objects " << jetHLT << ")" << endl;
+				continue;
+				}
+
+			double minDRtj (9999.);
+
+			int closest_trigger_object_i = 0;
+			for (size_t i = 0; i < our_HLT_trigger_objects.size(); i++)
+				{
+				pat::TriggerObjectStandAlone& obj = our_HLT_trigger_objects[i];
+				obj.unpackPathNames(trigNames);
+				if (obj.pathNames().size() == 0) continue; // NOTICE: don't match to no-pathname trigger objects
+				double jet_trig_distance = TMath::Min(minDRtj, reco::deltaR (jet, obj));
+				if (jet_trig_distance<minDRtj)
+					{
+					closest_trigger_object_i = i;
+					minDRtj = jet_trig_distance;
+					}
+				}
+
+			pat::TriggerObjectStandAlone& obj = our_HLT_trigger_objects[closest_trigger_object_i];
+
+			cout << closest_trigger_object_i << " obj " << obj.pt() << " (" << obj.energy() << ") " << " dist " << minDRtj << " col " << obj.collection() << " ids ";
+			for (unsigned h = 0; h < obj.filterIds().size(); ++h) std::cout << " " << obj.filterIds()[h];
+
+			cout << " pathnames" ;
+			// Exception Message:
+			// This TriggerObjectStandAlone object has packed trigger path names.
+			// Before accessing path names you must call unpackPathNames with an edm::TriggerNames object.
+			// You can get the latter from the edm::Event or fwlite::Event and the TriggerResults
+			obj.unpackPathNames(trigNames);
+			cout << " (searching " << jetHLT << ")";
+			for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+				{
+				std::cout << " " << obj.pathNames()[h];
+				if ((obj.pathNames()[h]).find(jetHLT) != std::string::npos) cout << " (OUR HLT)";
+				}
+			// HLT_PFJet40_v6
+			cout << endl;
+
+			//fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			//fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			}
 
 		} // End single file event loop
 

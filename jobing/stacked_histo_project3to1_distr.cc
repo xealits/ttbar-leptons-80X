@@ -30,7 +30,7 @@ using namespace std;
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = " lumi distr projection rebin_factor dir dtags";
+char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor dir dtags";
 if (argc < 5)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
@@ -39,12 +39,36 @@ if (argc < 5)
 
 gROOT->Reset();
 
-double lumi = atof(argv[1]);
-TString distr(argv[2]);
-TString projection(argv[3]);
-Int_t rebin_factor(atoi(argv[4]));
-TString dir(argv[5]);
-TString dtag1(argv[INPUT_DTAGS_START]);
+unsigned int input_starts = 0;
+bool be_verbose = false;
+bool normalize_MC_stack = false;
+string inp1(argv[1]), inp2(argv[2]);
+if (inp1 == string("--verbose"))
+	{
+	input_starts += 1;
+	be_verbose = true;
+	if (inp2 == string("--normalize"))
+		{
+		normalize_MC_stack = true;
+		input_starts += 1;
+		}
+	}
+else if (inp1 == string("--normalize"))
+	{
+	normalize_MC_stack = true;
+	input_starts += 1;
+	}
+
+if (be_verbose) cout << "being verbose" << endl;
+if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
+cout << "options are taken from " << input_starts << endl;
+
+double lumi = atof(argv[input_starts + 1]);
+TString distr(argv[input_starts + 2]);
+TString projection(argv[input_starts + 3]);
+Int_t rebin_factor(atoi(argv[input_starts + 4]));
+TString dir(argv[input_starts + 5]);
+TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
 	{
@@ -99,7 +123,7 @@ TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
  * if it is MC -> scale it according xsecs/weightflow and stack it to mc-stack
  *
  */
-for (int i = INPUT_DTAGS_START; i<argc; i++)
+for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
 	cout << "processing " << dtag << endl;
@@ -203,12 +227,42 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 	cout << "processed histogram" << endl;
 	}
 
+
+double integral_data = hs_data->Integral();
+double integral_MC   = 0.;
+//for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+for (std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+	{
+	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+	//mc_jet_origin_ths[origin_n]->Print();
+	TH1D * distr = it->second;
+	integral_MC += distr->Integral();
+	}
+cout << "data  integral = " << integral_data << endl;
+cout << "MC    integral = " << integral_MC   << endl;
+double ratio = integral_data / integral_MC;
+cout << "ratio = " << ratio << endl;
+
+if (normalize_MC_stack)
+	{
+	cout << "normalizing MC" << endl;
+	//for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+	for (std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+		{
+		TString nick = it->first;
+		TH1D * distr = it->second;
+		double integral = distr->Integral();
+		distr->Scale(ratio);
+		cout << nick << " integral before = " << integral << " after = " << distr->Integral() << endl;
+		}
+	}
+
 //std::map<TString, TH1D *> nicknamed_mc_histos;
 for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
 	{
 	TString nick = it->first;
 	TH1D * distr = it->second;
-	cout << "adding to mc stack: " << nick << endl;
+	if (be_verbose) cout << "adding to mc stack: " << nick << endl;
 	distr->Print();
 
 	hs->Add(distr, "HIST");
@@ -228,7 +282,7 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 // in top left pad, draw the stack with defaults
 //cst->cd(1);
 
-cout << "setting title" << endl;
+if (be_verbose) cout << "setting title" << endl;
 
 //hs->GetXaxis()->SetTitle(distr);
 //cst->SetXaxisTile(distr);
@@ -251,7 +305,7 @@ h->SetXTitle("x");
 //cst->Update();
 //cst->Modified();
 
-cout << "drawing" << endl;
+if (be_verbose) cout << "drawing" << endl;
 
 hs_data->Draw("e p");
 hs->Draw("same");
@@ -268,7 +322,7 @@ hs_data->SetXTitle(distr);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr + "_MCstacked_" + projection +".png" );
+cst->SaveAs( dir + "/jobsums/" + distr + "_MCstacked_" + projection + (normalize_MC_stack? "_normalized" : "") + ".png" );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);
