@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 6
+#define INPUT_DTAGS_START 7
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = " lumi distr projection rebin_factor dir dtags";
-if (argc < 5)
+char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor name_tag dir dtags";
+if (argc < 6)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -38,12 +38,37 @@ if (argc < 5)
 
 gROOT->Reset();
 
-double lumi = atof(argv[1]);
-TString distr_selection(argv[2]);
-TString projection(argv[3]);
-Int_t rebin_factor(atoi(argv[4]));
-TString dir(argv[5]);
-TString dtag1(argv[INPUT_DTAGS_START]);
+unsigned int input_starts = 0;
+bool be_verbose = false;
+bool normalize_MC_stack = false;
+string inp1(argv[1]), inp2(argv[2]);
+if (inp1 == string("--verbose"))
+	{
+	input_starts += 1;
+	be_verbose = true;
+	if (inp2 == string("--normalize"))
+		{
+		normalize_MC_stack = true;
+		input_starts += 1;
+		}
+	}
+else if (inp1 == string("--normalize"))
+	{
+	normalize_MC_stack = true;
+	input_starts += 1;
+	}
+
+if (be_verbose) cout << "being verbose" << endl;
+if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
+cout << "options are taken from " << input_starts << endl;
+
+double lumi = atof(argv[input_starts + 1]);
+TString distr_selection(argv[input_starts + 2]);
+TString projection(argv[input_starts + 3]);
+Int_t rebin_factor(atoi(argv[input_starts + 4]));
+TString name_tag(argv[input_starts + 5]);
+TString dir(argv[input_starts + 6]);
+TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
 	{
@@ -106,13 +131,13 @@ TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
  * if it is MC -> scale it according xsecs/weightflow and stack it to mc-stack
  *
  */
-for (int i = INPUT_DTAGS_START; i<argc; i++)
+for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	cout << "processing " << dtag << endl;
+	if (be_verbose) cout << "processing " << dtag << endl;
 	dtags.push_back(dtag);
 	TString the_file = dir + "/" + dtag + ".root";
-	cout << the_file << endl;
+	if (be_verbose) cout << the_file << endl;
 	TFile* file = TFile::Open(the_file);
 	//files.push_back(file); // not needed
 	//dtags.push_back(5);
@@ -129,21 +154,26 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		}
 	*/
 
+	// hack to merge HLTmu & HLTjetmu
+	//string distr_selections[2] = {"HLTmu_qcd", "HLTjetmu_qcd"};
+	//for (int i = 0; i<2; i++){
+	//TString distr_selection(distr_selections[i]);
 	if (dtag.Contains("Data"))
 		{
-		cout << "summing data-stack" << endl;
+		if (be_verbose) cout << "summing data-stack" << endl;
+		TString distro_name = distr_selection + string("_jets_distr");
 
-		if (!file->GetListOfKeys()->Contains(distr_selection + string("_jets_distr")))
+		if (!file->GetListOfKeys()->Contains(distro_name))
 			{
-			cout << "no " << distr_selection +string("_jets_distr") << endl;
+			if (be_verbose) cout << "no " << distro_name << endl;
 			continue;
 			}
 
 		// get the histogram's projection
-		TH1D* histo = (TH1D*) ((TH3D*) file->Get(distr_selection + string("_jets_distr")))->Project3D(projection);
+		TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
 		//histos.push_back();
 		//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
-		histo->Print();
+		if (be_verbose) histo->Print();
 
 		// normalize the histo for bin width
 		for (Int_t i=0; i<=histo->GetSize(); i++)
@@ -159,12 +189,12 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 
 		if (hs_data == NULL)
 			{
-			cout << "creating data histo" << endl;
+			if (be_verbose) cout << "creating data histo" << endl;
 			hs_data = (TH1D*) histo->Clone();
 			}
 		else
 			{
-			cout << "add histo to data histo" << endl;
+			if (be_verbose) cout << "add histo to data histo" << endl;
 			hs_data->Add(histo);
 			}
 		}
@@ -173,17 +203,19 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 			{
 			string jet_origin = mc_jet_origins[origin_n];
-			if (!file->GetListOfKeys()->Contains(distr_selection + jet_origin))
+			TString distro_name = distr_selection + jet_origin;
+
+			if (!file->GetListOfKeys()->Contains(distro_name))
 				{
-				cout << "no " << distr_selection + jet_origin << endl;
+				if (be_verbose) cout << "no " << distro_name << endl;
 				continue;
 				}
 
 			// get the histogram's projection
-			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distr_selection + jet_origin))->Project3D(projection);
+			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
 			//histos.push_back();
 			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
-			histo->Print();
+			if (be_verbose) histo->Print();
 
 			// normalize the histo for bin width
 			for (Int_t i=0; i<=histo->GetSize(); i++)
@@ -218,13 +250,13 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 			//weightflows.back()->Print();
 			// --- using only the initial weight
 
-			cout << "got weightflow init" << endl;
+			if (be_verbose) cout << "got weightflow init" << endl;
 
 			// MC ratio for this dtag:
 			Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
 			histo->Scale(ratio);
-			cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-			histo->Print();
+			if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+			if (be_verbose) histo->Print();
 			//histo->SetFillColor(kRed );
 
 			/*
@@ -246,13 +278,38 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 			else
 				mc_jet_origin_ths[origin_n] = (TH1D*) histo->Clone();
 			}
+		//}
 
-	cout << "processed dtag" << endl;
+	if (be_verbose) cout << "processed dtag" << endl;
+	}
+
+double integral_data = hs_data->Integral();
+double integral_MC   = 0.;
+for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+	{
+	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+	//mc_jet_origin_ths[origin_n]->Print();
+	integral_MC += mc_jet_origin_ths[origin_n]->Integral();
+	}
+cout << "data  integral = " << integral_data << endl;
+cout << "MC    integral = " << integral_MC   << endl;
+double ratio = integral_data / integral_MC;
+cout << "ratio = " << ratio << endl;
+
+if (normalize_MC_stack)
+	{
+	cout << "normalizing MC" << endl;
+	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+		{
+		double integral = mc_jet_origin_ths[origin_n]->Integral();
+		mc_jet_origin_ths[origin_n]->Scale(ratio);
+		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+		}
 	}
 
 for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 	{
-	cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 	//mc_jet_origin_ths[origin_n]->Print();
 	hs->Add(mc_jet_origin_ths[origin_n], "HIST");
 	leg->AddEntry(mc_jet_origin_ths[origin_n], TString(mc_jet_origins[origin_n]), "F");
@@ -292,7 +349,7 @@ hs_data->SetXTitle(distr_selection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection +".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "" ) + ".png" );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);

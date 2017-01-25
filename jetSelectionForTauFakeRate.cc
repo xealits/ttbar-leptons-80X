@@ -1232,6 +1232,9 @@ bool isW0JetsSet   (isMC && (dtag.Contains ("W0Jets")));
 
 bool isNoHLT = dtag.Contains("noHLT");
 
+bool isJetHT = (!isMC) && dtag.Contains("JetHT");
+bool isSingleMuon = (!isMC) && dtag.Contains("SingleMuon");
+
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
@@ -2202,8 +2205,12 @@ for(size_t f=0; f<urls.size();++f)
 
 		// if (!(JetHLTTrigger || MuonHLTTrigger)) continue; // No orthogonalization -- run on only 1 trigger type of datasets
 
-		string hlt_channel("");
-
+		/*
+		 * making HLTs not exclusive:
+		 * events from SingleMuon dataset passing Muon HLTs and selections are needed
+		 * .....  from JetHT dataset passing Jet HLT and selections
+		 * --- if it is JetHT check if they pass HLT_Jet
+		 *              SingleMuon --- HLT_Muon
 		if (JetHLTTrigger && MuonHLTTrigger)
 			{
 			hlt_channel = string("HLTjetmu_");
@@ -2217,6 +2224,13 @@ for(size_t f=0; f<urls.size();++f)
 			hlt_channel = string("HLTmu_");
 			}
 		else continue;
+		*/
+
+		if (!(JetHLTTrigger || MuonHLTTrigger)) continue;
+
+		vector<string> hlt_channels;
+		if (JetHLTTrigger)  hlt_channels.push_back("HLTjet_");
+		if (MuonHLTTrigger) hlt_channels.push_back("HLTmu_");
 
 		/*
 		bool eTrigger    ( isMC ?
@@ -3543,8 +3557,9 @@ for(size_t f=0; f<urls.size();++f)
 		bool Wjets_selection = clean_lep_conditions && isSingleMu && (selJetsNoLep.size() > 0);
 		bool QCD_selection  = selJetsNoLep.size() > 1;
 
-		if (Wjets_selection)
+		if (Wjets_selection) for (int i = 0; i<hlt_channels.size(); i++)
 			{
+			string hlt_channel = hlt_channels[i];
 			string selection("wjets");
 
 			// WJets, HLT channels
@@ -3680,8 +3695,9 @@ for(size_t f=0; f<urls.size();++f)
 				*/
 			}
 
-		if (QCD_selection)
+		if (QCD_selection) for (int i = 0; i<hlt_channels.size(); i++)
 			{
+			string hlt_channel = hlt_channels[i];
 			string selection("qcd");
 			/*
 			// to unpack the TriggerNames in the triggerobject:

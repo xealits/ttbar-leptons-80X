@@ -178,6 +178,21 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_QCD_HT-1000-1500",  1206},
 {"MC2016_noHLT_QCD_HT-1500-2000",  120.4},
 {"MC2016_noHLT_QCD_HT-2000-Inf",  25.25},
+
+{"MC2016_Summer16_WJets_amcatnlo", 61526.7},
+{"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo", 18610},
+{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 6025.2}, // FIXME: the DY x-section was updated by about 5%
+
+{"MC2016_Summer16_QCD_HT-50-100", 0. }, // FIXME: xsection for 50-100 QCD
+{"MC2016_Summer16_QCD_HT-100-200",  27540000},
+{"MC2016_Summer16_QCD_HT-200-300",  1717000},
+{"MC2016_Summer16_QCD_HT-300-500",  351300},
+{"MC2016_Summer16_QCD_HT-500-700",  31630},
+{"MC2016_Summer16_QCD_HT-700-1000",  6802},
+{"MC2016_Summer16_QCD_HT-1000-1500",  1206},
+{"MC2016_Summer16_QCD_HT-1500-2000",  120.4},
+{"MC2016_Summer16_QCD_HT-2000-Inf",  25.25},
+
 };
 
 // nick and colour for dtags
