@@ -229,6 +229,30 @@ elel_fakerate_ratio_plots: fakerate_ratio_plots
 
 dilep_fakerate_ratio_plots: elel_fakerate_ratio_plots mumu_fakerate_ratio_plots elmu_fakerate_ratio_plots
 
+jet_mc_distrs:
+	stacked_histo_project3to1_distr --normalize 1.7 HLTjet_qcd_jets_distr x 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	stacked_histo_project3to1_distr --normalize 1.7 HLTjet_qcd_jets_distr y 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	stacked_histo_project3to1_distr --normalize 1.7 HLTjet_qcd_jets_distr z 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	stacked_histo_project3to1_distr --normalize 1.7 HLTmu_wjets_jets_distr x 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	stacked_histo_project3to1_distr --normalize 1.7 HLTmu_wjets_jets_distr y 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	stacked_histo_project3to1_distr --normalize 1.7 HLTmu_wjets_jets_distr z 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+
+jet_mc_fakerates:
+	jet_fakerate_per_mc 0.25 HLTjet_qcd  z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_mc 0.25 HLTjet_qcd  y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_mc 0.25 HLTjet_qcd  x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_mc 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_mc 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_mc 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+
+jet_origin_fakerates:
+	jet_fakerate_per_origin 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin 0.25 HLTjet_qcd y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin 0.25 HLTjet_qcd x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+
 overlay_fakerates:
 	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-x-pt_overlayed.png     qcd-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_x.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_x.root h3 mumu-sel test/tests/outdir_${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_x.root h3
 	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-y-eta_overlayed.png    qcd-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_y.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_y.root h3 mumu-sel test/tests/outdir_${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_y.root h3

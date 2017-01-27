@@ -78,10 +78,13 @@ if (projection != TString("x") && projection != TString("y") && projection != TS
 	return 2;
 	}
 
-cout << lumi  << endl;
-cout << distr << endl;
-cout << dir   << endl;
-cout << dtag1 << endl;
+if (be_verbose)
+	{
+	cout << lumi  << endl;
+	cout << distr << endl;
+	cout << dir   << endl;
+	cout << dtag1 << endl;
+	}
 
 /*
 for(std::map<TString, double>::iterator it = xsecs.begin(); it != xsecs.end(); ++it)
@@ -129,14 +132,14 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	cout << "processing " << dtag << endl;
 	dtags.push_back(dtag);
 	TString the_file = dir + "/" + dtag + ".root";
-	cout << the_file << endl;
+	if (be_verbose) cout << the_file << endl;
 	TFile* file = TFile::Open(the_file);
 	//files.push_back(file); // not needed
 	//dtags.push_back(5);
 
 	if (!file->GetListOfKeys()->Contains(distr))
 		{
-		cout << "no " << distr << endl;
+		if (be_verbose) cout << "no " << distr << endl;
 		continue;
 		}
 
@@ -164,12 +167,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	//weightflows.back()->Print();
 	// --- using only the initial weight
 
-	cout << "got weightflow init" << endl;
+	if (be_verbose) cout << "got weightflow init" << endl;
 
 	// get the histogram's projection
 	histos.push_back((TH1D*) ((TH3D*) file->Get(distr))->Project3D(projection));
 	histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
-	histos.back()->Print();
+	if (be_verbose) histos.back()->Print();
 
 	// normalize the histo for bin width
 	for (Int_t i=0; i<=histos.back()->GetSize(); i++)
@@ -182,18 +185,18 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 	if (dtag.Contains("Data"))
 		{
-		cout << "summing data-stack" << endl;
+		if (be_verbose) cout << "summing data-stack" << endl;
 		histos.back()->SetMarkerStyle(9);
 		//histos.back()->SetFillColor(kRed + i);
 
 		if (hs_data == NULL)
 			{
-			cout << "creating data histo" << endl;
+			if (be_verbose) cout << "creating data histo" << endl;
 			hs_data = (TH1D*) histos.back()->Clone();
 			}
 		else
 			{
-			cout << "add histo to data histo" << endl;
+			if (be_verbose) cout << "add histo to data histo" << endl;
 			hs_data->Add(histos.back());
 			}
 		}
@@ -202,15 +205,18 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		{
 		Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
 		histos.back()->Scale(ratio);
-		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-		histos.back()->Print();
+		if (be_verbose)
+			{
+			cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+			histos.back()->Print();
+			}
 		//histos.back()->SetFillColor(kRed );
 
 		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
 		TString nick = nick_colour.first;
 		Color_t col = nick_colour.second;
-		histos.back()->SetFillColor( col );
 
+		histos.back()->SetFillColor( col );
 		histos.back()->SetMarkerStyle(20);
 		histos.back()->SetLineStyle(0);
 		histos.back()->SetMarkerColor(i);
@@ -224,7 +230,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		//hs->Add(histos.back(), "HIST");
 		}
 
-	cout << "processed histogram" << endl;
+	if (be_verbose) cout << "processed histogram" << endl;
 	}
 
 
@@ -253,7 +259,7 @@ if (normalize_MC_stack)
 		TH1D * distr = it->second;
 		double integral = distr->Integral();
 		distr->Scale(ratio);
-		cout << nick << " integral before = " << integral << " after = " << distr->Integral() << endl;
+		if (be_verbose) cout << nick << " integral before = " << integral << " after = " << distr->Integral() << endl;
 		}
 	}
 
@@ -262,8 +268,11 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	{
 	TString nick = it->first;
 	TH1D * distr = it->second;
-	if (be_verbose) cout << "adding to mc stack: " << nick << endl;
-	distr->Print();
+	if (be_verbose)
+		{
+		cout << "adding to mc stack: " << nick << endl;
+		distr->Print();
+		}
 
 	hs->Add(distr, "HIST");
 
@@ -316,13 +325,20 @@ leg->Draw();
 //MC_stack_124->GetXaxis()->SetTitle("#rho");
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
 
+bool set_logy = false;
+
+if (projection == string("x") || projection == string("z"))
+	set_logy = true;
+
+if (set_logy)
+	cst->SetLogy();
 
 hs->GetXaxis()->SetTitle(distr);
 hs_data->SetXTitle(distr);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr + "_MCstacked_" + projection + (normalize_MC_stack? "_normalized" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr + "_MCstacked_" + projection + (normalize_MC_stack? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);

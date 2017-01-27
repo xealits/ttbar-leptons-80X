@@ -97,12 +97,12 @@ h3->SetYTitle(cont_name);
 
 h3->Draw("ep");       // Draw the ratio plot
 
-h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
-h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
+//h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
+//h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
 h3->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 h3->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 
-cout << "fakerate ratio distr:" << endl;
+cout << "jet distr:" << endl;
 h3->Print();
 
 TFile f( filename.ReplaceAll(".root","") + "_" + distr1 + "_" + proj + ".root", "create" );
