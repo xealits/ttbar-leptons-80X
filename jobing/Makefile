@@ -95,6 +95,7 @@ stacked_fakerate_histos:
 
 done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
+	ls test/tests/outdir_"${job}"/*root | wc -l
 	ls test/tests/outdir_"${job}"/*cfg.py | wc -l
 
 .PHONY:missing_jobs
@@ -213,6 +214,20 @@ jet_fakerate_plots_SingleMu: selection=HLTmu_wjets
 jet_fakerate_plots_SingleMu: fakerate_ratio_plots
 
 jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
+
+mumu_fakerate_ratio_plots: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
+mumu_fakerate_ratio_plots: selection=mumu_passjets
+mumu_fakerate_ratio_plots: fakerate_ratio_plots
+
+elmu_fakerate_ratio_plots: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
+elmu_fakerate_ratio_plots: selection=elmu_passjets
+elmu_fakerate_ratio_plots: fakerate_ratio_plots
+
+elel_fakerate_ratio_plots: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
+elel_fakerate_ratio_plots: selection=elel_passjets
+elel_fakerate_ratio_plots: fakerate_ratio_plots
+
+dilep_fakerate_ratio_plots: elel_fakerate_ratio_plots mumu_fakerate_ratio_plots elmu_fakerate_ratio_plots
 
 overlay_fakerates:
 	overlay_th1d_distrs ${ttjob}_${jetjob}_fake-rates-per-x-pt_overlayed.png     qcd-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_x.root h3 wjets-sel test/tests/outdir_${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_x.root h3 mumu-sel test/tests/outdir_${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_x.root h3

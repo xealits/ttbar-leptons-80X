@@ -40,7 +40,7 @@ gROOT->Reset();
 
 unsigned int input_starts = 0;
 bool be_verbose = false;
-bool normalize_MC_stack = false;
+bool normalize_MC = false;
 string inp1(argv[1]), inp2(argv[2]);
 if (inp1 == string("--verbose"))
 	{
@@ -48,18 +48,18 @@ if (inp1 == string("--verbose"))
 	be_verbose = true;
 	if (inp2 == string("--normalize"))
 		{
-		normalize_MC_stack = true;
+		normalize_MC = true;
 		input_starts += 1;
 		}
 	}
 else if (inp1 == string("--normalize"))
 	{
-	normalize_MC_stack = true;
+	normalize_MC = true;
 	input_starts += 1;
 	}
 
 if (be_verbose) cout << "being verbose" << endl;
-if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
+if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
 double lumi = atof(argv[input_starts + 1]);
@@ -114,7 +114,7 @@ vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL};
 //TH1D    *hs_mc_b = NULL; // b
 //TH1D    *hs_mc_q = NULL; // not b, light quarks
 //TH1D    *hs_mc_g = NULL; // gluons
-THStack *hs      = new THStack("hs", "");
+//THStack *hs      = new THStack("hs", "");
 //THStack *hs = new THStack("hs","Stacked 1D histograms");
 
 
@@ -266,10 +266,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->SetFillColor( col );
 			*/
 
-			histo->SetMarkerStyle(20);
-			histo->SetLineStyle(0);
-			histo->SetMarkerColor(origin_n);
-			histo->SetFillColor(origin_n);
+			//histo->SetMarkerStyle(20);
+			//histo->SetLineStyle(1);
+			histo->SetLineWidth(3);
+			histo->SetLineColor(1 + (origin_n<4? origin_n : origin_n+1 ));
+			//histo->SetMarkerColor(origin_n);
+			//histo->SetFillColor(origin_n);
 
 			// add the histo to an origin histo
 			// or clone, if the origin hiso is not initialized already
@@ -289,13 +291,6 @@ for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 	{
 	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 	//mc_jet_origin_ths[origin_n]->Print();
-	if (!mc_jet_origin_ths[origin_n])
-		{
-		cout << "no " << mc_jet_origins[origin_n] << endl;
-		// let's hope the 0-s is there
-		mc_jet_origin_ths[origin_n] = (TH1D*) mc_jet_origin_ths[0]->Clone();
-		mc_jet_origin_ths[origin_n]->Reset();
-		}
 	integral_MC += mc_jet_origin_ths[origin_n]->Integral();
 	}
 cout << "data  integral = " << integral_data << endl;
@@ -303,46 +298,21 @@ cout << "MC    integral = " << integral_MC   << endl;
 double ratio = integral_data / integral_MC;
 cout << "ratio = " << ratio << endl;
 
-/* TODO: somehow it doesn't work
-// normalize data for bin width
-for (Int_t i=0; i<=hs_data->GetSize(); i++)
+if (normalize_MC)
 	{
-	//yAxis->GetBinLowEdge(3)
-	double content = hs_data->GetBinContent(i);
-	double width   = hs_data->GetXaxis()->GetBinUpEdge(i) - hs_data->GetXaxis()->GetBinLowEdge(i);
-	hs_data->SetBinContent(i, content/width);
-	}
-
-// normalize each MC origin for bin size
-for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
-	{
-	// normalize data for bin width
-	for (Int_t i=0; i<=mc_jet_origin_ths[origin_n]->GetSize(); i++)
-		{
-		//yAxis->GetBinLowEdge(3)
-		double content = mc_jet_origin_ths[origin_n]->GetBinContent(i);
-		double width   = mc_jet_origin_ths[origin_n]->GetXaxis()->GetBinUpEdge(i) - mc_jet_origin_ths[origin_n]->GetXaxis()->GetBinLowEdge(i);
-		mc_jet_origin_ths[origin_n]->SetBinContent(i, content/width);
-		}
-	}
-*/
-
-if (normalize_MC_stack) // TODO: does it interfere with the bin-wise normalization?
-	{
-	cout << "normalizing MC" << endl;
+	cout << "normalizing MCs" << endl;
 	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		{
 		double integral = mc_jet_origin_ths[origin_n]->Integral();
+		double ratio = integral_data / integral;
 		mc_jet_origin_ths[origin_n]->Scale(ratio);
 		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 		}
 	}
 
+// add MC to legend
 for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 	{
-	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
-	//mc_jet_origin_ths[origin_n]->Print();
-	hs->Add(mc_jet_origin_ths[origin_n], "HIST");
 	leg->AddEntry(mc_jet_origin_ths[origin_n], TString(mc_jet_origins[origin_n]), "F");
 	}
 
@@ -365,14 +335,29 @@ h->SetXTitle("x");
 
 cout << "drawing" << endl;
 
-hs_data->Draw("e p");
-hs->Draw("same");
-hs_data->Draw("e p same"); // to draw it _over_ MC
+//hs_data->Draw("e"); // to draw it _over_ MC
+
+mc_jet_origin_ths[0]->SetLineStyle(1);
+mc_jet_origin_ths[0]->Draw("hist");
+for (int origin_n=1; origin_n<mc_jet_origins.size(); origin_n++)
+	{
+	mc_jet_origin_ths[origin_n]->SetLineStyle(1);
+	mc_jet_origin_ths[origin_n]->Draw("same hist");
+	}
+
+/*
+mc_jet_origin_ths[0]->GetXaxis()->SetRange(0, 0.4);
+mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(0, 0.4);
+
+
+mc_jet_origin_ths[0]->GetYaxis()->SetRange(0, 10000);
+mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0, 10000);
+*/
 
 bool set_logy = false;
 
-if (projection == string("x") || projection == string("z"))
-	set_logy = true;
+//if (projection == string("x") || projection == string("z"))
+	//set_logy = true;
 
 if (set_logy)
 	cst->SetLogy();
@@ -383,40 +368,15 @@ leg->Draw();
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
 
 
-hs->GetXaxis()->SetTitle(distr_selection);
-hs_data->SetXTitle(distr_selection);
+//hs_data->GetXaxis()->SetTitle(distr_selection);
+//hs_data->SetXTitle(distr_selection);
+//mc_jet_origin_ths[0]->GetXaxis()->SetTitle("Jet Radius for different origins");
+mc_jet_origin_ths[0]->SetXTitle(projection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginOverlayed_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
-/*
-TH1D *h = (TH1D*) file->Get(distr);
-
-Int_t size_x = h->GetNbinsX();
-
-if (!print_header)
-	{
-	cout << dtag;
-	for (int x=1; x<size_x; x++)
-		{
-		//double bin_center = h->GetXaxis()->GetBinCenter(x);
-		double global_bin = h->GetBin(x);
-		cout << "," << h->GetBinContent(global_bin);
-		}
-	cout << "\n";
-	}
-else
-	{
-	cout << "dtag";
-	for (int x=1; x<size_x; x++)
-		{
-		double bin_center = h->GetXaxis()->GetBinCenter(x);
-		cout << "," << bin_center;
-		}
-	cout << "\n";
-	}
-*/
 return 0;
 }
 

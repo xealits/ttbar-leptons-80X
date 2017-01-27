@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 7
+#define INPUT_DTAGS_START 9
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor name_tag dir dtags";
-if (argc < 6)
+char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
+if (argc < 8)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -40,7 +40,7 @@ gROOT->Reset();
 
 unsigned int input_starts = 0;
 bool be_verbose = false;
-bool normalize_MC_stack = false;
+bool normalize_MC = false;
 string inp1(argv[1]), inp2(argv[2]);
 if (inp1 == string("--verbose"))
 	{
@@ -48,26 +48,29 @@ if (inp1 == string("--verbose"))
 	be_verbose = true;
 	if (inp2 == string("--normalize"))
 		{
-		normalize_MC_stack = true;
+		normalize_MC = true;
 		input_starts += 1;
 		}
 	}
 else if (inp1 == string("--normalize"))
 	{
-	normalize_MC_stack = true;
+	normalize_MC = true;
 	input_starts += 1;
 	}
 
 if (be_verbose) cout << "being verbose" << endl;
-if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
+if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
 double lumi = atof(argv[input_starts + 1]);
 TString distr_selection(argv[input_starts + 2]);
 TString projection(argv[input_starts + 3]);
 Int_t rebin_factor(atoi(argv[input_starts + 4]));
-TString name_tag(argv[input_starts + 5]);
-TString dir(argv[input_starts + 6]);
+
+double x_axis_min_range = atof(argv[input_starts + 5]);
+double x_axis_max_range = atof(argv[input_starts + 6]);
+TString name_tag(argv[input_starts + 7]);
+TString dir(argv[input_starts + 8]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -104,17 +107,21 @@ std::vector < TH1D * > weightflows;
 // also nickname the MC....
 // per-dtag for now..
 
-TH1D    *hs_data = NULL;
+TH1D* hs_data[2] = {NULL, NULL};
 
 // different jet origin histos:
-vector<string> mc_jet_origins = {"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
-vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL};
+unsigned int n_jet_origins = 5;
+vector<string> mc_jet_origins = {"_tau_jets_distr_o", "_tau_jets_distr_t", "_tau_jets_distr_b", "_tau_jets_distr_q", "_tau_jets_distr_g",
+	"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
+//HLTjetmu_qcd_tau_jets_distr_q
+vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL};
 //TH1D    *hs_mc_o = NULL; // "other" objects -- not recognized by partonFlavour
 //TH1D    *hs_mc_t = NULL; // taus -- matched not recognized by partonFlavour and matched to a visible part of tau in GenParticles collection
 //TH1D    *hs_mc_b = NULL; // b
 //TH1D    *hs_mc_q = NULL; // not b, light quarks
 //TH1D    *hs_mc_g = NULL; // gluons
-THStack *hs      = new THStack("hs", "");
+//THStack *hs      = new THStack("hs", "");
 //THStack *hs = new THStack("hs","Stacked 1D histograms");
 
 
@@ -161,41 +168,48 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (dtag.Contains("Data"))
 		{
 		if (be_verbose) cout << "summing data-stack" << endl;
-		TString distro_name = distr_selection + string("_jets_distr");
+		vector<TString> distro_names;
+		distro_names.push_back(distr_selection + string("_tau_jets_distr"));
+		distro_names.push_back(distr_selection + string("_jets_distr"));
 
-		if (!file->GetListOfKeys()->Contains(distro_name))
+		for (int i=0; i<distro_names.size(); i++)
 			{
-			if (be_verbose) cout << "no " << distro_name << endl;
-			continue;
-			}
+			TString distro_name = distro_names[i];
 
-		// get the histogram's projection
-		TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
-		//histos.push_back();
-		//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
-		if (be_verbose) histo->Print();
+			if (!file->GetListOfKeys()->Contains(distro_name))
+				{
+				if (be_verbose) cout << "no " << distro_name << endl;
+				continue;
+				}
 
-		// normalize the histo for bin width
-		for (Int_t i=0; i<=histo->GetSize(); i++)
-			{
-			//yAxis->GetBinLowEdge(3)
-			double content = histo->GetBinContent(i);
-			double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-			histo->SetBinContent(i, content/width);
-			}
+			// get the histogram's projection
+			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
+			//histos.push_back();
+			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
+			if (be_verbose) histo->Print();
 
-		histo->SetMarkerStyle(9);
-		//histo->SetFillColor(kRed + i);
+			// normalize the histo for bin width
+			for (Int_t i=0; i<=histo->GetSize(); i++)
+				{
+				//yAxis->GetBinLowEdge(3)
+				double content = histo->GetBinContent(i);
+				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+				histo->SetBinContent(i, content/width);
+				}
 
-		if (hs_data == NULL)
-			{
-			if (be_verbose) cout << "creating data histo" << endl;
-			hs_data = (TH1D*) histo->Clone();
-			}
-		else
-			{
-			if (be_verbose) cout << "add histo to data histo" << endl;
-			hs_data->Add(histo);
+			histo->SetMarkerStyle(9);
+			//histo->SetFillColor(kRed + i);
+
+			if (hs_data[i] == NULL)
+				{
+				if (be_verbose) cout << "creating data histo" << endl;
+				hs_data[i] = (TH1D*) histo->Clone();
+				}
+			else
+				{
+				if (be_verbose) cout << "add histo to data histo" << endl;
+				hs_data[i]->Add(histo);
+				}
 			}
 		}
 
@@ -267,7 +281,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			*/
 
 			histo->SetMarkerStyle(20);
-			histo->SetLineStyle(0);
+			//histo->SetLineStyle(1);
+			//histo->SetLineWidth(3);
+			//histo->SetLineColor(1 + (origin_n<4? origin_n : origin_n+1 ));
 			histo->SetMarkerColor(origin_n);
 			histo->SetFillColor(origin_n);
 
@@ -283,67 +299,74 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "processed dtag" << endl;
 	}
 
-double integral_data = hs_data->Integral();
-double integral_MC   = 0.;
-for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+TH1D* hs_mc_all_jets = (TH1D*) mc_jet_origin_ths[0 + n_jet_origins]->Clone();
+hs_mc_all_jets->Reset();
+
+double integral_data = hs_data[1]->Integral();
+double integral_MC_taus  = 0.;
+double integral_MC_jets  = 0.;
+for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	{
 	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 	//mc_jet_origin_ths[origin_n]->Print();
-	if (!mc_jet_origin_ths[origin_n])
+	if (!mc_jet_origin_ths[origin_n]) // let's hope the 1 (tau_jets.._o) exists
 		{
-		cout << "no " << mc_jet_origins[origin_n] << endl;
-		// let's hope the 0-s is there
 		mc_jet_origin_ths[origin_n] = (TH1D*) mc_jet_origin_ths[0]->Clone();
 		mc_jet_origin_ths[origin_n]->Reset();
 		}
-	integral_MC += mc_jet_origin_ths[origin_n]->Integral();
-	}
-cout << "data  integral = " << integral_data << endl;
-cout << "MC    integral = " << integral_MC   << endl;
-double ratio = integral_data / integral_MC;
-cout << "ratio = " << ratio << endl;
-
-/* TODO: somehow it doesn't work
-// normalize data for bin width
-for (Int_t i=0; i<=hs_data->GetSize(); i++)
-	{
-	//yAxis->GetBinLowEdge(3)
-	double content = hs_data->GetBinContent(i);
-	double width   = hs_data->GetXaxis()->GetBinUpEdge(i) - hs_data->GetXaxis()->GetBinLowEdge(i);
-	hs_data->SetBinContent(i, content/width);
-	}
-
-// normalize each MC origin for bin size
-for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
-	{
-	// normalize data for bin width
-	for (Int_t i=0; i<=mc_jet_origin_ths[origin_n]->GetSize(); i++)
+	if (!mc_jet_origin_ths[origin_n + n_jet_origins])
 		{
-		//yAxis->GetBinLowEdge(3)
-		double content = mc_jet_origin_ths[origin_n]->GetBinContent(i);
-		double width   = mc_jet_origin_ths[origin_n]->GetXaxis()->GetBinUpEdge(i) - mc_jet_origin_ths[origin_n]->GetXaxis()->GetBinLowEdge(i);
-		mc_jet_origin_ths[origin_n]->SetBinContent(i, content/width);
+		mc_jet_origin_ths[origin_n + n_jet_origins] = (TH1D*) mc_jet_origin_ths[0]->Clone();
+		mc_jet_origin_ths[origin_n + n_jet_origins]->Reset();
 		}
-	}
-*/
 
-if (normalize_MC_stack) // TODO: does it interfere with the bin-wise normalization?
+	integral_MC_taus += mc_jet_origin_ths[origin_n]->Integral();
+	integral_MC_jets += mc_jet_origin_ths[n_jet_origins + origin_n]->Integral();
+	hs_mc_all_jets->Add(mc_jet_origin_ths[n_jet_origins + origin_n]);
+	if (be_verbose) cout << mc_jet_origins[origin_n] << "\t" << mc_jet_origins[n_jet_origins + origin_n] << endl;
+	}
+cout << "data    integral = " << "(" << hs_data[0]->Integral() << ")" << integral_data << endl;
+cout << "MC taus integral = " << integral_MC_taus   << endl;
+cout << "MC jets integral = " << integral_MC_jets << "(" << hs_mc_all_jets->Integral() << ")" << endl;
+//double ratio = integral_data / integral_MC;
+//cout << "ratio = " << ratio << endl;
+
+// find the fake rate in data:
+hs_data[0]->Sumw2();
+hs_data[0]->SetStats(0);      // No statistics on lower plot
+hs_data[0]->Divide(hs_data[1]);
+
+/*
+if (normalize_MC)
 	{
-	cout << "normalizing MC" << endl;
+	cout << "normalizing MCs" << endl;
 	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		{
 		double integral = mc_jet_origin_ths[origin_n]->Integral();
+		double ratio = integral_data / integral;
 		mc_jet_origin_ths[origin_n]->Scale(ratio);
 		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 		}
 	}
+*/
 
-for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+THStack *hs      = new THStack("hs", "");
+
+// add MC to stack
+// add MC to legend
+// and divide tau_jets / jets
+for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	{
-	//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
-	//mc_jet_origin_ths[origin_n]->Print();
-	hs->Add(mc_jet_origin_ths[origin_n], "HIST");
-	leg->AddEntry(mc_jet_origin_ths[origin_n], TString(mc_jet_origins[origin_n]), "F");
+	TH1D* distr = mc_jet_origin_ths[origin_n];
+	// calculate fake rate
+	// the origin tau jets / all jets (of all origins)
+	distr->Divide(hs_mc_all_jets);
+	//mc_jet_origin_ths[origin_n]->Divide(mc_jet_origin_ths[n_jet_origins + origin_n]);
+
+	// and add the histogram to the stack and record about it to the legend
+	hs->Add(distr, "HIST");
+	leg->AddEntry(distr, TString(mc_jet_origins[origin_n]), "F");
+	// rebin here, if needed
 	}
 
 //cst->SetFillColor(41);
@@ -365,17 +388,49 @@ h->SetXTitle("x");
 
 cout << "drawing" << endl;
 
-hs_data->Draw("e p");
-hs->Draw("same");
-hs_data->Draw("e p same"); // to draw it _over_ MC
+//hs_data->Draw("e"); // to draw it _over_ MC
 
-bool set_logy = false;
+/*
+mc_jet_origin_ths[0]->SetLineStyle(1);
+mc_jet_origin_ths[0]->Draw("hist");
+for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
+	{
+	mc_jet_origin_ths[origin_n]->SetLineStyle(1);
+	mc_jet_origin_ths[origin_n]->Draw("same hist");
+	}
+*/
 
-if (projection == string("x") || projection == string("z"))
-	set_logy = true;
+hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
+hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
+hs_data[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+hs_data[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
+hs->GetYaxis()->SetRange(0.0001, 1);
+hs->GetYaxis()->SetRangeUser(0.0001, 1);
+hs->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+hs->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
+//mc_jet_origin_ths[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+//mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+//h3->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+//h3->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
+//mc_jet_origin_ths[0]->GetYaxis()->SetRange(0.0001, 1);
+//mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0.0001, 1);
+//h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
+//h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
+
+bool set_logy = true; // in case it becomes main argument
+
+//if (projection == string("x") || projection == string("z"))
+	//set_logy = true;
 
 if (set_logy)
 	cst->SetLogy();
+
+hs_data[0]->Draw("e p"); // to pass the title/axes settings to the canvas/plot/pad/etc root-shmuz
+hs->Draw("same"); // draw the stack
+hs_data[0]->Draw("e same p"); // to overlay MC
 
 leg->Draw();
 
@@ -383,40 +438,15 @@ leg->Draw();
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
 
 
-hs->GetXaxis()->SetTitle(distr_selection);
-hs_data->SetXTitle(distr_selection);
+//hs_data->GetXaxis()->SetTitle(distr_selection);
+//hs_data->SetXTitle(distr_selection);
+//mc_jet_origin_ths[0]->GetXaxis()->SetTitle(name_tag);
+//mc_jet_origin_ths[0]->SetXTitle(projection);
 
-cst->Modified();
+//cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRates_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
-/*
-TH1D *h = (TH1D*) file->Get(distr);
-
-Int_t size_x = h->GetNbinsX();
-
-if (!print_header)
-	{
-	cout << dtag;
-	for (int x=1; x<size_x; x++)
-		{
-		//double bin_center = h->GetXaxis()->GetBinCenter(x);
-		double global_bin = h->GetBin(x);
-		cout << "," << h->GetBinContent(global_bin);
-		}
-	cout << "\n";
-	}
-else
-	{
-	cout << "dtag";
-	for (int x=1; x<size_x; x++)
-		{
-		double bin_center = h->GetXaxis()->GetBinCenter(x);
-		cout << "," << bin_center;
-		}
-	cout << "\n";
-	}
-*/
 return 0;
 }
 

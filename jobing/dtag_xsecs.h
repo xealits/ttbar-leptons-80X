@@ -193,6 +193,37 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_QCD_HT-1500-2000",  120.4},
 {"MC2016_Summer16_QCD_HT-2000-Inf",  25.25},
 
+{"MC2016_Summer16_QCD_HT-50-100_", 0. }, // FIXME: xsection for 50-100 QCD
+{"MC2016_Summer16_QCD_HT-100-200_",  27540000},
+{"MC2016_Summer16_QCD_HT-200-300_",  1717000},
+{"MC2016_Summer16_QCD_HT-300-500_",  351300},
+{"MC2016_Summer16_QCD_HT-500-700_",  31630},
+{"MC2016_Summer16_QCD_HT-700-1000_",  6802},
+{"MC2016_Summer16_QCD_HT-1000-1500_",  1206},
+{"MC2016_Summer16_QCD_HT-1500-2000_",  120.4},
+{"MC2016_Summer16_QCD_HT-2000-Inf_",  25.25},
+
+{"MC2016_Summer16_WJets_amcatnlo_", 61526.7},
+{"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo_", 18610},
+{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph_", 6025.2}, // FIXME: the DY x-section was updated by about 5%
+
+{"MC2016_Summer16_SingleT_tW_5FS_powheg_",    35.6},
+{"MC2016_Summer16_SingleTbar_tW_5FS_powheg_", 35.6},
+{"MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo_", 3.36},
+{"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg_", 70.69/2},
+{"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg_", 70.69/2},
+
+{ "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_eell"        , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_elmu"        , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_elq"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_mmuu"        , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_qq"          , ttbar_xsec * W_qar_br2 },
+
 };
 
 // nick and colour for dtags
