@@ -1503,6 +1503,13 @@ TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wj
 Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
 
 
+// dilepton fake rates
+TFile * tau_fake_rate_file_dileptons = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons") .c_str() );
+TH3F * tau_fake_rate_jets_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr");
+TH3F * tau_fake_rate_taus_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
+TH3F * tau_fake_rate_jets_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
+TH3F * tau_fake_rate_taus_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr");
+
 
 //MC normalization (to 1/pb)
 if(debug) cout << "DEBUG: xsec: " << xsec << endl;
@@ -4424,6 +4431,9 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_fake_rate2_q = 1.0; // only histo 2
 					double jet_to_tau_fake_rate2_w = 1.0; // only histo 2
 
+					double jet_to_tau_no_fake_rate_elmu = 1.0;
+					double jet_to_tau_fake_rate_elmu = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -4467,6 +4477,8 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+
+						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 					if (selJets30GeVNoLep.size() != 2)
@@ -4486,6 +4498,8 @@ for(size_t f=0; f<urls.size();++f)
 							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+
+							jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							}
 
 
@@ -4496,30 +4510,21 @@ for(size_t f=0; f<urls.size();++f)
 					jet_to_tau_fake_rate2_q = 1.0 - jet_to_tau_no_fake_prob2_q; // only histo 2
 					jet_to_tau_fake_rate2_w = 1.0 - jet_to_tau_no_fake_prob2_w; // only histo 2
 
+					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
+
 					if (debug)
 						{
 						cout << "no-fake probs: " << jet_to_tau_no_fake_prob1_q << " " << jet_to_tau_no_fake_prob << " " << jet_to_tau_no_fake_prob2_q << "\n";
 						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2_q << "\n";
 						}
 
-					/*
-					increment(string("singlemu_pretauselection_jettotaufakerate"),  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
-					increment(string("singlemu_pretauselection_jettotaufakerate1_q"), weight * (jet_to_tau_fake_rate1_q < 1. ? jet_to_tau_fake_rate1_q : 1.));
-					increment(string("singlemu_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
-					increment(string("singlemu_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
-					increment(string("singlemu_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
-					*/
-
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 1,  weight * (jet_to_tau_fake_rate  < 1. ? jet_to_tau_fake_rate  : 1.));
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 2,  weight * (jet_to_tau_fake_rate1_q  < 1. ? jet_to_tau_fake_rate1_q  : 1.));
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 3,  weight * (jet_to_tau_fake_rate1_w  < 1. ? jet_to_tau_fake_rate1_w  : 1.));
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 4,  weight * (jet_to_tau_fake_rate2_q  < 1. ? jet_to_tau_fake_rate2_q  : 1.));
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
-					//increment(string("singlemu_pretauselection_jettotaufakerate1_q"), weight * (jet_to_tau_fake_rate1_q < 1. ? jet_to_tau_fake_rate1_q : 1.));
-					//increment(string("singlemu_pretauselection_jettotaufakerate1_w"), weight * (jet_to_tau_fake_rate1_w < 1. ? jet_to_tau_fake_rate1_w : 1.));
-					//increment(string("singlemu_pretauselection_jettotaufakerate2_q"), weight * (jet_to_tau_fake_rate2_q < 1. ? jet_to_tau_fake_rate2_q : 1.));
-					//increment(string("singlemu_pretauselection_jettotaufakerate2_w"), weight * (jet_to_tau_fake_rate2_w < 1. ? jet_to_tau_fake_rate2_w : 1.));
 
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
@@ -4718,6 +4723,10 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_fake_rate1_w = 1.0; // done with only histo 1
 					double jet_to_tau_fake_rate2_q = 1.0; // only histo 2
 					double jet_to_tau_fake_rate2_w = 1.0; // only histo 2
+
+					double jet_to_tau_no_fake_rate_elmu = 1.0;
+					double jet_to_tau_fake_rate_elmu = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -4754,6 +4763,8 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+
+						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 					if (selJets30GeVNoLep.size() != 2)
@@ -4773,6 +4784,8 @@ for(size_t f=0; f<urls.size();++f)
 							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
+
+							jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 							}
 
 
@@ -4782,6 +4795,8 @@ for(size_t f=0; f<urls.size();++f)
 					jet_to_tau_fake_rate1_w = 1.0 - jet_to_tau_no_fake_prob1_w; // done with only histo 1
 					jet_to_tau_fake_rate2_q = 1.0 - jet_to_tau_no_fake_prob2_q; // only histo 2
 					jet_to_tau_fake_rate2_w = 1.0 - jet_to_tau_no_fake_prob2_w; // only histo 2
+
+					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
 
 					if (debug)
 						{
@@ -4800,6 +4815,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 3,  weight * (jet_to_tau_fake_rate1_w  < 1. ? jet_to_tau_fake_rate1_w  : 1.));
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 4,  weight * (jet_to_tau_fake_rate2_q  < 1. ? jet_to_tau_fake_rate2_q  : 1.));
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
+
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
