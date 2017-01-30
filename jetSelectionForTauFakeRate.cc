@@ -1884,10 +1884,10 @@ for(size_t f=0; f<urls.size();++f)
 
 		iev++;
 		totalEntries++;
-		if (iev % treeStep == 0)
+		if (debug && (iev % treeStep == 0))
 			{
 			printf (".");
-			if(!debug) fflush (stdout); // Otherwise debug messages are flushed
+			//if(!debug) fflush (stdout); // Otherwise debug messages are flushed
 			}
 
 		edm::EventBase const & myEvent = ev;
