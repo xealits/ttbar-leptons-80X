@@ -163,6 +163,8 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 		// (maybe it would be nice to use bins of the 3d jet distr?)
 		fill_2d(channel + selection + ("_jet_radius_vs_eta"), 100, 0., 2., 120, -3., 3., jet_radius(jet), jet.eta(), event_weight);
 
+		int jet_origin = -1; // for MC only
+
 		// const reco::GenParticle* genParton()
 		// jet parton origin
 		if (isMC)
@@ -170,10 +172,10 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//const reco::GenParticle* jet_origin = jet.genParton();
 			// the ID should be in:
 			// jet_origin->pdgId();
-			int jet_origin = abs(jet.partonFlavour());
+			jet_origin = abs(jet.partonFlavour());
 
 			// match to visible_gen_taus
-			// if partonFlavour == 0 and matches to a tau (dR < 1)
+			// if partonFlavour == 0 and matches to a tau (dR < tau_fake_distance (~= 0.3))
 			// add it as 15 --- tau
 
 			double minDRtj (9999.);
@@ -187,7 +189,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 					minDRtj = jet_tau_distance;
 					}
 				}
-			if (jet_origin == 0 && (minDRtj < 1)) jet_origin = 15;
+			if (jet_origin == 0 && (minDRtj < tau_fake_distance)) jet_origin = 15;
 
 			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
 			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
@@ -231,7 +233,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 				// jet parton origin for faking jet (just in case)
 				if (isMC)
 					{
-					int jet_origin = abs(jet.partonFlavour());
+					//int jet_origin = abs(jet.partonFlavour());
 					//const reco::GenParticle* jet_origin = selJets[ijet].genParton();
 					// the ID should be in:
 					// jet_origin->pdgId();

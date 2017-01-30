@@ -141,7 +141,7 @@ TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	if (be_verbose) cout << "processing " << dtag << endl;
+	cout << dtag << endl;
 	dtags.push_back(dtag);
 	TString the_file = dir + "/" + dtag + ".root";
 	if (be_verbose) cout << the_file << endl;
@@ -204,11 +204,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				{
 				if (be_verbose) cout << "creating data histo" << endl;
 				hs_data[i] = (TH1D*) histo->Clone();
+				cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
 			else
 				{
 				if (be_verbose) cout << "add histo to data histo" << endl;
 				hs_data[i]->Add(histo);
+				cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
 			}
 		}
@@ -221,7 +223,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			if (!file->GetListOfKeys()->Contains(distro_name))
 				{
-				if (be_verbose) cout << "no " << distro_name << endl;
+				cout << "no " << distro_name << endl;
 				continue;
 				}
 
@@ -268,6 +270,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			// MC ratio for this dtag:
 			Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
+			if (be_verbose) cout << "x-sec/weight/ratio\t" << xsecs[dtag] << "\t" << normal_initial_weight << "\t" << ratio << endl;
 			histo->Scale(ratio);
 			if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 			if (be_verbose) histo->Print();
@@ -290,9 +293,18 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			// add the histo to an origin histo
 			// or clone, if the origin hiso is not initialized already
 			if (mc_jet_origin_ths[origin_n])
+				{
+				// in principle, on addition one can get floating point saturation
+				//cout << "" << hs_data[i]->Integral() << "\t" << histo->Integral() << endl;
+
 				mc_jet_origin_ths[origin_n]->Add(histo);
+				cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
+				}
 			else
+				{
 				mc_jet_origin_ths[origin_n] = (TH1D*) histo->Clone();
+				cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
+				}
 			}
 		//}
 
@@ -322,6 +334,9 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 
 	integral_MC_taus += mc_jet_origin_ths[origin_n]->Integral();
 	integral_MC_jets += mc_jet_origin_ths[n_jet_origins + origin_n]->Integral();
+
+	// Float control
+	cout << "Float control: " << "mc_all_jets" << "\t" << mc_jet_origin_ths[n_jet_origins + origin_n]->Integral() << "\t" << hs_mc_all_jets->Integral() << endl;
 	hs_mc_all_jets->Add(mc_jet_origin_ths[n_jet_origins + origin_n]);
 	if (be_verbose) cout << mc_jet_origins[origin_n] << "\t" << mc_jet_origins[n_jet_origins + origin_n] << endl;
 	}
