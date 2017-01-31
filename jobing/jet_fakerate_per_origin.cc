@@ -141,7 +141,7 @@ TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
 for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	cout << dtag << endl;
+	if (be_verbose) cout << dtag << endl;
 	dtags.push_back(dtag);
 	TString the_file = dir + "/" + dtag + ".root";
 	if (be_verbose) cout << the_file << endl;
@@ -204,13 +204,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				{
 				if (be_verbose) cout << "creating data histo" << endl;
 				hs_data[i] = (TH1D*) histo->Clone();
-				cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
+				if (be_verbose) cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
 			else
 				{
 				if (be_verbose) cout << "add histo to data histo" << endl;
 				hs_data[i]->Add(histo);
-				cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
+				if (be_verbose) cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
 			}
 		}
@@ -298,12 +298,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				//cout << "" << hs_data[i]->Integral() << "\t" << histo->Integral() << endl;
 
 				mc_jet_origin_ths[origin_n]->Add(histo);
-				cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
+				if (be_verbose) cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
 				}
 			else
 				{
 				mc_jet_origin_ths[origin_n] = (TH1D*) histo->Clone();
-				cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
+				if (be_verbose) cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
 				}
 			}
 		//}
@@ -311,6 +311,10 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "processed dtag" << endl;
 	}
 
+// need an empty histogram of the same bins as the given ones
+// for that cloning a histogram, which supposedly always exists
+// (big amount of jets of this type)
+// --- chose fisrt all_jets histogram
 TH1D* hs_mc_all_jets = (TH1D*) mc_jet_origin_ths[0 + n_jet_origins]->Clone();
 hs_mc_all_jets->Reset();
 
@@ -336,7 +340,7 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	integral_MC_jets += mc_jet_origin_ths[n_jet_origins + origin_n]->Integral();
 
 	// Float control
-	cout << "Float control: " << "mc_all_jets" << "\t" << mc_jet_origin_ths[n_jet_origins + origin_n]->Integral() << "\t" << hs_mc_all_jets->Integral() << endl;
+	if (be_verbose) cout << "Float control: " << "mc_all_jets" << "\t" << mc_jet_origin_ths[n_jet_origins + origin_n]->Integral() << "\t" << hs_mc_all_jets->Integral() << endl;
 	hs_mc_all_jets->Add(mc_jet_origin_ths[n_jet_origins + origin_n]);
 	if (be_verbose) cout << mc_jet_origins[origin_n] << "\t" << mc_jet_origins[n_jet_origins + origin_n] << endl;
 	}
@@ -345,6 +349,18 @@ cout << "MC taus integral = " << integral_MC_taus   << endl;
 cout << "MC jets integral = " << integral_MC_jets << "(" << hs_mc_all_jets->Integral() << ")" << endl;
 //double ratio = integral_data / integral_MC;
 //cout << "ratio = " << ratio << endl;
+
+cout << "fractions of jets:" << endl;
+for (int origin_n=n_jet_origins; origin_n<mc_jet_origin_ths.size(); origin_n++)
+	{
+	cout << mc_jet_origins[origin_n] << ",";
+	}
+cout << endl;
+for (int origin_n=n_jet_origins; origin_n<mc_jet_origin_ths.size(); origin_n++)
+	{
+	cout << mc_jet_origin_ths[origin_n]->Integral() / integral_MC_jets << ",";
+	}
+cout << endl;
 
 // find the fake rate in data:
 hs_data[0]->Sumw2();

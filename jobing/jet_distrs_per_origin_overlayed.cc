@@ -269,7 +269,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			//histo->SetMarkerStyle(20);
 			//histo->SetLineStyle(1);
 			histo->SetLineWidth(3);
-			histo->SetLineColor(1 + (origin_n<4? origin_n : origin_n+1 ));
+			histo->SetLineColor(origin_n!=0? origin_n : 6);
 			//histo->SetMarkerColor(origin_n);
 			//histo->SetFillColor(origin_n);
 
@@ -337,9 +337,15 @@ cout << "drawing" << endl;
 
 //hs_data->Draw("e"); // to draw it _over_ MC
 
-mc_jet_origin_ths[0]->SetLineStyle(1);
-mc_jet_origin_ths[0]->Draw("hist");
-for (int origin_n=1; origin_n<mc_jet_origins.size(); origin_n++)
+if (projection == TString("z"))
+	{
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRange(0, 0.3);
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRangeUser(0, 0.3);
+	}
+
+mc_jet_origin_ths[mc_jet_origins.size()-1]->SetLineStyle(1);
+mc_jet_origin_ths[mc_jet_origins.size()-1]->Draw("hist");
+for (int origin_n=mc_jet_origins.size()-2; origin_n>=0; origin_n--)
 	{
 	mc_jet_origin_ths[origin_n]->SetLineStyle(1);
 	mc_jet_origin_ths[origin_n]->Draw("same hist");
