@@ -1748,6 +1748,12 @@ for(size_t f=0; f<urls.size();++f)
 					// it's a final state tau
 					// select its' daughters, skipping neutrinos
 					// add their momenta -- use the sum as a visible_gen_tau
+					//
+					// in genParticles tree such a decay looks like:
+					// 36: 15 2        40.6392,1.48436,2.06287,1.777
+					//  <-  15 23;
+					//          |-> 16 1; -211 1; 
+					// -- no intermediate between tau, neutrinos and visible part
 					LorentzVector vis_ds(0,0,0,0);
 					for (int j = 0; j < n_daughters; ++j)
 						{
