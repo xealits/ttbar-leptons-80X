@@ -469,16 +469,18 @@ hs_data[0]->Draw("e same p"); // to overlay MC
 
 //cst->Modified();
 
+mc_jet_origin_ths[0]->GetYaxis()->SetRange(0.00001, 1);
+mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0.00001, 1);
+mc_jet_origin_ths[0]->Draw();
 // Draw each origin and save it
-for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
+for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
 	{
 	TH1D* distr = mc_jet_origin_ths[origin_n];
 	distr->GetYaxis()->SetRange(0.00001, 1);
 	distr->GetYaxis()->SetRangeUser(0.00001, 1);
-	distr->Draw();
-
-	cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRatesSeparately_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + mc_jet_origins[origin_n] + ".png" );
+	distr->Draw("same");
 	}
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRatesSeparatelyOverlayed_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 return 0;
 }
