@@ -1890,11 +1890,13 @@ for(size_t f=0; f<urls.size();++f)
 
 		iev++;
 		totalEntries++;
+		/* jobs still fail here?
 		if (debug && (iev % treeStep == 0))
 			{
 			printf (".");
 			//if(!debug) fflush (stdout); // Otherwise debug messages are flushed
 			}
+		*/
 
 		edm::EventBase const & myEvent = ev;
 
@@ -2074,6 +2076,7 @@ for(size_t f=0; f<urls.size();++f)
 		if (num_inters>99) num_inters = 99;
 		if (nGoodPV>100) nGoodPV = 99;
 		//if (num_inters<0)  num_inters = 0;
+		/* jobs seem to crash here, and pu is saved with general fill1d function now
 		if (weight_Gen<0)
 			{
 			increment( string("negative_events"), 1 );
@@ -2086,6 +2089,7 @@ for(size_t f=0; f<urls.size();++f)
 			fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
 			fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
 			}
+		*/
 
 		// -------------------------------------   Basic event selection
 
