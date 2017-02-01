@@ -3285,6 +3285,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
+		/*
 		// --------------------------- B-TAGGED JETS
 		pat::JetCollection selBJets;
 
@@ -3381,10 +3382,10 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-
 		if(debug){
 			cout << "processed b-tagged jets" << endl;
 			}
+		*/
 
 
 
@@ -3499,7 +3500,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		unsigned int n_taus = selTausNoLep.size();
 		unsigned int n_jets = selJetsNoLep.size();
-		unsigned int n_bjets = selBJets.size();
+		//unsigned int n_bjets = selBJets.size();
 
 		// Select jets for tau-fake-rate study, save the counts
 
@@ -3561,7 +3562,18 @@ for(size_t f=0; f<urls.size();++f)
 		//bool isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
 
 		bool Wjets_selection = clean_lep_conditions && isSingleMu && (selJetsNoLep.size() > 0);
-		bool QCD_selection  = selJetsNoLep.size() > 1;
+		//bool QCD_selection  = selJetsNoLep.size() > 1;
+		// Trying get HT > 100 jets --- to match the smallest HT bin I have in QCD MC
+		// HT = sum of jet pT-s
+		// my jets are 20 GeV
+		// ...
+		// let's do 2 separate requirements and & them
+		double event_ht = 0.;
+		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
+			{
+			event_ht += selJetsNoLep[ijet].pt();
+			}
+		bool QCD_selection  = (selJetsNoLep.size() > 1) && (event_ht > 99.);
 
 		if (Wjets_selection) for (int i = 0; i<hlt_channels.size(); i++)
 			{

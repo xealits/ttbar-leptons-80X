@@ -252,5 +252,18 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 
 	}
 
+/* Include it to colors somehow, to preserve inclusiveness of ttbar in jet fake rates scripts
+{ "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_eell"        , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_elmu"        , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_elq"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_mmuu"        , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_qq"          , ttbar_xsec * W_qar_br2 },
+*/
+
 
 #endif // DTAG_XSECS_H_
