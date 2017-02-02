@@ -3577,7 +3577,7 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			event_ht += selJetsNoLep[ijet].pt();
 			}
-		bool QCD_selection  = (selJetsNoLep.size() > 1) && (event_ht > 99.);
+		bool QCD_selection  = (selJetsNoLep.size() > 1) && (event_ht > 100.);
 
 		if (Wjets_selection) for (int i = 0; i<hlt_channels.size(); i++)
 			{
