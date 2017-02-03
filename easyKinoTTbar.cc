@@ -2267,17 +2267,19 @@ for(size_t f=0; f<urls.size();++f)
 						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
 						// got all products of t decay
 						//cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << "," << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << endl;
-						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,be,bp,Wm,tm, tX,tY,tZ, wX,wY,wZ,wT, bWe,lWe,bAl,lAb
+						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,be,bp,Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, boost_wX,boost_wY,boost_wZ,boost_wT, bWe,lWe,bAl,lAb
+						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,be,bp,Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, bWe,lWe,bAl,lAb
 						cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
 						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
 						cout << ',' << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << "," << W->mass() << "," << p.mass();
-						cout << ',' << t_v.X() << ',' << t_v.Y() << ',' << t_v.Z();
+						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
+						cout << ',' << t_v.X() << ',' << t_v.Y() << ',' << t_v.Z() << ',' << t_v.T();
 						TVector3 W_frame = W_v.BoostVector();
 						b_v.Boost(-W_frame);
 						W_v.Boost(-W_frame);
 						l_v.Boost(-W_frame);
-						// check:
-						cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
+						// check: Done
+						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
 						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
 						cout << endl;
 						if (l->numberOfDaughters()>0)
@@ -2317,13 +2319,14 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
 						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
 						cout << ',' << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << "," << W->mass() << "," << p.mass();
-						cout << ',' << tbar_v.X() << ',' << tbar_v.Y() << ',' << tbar_v.Z();
+						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
+						cout << ',' << tbar_v.X() << ',' << tbar_v.Y() << ',' << tbar_v.Z() << ',' << tbar_v.T();
 						TVector3 W_frame = W_v.BoostVector();
 						b_v.Boost(-W_frame);
 						W_v.Boost(-W_frame);
 						l_v.Boost(-W_frame);
-						// check:
-						cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
+						// check: Done
+						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
 						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
 						cout << endl;
 						if (l->numberOfDaughters()>0)
