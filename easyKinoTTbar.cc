@@ -560,6 +560,49 @@ const reco::Candidate* find_W_decay_l(const reco::Candidate * W) {
 	}
 }
 
+
+/*
+ * const reco::Candidate* find_W_decay_nu(const reco::Candidate * W)
+ *
+ * returns the pointer to the lepton (first in the generation tree, not final product or anything)
+ *
+ * Usage:
+ * const reco::Candidate * W = p.daughter( W_num );
+ * const reco::Candidate * neutrino = find_W_decay_nu(W);
+*/
+const reco::Candidate* find_W_decay_nu(const reco::Candidate * W) {
+	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
+	int d0_id, d1_id; // ids of decay daughters
+	//bool found_decay=false;
+	// follow W, whatever happens to it (who knows! defensive programming here)
+	// until leptonic/quarkonic decay is found
+	// 
+	// assume there can be only W->W transitions inbetween (TODO: to check actually)
+	//while (!found_decay) {
+	while (true) {
+		int n = p->numberOfDaughters();
+		switch(n) {
+		case 0: return NULL;
+		case 1: // it should be another W->W transition
+			p = p->daughter(0);
+			break; // there should not be no infinite loop here!
+		case 2: // so, it should be the decay
+			//found_decay = true;
+			d0_id = fabs(p->daughter(0)->pdgId());
+			d1_id = fabs(p->daughter(1)->pdgId());
+			if (d0_id == 16 || d0_id == 14 || d0_id == 12) return p->daughter(0);
+			if (d1_id == 16 || d1_id == 14 || d1_id == 12) return p->daughter(1);
+			cout << "weird daughters: " << d0_id << "\t" << d1_id << endl;
+			return NULL;
+		default: // and this is just crazy
+			cout << "crazy" << endl;
+			return NULL;
+		}
+	}
+}
+
+
+
 // int n = p.numberOfDaughters();
 // if (n == 2) { // it is a decay vertes of t to something
 // int d0_id = p.daughter(0)->pdgId();
@@ -1918,7 +1961,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		if(debug)
 			{
-			cout << "Processing event " << iev << "\n\n" ;
+			cout << "Processing event " << iev << endl;
 			if(iev > debug_len)
 				{
 				cout << "Got to the event " << iev << " in the file, exiting" << endl;
@@ -2168,6 +2211,30 @@ for(size_t f=0; f<urls.size();++f)
 			// mu, vmu   13, 14
 			// tau, vtau 15, 16
 
+			//cout << "getting getting a random particle" << endl;
+
+			// find random final state particle for tests further on
+			TLorentzVector random_particle(0,0,0,0);
+			for(size_t i = 0; i < gen.size(); ++ i)
+				{ // try first final state particle in the collection
+				const reco::GenParticle & p = gen[i];
+				int id = fabs(p.pdgId());
+				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
+				if (st==1) // final state status
+					{
+					cout << "random_particle:" << i << ',' << id << endl;
+					random_particle = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
+					break;
+					}
+				}
+
+			LorentzVector z_unit_vector(0, 0, 1, 0);
+
+			//cout << "getting ttbar branches" << endl;
+
+			//const reco::GenParticle & t, tbar; // = gen[i];
+			TLorentzVector t_v, tbar_v;
+			TLorentzVector ttbar_neutrinos(0,0,0,0);
 			for(size_t i = 0; i < gen.size(); ++ i)
 				{
 				const reco::GenParticle & p = gen[i];
@@ -2177,6 +2244,8 @@ for(size_t f=0; f<urls.size();++f)
 				if (id == 6) { // if it is a t quark
 					// looking for W+ and its' leptonic decay
 					// without checks, just checking 2 daughters
+					//t = gen[i];
+					t_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
 					int n = p.numberOfDaughters();
 					if (n == 2) { // it is a decay vertes of t to something
 						int d0_id = p.daughter(0)->pdgId();
@@ -2186,18 +2255,49 @@ for(size_t f=0; f<urls.size();++f)
 						const reco::Candidate * b = p.daughter( 1 - W_num );
 						const reco::Candidate * W = p.daughter( W_num );
 						const reco::Candidate * l = find_W_decay_l(W);
+						const reco::Candidate * nu = find_W_decay_nu(W);
 						if (!b || !l)
 							{
 							cout << "broken decay in t" << endl;
+							continue;
 							}
+						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
+						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
+						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
+						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
 						// got all products of t decay
-						cout << "t decay\t" << b->p4().Dot(l->p4()) << endl;
+						//cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << "," << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << endl;
+						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, boost_wX,boost_wY,boost_wZ,boost_wT, bWe,lWe,bAl,lAb
+						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, bWe,lWe,bAl,lAb
+						cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
+						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
+						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
+						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
+						cout << "," << W->mass() << "," << p.mass();
+						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
+						cout << ',' << t_v.X() << ',' << t_v.Y() << ',' << t_v.Z() << ',' << t_v.T();
+						TVector3 W_frame = W_v.BoostVector();
+						b_v.Boost(-W_frame);
+						W_v.Boost(-W_frame);
+						l_v.Boost(-W_frame);
+						// boost check: Done
+						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
+						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
+						cout << endl;
+						if (l->numberOfDaughters()>0)
+							{
+							cout << "lepton has " << l->numberOfDaughters() << " daughters";
+							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
+							cout << endl;
+							}
 					}
 				}
 
 				if (id == -6) { // if it is a tbar quark
 					// looking for W- and its' leptonic decay
 					int n = p.numberOfDaughters();
+					//tbar = gen[i];
+					tbar_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
 					if (n == 2) { // it is a decay vertes of t to something
 						int d0_id = p.daughter(0)->pdgId();
 						int d1_id = p.daughter(1)->pdgId();
@@ -2206,22 +2306,73 @@ for(size_t f=0; f<urls.size();++f)
 						const reco::Candidate * b = p.daughter( 1 - W_num );
 						const reco::Candidate * W = p.daughter( W_num );
 						const reco::Candidate * l = find_W_decay_l(W);
+						const reco::Candidate * nu = find_W_decay_nu(W);
 						if (!b || !l)
 							{
 							cout << "broken decay in t" << endl;
+							continue;
 							}
+						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
+						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
+						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
+						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
 						// got all products of tbar decay
-						cout << "tbar decay\t" << b->p4().Dot(l->p4()) << endl;
+						//cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << endl;
+						cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
+						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
+						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
+						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
+						cout << "," << W->mass() << "," << p.mass();
+						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
+						cout << ',' << tbar_v.X() << ',' << tbar_v.Y() << ',' << tbar_v.Z() << ',' << tbar_v.T();
+						TVector3 W_frame = W_v.BoostVector();
+						b_v.Boost(-W_frame);
+						W_v.Boost(-W_frame);
+						l_v.Boost(-W_frame);
+						// boost check: Done
+						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
+						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
+						cout << endl;
+						if (l->numberOfDaughters()>0)
+							{
+							cout << "lepton has " << l->numberOfDaughters() << " daughters";
+							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
+							cout << endl;
+							}
 					}
 				}
 				}
-				// so, mc_decay will be populated with strings matching t decays
-				// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
+			// so, mc_decay will be populated with strings matching t decays
+			// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
+
+			TLorentzVector ttbar_v = t_v+tbar_v;
+			cout << "ttbar_system," << ttbar_v.Px() << ',' << ttbar_v.Py() << ',' << ttbar_v.Pz() << ',' << ttbar_v.E() << ',' << ttbar_v.M() << endl;
+
+			//cout << "getting all neutrinos" << endl;
+
+			//const reco::GenParticle & t, tbar; // = gen[i];
+			TLorentzVector all_neutrinos(0,0,0,0);
+			for(size_t i = 0; i < gen.size(); ++ i)
+				{
+				const reco::GenParticle & p = gen[i];
+				int id = fabs(p.pdgId());
+				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
+				if (id == 12 || id == 14 || id == 16)
+					{
+					if (st==1) // final state status
+						all_neutrinos += TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
+					else
+						cout << "non-final neutrino? " << i << '\t' << p << endl;
+					}
+				}
+
+			// ch, dX,dY,dZ,dT
+			TLorentzVector residual_neutrinos = all_neutrinos - ttbar_neutrinos;
+			cout << "neutrinos," << residual_neutrinos.X() << ',' << residual_neutrinos.Y() << ',' << residual_neutrinos.Z() << ',' << residual_neutrinos.T() << ',' << residual_neutrinos.E() << ',' << residual_neutrinos.M() << endl;
 			}
 
-
 		if(debug){
-			cout << "end of event" << endl;
+			cout << "end of event" << endl << endl;
 			}
 
 

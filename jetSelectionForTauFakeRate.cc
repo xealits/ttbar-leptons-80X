@@ -1760,7 +1760,17 @@ for(size_t f=0; f<urls.size();++f)
 						const reco::Candidate * d = p.daughter(j);
 						unsigned int d_id = fabs(d->pdgId());
 						if (d_id == 12 || d_id == 14 || d_id == 16) continue;
-						vis_ds += d->p4();
+						if (d->status() == 1) vis_ds += d->p4();
+						// it should be useless -- all subdaughters are photons from neutral pions
+						// and they are visible..
+						// but still:
+						for (int u = 0; u < d->numberOfDaughters(); ++u)
+							{
+							const reco::Candidate * d2 = d->daughter(u);
+							unsigned int d_id = fabs(d2->pdgId());
+							if (d_id == 12 || d_id == 14 || d_id == 16) continue;
+							vis_ds += d2->p4();
+							}
 						}
 					visible_gen_taus.push_back(vis_ds); 
 					}
@@ -2799,9 +2809,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (tau.tauID("decayModeFinding")<0.5) continue; // OldDMs is synonim for no <DMs>
 			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
 			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
-			if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
+			//if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
 			// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
-			//if (tau.tauID ("byMediumIsolationMVArun2v1DBoldDMwLT")<0.5) continue;
+			if (tau.tauID ("byMediumIsolationMVArun2v1DBoldDMwLT")<0.5) continue;
 
 			if (tau.tauID ("againstMuonTight3")                          <0.5) continue; // Medium working point not usable. Available values: Loose, Tight
 			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
