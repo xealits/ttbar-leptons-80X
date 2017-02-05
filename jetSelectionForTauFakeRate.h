@@ -189,7 +189,15 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 					minDRtj = jet_tau_distance;
 					}
 				}
-			if (jet_origin == 0 && (minDRtj < tau_fake_distance)) jet_origin = 15;
+			//if (jet_origin == 0 && (minDRtj < tau_fake_distance)) jet_origin = 15;
+			// maybe the true taus are lost here?
+			// 1) dR can be too wide and include non-tau jets
+			//    (where is the tau jet then? -- maybe mixed into a wide jet, or not reconstructed altogether?) 
+			// 2) what if partonFlavour of a tau jet is not 0?
+			//    maybe 0 are only wide tau jets, which have less ID efficiency,
+			//    average tau jets usually get 1-4 light-quark partonFlavour etc
+			// let's try 2)
+			if (minDRtj < tau_fake_distance) jet_origin = 15;
 
 			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
 			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
