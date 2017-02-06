@@ -197,7 +197,10 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//    maybe 0 are only wide tau jets, which have less ID efficiency,
 			//    average tau jets usually get 1-4 light-quark partonFlavour etc
 			// let's try 2)
-			if (minDRtj < tau_fake_distance) jet_origin = 15;
+			//if (minDRtj < tau_fake_distance) jet_origin = 15;
+			// the fake rate in qcd is lower than it was and lower than in wjets
+			// try partonFlavour != gluons
+			if (jet_origin != 21 && (minDRtj < tau_fake_distance)) jet_origin = 15;
 
 			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
 			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
