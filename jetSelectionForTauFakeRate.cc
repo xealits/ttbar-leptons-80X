@@ -4103,7 +4103,10 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	//outUrl.Data() is dtag_jobnum
 	// use them separately, take from: dtag_s, job_num
 	// TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "CREATE");
-	TFile* out_f = TFile::Open (outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root")), "CREATE");
+
+	TString filename = outdir + TString(string("/") + dtag_s + channel + string("_") + job_num + string(".root"));
+	cout << "opening " << filename << endl;
+	TFile* out_f = TFile::Open(filename, "CREATE");
 	// string mc_decay_suffix = key->first;
 	std::map<string, TH1D> * th1d_controlpoints = & it->second;
 
@@ -4154,6 +4157,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		}
 
 	out_f->Close();
+	cout << "closed " << endl;
 	}
 
 FILE *csv_out;
