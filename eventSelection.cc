@@ -86,6 +86,10 @@
 //#include "jetDistrs.h"
 #include "recordFuncs.h"
 #include "ProcessingMuons.cc"
+#include "ProcessingElectrons.cc"
+#include "ProcessingTaus.cc"
+#include "ProcessingJets.cc"
+#include "ProcessingBJets.cc"
 
 using namespace std;
 
@@ -124,171 +128,6 @@ namespace utils
 			//return the corrector
 			return new FactorizedJetCorrector(corSteps);
 			}
-
-		std::vector<double> smearJER(double pt, double eta, double genPt)
-			{
-			std::vector<double> toReturn(3,pt);
-			if(genPt<=0) return toReturn;
-
-			// These are from MacroUtils
-			// FIXME: These are the 8 TeV values.
-			//
-			// eta=fabs(eta);
-			// double ptSF(1.0), ptSF_err(0.06);
-			// if(eta<0.8)                  { ptSF=1.061; ptSF_err=sqrt(pow(0.012,2)+pow(0.023,2)); }
-			// else if(eta>=0.8 && eta<1.3) { ptSF=1.088; ptSF_err=sqrt(pow(0.012,2)+pow(0.029,2)); }
-			// else if(eta>=1.3 && eta<1.9) { ptSF=1.106; ptSF_err=sqrt(pow(0.017,2)+pow(0.030,2)); }
-			// else if(eta>=1.9 && eta<2.5) { ptSF=1.126; ptSF_err=sqrt(pow(0.035,2)+pow(0.094,2)); }
-			// else if(eta>=2.5 && eta<3.0) { ptSF=1.343; ptSF_err=sqrt(pow(0.127,2)+pow(0.123,2)); }
-			// else if(eta>=3.0 && eta<3.2) { ptSF=1.303; ptSF_err=sqrt(pow(0.127,2)+pow(1.303,2)); }
-			// else if(eta>=3.2 && eta<5.0) { ptSF=1.320; ptSF_err=sqrt(pow(0.127,2)+pow(1.320,2)); }
-
-			// TODO: 13TeV table for CMSSW_76X
-			// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
-			// following https://github.com/pfs/TopLJets2015/blob/master/TopAnalysis/src/CommonTools.cc
-			//eta=fabs(eta);
-			//double ptSF(1.0), ptSF_err(0.06);
-			//if      (eta<0.5) { ptSF=1.095; ptSF_err=0.018; }
-			//else if (eta<0.8) { ptSF=1.120; ptSF_err=0.028; }
-			//else if (eta<1.1) { ptSF=1.097; ptSF_err=0.017; }
-			//else if (eta<1.3) { ptSF=1.103; ptSF_err=0.033; }
-			//else if (eta<1.7) { ptSF=1.118; ptSF_err=0.014; }
-			//else if (eta<1.9) { ptSF=1.100; ptSF_err=0.033; }
-			//else if (eta<2.1) { ptSF=1.162; ptSF_err=0.044; }
-			//else if (eta<2.3) { ptSF=1.160; ptSF_err=0.048; }
-			//else if (eta<2.5) { ptSF=1.161; ptSF_err=0.060; }
-			//else if (eta<2.8) { ptSF=1.209; ptSF_err=0.059; }
-			//else if (eta<3.0) { ptSF=1.564; ptSF_err=0.321; }
-			//else if (eta<3.2) { ptSF=1.384; ptSF_err=0.033; }
-			//else if (eta<5.0) { ptSF=1.216; ptSF_err=0.050; }
-
-			// 2016 80X
-			// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-			//abs(eta) region 	0.0–0.5 	0.5-0.8 	0.8–1.1 	1.1-1.3 	1.3–1.7 	1.7 - 1.9 	1.9–2.1 	2.1 - 2.3 	2.3 - 2.5 	2.5–2.8 	2.8-3.0 	3.0-3.2 	3.2-5.0
-			//Data/MC SF
-			//1.122 +-0.026
-			//1.167 +-0.048
-			//1.168 +-0.046
-			//1.029 +-0.066
-			//1.115 +-0.03
-			//1.041 +-0.062
-			//1.167 +-0.086
-			//1.094 +-0.093
-			//1.168 +-0.120
-			//1.266 +-0.132
-			//1.595 +-0.175
-			//0.998 +-0.066
-			//1.226 +-0.145
-			eta=fabs(eta);
-			double ptSF(1.0), ptSF_err(0.06);
-			if      (eta<0.5) { ptSF=1.122; ptSF_err=0.026; }
-			else if (eta<0.8) { ptSF=1.167; ptSF_err=0.048; }
-			else if (eta<1.1) { ptSF=1.168; ptSF_err=0.046; }
-			else if (eta<1.3) { ptSF=1.029; ptSF_err=0.066; }
-			else if (eta<1.7) { ptSF=1.115; ptSF_err=0.03 ; }
-			else if (eta<1.9) { ptSF=1.041; ptSF_err=0.062; }
-			else if (eta<2.1) { ptSF=1.167; ptSF_err=0.086; }
-			else if (eta<2.3) { ptSF=1.094; ptSF_err=0.093; }
-			else if (eta<2.5) { ptSF=1.168; ptSF_err=0.120; }
-			else if (eta<2.8) { ptSF=1.266; ptSF_err=0.132; }
-			else if (eta<3.0) { ptSF=1.595; ptSF_err=0.175; }
-			else if (eta<3.2) { ptSF=0.998; ptSF_err=0.066; }
-			else if (eta<5.0) { ptSF=1.226; ptSF_err=0.145; }
-
-			toReturn[0]=TMath::Max(0., (genPt+ptSF*(pt-genPt))/pt );
-			toReturn[1]=TMath::Max(0., (genPt+(ptSF+ptSF_err)*(pt-genPt))/pt );
-			toReturn[2]=TMath::Max(0., (genPt+(ptSF-ptSF_err)*(pt-genPt))/pt );
-			return toReturn;
-			}
-
-
-		/* Using new stuff above
-		std::vector<double> smearJER(double pt, double eta, double genPt)
-			{
-			std::vector<double> toReturn(3,pt);
-			if(genPt<=0) return toReturn;
-			
-			// FIXME: These are the 8 TeV values.
-			//
-			eta=fabs(eta);
-			double ptSF(1.0), ptSF_err(0.06);
-			if(eta<0.5)                  { ptSF=1.052; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.062+0.061),2)); }
-			else if(eta>=0.5 && eta<1.1) { ptSF=1.057; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.056+0.055),2)); }
-			else if(eta>=1.1 && eta<1.7) { ptSF=1.096; ptSF_err=sqrt(pow(0.017,2)+pow(0.5*(0.063+0.062),2)); }
-			else if(eta>=1.7 && eta<2.3) { ptSF=1.134; ptSF_err=sqrt(pow(0.035,2)+pow(0.5*(0.087+0.085),2)); }
-			else if(eta>=2.3 && eta<5.0) { ptSF=1.288; ptSF_err=sqrt(pow(0.127,2)+pow(0.5*(0.155+0.153),2)); }
-			
-			toReturn[0]=TMath::Max(0.,(genPt+ptSF*(pt-genPt)));
-			toReturn[1]=TMath::Max(0.,(genPt+(ptSF+ptSF_err)*(pt-genPt)));
-			toReturn[2]=TMath::Max(0.,(genPt+(ptSF-ptSF_err)*(pt-genPt)));
-			return toReturn;
-			}
-
-		//
-		//std::vector<double> smearJES(double pt, double eta, JetCorrectionUncertainty *jecUnc)
-		std::vector<float> smearJES(double pt, double eta, JetCorrectionUncertainty *jecUnc)
-			{
-			jecUnc->setJetEta(eta);
-			jecUnc->setJetPt(pt);
-			double relShift=fabs(jecUnc->getUncertainty(true));
-			//std::vector<double> toRet;
-			std::vector<float> toRet;
-			toRet.push_back((1.0+relShift)*pt);
-			toRet.push_back((1.0-relShift)*pt);
-			return toRet;
-			}
-		*/
-
-		/* using the one in src/MacroUtils.cc
-		void updateJEC(pat::JetCollection &jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC)
-			{
-			for(size_t ijet=0; ijet<jets.size(); ijet++)
-				{
-				pat::Jet jet = jets[ijet];
-				//correct JES
-				LorentzVector rawJet = jet.correctedP4("Uncorrected");
-				//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
-				//LorentzVector rawJet(jet*toRawSF);
-				jesCor->setJetEta(rawJet.eta());
-				jesCor->setJetPt(rawJet.pt());
-				jesCor->setJetA(jet.jetArea());
-				jesCor->setRho(rho);
-				jesCor->setNPV(nvtx);
-				double newJECSF=jesCor->getCorrection();
-				rawJet *= newJECSF;
-				//jet.SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
-				jet.setP4(rawJet);
-
-				//smear JER
-				double newJERSF(1.0);
-				if(isMC)
-					{
-					const reco::GenJet* genJet=jet.genJet();
-					double genjetpt( genJet ? genJet->pt(): 0.);
-					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-					newJERSF=smearJER[0]/jet.pt();
-					rawJet *= newJERSF;
-					//jet.SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
-					jet.setP4(rawJet);
-					// FIXME: change the way this is stored (to not storing it)
-					// //set the JER up/down alternatives 
-					// jets[ijet].setVal("jerup",   smearJER[1] );
-					// jets[ijet].setVal("jerdown", smearJER[2] );
-					}
-
-				// FIXME: change the way this is stored (to not storing it)
-				////set the JES up/down pT alternatives
-				//std::vector<float> ptUnc=utils::cmssw::smearJES(jet.pt(),jet.eta(), totalJESUnc);
-				//jets[ijet].setVal("jesup",    ptUnc[0] );
-				//jets[ijet].setVal("jesdown",  ptUnc[1] );
-
-				// FIXME: this is not to be re-set. Check that this is a desired non-feature.
-				// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine. 
-				//to get the raw jet again
-				//jets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));  
-				}
-			}
-		*/
 
 		enum METvariations { NOMINAL, JERUP, JERDOWN, JESUP, JESDOWN, UMETUP, UMETDOWN, LESUP, LESDOWN };
 
@@ -354,70 +193,6 @@ namespace utils
 			}
 		}
 	}
-
-bool passPFJetID(std::string label, pat::Jet jet)
-	{
-	// Set of cuts from the POG group: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-
-	bool passID(false); 
-
-	// float rawJetEn(jet.correctedJet("Uncorrected").energy() );
-
-	double eta=jet.eta();
- 
- 	// from the twiki:
-	float NHF = jet.neutralHadronEnergyFraction();
-	float NEMF = jet.neutralEmEnergyFraction();
-	float CHF = jet.chargedHadronEnergyFraction();
-	float MUF = jet.muonEnergyFraction();
-	float CEMF = jet.chargedEmEnergyFraction();
-	float NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
-	float NumNeutralParticles =jet.neutralMultiplicity();
-	float CHM = jet.chargedMultiplicity(); 
-	// TODO: check if these change corresponding to jet corrections? Or apply corrections after passing the selection?
-
-	// float nhf( (jet.neutralHadronEnergy() + jet.HFHadronEnergy())/rawJetEn );
-	// float nef( jet.neutralEmEnergy()/rawJetEn );
-	// float cef( jet.chargedEmEnergy()/rawJetEn );
-	// float chf( jet.chargedHadronEnergy()/rawJetEn );
-	// float nch    = jet.chargedMultiplicity();
-	// float nconst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
-	// float muf(jet.muonEnergy()/rawJetEn); 
-
-	// at time of 80X all 13TeV (74X, 76X, 80X) recommendations got new specification for |eta| < 2.7
-	if (label=="Loose")
-		{
-		// passID = ( ((nhf<0.99 && nef<0.99 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.99) || abs(eta)>2.4)) && abs(eta)<=3.0 );
-		// the same, just with new names:
-		// passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 
-		if (fabs(eta) <= 3.0)
-			{
-			if (fabs(eta) <= 2.7) passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
-			else passID = NEMF<0.90 && NumNeutralParticles > 2;
-			}
-		else passID = NEMF<0.90 && NumNeutralParticles > 10;
-		}
-	if (label=="Tight")
-		{
-		// passID = ( ((nhf<0.90 && nef<0.90 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.90) || abs(eta)>2.4)) && abs(eta) <=3.0);
-		// passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
-		// the same, only NHF and NEMF are 0.90 at |eta| < 2.7
-		if (fabs(eta) <= 3.0)
-			{
-			if (fabs(eta) <= 2.7) passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4);
-			else passID = NEMF<0.90 && NumNeutralParticles > 2;
-			}
-		else passID = NEMF<0.90 && NumNeutralParticles > 10;
-		}
-
-	// there is also:
-	//tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4) && abs(eta)<=3.0
-
-	// And the abs(eta)>3.0 part, but we never consider such jets, so... Meh!
-
-	return passID; 
-	}
-
 
 
 bool hasLeptonAsDaughter(const reco::GenParticle p)
@@ -2674,10 +2449,12 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "N Jets:" << jets.size() << "\n";
 			}
 
+		/* not using photons now
 		pat::PhotonCollection photons;
 		fwlite::Handle<pat::PhotonCollection> photonsHandle;
 		photonsHandle.getByLabel(ev, "slimmedPhotons");
 		if(photonsHandle.isValid() ) photons = *photonsHandle;
+		*/
 
 		pat::METCollection mets;
 		fwlite::Handle<pat::METCollection> metsHandle;
@@ -2717,6 +2494,8 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
+		/* Tried photons for QCD issue in e-tau (excces from 2 very-weighted events)
+		 * it didn't change anything
 		pat::PhotonCollection selPhotons;
 		//pat::PhotonCollection photons;
 		for(unsigned int n=0; n<photons.size (); ++n)
@@ -2735,163 +2514,32 @@ for(size_t f=0; f<urls.size();++f)
 
 			selPhotons.push_back(photon); 
 			}
+		*/
 
 		//
 		// LEPTON SELECTION
 		//
 
 		// ---------------------------------- ELECTRONS SELECTION
+		/* int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco::Vertex goodPV, double rho, double weight, // input
+		 *         patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                           // config/cuts
+		 *         patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
+		 *         double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+		 *         pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE,                    // output
+		 *         bool record, bool debug) // more output
+		 */
+
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
-		for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
-			{
-			pat::Electron& electron = electrons[n];
-
-			fill_2d(string("control_el_slimmedelectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-			fill_1d(string("control_el_slimmedelectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
-			//fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			bool 
-				passKin(true),     passId(true),     passIso(true),
-				passVetoKin(true), passVetoId(true), passVetoIso(true);
-			bool passSigma(false), passSigmaVeto(false);
-			bool passImpactParameter(false), passImpactParameterVeto(true);
-			// from passId( pat::Photon .. ) of PatUtils:
-			//bool elevto = photon.hasPixelSeed();  //LQ  REACTIVATED FOR TIGHT ID, OTHERWISE MANY ELECtRONS pass the photon Id
-			// and then, in Tight ID, they include:
-			// && !elevto 
-			//
-			// So, it would be nice to add it to Tight Electron ID:
-			//bool hasPixelSeed = electron.hasPixelSeed();
-			// but electrons don't have this method
-			// will have to cross-clean with photons or etc
-
-			// removing all electrons close to tight Photons
-			// actually, people do it the other way around, testing v9.5
-			double minDRlg(9999.);
-			for(size_t i=0; i<selPhotons.size(); i++)
-				{
-				minDRlg = TMath::Min(minDRlg, deltaR(electron.p4(), selPhotons[i].p4()));
-				}
-			if(minDRlg<0.1) continue;
-
-			int lid(electron.pdgId()); // should always be 11
-
-			//apply electron corrections
-			/* no lepcorrs in 13.6
-			if(abs(lid)==11)
-				{
-				elDiff -= electron.p4();
-				ElectronEnCorrector.calibrate(electron, ev.eventAuxiliary().run(), edm::StreamID::invalidStreamID()); 
-				//electron = patUtils::GenericLepton(electron.el); //recreate the generic electron to be sure that the p4 is ok
-				elDiff += electron.p4();
-				}
-			*/
-
-			// TODO: probably, should make separate collections for each step, for corrected particles, then -- passed ID etc
-			// fill_pt_e( string("all_electrons_corrected_pt"), electron.pt(), weight);
-			// if (n < 2)
-			// 	{
-			// 	fill_pt_e( string("top2pt_electrons_corrected_pt"), electron.pt(), weight);
-			// 	}
-
-			//no need for charge info any longer
-			//lid = abs(lid);
-			//TString lepStr(lid == 13 ? "mu" : "e");
-			// should always be 11!
-					
-			// no need to mess with photon ID // //veto nearby photon (loose electrons are many times photons...)
-			// no need to mess with photon ID // double minDRlg(9999.);
-			// no need to mess with photon ID // for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
-			// no need to mess with photon ID //   minDRlg=TMath::Min(minDRlg,deltaR(leptons[n].p4(),selPhotons[ipho].p4()));
-			// no need to mess with photon ID // if(minDRlg<0.1) continue;
-
-
-			// ------------------------- electron IDs
-			//Cut based identification
-			//https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
-			// full5x5_sigmaIetaIeta is forgotten in our passId for electrons
-			// getting high MC/Data in electrons now -- maybe due to photons,
-			// checking sigmaIetaIeta, then photon rejection (hasPixelSeed()) and cross-cleaning with photons
-			float eta = std::abs(electron.superCluster()->position().eta());
-			float sigmaIetaIeta = electron.full5x5_sigmaIetaIeta();
-			if (eta <= 1.479) // barrel, newer selection is precise?
-				{
-				passSigma =     sigmaIetaIeta < 0.00998; // Tight WP
-				passSigmaVeto = sigmaIetaIeta < 0.0115;  // Veto WP
-				}
-			else if (eta > 1.479) // endcap
-				{
-				passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
-				passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
-				}
-			passImpactParameter = electron.dB() < 0.02;
-			// what units is this? in the PAT example on top they say "we use < 0.02cm",
-			// in recommendations for muons it is < 0.2 
-			// and say "The 2 mm cut preserves efficiency for muons from decays of b and c hadrons"
-			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookPATExampleTopQuarks
-			//https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
-			//
-			// the electron ID from parUtils has the impact parameter commented out:
-			//                  //dxy             < 0.05     &&
-			//                  //dz              < 0.10     &&
-			// -- dxy should be the same as dB
-			// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
-
-
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma && passImpactParameter;
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto && passImpactParameterVeto;
-
-			// ------------------------- electron isolation
-
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
-
-
-			// ---------------------------- Electron Kinematics
-			//double leta(fabs(lid==11 ? lepton.el.superCluster()->eta() : lepton.eta()));
-			double leta( electron.superCluster()->eta() );
-
-			// ---------------------- Main lepton kin
-			//if(electron.pt() < 30.)                passKin = false;
-			if(electron.pt() < 35.)                passKin = false;
-			// if(leta > 2.1)                         passKin = false;
-			if(leta > 2.4)                         passKin = false;
-			if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
-
-			// ---------------------- Veto lepton kin
-			// if (electron.pt () < 20)            passVetoKin = false;
-			if (electron.pt () < 15)            passVetoKin = false;
-			// if (leta > 2.1)                     passVetoKin = false;
-			if (leta > 2.5)                     passVetoKin = false;
-			if (leta > 1.4442 && leta < 1.5660) passVetoKin = false; // Crack veto
-
-
-			if     (passKin     && passId     && passIso)
-				{
-				selElectrons.push_back(electron);
-				fill_2d(string("control_el_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-				fill_1d(string("control_el_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
-				}
-			else if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
-
-			}
-
-		// TODO: there should be no need to sort selected electrons here again -- they are in order of Pt
-		std::sort(selElectrons.begin(),   selElectrons.end(),   utils::sort_CandidatesByPt);
-		// std::sort(selLeptons.begin(),   selLeptons.end(),   utils::sort_CandidatesByPt);
-		// std::sort(selLeptons_nocor.begin(),   selLeptons_nocor.end(),   utils::sort_CandidatesByPt);
-
+		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
+			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
 			}
-
-
-
 
 
 		// ---------------------------------- MUONS SELECTION
@@ -2911,85 +2559,6 @@ for(size_t f=0; f<urls.size();++f)
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
 			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
 
-		/*
-		for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
-			{
-			// patUtils::GenericLepton& lepton = leptons[n];
-			pat::Muon& muon = muons[n];
-
-			fill_2d(string("control_mu_slimmedmions_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-			fill_1d(string("control_mu_slimmedmions_phi"), 128, -3.2, 3.2, muon.phi(), weight);
-
-			bool
-				passKin(true),     passId(true),     passIso(true),
-				passVetoKin(true), passVetoId(true), passVetoIso(true);
-
-			int lid(muon.pdgId()); // should always be 13
-
-
-			//no need for charge info any longer
-			//lid = abs(lid);
-			//TString lepStr(lid == 13 ? "mu" : "e");
-					
-			// no need to mess with photon ID // //veto nearby photon (loose electrons are many times photons...)
-			// no need to mess with photon ID // double minDRlg(9999.);
-			// no need to mess with photon ID // for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
-			// no need to mess with photon ID //   minDRlg=TMath::Min(minDRlg,deltaR(leptons[ilep].p4(),selPhotons[ipho].p4()));
-			// no need to mess with photon ID // if(minDRlg<0.1) continue;
-
-			//Cut based identification
-
-			// ------------------------- muon IDs
-			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose, patUtils::CutVersion::ICHEP16Cut);
-
-			// ------------------------- muon isolation
-			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, patUtils::CutVersion::ICHEP16Cut);
-
-			if (passId && passIso)
-				{
-				fill_pt_e( string("all_muons_idiso_pt"), muon.pt(), weight);
-				if (count_idiso_muons < 2) fill_pt_e( string("top2pt_muons_idiso_pt"), muon.pt(), weight);
-				count_idiso_muons += 1;
-				}
-
-
-			// ---------------------------- Muon Kinematics
-			double leta( muon.eta());
-
-			// ---------------------- Main muon kin
-			if(muon.pt() < 30.)   passKin = false;
-			// if(leta > 2.1)        passKin = false;
-			//if(muon.pt() < 26.)   passKin = false;
-			if(leta > 2.4)        passKin = false;
-
-			// ---------------------- Veto muon kin
-			//if (muon.pt () < 20)  passVetoKin = false;
-			// if (leta > 2.1)       passVetoKin = false;
-			if (muon.pt () < 10)  passVetoKin = false;
-			if (leta > 2.5)       passVetoKin = false;
-
-			if     (passKin     && passId     && passIso)
-				{
-				selMuons.push_back(muon);
-				fill_2d(string("control_mu_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-				fill_1d(string("control_mu_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
-				}
-			else if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
-
-			// TODO: ------------ ID/Iso scale factors:
-			// https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Muon_reconstruction_identificati
-			// if it is MC and ID tight muon is found -- multiply weight by factor,
-			// corresponding to its' tight scale factor distr
-			// if loose -- loose scale factor
-			}
-
-
-		// TODO: there should be no need to sort selected muons here again -- they are in order of Pt
-		std::sort(selMuons.begin(),   selMuons.end(),   utils::sort_CandidatesByPt);
-		*/
-
 		if(debug){
 			cout << "processed muons" << endl;
 			}
@@ -3005,83 +2574,16 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
-		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
-			{
-			pat::Tau& tau = taus[n];
+		//int processTaus_ID_ISO_Kinematics(pat::TauCollection& taus, double weight, // input
+		//        string& tauID_decayMode, string& tauID,               // config/cuts
+		//        string& tauID_IsoMuons,  string& tauID_IsoElectrons,
+		//        double pt_cut, double eta_cut, 
+		//        pat::TauCollection& selTaus,                          // output
+		//        bool record, bool debug) // more output
+		string tau_decayMode("decayModeFinding"), tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"), tau_againstMuon("againstMuonTight3"), tau_againstElectron("againstElectronTightMVA6");
 
-			fill_2d(string("control_tau_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			// ---------- IDs
-					
-			// if(!tau.isPFTau()) continue; // Only PFTaus // It should be false for slimmedTaus
-			// if(tau.emFraction() >=2.) continue;
-					
-			// Discriminators from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-			// "The tau passes the discriminator if pat::Tau::tauID("name") returns a value of 0.5 or greater"
-			//if(tau.tauID("decayModeFindingNewDMs")<0.5) continue; // High pt tau. Otherwise, OldDMs
-			if (tau.tauID("decayModeFinding")<0.5) continue; // OldDMs is synonim for no <DMs>
-			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
-			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
-			if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
-			// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
-			//if (tau.tauID ("byMediumIsolationMVArun2v1DBoldDMwLT")<0.5) continue;
-
-			if (tau.tauID ("againstMuonTight3")                          <0.5) continue; // Medium working point not usable. Available values: Loose, Tight
-			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
-			// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
-			if (tau.tauID ("againstElectronTightMVA6")                  <0.5) continue;
-
-			// maybe use MVA-based discriminators:
-			// byVLooseIsolationMVArun2v1DBoldDMwLT
-			// byLooseIsolationMVArun2v1DBoldDMwLT
-			// byMediumIsolationMVArun2v1DBoldDMwLT
-			// byTightIsolationMVArun2v1DBoldDMwLT
-			// byVTightIsolationMVArun2v1DBoldDMwLT
-
-			// or the new discriminators:
-			// byLooseCombinedIsolationDeltaBetaCorr3HitsdR03
-			// byMediumCombinedIsolationDeltaBetaCorr3HitsdR03
-			// byTightCombinedIsolationDeltaBetaCorr3HitsdR03
-			// -- recommended for multi-object final states (ttH, H->tau-tau)
-			// -- not found in noHLT TTbar
-
-			fill_2d(string("control_tau_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
-
-			// Pixel hits cut (will be available out of the box in new MINIAOD production)
-			//{
-			//int nChHadPixelHits = 0;
-			//reco::CandidatePtrVector chCands = tau.signalChargedHadrCands();
-			//for(reco::CandidatePtrVector::const_iterator iter = chCands.begin(); iter != chCands.end(); iter++)
-			//	{
-			//	pat::PackedCandidate const* packedCand = dynamic_cast<pat::PackedCandidate const*>(iter->get());
-			//	int pixelHits = packedCand->numberOfPixelHits();
-			//	if(pixelHits > nChHadPixelHits) nChHadPixelHits = pixelHits;
-			//	}
-			//if(nChHadPixelHits==0) continue;
-			//}
-
-			/*
-			fill_pt_e( string("all_taus_ided_pt"), tau.pt(), weight);
-			if (count_ided_taus<1)
-				{
-				fill_pt_e( string("top1pt_taus_ided_pt"), tau.pt(), weight);
-				count_ided_taus += 1;
-				}
-			*/
-
-			// --------- Tau Kinematics
-			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
-
-			selTaus.push_back(tau);
-			fill_2d(string("control_tau_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-			}
-
-		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
-
+		processTaus_ID_ISO_Kinematics(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron,
+			20, 2.3, selTaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -3215,258 +2717,31 @@ for(size_t f=0; f<urls.size();++f)
 		// up to here jets were not processed in any way
 		// now goes the procedure of corrections to jets and then METs
 
+
+
+
 		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
 
-		//void updateJEC(pat::JetCollection& jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC){
+		//int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, bool isMC, double weight, // input
+		//	double rho, unsigned int nGoodPV,
+		//	FactorizedJetCorrector *jesCor,
+		//	JetCorrectionUncertainty *totalJESUnc,
+		//	string& jetID,
+		//	double pt_cut, double eta_cut,
+		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
+		//	bool record, bool debug) // more output
 
-		// inline control functions usage:
-		//   fill_pt_e( "control_point_name", value, weight)
-		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
-		//   increment( "control_point_name", weight )
-
-
-		if(debug) cout << "jet eta pt e, e x y z" << endl;
-
-		// v6, adding jet corrections and b-tagging
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
-		for(size_t ijet=0; ijet<jets.size(); ijet++)
-			{
-			// TODO: so does this mean "in place"?
-			pat::Jet& jet = jets[ijet];
-			//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_2d(string("control_jet_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-			LorentzVector jet_corr(0., 0., 0., 0.);
-
-			LorentzVector jet_initial_momentum = jet.p4();
-
-			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-			//correct JES
-			LorentzVector rawJet = jet.correctedP4("Uncorrected");
-
-			fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
-
-			if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
-
-			//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
-			//LorentzVector rawJet(jet*toRawSF);
-			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
-			jesCor->setJetEta(rawJet.eta());
-			jesCor->setJetPt(rawJet.pt());
-			jesCor->setJetA(jet.jetArea());
-			jesCor->setRho(rho);
-			jesCor->setNPV(nGoodPV);
-			float jes_correction = jesCor->getCorrection();
-			jet.setP4(rawJet*jes_correction);
-
-			fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
-
-			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-
-			//smear JER
-			//https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-			//double newJERSF(1.0);
-			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
-			if(isMC)
-				{
-				const reco::GenJet* genJet=jet.genJet();
-				if(genJet)
-					{
-					double genjetpt( genJet ? genJet->pt(): 0.);                    
-					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-					double jer_smearing = smearJER[0];
-					jet.setP4(jet.p4()*jer_smearing);
-					fill_1d(string("control_jet_slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
-					
-					//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smearJER[0], smearJER[1], smearJER[2]);
-					// //set the JER up/down alternatives
-					jet.addUserFloat("jerup", smearJER[1]);  //kept for backward compatibility
-					jet.addUserFloat("jerdown", smearJER[2] ); //kept for backward compatibility
-					jet.addUserFloat("_res_jup", smearJER[1]);
-					jet.addUserFloat("_res_jdown", smearJER[2] );
-					}
-				else{
-					jet.addUserFloat("jerup", 1.0); //kept for backward compatibility
-					jet.addUserFloat("jerdown", 1.0);  //kept for backward compatibility
-					jet.addUserFloat("_res_jup", 1.0);
-					jet.addUserFloat("_res_jdown", 1.0 );
-					}
-				fill_2d(string("control_jet_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				}
-
-
-			// here is the correct3 jet correction point
-
-			if(isMC)
-				{
-				////set the JES up/down pT alternatives
-				std::vector<float> ptUnc=utils::cmssw::smearJES(jet.pt(),jet.eta(), totalJESUnc);
-				jet.addUserFloat("jesup",    ptUnc[0] );  //kept for backward compatibility
-				jet.addUserFloat("jesdown",  ptUnc[1] );  //kept for backward compatibility
-				jet.addUserFloat("_scale_jup",    ptUnc[0] );
-				jet.addUserFloat("_scale_jdown",  ptUnc[1] );
-				}
-
-			// FIXME: this is not to be re-set. Check that this is a desired non-feature.
-			// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
-			//to get the raw jet again
-			//jets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
-
-			// Add the jet momentum correction:
-			// jet_cor propagation is on in 13.4
-			jet_corr = jet.p4() - jet_initial_momentum;
-			full_jet_corr += jet_corr;
-
-			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
-			// so, jes & jer shouldn't change the eta of the jet -- only the energy (pt)
-			// record the correction per jet's eta and per original pt
-			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
-			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_pt"), 400, 0., 400., 200, -4., 4.,  full_jet_corr.pt(), jet_initial_momentum.eta(), weight);
-
-			if(debug)
-				{
-				cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-				cout << "-" << jet_initial_momentum.eta() << " " << jet_initial_momentum.pt() << " " << jet_initial_momentum.energy() << endl;
-				}
-			}
-
-
-		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
-
-		// ----------------------------------- here is the correctF jet correction point
-		// Propagate full_jet_corr to MET:
-		met.setP4(met.p4() - full_jet_corr);
-		// TODO: uncertainties?
-		// for leptons they are done as:
-		//met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
-		//met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
-		//met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
-		//met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
-
-
-
-		// FIXME: So are these MET corrections?
-		if(debug) cout << "Update also MET" << endl;
-		// LorentzVector n_met = met.p4();
-		// std::vector<LorentzVector> newMet = utils::cmssw::getMETvariations(n_met/*recoMet*/,jets,selLeptons,isMC);
-		// FIXME: Must choose a lepton collection. Perhaps loose leptons?
-		// n_met = newMet[utils::cmssw::METvariations::NOMINAL];
-
-		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), n_met.pt(), weight);
-		//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
-		//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
-		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
-		fill_1d(string("control_met_allcorr_pt"), 200, 0., 200., met.pt(), weight);
-
-		if(debug) cout << "Jet Energy Corrections updated" << endl;
-
-
-		// TODO: should MET corrections be done here?
-		// METs with corrections
-		// not used now
-		//
-		//double met_pt_values[7];
-		//met_pt_values[0] = n_met.pt();
-		//met_pt_values[1] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnUp).pt();
-		//met_pt_values[2] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnDown).pt();
-		//met_pt_values[3] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResUp).pt();
-		//met_pt_values[4] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResDown).pt();
-		//met_pt_values[5] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp).pt();
-		//met_pt_values[6] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown).pt();
-
-		// ------------------------------- JETS SELECTION
-		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
 		pat::JetCollection selJets;
-		pat::JetCollection selJets20GeV, selJets30GeV;
-		// TODO: do all jet selection right here
-		// now selBJets are not used anywhere
-		// selJets pass cross-cleaning with taus later
-		// and b-tagging again
-		double mindphijmet (9999.);
-		for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
-			{
-			pat::Jet& jet = jets[ijet];
+		string jetID("Loose");
 
-			fill_2d(string("control_jet_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, jetID, 30, 2.4, full_jet_corr, selJets, false, debug);
 
-			// TODO: what do we do here exactly?
-			// a loose selection on jets, and then tighten it later?
-			// if (jet.pt() < 15 || fabs (jet.eta()) > 3.0) continue;
-			// Was 4.7 in eta. Tightened for computing time. 3.0 ensures that we don't cut associations with leptons (0.4 from 2.4)
+		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, 0., 100., 100, 0., 100.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
+		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, 0., 100., full_jet_corr.Z(), weight);
 
-			//mc truth for this jet
-			//const reco::GenJet * genJet = jet.genJet();
-			//TString jetType (genJet && genJet->pt() > 0 ? "truejetsid" : "pujetsid");
-			// TODO: this mctruth for jets it is never used in the code
-
-			//jet id
-			bool passPFloose = passPFJetID("Loose", jet); 
-			// bool passPFloose = passPFJetID("Tight", jet); 
-			//if (label=="Tight")
-			// FIXME: check when pileup ID will come out
-
-			if (passPFloose)
-				{
-				fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-				}
-
-			// Jet Kinematics
-			double eta = jet.eta();
-			double pt  = jet.pt();
-			//bool passKino = pt > 30. && fabs(eta) < 2.4;
-
-			// corrections:
-			// TODO: are they MC-only?
-			/* no smeared  jet pt values for now
-			std::vector<double> pt_values;
-			if (isMC)
-				pt_values = utils::cmssw::smearJES(pt, eta, totalJESUnc);
-			else
-				{
-				pt_values.push_back(pt);
-				pt_values.push_back(pt);
-				}
-			*/
-			// vary JesUp   is pt_values[0]
-			// vary JesDown is pt_values[1]
-			// if (!passPFloose || jet.pt() <30. || fabs(jet.eta()) > 2.5) continue;
-			// if (passPFloose && (pt > 30. || pt_values[0] > 30. || pt_values[1] > 30.) && fabs(eta) < 2.5)
-
-
-			//if (passPFloose && passKino)
-			if (passPFloose && (fabs(eta) < 2.4))
-				{
-				if (pt > 30.)
-					{
-					// trying new fake rate application:
-					// if there are only 2 30GeV jets -- they are not considered for faking taus
-					// TODO: and what to do with 20GeV jets? in selection and in fake rates?
-					//  --- for now I will just add 20-30 GeV jets for fake rates..
-					//      one should actually try without them
-					selJets30GeV.push_back(jet);
-					selJets.push_back(jet);
-
-					fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-					fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-					// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
-					//double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
-					//if (dphijmet < mindphijmet) mindphijmet = dphijmet;
-					// FIXME: mindphijmet is not used anywhere now
-					}
-				else if (pt > 20.)
-					{
-					selJets20GeV.push_back(jet);
-					}
-				}
-			}
-
-		std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
-
+		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
 
 
 		// ---------------------------- Clean jet collections from selected leptons
@@ -3492,6 +2767,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// so, just for the fake rates:
 
+		/*
 		pat::JetCollection selJets30GeVNoLep;
 		for (size_t ijet = 0; ijet < selJets30GeV.size(); ++ijet)
 			{
@@ -3521,6 +2797,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			selJets20GeVNoLep.push_back(jet);
 			}
+		*/
 
 
 
@@ -3555,99 +2832,16 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------- B-TAGGED JETS
 		pat::JetCollection selBJets;
 
-		// for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
-			{
-			pat::Jet& jet = selJetsNoLep[ijet];
+		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double weight, // input
+		//	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+		//	string& b_tagger_label, float b_tag_WP,
+		//	float beff, leff,
+		//	pat::JetCollection& selBJets,                          // output
+		//	bool record, bool debug) // more output
 
-			fill_2d(string("control_jet_bjetCandidates_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_bjetCandidates_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-			double eta=jet.eta();
-
-			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
-			//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
-			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
-
-			fill_2d(string("all_b_tagging_candidate_jets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-
-			//update according to the SF measured by BTV
-			// new fency procedure with CSV files
-			// 80X calibrators in btagCal
-			// usage:
-			// btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
-			// -- one calibrator for central value, and up/down
-			// thus the specification of the value to callibrate,
-			// instead of different callibrators
-			if(isMC){
-				// int flavId=jet.partonFlavour();
-				int flavId=jet.hadronFlavour();
-				// also: patJet->genParton().pdgId()
-				// fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
-
-				double sf;
-				if (abs(flavId)==5) {
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					// int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					// jet_radius(pat::Jet& jet)
-					fill_1d(string("btag_radius_flavour_b"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
-					// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
-					fill_1d(string("btag_sf_flavour_b"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				} else if(abs(flavId)==4) {
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					fill_1d(string("btag_radius_flavour_c"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_c"), sf, weight);
-					fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				} else {
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					fill_1d(string("btag_radius_flavour_udsg"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					// hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
-
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
-					fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				}
-			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged_after_mc_sfs"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-			}
-
-			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
-				{
-				selBJets.push_back(jet);
-				fill_2d(string("control_jet_selBJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_selBJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-				}
-			}
+		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+		float btag_WP = 0.8;
+		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, btagCal, btsfutil, btagger_label, btag_WP, 0.747, 0.13, selBJets, true, debug);
 
 		if(debug){
 			cout << "processed b-tagged jets" << endl;
@@ -4180,10 +3374,10 @@ for(size_t f=0; f<urls.size();++f)
 					// new fake rates are calculated
 					// from all 20GeV jets
 					// and all 30GeV, if there are not 2 of them... (yeah..)
-					for(size_t n=0; n<selJets20GeVNoLep.size(); ++n)
+					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						// TODO: selJetsNoLepNoTau ???
 						{
-						pat::Jet& jet = selJets20GeVNoLep[n];
+						pat::Jet& jet = selJetsNoLep[n];
 						if (isMC)
 							{
 							int partID = jet.partonFlavour();
@@ -4205,27 +3399,6 @@ for(size_t f=0; f<urls.size();++f)
 
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
-
-					if (selJets30GeVNoLep.size() != 2)
-						for(size_t n=0; n<selJets30GeVNoLep.size(); ++n)
-							// TODO: selJetsNoLepNoTau ???
-							{
-							pat::Jet& jet = selJets30GeVNoLep[n];
-							if (isMC)
-								{
-								int partID = jet.partonFlavour();
-
-								fill_1d(string("smu_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
-								}
-
-							jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-
-							jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							}
 
 
 
@@ -4470,9 +3643,9 @@ for(size_t f=0; f<urls.size();++f)
 						}
 
 					//for(size_t n=0; n<selJetsNoLep.size(); ++n)
-					for(size_t n=0; n<selJets20GeVNoLep.size(); ++n)
+					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
-						pat::Jet& jet = selJets20GeVNoLep[n];
+						pat::Jet& jet = selJetsNoLep[n];
 						if (debug) cout << n << ":\n";
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						if (isMC)
@@ -4491,27 +3664,6 @@ for(size_t f=0; f<urls.size();++f)
 
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
-
-					if (selJets30GeVNoLep.size() != 2)
-						for(size_t n=0; n<selJets30GeVNoLep.size(); ++n)
-						{
-							pat::Jet& jet = selJets30GeVNoLep[n];
-							if (debug) cout << n << ":\n";
-							// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-							if (isMC)
-								{
-								int partID = jet.partonFlavour();
-								fill_1d(string("sel_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
-								}
-
-							jet_to_tau_no_fake_prob  *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob1_w *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate1_jets_histo_w, tau_fake_rate1_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob2_q *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
-
-							jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
-							}
 
 
 
@@ -4607,19 +3759,22 @@ for(size_t f=0; f<urls.size();++f)
 			multisel += (passOS ? 8 : 0);
 			multisel += (passBtagsSelection ? 16 : 0);
 
-			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+			//record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+			//record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 			if (passJetSelection)
 				{
-				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				//record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				//record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 				}
 
 			if (passJetSelection && passBtagsSelection)
 				{
-				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				//record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				//record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 				}
 
 			/*
@@ -4634,20 +3789,23 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4745,20 +3903,23 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4855,20 +4016,23 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					//record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("elmu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
