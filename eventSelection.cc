@@ -90,6 +90,7 @@
 #include "ProcessingTaus.cc"
 #include "ProcessingJets.cc"
 #include "ProcessingBJets.cc"
+#include "ProcessingDRCleaning.cc"
 
 using namespace std;
 
@@ -2592,98 +2593,17 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------------------ select the taus cleaned from leptons
 
+
+		//int crossClean_in_dR(pat::TauCollection& selTaus, std::vector<patUtils::GenericLepton>& leptons,
+		//	float min_dR,
+		//	pat::TauCollection& selTausNoLep, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
+
 		pat::TauCollection selTausNoLep;
-		int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
-		for (size_t itau = 0; itau < selTaus.size(); ++itau)
-			{
-			pat::Tau& tau = selTaus[itau];
-			if(debug) cout << "selecting NoLep taus " << itau << endl;
+		crossClean_in_dR(selTaus, selLeptons, 0.4, selTausNoLep, weight, string("selTausNoLep"), false, debug);
 
-			// cross-cleaning taus with leptons
-			bool overlapWithLepton(false);
-			for(int l=0; l<(int)selLeptons.size();++l)
-				{
-				if (reco::deltaR(tau, selLeptons[l])<0.4)
-					{ overlapWithLepton=true; break; }
-				}
-			if (overlapWithLepton) continue;
-
-			selTausNoLep.push_back(tau);
-			// so these are the final taus we use in the selection
-			fill_2d(string("control_tau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_selTausNoLep_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			//increment(string("number_of_tausnolep_found"), 1);
-
-			// for MC find the generated candidate closest to the tau
-			// to get the fakeness
-			/*
-			if (isMC)
-				{
-				double min_deltaR = 99999.9;
-				for(size_t i = 0; i < gen.size(); ++ i)
-					{
-					const reco::GenParticle & p = gen[i];
-					double deltaR_to_p = reco::deltaR(tau, p);
-					if (deltaR_to_p < min_deltaR)
-						{
-						min_deltaR = deltaR_to_p;
-						closest_totaunolep_particle_id = p.pdgId();
-						}
-					//int id = p.pdgId();
-					//int st = p.status();
-					//int n = p.numberOfDaughters();
-					//cout << i << ": " << id << " " << st;
-					//if (p.numberOfMothers() != 0) cout << " <- " ;
-					//for (int j = 0 ; j < p.numberOfMothers(); ++j)
-					//	{
-					//	const reco::Candidate * mom = p.mother(j);
-					//	cout << " " << mom->pdgId() << " " << mom->status() << ";";
-					//	}
-					//cout << "\n";
-					//if (n>0)
-					//	{
-					//	cout << "\t|-> " ;
-					//	for (int j = 0; j < n; ++j)
-					//		{
-					//		const reco::Candidate * d = p.daughter( j );
-					//		cout << d->pdgId() << " " << d->status() << "; " ;
-					//		}
-					//	cout << "\n";
-					//	}
-					}
-				fill_particle_ids(string("nearest_particle_around_taunolep"), closest_totaunolep_particle_id, weight);
-				// electron-tau fake-rate scale factor
-				if (fabs(closest_totaunolep_particle_id)==11)
-					{
-					increment(string("number_of_tausnolep_from_electron_found"), 1);
-					// apply the data/MC fake rate scale factor
-					// (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Electron_to_tau_fake_rate)
-					// for tight working points it is 1.80 +- 0.23 in barrel (eta < 1.460)
-					// and 1.3 +- 0.42 in endcaps (eta > 1.558)
-					// repeating 13.4, no electron-to-tau sf
-					if (fabs(tau.eta()) < 1.460)
-						{
-						weight *= 1.8 + r3->Gaus(0, 0.2);  // gaussian +- 0.2
-						}
-					else if (fabs(tau.eta()) > 1.558)
-						{
-						weight *= 1.3 + r3->Gaus(0, 0.42); // gaussian +- 0.42
-						}
-					//
-					// TODO: and then I need to renormalize the MC integral??
-					}
-
-				if (fabs(closest_totaunolep_particle_id)==13)
-					{
-					increment(string("number_of_tausnolep_from_muon_found"), 1);
-					// TODO: add muon-tau fake rate?
-					}
-				}
-			*/
-			}
+		// TODO: redo the SF of tau ID
 
 		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
 			{
@@ -2747,23 +2667,14 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?
 
+		//int crossClean_in_dR(pat::JetCollection& selJets, std::vector<patUtils::GenericLepton>& selLeptons,
+		//	float min_dR,
+		//	pat::JetCollection& selJetsNoLep, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
+
 		pat::JetCollection selJetsNoLep;
-		for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
-			{
-			pat::Jet& jet = selJets[ijet];
-
-			double minDRlj (9999.);
-
-			for (size_t ilep = 0; ilep < selLeptons.size(); ilep++)
-				minDRlj = TMath::Min(minDRlj, reco::deltaR (jet, selLeptons[ilep]));
-
-			if (minDRlj < 0.4) continue;
-
-			selJetsNoLep.push_back(jet);
-
-			fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-			}
+		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), false, debug);
 
 		// so, just for the fake rates:
 
@@ -2804,25 +2715,14 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// ---------------------------- Clean jet collection from selected taus
+
+		//int crossClean_in_dR(pat::JetCollection& selJets, pat::TauCollection& selTaus,
+		//	float min_dR,
+		//	pat::JetCollection& selJetsOut, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
 		pat::JetCollection selJetsNoLepNoTau;
-
-		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-			{
-			pat::Jet& jet = selJetsNoLep[ijet];
-
-			double minDRtj(9999.);
-
-			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
-				minDRtj = TMath::Min(minDRtj, reco::deltaR(jet, selTausNoLep[itau]));
-
-			if (minDRtj < 0.4) continue;
-
-			selJetsNoLepNoTau.push_back(jet);
-
-			fill_2d(string("control_jet_selJetsNoLepNoTau_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_selJetsNoLepNoTau_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-			}
-
+		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weight, string("selJetsNoLepNoTau"), false, debug);
 
 		if(debug){
 			cout << "processed jets" << endl;
@@ -2848,32 +2748,9 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-
+		// also for referense:
 		pat::TauCollection selTausNoLepNoJet;
-		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-			{
-			pat::Tau& tau = selTausNoLep[itau];
-
-			// cross-cleaning taus with jets
-			bool overlapWithJet(false);
-			for(int n=0; n<(int)selJetsNoLep.size();++n)
-				{
-				if (reco::deltaR(tau, selJetsNoLep[n])<0.4)
-					{ overlapWithJet=true; break; }
-				}
-			if (overlapWithJet) continue;
-
-			// the taus, far from leptons and jets
-			selTausNoLepNoJet.push_back(tau);
-
-			fill_2d(string("control_tau_selTausNoLepNoJet_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_selTausNoLepNoJet_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			// increment(string("number_of_tausNoLepNoJet_found"), weight);
-			}
-
+		crossClean_in_dR(selTausNoLep, selJetsNoLep, 0.4, selTausNoLepNoJet, weight, string("selTausNoLepNoJet"), false, debug);
 
 
 		// -------------------------------------------------- all particles are selected
