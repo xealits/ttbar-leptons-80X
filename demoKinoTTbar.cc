@@ -83,7 +83,7 @@
 #include <map>
 #include <string>
 
-#include "jetSelectionForTauFakeRate.h"
+//#include "recordFuncs.h"
 
 using namespace std;
 
@@ -2085,6 +2085,7 @@ for(size_t f=0; f<urls.size();++f)
 			if (debug) {
 				cout << "MC suffix " << mc_decay << " is found\n";
 				}
+			if (mc_decay.size() == 0) mc_decay = string("_");
 
 			//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
 			//mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
@@ -2211,6 +2212,7 @@ for(size_t f=0; f<urls.size();++f)
 			// first find W-pairs:
 
 			bool found_W1 = false;
+			double W1_dist = -1;
 			for (unsigned int ijet1 = 0; ijet1 < jets.size()-1; ++ijet1)
 				{
 				pat::Jet& jet1 = jets[ijet1];
@@ -2223,6 +2225,7 @@ for(size_t f=0; f<urls.size();++f)
 					if (W_dist < 15)
 						{
 						found_W1 = true;
+						W1_dist = W_dist;
 						W1 = jet1_v + jet2_v;
 						W1j1 = ijet1;
 						W1j2 = ijet2;
@@ -2233,6 +2236,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 
 			bool found_W2 = false;
+			double W2_dist = -1;
 			for (unsigned int ijet1 = 0; ijet1 < jets.size()-1; ++ijet1)
 				{
 				if (ijet1 == W1j1 || ijet1 == W1j2) continue;
@@ -2247,6 +2251,7 @@ for(size_t f=0; f<urls.size();++f)
 					if (W_dist < 15)
 						{
 						found_W2 = true;
+						W2_dist = W_dist;
 						W2 = jet1_v + jet2_v;
 						W2j1 = ijet1;
 						W2j2 = ijet2;
@@ -2266,6 +2271,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			// find b-jet
 			bool found_b1 = false;
+			double t1_dist = -1;
 			for (unsigned int ijet = 0; ijet < jets.size()-1; ++ijet)
 				{
 				if (ijet == W1j1 || ijet == W1j2 || ijet == W2j1 || ijet == W2j2) continue;
@@ -2275,6 +2281,7 @@ for(size_t f=0; f<urls.size();++f)
 				if (t_dist < 15)
 					{
 					found_b1 = true;
+					t1_dist  = t_dist;
 					ib1 = ijet;
 					b1 = jet_v;
 					t1 = b1 + W1;
@@ -2284,6 +2291,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			// and another one b-jet
 			bool found_b2 = false;
+			double t2_dist = -1;
 			for (unsigned int ijet = 0; ijet < jets.size()-1; ++ijet)
 				{
 				if (ijet == W1j1 || ijet == W1j2 || ijet == W2j1 || ijet == W2j2 || ijet == ib1) continue;
@@ -2293,6 +2301,7 @@ for(size_t f=0; f<urls.size();++f)
 				if (t_dist < 15)
 					{
 					found_b2 = true;
+					t2_dist  = t_dist;
 					ib2 = ijet;
 					b2 = jet_v;
 					t2 = b2 + W2;
@@ -2308,7 +2317,10 @@ for(size_t f=0; f<urls.size();++f)
 				continue;
 				}
 
-			cout << "in " << mc_decay << " found tt->jj" << endl;
+			//cout << "in " << mc_decay << " found tt->jj" << endl;
+			cout << "found:" << mc_decay << ',' << W1_dist << ',' << W2_dist << ',' << t1_dist << ',' << t2_dist << endl;
+
+			// fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
 
 			cout << "end of event" << endl << endl;
 			}

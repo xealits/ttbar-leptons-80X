@@ -83,7 +83,7 @@
 #include <map>
 #include <string>
 
-#include "jetSelectionForTauFakeRate.h"
+#include "recordFuncs.h"
 
 using namespace std;
 
@@ -629,7 +629,7 @@ double top_pT_SF(double x)
 
 
 
-string mc_decay("");
+//string mc_decay("");
 // Some MC datasets are inclusive, but analysis needs info on separate channels from them
 // thus the events are traversed and the channel is found
 // currently it is done only for TTbar channel (isTTbarMC)
@@ -650,22 +650,6 @@ Float_t bins_rad[16] = { 0, 0.06, 0.07, 0.08, 0.087, 0.093, 0.1, 0.107, 0.113, 0
 	0.127, 0.133, 0.14, 0.15, 0.16, 2 }; // 15 bins, 16 edges
 */
 
-// channel -> {control_point, TH}
-// 1 job = 1 dtag,
-// 1 dtag may have several channels
-std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
-std::map<string, TH1D> th1d_distr_maps_control_headers;
-
-std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
-std::map<string, TH1I> th1i_distr_maps_control_headers;
-
-std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
-std::map<string, TH2D> th2d_distr_maps_control_headers;
-
-std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
-std::map<string, TH3D> th3d_distr_maps_control_headers;
-
-
 
 std::map<std::pair <string,string>, TH1D> th1d_distr_control;
 std::map<string, TH1D> th1d_distr_control_headers;
@@ -681,230 +665,21 @@ std::map<string, TH2D> th2d_distr_control_headers;
 //std::map<string, double> weight_flow_control;
 
 
-int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
-	{
-	// check if control point has been initialized
-	// std::pair <string,string> key (mc_decay, control_point_name);
-
-	// create channel map in th1d_distr_maps_control
-	if (th1d_distr_maps_control.find(mc_decay) == th1d_distr_maps_control.end() )
-		{
-		//
-		th1d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1D>()));
-		}
-
-	if (th1d_distr_maps_control[mc_decay].find(control_point_name) == th1d_distr_maps_control[mc_decay].end() )
-		{
-		// the control point distr has not been created/initialized
-		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
-		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
-		//         O M G
-		th1d_distr_maps_control[mc_decay][control_point_name] = TH1D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
-		// later on, when writing to the file,
-		// I'll have to rename histograms on each write
-		// and probably delete them along the way, so that they don't collide...
-		// ROOT SUCKS
-		//cout << "creating " << control_point_name << endl;
-		}
-
-	// fill the distribution:
-	th1d_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
-
-	if (th1d_distr_maps_control_headers.find(control_point_name) == th1d_distr_maps_control_headers.end() )
-		{
-		// th1d_distr_maps_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
-		}
-
-	// return success:
-	return 0;
-	}
-
-
-
-
-int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
-	{
-	// check if control point has been initialized
-	// std::pair <string,string> key (mc_decay, control_point_name);
-
-	// create channel map in th1i_distr_maps_control
-	if (th1i_distr_maps_control.find(mc_decay) == th1i_distr_maps_control.end() )
-		{
-		//
-		th1i_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH1I>()));
-		}
-
-	if (th1i_distr_maps_control[mc_decay].find(control_point_name) == th1i_distr_maps_control[mc_decay].end() )
-		{
-		// the control point distr has not been created/initialized
-		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
-		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
-		//         O M G
-		th1i_distr_maps_control[mc_decay][control_point_name] = TH1I((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup);
-		// later on, when writing to the file,
-		// I'll have to rename histograms on each write
-		// and probably delete them along the way, so that they don't collide...
-		// ROOT SUCKS
-		//cout << "creating " << control_point_name << endl;
-		}
-
-	// fill the distribution:
-	th1i_distr_maps_control[mc_decay][control_point_name].Fill(value, weight);
-
-	if (th1i_distr_maps_control_headers.find(control_point_name) == th1i_distr_maps_control_headers.end() )
-		{
-		// th1i_distr_maps_control_headers[control_point_name] = TH1I("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1i_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH1I((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
-		}
-
-	// return success:
-	return 0;
-	}
-
-
-
-
-
-//int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
-int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
-	{
-	// check if control point has been initialized
-	// std::pair <string,string> key (mc_decay, control_point_name);
-
-	// create channel map in th2d_distr_maps_control
-	if (th2d_distr_maps_control.find(mc_decay) == th2d_distr_maps_control.end() )
-		{
-		//
-		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH2D>()));
-		}
-
-	if (th2d_distr_maps_control[mc_decay].find(control_point_name) == th2d_distr_maps_control[mc_decay].end() )
-		{
-		// the control point distr has not been created/initialized
-		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
-		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
-		//         O M G
-		th2d_distr_maps_control[mc_decay][control_point_name] = TH2D((control_point_name + mc_decay).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup);
-		// later on, when writing to the file,
-		// I'll have to rename histograms on each write
-		// and probably delete them along the way, so that they don't collide...
-		// ROOT SUCKS
-		//cout << "creating " << control_point_name << endl;
-		}
-
-	// fill the distribution:
-	th2d_distr_maps_control[mc_decay][control_point_name].Fill(x, y, weight);
-
-	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
-		{
-		// th2d_distr_maps_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
-		}
-
-	// return success:
-	return 0;
-	}
-
-
 /*
-int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius)
-	{
-	// for tau (and other) fake-rates
-	// check if the key (mc_decay, control point) has been initialized
-	// std::pair <string,string> key (mc_decay, control_point_name);
+// channel -> {control_point, TH}
+// 1 job = 1 dtag,
+// 1 dtag may have several channels
+std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
+std::map<string, TH1D> th1d_distr_maps_control_headers;
 
-	// create channel map in th3d_distr_maps_control
-	if (th3d_distr_maps_control.find(mc_decay) == th3d_distr_maps_control.end() )
-		{
-		//
-		th3d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
-		}
+std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
+std::map<string, TH1I> th1i_distr_maps_control_headers;
 
-	if (th3d_distr_maps_control[mc_decay].find(control_point_name) == th3d_distr_maps_control[mc_decay].end() )
-		{
-		// the control point distr has not been created/initialized
-		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
-		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
-		//         O M G
-		th3d_distr_maps_control[mc_decay][control_point_name] = TH3D((control_point_name + mc_decay).c_str(), ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad);
-		// th3f_distr_control.insert( std::make_pair(key, TH3F(control_point_name.c_str(),      ";;", 10, bins_pt, n_bins_eta, bins_eta, 15, bins_rad)));
-		// later on, when writing to the file,
-		// I'll have to rename histograms on each write
-		// and probably delete them along the way, so that they don't collide...
-		// ROOT SUCKS
-		//cout << "creating " << control_point_name << endl;
-		}
+std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
+std::map<string, TH2D> th2d_distr_maps_control_headers;
 
-	th3d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, radius, weight);
-
-	if (th3d_distr_maps_control_headers.find(control_point_name) == th3d_distr_maps_control_headers.end() )
-		{
-		// th3d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
-		th3d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH3D((string("Header of ") + control_point_name).c_str(), ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
-		}
-
-	// return success:
-	return 0;
-	}
-*/
-
-
-
-
-
-
-
-/*
-int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight)
-	{
-	// check if control point has been initialized
-	std::pair <string,string> key (mc_decay, control_point_name);
-
-	if (th1d_distr_control.find(key) == th1d_distr_control.end() )
-		{
-		// the control point distr has not been created/initialized
-		th1d_distr_control.insert( std::make_pair(key, TH1D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
-		//cout << "creating " << control_point_name << endl;
-		}
-
-	// fill the distribution:
-	th1d_distr_control[key].Fill(value, weight);
-
-	if (th1d_distr_control_headers.find(control_point_name) == th1d_distr_control_headers.end() )
-		{
-		// th1d_distr_control_headers[control_point_name] = TH1D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th1d_distr_control_headers.insert( std::make_pair(control_point_name, TH1D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup)));
-		}
-
-	// return success:
-	return 0;
-	}
-
-
-int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
-	{
-	// check if control point has been initialized
-	std::pair <string,string> key (mc_decay, control_point_name);
-
-	if (th2d_distr_control.find(key) == th2d_distr_control.end() )
-		{
-		th2d_distr_control.insert( std::make_pair(key, TH2D((mc_decay + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
-		}
-
-	// fill the distribution:
-	th2d_distr_control[key].Fill(x, y, weight);
-
-	if (th2d_distr_control_headers.find(control_point_name) == th2d_distr_control_headers.end() )
-		{
-		// th2d_distr_control_headers[control_point_name] = TH2D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		th2d_distr_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", nbinsx, xlow, xup, nbinsy, ylow, yup)));
-		}
-
-	// return success:
-	return 0;
-	}
+std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
+std::map<string, TH3D> th3d_distr_maps_control_headers;
 */
 
 
