@@ -2017,7 +2017,6 @@ for(size_t f=0; f<urls.size();++f)
 		// -- thus recursion is needed
 
 		// traversing separate t quarks
-		/*
 		if (debug)
 			{
 			if (isTTbarMC && genHandle.isValid()) {
@@ -2073,21 +2072,22 @@ for(size_t f=0; f<urls.size();++f)
 							if (W_num < 0) continue;
 							const reco::Candidate * W = p.daughter( W_num );
 							mc_decay += find_W_decay(W);
-							mc_decay += string("bar");
+							//mc_decay += string("bar");
 						}
 					}
 				}
 				// so, mc_decay will be populated with strings matching t decays
 				// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
 			}
+			}
 
+			std::sort(mc_decay.begin(), mc_decay.end());
 			if (debug) {
 				cout << "MC suffix " << mc_decay << " is found\n";
 				}
 
 			//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
-			mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
-			*/
+			//mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
 
 			//* List of mother-daughters for all particles
 			//* TODO: make it into a separate function
@@ -2182,209 +2182,134 @@ for(size_t f=0; f<urls.size();++f)
 			}
 			*/
 
-		/*
-		 * find ttbar decay branches
-		 * calculate lepton * b-quark scalar product and print it out
-		 */
-		if (isTTbarMC && genHandle.isValid())
+		pat::METCollection mets;
+		fwlite::Handle<pat::METCollection> metsHandle;
+		metsHandle.getByLabel(ev, "slimmedMETs");
+		if(metsHandle.isValid() ) mets = *metsHandle;
+		pat::MET met = mets[0];
+		// LorentzVector met = mets[0].p4 ();
+
+		pat::JetCollection jets;
+		fwlite::Handle<pat::JetCollection>jetsHandle;
+		jetsHandle.getByLabel(ev, "slimmedJets");
+		if(jetsHandle.isValid() ) jets = *jetsHandle;
+		else
 			{
-			//string mc_decay(""); // move to all job parameters
-			// every found t-quark decay branch will be added as a substring to this string (el, mu, tau, q)
-			// TODO: what to do if there are > t-decays than 1 ttbar pair in an event? (naive traverse approach also doesn't work?)
+			cout << "ooops" << endl;
+			continue;
+			}
 
-			// For reference, some PDG IDs:
-			// QUARKS
-			// d  1
-			// u  2
-			// s  3
-			// c  4
-			// b  5
-			// t  6
-			// b' 7
-			// t' 8
-			// g 21
-			// gamma 22
-			// Z     23
-			// W     24
-			// h     25
-			// e, ve     11, 12
-			// mu, vmu   13, 14
-			// tau, vtau 15, 16
+		if(debug){
+			/* just loop through jets and find 1 acceptable ttbar->jj decay
+			 */
+			cout << "N jets = " << jets.size() << endl;
+			if (jets.size()<6) continue;
 
-			//cout << "getting getting a random particle" << endl;
+			TLorentzVector W1(0,0,0,0), W2(0,0,0,0), b1(0,0,0,0), b2(0,0,0,0), t1(0,0,0,0), t2(0,0,0,0);
+			unsigned int W1j1 = -1, W1j2 = -1, W2j1 = -1, W2j2 = -1, ib1 = -1, ib2 = -1;
 
-			// find random final state particle for tests further on
-			TLorentzVector random_particle(0,0,0,0);
-			for(size_t i = 0; i < gen.size(); ++ i)
-				{ // try first final state particle in the collection
-				const reco::GenParticle & p = gen[i];
-				int id = fabs(p.pdgId());
-				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
-				if (st==1) // final state status
+			// first find W-pairs:
+
+			bool found_W1 = false;
+			for (unsigned int ijet1 = 0; ijet1 < jets.size()-1; ++ijet1)
+				{
+				pat::Jet& jet1 = jets[ijet1];
+				TLorentzVector jet1_v(jet1.p4().X(), jet1.p4().Y(), jet1.p4().Z(), jet1.p4().T());
+				for (unsigned int ijet2 = ijet1+1; ijet2 < jets.size(); ++ijet2)
 					{
-					cout << "random_particle:" << i << ',' << id << endl;
-					random_particle = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
+					pat::Jet& jet2 = jets[ijet2];
+					TLorentzVector jet2_v(jet2.p4().X(), jet2.p4().Y(), jet2.p4().Z(), jet2.p4().T());
+					double W_dist = fabs(80 - (jet1_v + jet2_v).M());
+					if (W_dist < 15)
+						{
+						found_W1 = true;
+						W1 = jet1_v + jet2_v;
+						W1j1 = ijet1;
+						W1j2 = ijet2;
+						break;
+						}
+					}
+				if (found_W1) break;
+				}
+
+			bool found_W2 = false;
+			for (unsigned int ijet1 = 0; ijet1 < jets.size()-1; ++ijet1)
+				{
+				if (ijet1 == W1j1 || ijet1 == W1j2) continue;
+				pat::Jet& jet1 = jets[ijet1];
+				TLorentzVector jet1_v(jet1.p4().X(), jet1.p4().Y(), jet1.p4().Z(), jet1.p4().T());
+				for (unsigned int ijet2 = ijet1+1; ijet2 < jets.size(); ++ijet2)
+					{
+					if (ijet2 == W1j1 || ijet2 == W1j2) continue;
+					pat::Jet& jet2 = jets[ijet2];
+					TLorentzVector jet2_v(jet2.p4().X(), jet2.p4().Y(), jet2.p4().Z(), jet2.p4().T());
+					double W_dist = fabs(80 - (jet1_v + jet2_v).M());
+					if (W_dist < 15)
+						{
+						found_W2 = true;
+						W2 = jet1_v + jet2_v;
+						W2j1 = ijet1;
+						W2j2 = ijet2;
+						break;
+						}
+					}
+				if (found_W2) break;
+				}
+
+			cout << "found Ws " << found_W1 << " " << found_W2 << endl;
+
+			if (!(found_W1 && found_W2))
+				{
+				cout << "in " << mc_decay << " didnt find" << endl;
+				continue;
+				}
+
+			// find b-jet
+			bool found_b1 = false;
+			for (unsigned int ijet = 0; ijet < jets.size()-1; ++ijet)
+				{
+				if (ijet == W1j1 || ijet == W1j2 || ijet == W2j1 || ijet == W2j2) continue;
+				pat::Jet& jet = jets[ijet];
+				TLorentzVector jet_v(jet.p4().X(), jet.p4().Y(), jet.p4().Z(), jet.p4().T());
+				double t_dist = fabs(173 - (W1 + jet_v).M());
+				if (t_dist < 15)
+					{
+					found_b1 = true;
+					ib1 = ijet;
+					b1 = jet_v;
+					t1 = b1 + W1;
 					break;
 					}
 				}
 
-			LorentzVector z_unit_vector(0, 0, 1, 0);
-
-			//cout << "getting ttbar branches" << endl;
-
-			//const reco::GenParticle & t, tbar; // = gen[i];
-			TLorentzVector t_v, tbar_v;
-			TLorentzVector ttbar_neutrinos(0,0,0,0);
-			for(size_t i = 0; i < gen.size(); ++ i)
+			// and another one b-jet
+			bool found_b2 = false;
+			for (unsigned int ijet = 0; ijet < jets.size()-1; ++ijet)
 				{
-				const reco::GenParticle & p = gen[i];
-				int id = p.pdgId();
-				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
-
-				if (id == 6) { // if it is a t quark
-					// looking for W+ and its' leptonic decay
-					// without checks, just checking 2 daughters
-					//t = gen[i];
-					t_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
-					int n = p.numberOfDaughters();
-					if (n == 2) { // it is a decay vertes of t to something
-						int d0_id = p.daughter(0)->pdgId();
-						int d1_id = p.daughter(1)->pdgId();
-						int W_num = d0_id == 24 ? 0 : (d1_id == 24 ? 1 : -1) ;
-						if (W_num < 0) continue;
-						const reco::Candidate * b = p.daughter( 1 - W_num );
-						const reco::Candidate * W = p.daughter( W_num );
-						const reco::Candidate * l = find_W_decay_l(W);
-						const reco::Candidate * nu = find_W_decay_nu(W);
-						if (!b || !l)
-							{
-							cout << "broken decay in t" << endl;
-							continue;
-							}
-						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
-						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
-						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
-						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
-						// got all products of t decay
-						//cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << "," << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << endl;
-						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, boost_wX,boost_wY,boost_wZ,boost_wT, bWe,lWe,bAl,lAb
-						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, bWe,lWe,bAl,lAb
-						cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
-						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
-						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
-						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
-						cout << "," << W->mass() << "," << p.mass();
-						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
-						cout << ',' << t_v.X() << ',' << t_v.Y() << ',' << t_v.Z() << ',' << t_v.T();
-						TVector3 W_frame = W_v.BoostVector();
-						b_v.Boost(-W_frame);
-						W_v.Boost(-W_frame);
-						l_v.Boost(-W_frame);
-						// boost check: Done
-						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
-						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
-						cout << endl;
-						if (l->numberOfDaughters()>0)
-							{
-							cout << "lepton has " << l->numberOfDaughters() << " daughters";
-							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
-							cout << endl;
-							}
-					}
-				}
-
-				if (id == -6) { // if it is a tbar quark
-					// looking for W- and its' leptonic decay
-					int n = p.numberOfDaughters();
-					//tbar = gen[i];
-					tbar_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
-					if (n == 2) { // it is a decay vertes of t to something
-						int d0_id = p.daughter(0)->pdgId();
-						int d1_id = p.daughter(1)->pdgId();
-						int W_num = d0_id == -24 ? 0 : (d1_id == -24 ? 1 : -1) ;
-						if (W_num < 0) continue;
-						const reco::Candidate * b = p.daughter( 1 - W_num );
-						const reco::Candidate * W = p.daughter( W_num );
-						const reco::Candidate * l = find_W_decay_l(W);
-						const reco::Candidate * nu = find_W_decay_nu(W);
-						if (!b || !l)
-							{
-							cout << "broken decay in t" << endl;
-							continue;
-							}
-						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
-						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
-						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
-						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
-						// got all products of tbar decay
-						//cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << endl;
-						cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
-						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
-						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
-						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
-						cout << "," << W->mass() << "," << p.mass();
-						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
-						cout << ',' << tbar_v.X() << ',' << tbar_v.Y() << ',' << tbar_v.Z() << ',' << tbar_v.T();
-						TVector3 W_frame = W_v.BoostVector();
-						b_v.Boost(-W_frame);
-						W_v.Boost(-W_frame);
-						l_v.Boost(-W_frame);
-						// boost check: Done
-						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
-						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
-						cout << endl;
-						if (l->numberOfDaughters()>0)
-							{
-							cout << "lepton has " << l->numberOfDaughters() << " daughters";
-							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
-							cout << endl;
-							}
-					}
-				}
-				}
-			// so, mc_decay will be populated with strings matching t decays
-			// hopefully, in TTbar sample only ttbar decays are present and it is not ambigous
-
-			TLorentzVector ttbar_v = t_v+tbar_v;
-			cout << "ttbar_system," << ttbar_v.Px() << ',' << ttbar_v.Py() << ',' << ttbar_v.Pz() << ',' << ttbar_v.E() << ',' << ttbar_v.M() << endl;
-
-			//cout << "getting all neutrinos" << endl;
-
-			//const reco::GenParticle & t, tbar; // = gen[i];
-			TLorentzVector all_neutrinos(0,0,0,0);
-			for(size_t i = 0; i < gen.size(); ++ i)
-				{
-				const reco::GenParticle & p = gen[i];
-				int id = fabs(p.pdgId());
-				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
-				if (id == 12 || id == 14 || id == 16)
+				if (ijet == W1j1 || ijet == W1j2 || ijet == W2j1 || ijet == W2j2 || ijet == ib1) continue;
+				pat::Jet& jet = jets[ijet];
+				TLorentzVector jet_v(jet.p4().X(), jet.p4().Y(), jet.p4().Z(), jet.p4().T());
+				double t_dist = fabs(173 - (W2 + jet_v).M());
+				if (t_dist < 15)
 					{
-					if (st==1) // final state status
-						all_neutrinos += TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
-					else
-						cout << "non-final neutrino? " << i << '\t' << p << endl;
+					found_b2 = true;
+					ib2 = ijet;
+					b2 = jet_v;
+					t2 = b2 + W2;
+					break;
 					}
 				}
 
-			// ch, dX,dY,dZ,dT,dE,dM, ttX,ttY,ttZ,ttT
-			TLorentzVector residual_neutrinos = all_neutrinos - ttbar_neutrinos;
-			cout << "neutrinos," << residual_neutrinos.X() << ',' << residual_neutrinos.Y() << ',' << residual_neutrinos.Z() << ',' << residual_neutrinos.T() << ',' << residual_neutrinos.E() << ',' << residual_neutrinos.M();
-			cout << ',' << ttbar_neutrinos.X() << ',' << ttbar_neutrinos.Y() << ',' << ttbar_neutrinos.Z() << ',' << ttbar_neutrinos.T() << endl;
+			cout << "found bs " << found_b1 << " " << found_b2 << endl;
 
-			pat::JetCollection jets;
-			fwlite::Handle<pat::JetCollection>jetsHandle;
-			jetsHandle.getByLabel(ev, "slimmedJets");
-			if(jetsHandle.isValid() ) jets = *jetsHandle;
-			else
+			if (!(found_b1 && found_b2))
 				{
-				cout << "ooops" << endl;
+				cout << "in " << mc_decay << " didnt find" << endl;
 				continue;
 				}
 
-			cout << "slimmedJets_bin," << jets.size() << endl;
-			}
+			cout << "in " << mc_decay << " found tt->jj" << endl;
 
-		if(debug){
 			cout << "end of event" << endl << endl;
 			}
 

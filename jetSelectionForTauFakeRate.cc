@@ -2006,7 +2006,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			}
 
-		// ----------------------------------------- Apply pileup reweighting
+		// ----------------------------------------- Apply PILEUP reweighting
 		// why don't use nGoodPV for Pile-Up?
 		unsigned int num_inters = 0, num_inters_raw = 0;
 		double weight_pu_test = weight;
@@ -2112,7 +2112,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// it's not needed with the latest versions of RunB rereconstruction
 		
-		// -------------------------------------------------- Skip bad lumi
+		// -------------------------------------------------- Skip bad LUMI
 		// 80X, v2
 		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
 		// Notice: it is the first continue in the event loop
@@ -2304,7 +2304,7 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "Set triggers" << endl;
 			}
 
-		// ------------------------------------------------- Apply MET filters
+		// ------------------------------------------------- Apply MET FILTERS
 		//if( !isMC && !metFiler.passMetFilter( ev, isPromptReco)) continue;
 		// New passMetFilter procedure from patUtils:
 		//if( !isMC && !metFiler.passMetFilter( ev )) continue;
