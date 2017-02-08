@@ -105,10 +105,11 @@ std::vector<double> smearJER(double pt, double eta, double genPt)
 	return toReturn;
 	}
 
-std::vector<double> JER_SF(double pt, double eta)
+std::vector<double> JER_SF(double eta)
 	{
-	std::vector<double> toReturn(2,pt);
-	if(genPt<=0) return toReturn;
+	eta=fabs(eta);
+	double ptSF(1.0), ptSF_err(0.06);
+	std::vector<double> toReturn(2, ptSF);
 
 	//Moriond:
 	//abs(eta) region	0.0–0.5	0.5-0.8	0.8–1.1	1.1-1.3	1.3–1.7	1.7 - 1.9	1.9–2.1	2.1 - 2.3	2.3 - 2.5	2.5–2.8	2.8-3.0	3.0-3.2	3.2-5.0
@@ -129,8 +130,6 @@ std::vector<double> JER_SF(double pt, double eta)
 	// 1.857 +-0.071
 	// 1.328 +-0.022
 	// 1.16  +-0.029
-	eta=fabs(eta);
-	double ptSF(1.0), ptSF_err(0.06);
 	if      (eta<0.5) { ptSF=1.109; ptSF_err=0.008; }
 	else if (eta<0.8) { ptSF=1.138; ptSF_err=0.013; }
 	else if (eta<1.1) { ptSF=1.114; ptSF_err=0.013; }
@@ -375,7 +374,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 		       fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_before"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 		       }
 		// the JER SF and resolution for the jet:
-		std::vector<double> jer_sf_pair = JER_SF(jet.pt(), jet.eta());
+		std::vector<double> jer_sf_pair = JER_SF(jet.eta());
 		double jer_sf = jer_sf_pair[0];
 		double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
 
@@ -404,7 +403,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 
 		if (matched_genJet)
 			{ // the scaling is ok
-			double dPt = jet.pt() - matched_genJet.pt();
+			double dPt = jet.pt() - matched_genJet->pt();
 			//double genjetpt( genJet ? genJet->pt(): 0.);                    
 			//std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
 			// using the local smear:
@@ -428,7 +427,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
 			// this is the twiki:
 			double smearFactor = 1 + r3->Gaus(0, jer_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
-			jet.setP4(jet.p4()*TMath::Max(0, smearFactor));
+			jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
 			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
 
 			if (record)
