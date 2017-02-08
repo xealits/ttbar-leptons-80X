@@ -2461,6 +2461,12 @@ for(size_t f=0; f<urls.size();++f)
 		jetsHandle.getByLabel(ev, "slimmedJets");
 		if(jetsHandle.isValid() ) jets = *jetsHandle;
 
+
+		std::vector<reco::GenJet> genJets;
+		fwlite::Handle<std::vector<reco::GenJet>>genJetsHandle;
+		genJetsHandle.getByLabel(ev, "slimmedGenJets"); // twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#GenJets
+		if(genJetsHandle.isValid() ) genJets = *genJetsHandle;
+
 		// testing WNJets
 		if(debug){
 			cout << "N Jets:" << jets.size() << "\n";
@@ -2666,10 +2672,12 @@ for(size_t f=0; f<urls.size();++f)
 		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
 
-		//int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, bool isMC, double weight, // input
+		//int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
+		//	bool isMC, double weight,
 		//	double rho, unsigned int nGoodPV,
 		//	FactorizedJetCorrector *jesCor,
 		//	JetCorrectionUncertainty *totalJESUnc,
+		//	double dR_max, // for jet matching in jet corrections smearing for MC
 		//	string& jetID,
 		//	double pt_cut, double eta_cut,
 		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -2679,7 +2687,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::JetCollection selJets;
 		string jetID("Loose");
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, jetID, 30, 2.4, full_jet_corr, selJets, false, debug);
+		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2, jetID, 30, 2.4, full_jet_corr, selJets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
