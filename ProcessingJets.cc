@@ -1,4 +1,34 @@
 
+#include "CommonTools/Utils/interface/PtComparator.h"
+
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
+#include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
+//#include "CondFormats/JetMETObjects/interface/JetResolutionObject.h"
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+
+
+#include <TFile.h>
+#include <TH1.h>
+#include <TH1F.h>
+
+#include <memory>
+#include <random>
+
+using namespace JME;
+
+
 std::vector<double> smearJER(double pt, double eta, double genPt)
 	{
 	std::vector<double> toReturn(3,pt);
@@ -405,7 +435,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 
 			double dPt = std::abs(genJet.pt() - jet.pt());
 			double dPt_max_factor = 3*jet.pt(); // from twiki
-			if (dPt > dPt_max_factor * jer_resolution) continue;
+			if (dPt > dPt_max_factor * jet_resolution) continue;
 
 			matched_genJet = &genJet;
 			}
@@ -435,7 +465,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			//double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
 			// this is the twiki:
-			double smearFactor = 1 + r3->Gaus(0, jer_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+			double smearFactor = 1 + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
 			jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
 			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
 

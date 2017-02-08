@@ -5,6 +5,10 @@
 // CMSSW version 80X (8_0_X, 8_0_5 for example)
 //
 
+#define STANDALONE 1
+
+#include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
