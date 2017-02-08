@@ -39,7 +39,6 @@
 //#include "TauAnalysis/SVfitStandalone/interface/SVfitStandaloneAlgorithm.h" //for svfit
 
 #include "UserCode/llvv_fwk/interface/MacroUtils.h"
-#include "UserCode/llvv_fwk/interface/HiggsUtils.h"
 #include "UserCode/llvv_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/llvv_fwk/interface/TMVAUtils.h"
 #include "UserCode/llvv_fwk/interface/LeptonEfficiencySF.h"
@@ -1044,13 +1043,10 @@ gSystem->ExpandPathName (jecDir);
 // v1
 // getJetCorrector(TString baseDir, TString pf, bool isMC)
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
-FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
-//TString pf(isMC ? "MC" : "DATA");
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-// JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Spring16_25nsV6_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-// JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/MC_Uncertainty_AK4PFchs.txt").Data ());
+FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Summer16_23Sep2016V4_", isMC);
+
+JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Summer16_23Sep2016V4_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
+// <-- used my smearJES
 
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
@@ -1117,7 +1113,9 @@ beff = 0.747;
 // Setup calibration readers
 //BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/btagSF_CSVv2.csv");
 // BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
-BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
+//BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
+BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_Moriond17_B_H.csv");
+
 // and there:
 
 // in *80X
@@ -1142,11 +1140,11 @@ BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
                              {"up", "down"});      // other sys types
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_B,      // btag flavour
-            "comb");               // measurement type
-//          "mujets");               // measurement type
+//            "comb");              // they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
+          "mujets");                //
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_C,      // btag flavour
-            "comb");              // measurement type
+          "mujets");               // measurement type
 btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
             "incl");                // measurement type
@@ -2581,7 +2579,11 @@ for(size_t f=0; f<urls.size();++f)
 		//        double pt_cut, double eta_cut, 
 		//        pat::TauCollection& selTaus,                          // output
 		//        bool record, bool debug) // more output
-		string tau_decayMode("decayModeFinding"), tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"), tau_againstMuon("againstMuonTight3"), tau_againstElectron("againstElectronTightMVA6");
+		string tau_decayMode("decayModeFinding"),
+			//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
+			tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
+			tau_againstMuon("againstMuonTight3"),
+			tau_againstElectron("againstElectronTightMVA6");
 
 		processTaus_ID_ISO_Kinematics(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron,
 			20, 2.3, selTaus, false, debug);
@@ -2658,10 +2660,18 @@ for(size_t f=0; f<urls.size();++f)
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, jetID, 30, 2.4, full_jet_corr, selJets, false, debug);
 
+
+		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
+		// 1000 bins
+
 		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, 0., 100., 100, 0., 100.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
 		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, 0., 100., full_jet_corr.Z(), weight);
+		// 10 000 and 100 bins
 
 		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
+
+		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weight);
+		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
 
 		// ---------------------------- Clean jet collections from selected leptons
@@ -2739,8 +2749,9 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::JetCollection& selBJets,                          // output
 		//	bool record, bool debug) // more output
 
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-		float btag_WP = 0.8;
+		float btag_WP = 0.8484; // medium
 		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, btagCal, btsfutil, btagger_label, btag_WP, 0.747, 0.13, selBJets, true, debug);
 
 		if(debug){

@@ -63,12 +63,12 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 	//Cut based identification
 
 	// ------------------------- muon IDs
-	passId     = patUtils::passId(muon, goodPV, mu_ID,      patUtils::CutVersion::ICHEP16Cut);
-	passVetoId = patUtils::passId(muon, goodPV, veto_mu_ID, patUtils::CutVersion::ICHEP16Cut);
+	passId     = patUtils::passId(muon, goodPV, mu_ID,      patUtils::CutVersion::Moriond17Cut);
+	passVetoId = patUtils::passId(muon, goodPV, veto_mu_ID, patUtils::CutVersion::Moriond17Cut);
 
 	// ------------------------- muon isolation
-	passIso     = patUtils::passIso(muon, mu_ISO,      patUtils::CutVersion::ICHEP16Cut);
-	passVetoIso = patUtils::passIso(muon, veto_mu_ISO, patUtils::CutVersion::ICHEP16Cut);
+	passIso     = patUtils::passIso(muon, mu_ISO,      patUtils::CutVersion::Moriond17Cut);
+	passVetoIso = patUtils::passIso(muon, veto_mu_ISO, patUtils::CutVersion::Moriond17Cut);
 
 	if (record && passId && passIso)
 		{

@@ -110,13 +110,13 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
 
 
-	passId     = patUtils::passId(electron, goodPV, el_ID, patUtils::CutVersion::ICHEP16Cut) && passSigma && passImpactParameter;
-	passVetoId = patUtils::passId(electron, goodPV, veto_el_ID, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto && passImpactParameterVeto;
+	passId     = patUtils::passId(electron, goodPV, el_ID,      patUtils::CutVersion::Moriond17Cut) && passSigma && passImpactParameter;
+	passVetoId = patUtils::passId(electron, goodPV, veto_el_ID, patUtils::CutVersion::Moriond17Cut) && passSigmaVeto && passImpactParameterVeto;
 
 	// ------------------------- electron isolation
 
-	passIso     = patUtils::passIso(electron, el_ISO, patUtils::CutVersion::ICHEP16Cut, rho);
-	passVetoIso = patUtils::passIso(electron, veto_el_ISO, patUtils::CutVersion::ICHEP16Cut, rho);
+	passIso     = patUtils::passIso(electron, el_ISO,      patUtils::CutVersion::Moriond17Cut, rho);
+	passVetoIso = patUtils::passIso(electron, veto_el_ISO, patUtils::CutVersion::Moriond17Cut, rho);
 
 
 	// ---------------------------- Electron Kinematics

@@ -53,48 +53,104 @@ std::vector<double> smearJER(double pt, double eta, double genPt)
 	//1.595 +-0.175
 	//0.998 +-0.066
 	//1.226 +-0.145
+	//
+	//Moriond:
+	//abs(eta) region	0.0–0.5	0.5-0.8	0.8–1.1	1.1-1.3	1.3–1.7	1.7 - 1.9	1.9–2.1	2.1 - 2.3	2.3 - 2.5	2.5–2.8	2.8-3.0	3.0-3.2	3.2-5.0
+	//Data/MC SF	1.109 +-0.008	1.138 +-0.013	1.114 +-0.013	1.123 +-0.024	1.084 +-0.011	1.082 +-0.035	1.140 +-0.047	1.067 +-0.053	1.177 +-0.041	1.364 +-0.039	1.857 +-0.071	1.328 +-0.022	1.16 +-0.029
+	//
+	//abs(eta) region	0.0–0.5	0.5-0.8	0.8–1.1	1.1-1.3	1.3–1.7	1.7 - 1.9	1.9–2.1	2.1 - 2.3	2.3 - 2.5	2.5–2.8	2.8-3.0	3.0-3.2	3.2-5.0
+	//Data/MC SF
+	// 1.109 +-0.008
+	// 1.138 +-0.013
+	// 1.114 +-0.013
+	// 1.123 +-0.024
+	// 1.084 +-0.011
+	// 1.082 +-0.035
+	// 1.140 +-0.047
+	// 1.067 +-0.053
+	// 1.177 +-0.041
+	// 1.364 +-0.039
+	// 1.857 +-0.071
+	// 1.328 +-0.022
+	// 1.16  +-0.029
 	eta=fabs(eta);
 	double ptSF(1.0), ptSF_err(0.06);
-	if      (eta<0.5) { ptSF=1.122; ptSF_err=0.026; }
-	else if (eta<0.8) { ptSF=1.167; ptSF_err=0.048; }
-	else if (eta<1.1) { ptSF=1.168; ptSF_err=0.046; }
-	else if (eta<1.3) { ptSF=1.029; ptSF_err=0.066; }
-	else if (eta<1.7) { ptSF=1.115; ptSF_err=0.03 ; }
-	else if (eta<1.9) { ptSF=1.041; ptSF_err=0.062; }
-	else if (eta<2.1) { ptSF=1.167; ptSF_err=0.086; }
-	else if (eta<2.3) { ptSF=1.094; ptSF_err=0.093; }
-	else if (eta<2.5) { ptSF=1.168; ptSF_err=0.120; }
-	else if (eta<2.8) { ptSF=1.266; ptSF_err=0.132; }
-	else if (eta<3.0) { ptSF=1.595; ptSF_err=0.175; }
-	else if (eta<3.2) { ptSF=0.998; ptSF_err=0.066; }
-	else if (eta<5.0) { ptSF=1.226; ptSF_err=0.145; }
+	if      (eta<0.5) { ptSF=1.109; ptSF_err=0.008; }
+	else if (eta<0.8) { ptSF=1.138; ptSF_err=0.013; }
+	else if (eta<1.1) { ptSF=1.114; ptSF_err=0.013; }
+	else if (eta<1.3) { ptSF=1.123; ptSF_err=0.024; }
+	else if (eta<1.7) { ptSF=1.084; ptSF_err=0.011; }
+	else if (eta<1.9) { ptSF=1.082; ptSF_err=0.035; }
+	else if (eta<2.1) { ptSF=1.140; ptSF_err=0.047; }
+	else if (eta<2.3) { ptSF=1.067; ptSF_err=0.053; }
+	else if (eta<2.5) { ptSF=1.177; ptSF_err=0.041; }
+	else if (eta<2.8) { ptSF=1.364; ptSF_err=0.039; }
+	else if (eta<3.0) { ptSF=1.857; ptSF_err=0.071; }
+	else if (eta<3.2) { ptSF=1.328; ptSF_err=0.022; }
+	else if (eta<5.0) { ptSF=1.16 ; ptSF_err=0.029; }
 
+	/*
 	toReturn[0]=TMath::Max(0., (genPt+ptSF*(pt-genPt))/pt );
 	toReturn[1]=TMath::Max(0., (genPt+(ptSF+ptSF_err)*(pt-genPt))/pt );
 	toReturn[2]=TMath::Max(0., (genPt+(ptSF-ptSF_err)*(pt-genPt))/pt );
+	*/
+
+	// TODO: check new SF-scaling application:
+	// from https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
+	// (called c_JER there)
+	toReturn[0]=TMath::Max(0., (1 + (ptSF          - 1)*(pt - genPt)/pt) );
+	toReturn[1]=TMath::Max(0., (1 + (ptSF+ptSF_err - 1)*(pt - genPt)/pt) );
+	toReturn[2]=TMath::Max(0., (1 + (ptSF-ptSF_err - 1)*(pt - genPt)/pt) );
+
 	return toReturn;
 	}
+
+
+
+/* TODO: taken from the latest MacroUtils of llvv
+ * need to check it
+ */
+std::vector<float> smearJES(float pt, float eta, JetCorrectionUncertainty *jecUnc)
+	{
+	jecUnc->setJetEta(eta);
+	jecUnc->setJetPt(pt);
+	float relShift=fabs(jecUnc->getUncertainty(true));
+	std::vector<float> toRet;
+	toRet.push_back((1.0+relShift)*pt);
+	toRet.push_back((1.0-relShift)*pt);
+	return toRet;
+	}
+
+
 
 bool passPFJetID(std::string label, pat::Jet jet)
 	{
 	// Set of cuts from the POG group: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
 
+	bool looseJetID = false;
+	bool tightJetID = false;
 	bool passID(false); 
 
 	// float rawJetEn(jet.correctedJet("Uncorrected").energy() );
 
-	double eta=jet.eta();
+	double eta = fabs(jet.eta());
  
  	// from the twiki:
+ 	// https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
 	float NHF = jet.neutralHadronEnergyFraction();
 	float NEMF = jet.neutralEmEnergyFraction();
 	float CHF = jet.chargedHadronEnergyFraction();
 	float MUF = jet.muonEnergyFraction();
-	float CEMF = jet.chargedEmEnergyFraction();
+	float CEMF = jet.chargedEmEnergyFraction(); // chargedEmEnergyFraction (relative to uncorrected jet energy)
 	float NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
 	float NumNeutralParticles =jet.neutralMultiplicity();
 	float CHM = jet.chargedMultiplicity(); 
 	// TODO: check if these change corresponding to jet corrections? Or apply corrections after passing the selection?
+	//
+	// the doc https://cmssdt.cern.ch/SDT/doxygen/CMSSW_8_0_14/doc/html/d6/d00/classpat_1_1Jet.html
+	// says these `...Fraction` are respective uncorrected jets
+	// which is exactly what is needed by their note:
+	// > Note: All fractions are calculated with the raw/uncorrected energy of the jet (only then they add up to unity). So the PF JetID has to be applied before the jet energy corrections.
 
 	// float nhf( (jet.neutralHadronEnergy() + jet.HFHadronEnergy())/rawJetEn );
 	// float nef( jet.neutralEmEnergy()/rawJetEn );
@@ -105,6 +161,7 @@ bool passPFJetID(std::string label, pat::Jet jet)
 	// float muf(jet.muonEnergy()/rawJetEn); 
 
 	// at time of 80X all 13TeV (74X, 76X, 80X) recommendations got new specification for |eta| < 2.7
+	/*
 	if (label=="Loose")
 		{
 		// passID = ( ((nhf<0.99 && nef<0.99 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.99) || abs(eta)>2.4)) && abs(eta)<=3.0 );
@@ -129,11 +186,41 @@ bool passPFJetID(std::string label, pat::Jet jet)
 			}
 		else passID = NEMF<0.90 && NumNeutralParticles > 10;
 		}
+	*/
+
+	// and latest (at Moriond17) stuff:
+	// https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+	// quote:
+	// > Note: All fractions are calculated with the raw/uncorrected energy of the jet (only then they add up to unity). So the PF JetID has to be applied before the jet energy corrections.
+	// --- khmm....
+	// in MINIAOD the jets are already corrected  --> one gets the uncorrected jet and reapplies the corrections
+	// > ... collection of AK4 jets slimmedJets, made from ak4PFJetsCHS ... "These have standard jet energy corrections applied (L1FastJet, L2, L3), and a pT cut at 10 GeV"
+	// so now one need to get the uncorrected jet --> 
+	if (eta <= 2.7)
+		{
+		looseJetID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=2.7 ;
+		tightJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=2.7 ;
+		}
+	else if (eta <= 3.0)
+		{
+		looseJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && abs(eta)>2.7 && abs(eta)<=3.0 );
+		tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && abs(eta)>2.7 && abs(eta)<=3.0 );
+		}
+	else
+		{
+		looseJetID = (NEMF<0.90 && NumNeutralParticles>10 && abs(eta)>3.0 );
+		tightJetID = (NEMF<0.90 && NumNeutralParticles>10 && abs(eta)>3.0 );
+		}
 
 	// there is also:
 	//tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4) && abs(eta)<=3.0
 
 	// And the abs(eta)>3.0 part, but we never consider such jets, so... Meh!
+
+	if (label == "Loose")
+		return looseJetID;
+	if (label == "Tight")
+		return tightJetID;
 
 	return passID; 
 	}
@@ -151,14 +238,38 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	bool record, bool debug) // more output
 {
 
+// the PF ID (in Moriond17 recommended to be applied before corrections)
+
+pat::JetCollection IDjets;
+
+for(size_t ijet=0; ijet<jets.size(); ijet++)
+	{
+	// the input jets here are, supposedly, slimmedJets from MINIAODs -- which are already corrected
+	// -- apparently, the parameters that are used in PF ID calculation use the uncorrected values stored in the jets
+	// so, everything is fine
+	pat::Jet& jet = jets[ijet];
+
+	bool passID = passPFJetID(jetID, jet);
+
+	if (passID)
+		{
+		IDjets.push_back(jet);
+		if (record)
+			{
+			fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			}
+		}
+	}
+
 // The jet corrections
 
 // v6, adding jet corrections and b-tagging
 //LorentzVector full_jet_corr(0., 0., 0., 0.);
-for(size_t ijet=0; ijet<jets.size(); ijet++)
+for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	{
 	// TODO: so does this mean "in place"?
-	pat::Jet& jet = jets[ijet];
+	pat::Jet& jet = IDjets[ijet];
 
 	if (record)
 		{
@@ -211,17 +322,17 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 			double genjetpt( genJet ? genJet->pt(): 0.);                    
 			//std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
 			// using the local smear:
-			std::vector<double> smeared_JER = smearJER(jet.pt(),jet.eta(),genjetpt);
-			double jer_smearing = smeared_JER[0];
+			std::vector<double> JER_smearing_factor = smearJER(jet.pt(),jet.eta(),genjetpt);
+			double jer_smearing = JER_smearing_factor[0];
 			jet.setP4(jet.p4()*jer_smearing);
 			fill_1d(string("control_jet_slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
 			
-			//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smeared_JER[0], smeared_JER[1], smeared_JER[2]);
+			//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, JER_smearing_factor[0], JER_smearing_factor[1], JER_smearing_factor[2]);
 			// //set the JER up/down alternatives
-			jet.addUserFloat("jerup", smeared_JER[1]);  //kept for backward compatibility
-			jet.addUserFloat("jerdown", smeared_JER[2] ); //kept for backward compatibility
-			jet.addUserFloat("_res_jup", smeared_JER[1]);
-			jet.addUserFloat("_res_jdown", smeared_JER[2] );
+			jet.addUserFloat("jerup", JER_smearing_factor[1]);  //kept for backward compatibility
+			jet.addUserFloat("jerdown", JER_smearing_factor[2] ); //kept for backward compatibility
+			jet.addUserFloat("_res_jup", JER_smearing_factor[1]);
+			jet.addUserFloat("_res_jdown", JER_smearing_factor[2] );
 			}
 		else{
 			jet.addUserFloat("jerup", 1.0); //kept for backward compatibility
@@ -249,7 +360,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 	// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 	// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
 	//to get the raw jet again
-	//jets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
+	//IDjets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
 
 	// Add the jet momentum correction:
 	// jet_cor propagation is on in 13.4
@@ -273,7 +384,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 	}
 
 
-std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
+std::sort (IDjets.begin(),  IDjets.end(),  utils::sort_CandidatesByPt);
 
 // ----------------------------------- here is the correctF jet correction point
 // Propagate full_jet_corr to MET:
@@ -290,7 +401,7 @@ std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
 // FIXME: So are these MET corrections?
 //if(debug) cout << "Update also MET" << endl;
 // LorentzVector n_met = met.p4();
-// std::vector<LorentzVector> newMet = utils::cmssw::getMETvariations(n_met/*recoMet*/,jets,selLeptons,isMC);
+// std::vector<LorentzVector> newMet = utils::cmssw::getMETvariations(n_met/*recoMet*/,IDjets,selLeptons,isMC);
 // FIXME: Must choose a lepton collection. Perhaps loose leptons?
 // n_met = newMet[utils::cmssw::METvariations::NOMINAL];
 
@@ -320,7 +431,7 @@ if(debug) cout << "Jet Energy Corrections updated" << endl;
 
 
 // ------------------------------- JETS SELECTION
-// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
+// the kinematics only, now (at Moriond17) the IDs are recommended to be applied before corrections
 
 //pat::JetCollection selJets;
 //pat::JetCollection selJets20GeV, selJets30GeV;
@@ -329,9 +440,9 @@ if(debug) cout << "Jet Energy Corrections updated" << endl;
 // selJets pass cross-cleaning with taus later
 // and b-tagging again
 double mindphijmet (9999.);
-for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
+for (unsigned int count_ided_jets = 0, ijet = 0; ijet < IDjets.size(); ++ijet)
 	{
-	pat::Jet& jet = jets[ijet];
+	pat::Jet& jet = IDjets[ijet];
 
 	if (record)
 		{
@@ -349,17 +460,11 @@ for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
 	//TString jetType (genJet && genJet->pt() > 0 ? "truejetsid" : "pujetsid");
 	// TODO: this mctruth for jets it is never used in the code
 
-	//jet id
-	bool passPFloose = passPFJetID(jetID, jet); 
+	//jet id (done before corrections)
+	//bool passPFloose = passPFJetID(jetID, jet); 
 	// bool passPFloose = passPFJetID("Tight", jet); 
 	//if (label=="Tight")
 	// FIXME: check when pileup ID will come out
-
-	if (record && passPFloose)
-		{
-		fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-		fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-		}
 
 	// Jet Kinematics
 	double eta = jet.eta();
@@ -385,7 +490,9 @@ for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
 
 
 	//if (passPFloose && passKino)
-	if (passPFloose && (fabs(eta) < eta_cut) && pt > pt_cut)
+	//if (passPFloose && (fabs(eta) < eta_cut) && pt > pt_cut)
+	// now the ID is applied before even corrections
+	if ((fabs(eta) < eta_cut) && pt > pt_cut)
 		{
 		//if (pt > 30.)
 			{
