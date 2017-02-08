@@ -280,6 +280,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	FactorizedJetCorrector *jesCor,
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
+	string& jetResolutionFileName, string& jetResolutionSFFileName,
 	string& jetID,
 	double pt_cut, double eta_cut,
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -287,6 +288,11 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 
 {
 // the PF ID (in Moriond17 recommended to be applied before corrections)
+JME::JetResolution resolution = JME::JetResolution(jetResolutionFileName);
+JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
+
+Variation m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+
 
 pat::JetCollection IDjets;
 
@@ -374,9 +380,12 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 		       fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_before"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
 		       }
 		// the JER SF and resolution for the jet:
-		std::vector<double> jer_sf_pair = JER_SF(jet.eta());
-		double jer_sf = jer_sf_pair[0];
-		double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
+		//std::vector<double> jer_sf_pair = JER_SF(jet.eta());
+		//double jer_sf = jer_sf_pair[0];
+		//double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
+		// getting it with the tool from files:
+		double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
+		double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
 
 		// matching to generation jet:
 		//const reco::GenJet* genJet=jet.genJet();

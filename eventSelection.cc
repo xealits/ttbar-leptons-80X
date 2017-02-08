@@ -1067,6 +1067,9 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 // <-- used by smearJES
 // (slimmedJets in MINIAOD are AK4PFchs jets)
 
+string jetResolutionFileName   = runProcess.getParameter<edm::FileInPath>("resolutionFile").fullPath();
+string jetResolutionSFFileName = runProcess.getParameter<edm::FileInPath>("scaleFactorFile").fullPath();
+
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
 // FIXME: MuScle fit corrections for 13 TeV not available yet (more Zs are needed) getMuonCorrector (jecDir, dtag);
@@ -2678,6 +2681,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	FactorizedJetCorrector *jesCor,
 		//	JetCorrectionUncertainty *totalJESUnc,
 		//	double dR_max, // for jet matching in jet corrections smearing for MC
+		//	string& jetResolutionFileName, string& jetResolutionSFFileName,
 		//	string& jetID,
 		//	double pt_cut, double eta_cut,
 		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -2687,7 +2691,8 @@ for(size_t f=0; f<urls.size();++f)
 		pat::JetCollection selJets;
 		string jetID("Loose");
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2, jetID, 30, 2.4, full_jet_corr, selJets, true, debug);
+		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+			jetResolutionFileName, jetResolutionSFFileName, jetID, 30, 2.4, full_jet_corr, selJets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
