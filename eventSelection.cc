@@ -104,8 +104,8 @@ namespace utils
 			gSystem->ExpandPathName(baseDir);
 			//TString pf(isMC ? "MC" : "DATA");
 			// TString pf("Fall15_25nsV2_");
-			pf += (isMC ? "MC" : "DATA");
-			
+			//pf += (isMC ? "MC" : "DATA");
+
 			//order matters: L1 -> L2 -> L3 (-> Residuals)
 			std::vector<std::string> jetCorFiles;
 			std::cout << baseDir+"/"+pf+"_L1FastJet_AK4PFchs.txt" << std::endl;
@@ -912,9 +912,13 @@ bool isNoHLT = dtag.Contains("noHLT");
 bool withTauIDSFs = runProcess.getParameter <bool> ("withTauIDSFs");
 
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
-bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
-bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
 bool isNLOMC      (isMC && (dtag.Contains("amcatnlo") || dtag.Contains("powheg")) );
+
+// Summer16_23Sep2016BCDV4_DATA_        Summer16_23Sep2016EFV4_DATA_        Summer16_23Sep2016GV4_DATA_        Summer16_23Sep2016HV4_DATA_
+bool period_BCD = !isMC && (dtag.Contains("2016B") || dtag.Contains("2016C") || dtag.Contains("2016D"));
+bool period_EF  = !isMC && (dtag.Contains("2016E") || dtag.Contains("2016F"));
+bool period_G   = !isMC && (dtag.Contains("2016G"));
+bool period_H   = !isMC && (dtag.Contains("2016H"));
 
 TString outTxtUrl = outUrl + ".txt";
 FILE *outTxtFile = NULL;
@@ -1043,10 +1047,25 @@ gSystem->ExpandPathName (jecDir);
 // v1
 // getJetCorrector(TString baseDir, TString pf, bool isMC)
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
-FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Summer16_23Sep2016V4_", isMC);
 
-JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Summer16_23Sep2016V4_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-// <-- used my smearJES
+// in 2016 the corrections for data are per-period:
+// Summer16_23Sep2016BCDV4_DATA_        Summer16_23Sep2016EFV4_DATA_        Summer16_23Sep2016GV4_DATA_        Summer16_23Sep2016HV4_DATA_
+TString jet_corr_files;
+if (isMC)
+	jet_corr_files = "/Summer16_23Sep2016V4_MC";
+else if (period_BCD)
+	jet_corr_files = "/Summer16_23Sep2016BCDV4_DATA";
+else if (period_EF)
+	jet_corr_files = "/Summer16_23Sep2016EFV4_DATA";
+else if (period_G)
+	jet_corr_files = "/Summer16_23Sep2016GV4_DATA";
+else if (period_H)
+	jet_corr_files = "/Summer16_23Sep2016HV4_DATA";
+FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, jet_corr_files, isMC);
+
+JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + jet_corr_files + "_Uncertainty_AK4PFchs.txt").Data ());
+// <-- used by smearJES
+// (slimmedJets in MINIAOD are AK4PFchs jets)
 
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
@@ -1328,9 +1347,8 @@ if(debug)
 	cout << "isW0JetsSet = " << isW0JetsSet << "\n";
 
 	cout << "isTTbarMC = "    << isTTbarMC << "\n";
-	cout << "isPromptReco = " << isPromptReco << "\n";
-	cout << "isRun2015B = "   << isRun2015B << "\n";
 	cout << "isNLOMC = "      << isNLOMC << "\n";
+	cout << "period BCD EF G H = " << period_BCD << " " << period_EF << " " << period_G << " " << period_H << endl;
 
 	cout << "jecDir = "      << jecDir << "\n";
 	}
@@ -2581,7 +2599,7 @@ for(size_t f=0; f<urls.size();++f)
 		//        bool record, bool debug) // more output
 		string tau_decayMode("decayModeFinding"),
 			//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
-			tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
+			tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
 			tau_againstMuon("againstMuonTight3"),
 			tau_againstElectron("againstElectronTightMVA6");
 
@@ -2605,7 +2623,8 @@ for(size_t f=0; f<urls.size();++f)
 		pat::TauCollection selTausNoLep;
 		crossClean_in_dR(selTaus, selLeptons, 0.4, selTausNoLep, weight, string("selTausNoLep"), false, debug);
 
-		// TODO: redo the SF of tau ID
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
+		// Medium MVA (no dR03) is 0.97 +- 0.05
 
 		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
 			{
@@ -2614,7 +2633,9 @@ for(size_t f=0; f<urls.size();++f)
 				//pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
 				// recommendations update (noticed 8-11-2016, last page update 2016-11-07)
 				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
-				pre_weight_tauIDsf *= (1 - 0.9 + r3->Gaus(0, 0.1)); // gaussian +- 0.1
+				// in ReReco it's different
+				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
+				pre_weight_tauIDsf *= (1 - 0.97 + r3->Gaus(0, 0.05)); // gaussian +- 0.05
 			weight_tauIDsf = 1 - pre_weight_tauIDsf;
 			}
 			// TODO: should here be a normalization to all MC events?
