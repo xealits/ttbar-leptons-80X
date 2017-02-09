@@ -50,6 +50,7 @@
   <bin name="jet_fakerate_per_mc"  file="ttbar-leptons-80X/jobing/jet_fakerate_per_mc.cc"></bin>
   <bin name="jet_fakerate_separate_origins"  file="ttbar-leptons-80X/jobing/jet_fakerate_separate_origins.cc"></bin>
   <bin name="jet_fakerate_separate_origins_overlayed"  file="ttbar-leptons-80X/jobing/jet_fakerate_separate_origins_overlayed.cc"></bin>
+  <bin name="jet_2D_distrs_per_origin_separate"  file="ttbar-leptons-80X/jobing/jet_2D_distrs_per_origin_separate.cc"></bin>
 
   <bin name="jet_origins"          file="ttbar-leptons-80X/jobing/jet_origins.cc"></bin>
   <bin name="jet_weightflow"          file="ttbar-leptons-80X/jobing/jet_weightflow.cc"></bin>

@@ -1,0 +1,1199 @@
+try golden certificate, go through the prescale for HLTs again
+
+
+# ---------------------------
+HLT_PFJet40 is prescaled
+-- updating to a not prescaled trigger in jet-tau fake rates study.
+List of similar triggers:
+HLT_PFJet40_v5
+HLT_PFJet60_v5
+HLT_PFJet80_v5
+HLT_PFJet140_v5
+HLT_PFJet200_v5
+HLT_PFJet260_v5
+HLT_PFJet320_v5
+HLT_PFJet400_v5
+HLT_PFJet450_v5
+HLT_PFJet500_v5
+--- 140 or 200 should be the first unprescaled.
+# ---------------------------
+
+
+# [b-tag scale-up is for tomorrow...]
+# 1798(2682)/2340 v9.23 UP jet corresctions, added stochastic smearing (with the corresponding jet matching)
+# and jet energy SF and resolutions come from the files
+# 5bc865738b3d2b867d8379063b12269548373841
+# aa9fe831ee4148e384545f551ec51002dbaa7f5d
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Summer16-TT-DY50-WJets-SingleTop-QCD-HT.json test/tests/outdir_v9.23/
+# ---------------------------
+
+# 2290(3154)/2340 v9.22 Updated program structure (Modularity1)
+# up llvv (muon ISO is probably the only new thing)
+# up jet PF ID (and application before corrections)
+# corrections (Summer_Reco JEC files (DATA is per-period), JER smearing table and factor formula, JES smearing is the same)
+# only jetcorr are propagated to MET
+# b-tagging -- new WP, full-2016-dataset combined SFs (there are per-period for light jets -- check later)
+# tau -- the same, Medium MVA-based, ID SF 0.97
+# leptons -- only muons got some update in ISO
+#
+# the 3 problems of the 2016 data:
+# old MET filters (high-MET/spurious muons issue in ReReco? tail 100+GeV in MET)
+# "slew rate effect" in high Energy electrons (should be too high, but still)
+# HIP fix -- muon SFs for B-F and G-H are different
+# 6091932bffa798b013e2d1e26a303b94dbd9f14f
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Summer16-TT-DY50-WJets-SingleTop-QCD-HT.json test/tests/outdir_v9.22/
+# ---------------------------
+
+# 1342(1341)/1836 j6.22 tau matching requires partonFlavour != gluons --- matching to quark- and other-jets
+# still MVA-based tau ID
+# 1faae64e8379c9be328464d5f6f6514632644e9f
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.22/
+# ---------------------------
+
+# [--- taus mixed with gluon jets could explain it: less fake rate and qcd has more gluons
+#   1. try run of taus with partonFlabour != gluons --- j6.22
+#   2. need to print out visible_tau & closest jets (with partonFlavour) and taus]
+# [and, naturally, mixed result, which cannot be used for any conclusions:
+#  1. fakerates of different components are different in wjets and qcd (wjets has old tau fake rate, qcd has it even lower than it was)
+#  2. overall fakerates are different (due to MVA-based tau ID)
+#  3. tau fake rate in qcd is much smaller than it was...]
+# 1453(1452)/1836 j6.21 tau matching doesn't require "other" partonFlavour --- just the dR distance
+# plus the final-state daughters of taus are processed down to sub-daughters (which should not matter -- no neutrinos should be there)
+# <<<<<< [also -- MVA-based tau ID]
+# 812d9f36e4083627e74c8d7b773817c5964c1f9e
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.21/
+# ---------------------------
+
+# [the gap is almost covered...]
+# 1736(1735)/1836 j6.20 event_ht > 120
+# bbbec5341e8e93d78df477deab23f5d6e9d51a33
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.20/
+# ---------------------------
+
+# 1767(1776)/1836 j6.19 added event_ht > 99 requirement to QCD selection
+# 4f6a0cffe7e1e3bbcd468da25f46894cfe4600f6
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.19/
+# ---------------------------
+
+# 2292(3183)/2340 v9.21 Included dilepton (elmu) fake rates in calculation
+# 31129104c0187daee24a99364a9ec0f8a2ca855c
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Summer16-TT-DY50-WJets-SingleTop-QCD-HT.json test/tests/outdir_v9.21/
+# ---------------------------
+
+# 1773/1836 j6.18 fixed tau_jets_distr_t -- the tau origin distr
+# c785da4bc35ec7febe1b449ed4b866c4bc3c7a01
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.18/
+# ---------------------------
+
+# 1734/1836 j6.17 fix of trigger jet removal -- it should start working in MC and maybe will improve in Data
+# 91a03729c900792a6d8af886a57c757b03083d23
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.17/
+# ---------------------------
+
+# 1726/2340 v9.20 Run with Summer16 (new HLTs), taus are still Medium CombinedIso
+# fabc1324f6480cc2b47b9bed03fd316f4cd1b16e
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Summer16-TT-DY50-WJets-SingleTop-QCD-HT.json test/tests/outdir_v9.20/
+# ---------------------------
+
+# 1743/1836 j6.16 return to HLT_PFJet40_v*, taus are still Medium CombinedIso
+# and run on Summer16 MC (with exclusive Jet and Muon triggers yet --- try them separately later)
+# bc67b51d558580215799eb69596ef8a17fc7ff00
+# fabc1324f6480cc2b47b9bed03fd316f4cd1b16e
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_23Sep2016_dataBCDEFG-H-jetht-n-singlemu_MC-Summer16_DY10amctnlo-50madgraph-WJetsIncl-QCD-HT.json test/tests/outdir_j6.16/
+# ---------------------------
+bin/ttbar-leptons-80X/analysis/MC-Summer16_DY10amctnlo-50madgraph--WJetsIncl-QCD-HT.json
+
+# [No events selected in HLTjet???]
+# 559/748 j6.15 short run (JetHT only) with HLT_AK4PFJet30, and removing highest-reco-pt
+# 6c807664130b21ced84ea1b2011d856029d133f5
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht.json test/tests/outdir_j6.15/
+# ---------------------------
+
+# [--- also check HLT_AK4PFJet30]
+# [worse than any pt-based scheme]
+# 515/748 j6.14 short run (HetHT only) checkremoving the highest energy our_hlt jet
+# 2752d0cc29a3f3467eb22adc7f39e946284ba2dd
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht.json test/tests/outdir_j6.14/
+# ---------------------------
+
+# [need to shift to Summer16 MC and all ReReco data features]
+# [--- added tau-matching to MC, started jet MC]
+# [--- MC ran with removing highest energy triggered jet]
+# [need to run highest-energy triggered jet in Data]
+# [the dilep mumu is closer to wjets, but not that much -- especially in R distr, it is off wjets and qcd]
+# [the emu is further from elel and mumu in dileps overlay.... -- why? if ConbinedIsolated has no info on b quarks all three should be the same]
+# ---------------------------
+# runs with Isolated tau ID (cut-based, no info on impact parameter)
+
+# 1777/1812 v9.19 Combined Isolated tau
+# 1ecf82e9540a42080fa49970277acdd9107936a2
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled.json test/tests/outdir_v9.19/
+# ---------------------------
+# 2321/2379
+# 1eafcfe94b46399708bf4b7a83ca7b653d4747c7
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.19/
+# ---------------------------
+
+# [worked well]
+# 1460/1556 j6.13 removing the highest pT our_hlt jet
+# 1ecf82e9540a42080fa49970277acdd9107936a2
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.13/
+# ---------------------------
+# 2057/2152
+# 1eafcfe94b46399708bf4b7a83ca7b653d4747c7
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT-MC_DYJets-WJets-QCD-TTbar.json test/tests/outdir_j6.13/
+# ---------------------------
+
+# 2035/2152 j6.12 0.1 bins
+# and per-jet-origin distrs
+# 490da510493873ea6d17f97c2d22fbbf93df6146
+python job_submit.py -d ./dsets/ jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu_noHLT-MC_DYJets-WJets-QCD-TTbar.json test/tests/outdir_j6.12/
+
+# ---------------------------
+
+# 2331/2379 v9.18 same as v9.17, but with new 0.1 bins
+# and per-jet-origin distrs
+# 490da510493873ea6d17f97c2d22fbbf93df6146
+# 9acafabecce807c49d9c6857c129a203b18c7095
+python job_submit.py -d ./dsets/ ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.18/
+
+# ---------------------------
+
+# 1399/1556 j6.11 removing the highest pT our_hlt jet
+# also: smaller bins in eta of 3D jet distr and radius-eta jet distr
+# 775f6095b8f50fdedd3d2d03ebd43b5b073a8364
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.11/
+# ---------------------------
+# /2152 added the MC, for jet origin matching (via partonFlavour)
+# dba0ff326f490591a1dad9a026d7d4b518808b54
+#python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT-MC_DYJets-WJets-QCD-TTbar.json test/tests/outdir_j6.11/
+# moved for j6.12 on 0.1 bins
+
+# ---------------------------
+
+# 1666/1812 v9.17 just re-run for fake rates in dileptons: 20-30GeV jets are in
+# thus taus and jets are selected the same way as in j6.10 (jets -- pt > 20, eta < 2.4; taus -- pt > 20, eta < 2.3)
+# ae5cddd042da9f5bdd89193b56a0ffe3bd4a034a
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled.json test/tests/outdir_v9.17/
+
+# ---------------------------
+# /2152 added the MC, for jet origin matching (via partonFlavour)
+# 1bbf79d05df50e4ff8b198d60b9beccf4e3570ed
+#python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.17/
+#didn't run -- started v9.18 with data+mc for new eta bins
+
+# ---------------------------
+
+# [worked much better, tough not 100% clean]
+# if doesn't work -- try removing jet closest to 40 GeV
+# 1411/1556 j6.10 another removing the trigger jet in QCD selection:
+# remove the 2nd smallest-pT jet of our-HLT jets
+# b1b0d05b49b92382f48c1cfc5814cc7a1aa08cd8
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.10/
+# ---------------------------
+# 1717/2152 (the reHLT_TTbar is failing due to HLT2 must be checked first in the event, checking HLT in reHLT breaks with error before reaching the if with HLT2)
+# added the MC, for jet origin matching (via partonFlavour)
+# dba0ff326f490591a1dad9a026d7d4b518808b54
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT-MC_DYJets-WJets-QCD-TTbar.json test/tests/outdir_j6.10/
+
+# ---------------------------
+
+# [doesn't work: it removes the whole slope at low pT with small part of the bump; thus the bump at 40GeV is seen even better]
+# 1460/1556 j6.9 another removing the trigger jet in QCD selection:
+# remove the smallest-pT jet of our-HLT jets
+# ae1c83888a2b3782d2cef97bcfe1a9cce1578d00
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.9/
+# ---------------------------
+
+
+# the 40GeV bump is still there
+# 1490/1556 j6.8 removing the trigger jet in QCD selection
+# [53e9ee418336eb1a7d6da5dfebdc2ce5fcaf4e84]
+# 2a3955bbdb5d83a45a87efd247d9fd72158e54fb
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.8/
+# ---------------------------
+
+
+# [now the calculation returns the same high fake rate - try without 20-30 GeV to check if things work - it should definitely reduce fake rate, compared to previous]
+# [get most complete output, runs B-F to show, maybe B-G]
+# 2350/2379 v9.16 re-run with new calculation of fake rate
+# with j6.7 fake rates
+# and 5 files per job [returned to 10 due to high memory use]
+# be6c5132c1e414bb7d178f8a96b4063b853d6167
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.16/
+
+# ---------------------------------------
+run with 5 files per jobs,
+sizes of output:
+$ ls test/tests/outdir_v9.16/*root -lh | head                                                                                                                                                                
+-rw-r--r--. 1 otoldaie zh  722K Dec 26 03:58 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__100.root
+-rw-r--r--. 1 otoldaie zh  783K Dec 26 04:03 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__103.root
+-rw-r--r--. 1 otoldaie zh  781K Dec 26 04:01 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__104.root
+-rw-r--r--. 1 otoldaie zh  760K Dec 26 03:55 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__105.root
+-rw-r--r--. 1 otoldaie zh  691K Dec 26 04:03 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__106.root
+-rw-r--r--. 1 otoldaie zh  780K Dec 26 04:03 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__108.root
+-rw-r--r--. 1 otoldaie zh  733K Dec 26 04:01 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__113.root
+-rw-r--r--. 1 otoldaie zh  681K Dec 26 03:52 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__118.root
+-rw-r--r--. 1 otoldaie zh  806K Dec 26 03:58 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__120.root
+-rw-r--r--. 1 otoldaie zh  710K Dec 26 03:59 test/tests/outdir_v9.16/Data13TeV_SingleElectron2016B_23Sep2016_v3__122.root
+0 otoldaie @lxplus088 merging-pietro ~/work/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk
+$ ls test/tests/outdir_v9.16/MC*root -lh | head                                                                                                                                                              
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 03:58 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__0.root
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 03:59 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__101.root
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 03:53 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__105.root
+-rw-r--r--. 1 otoldaie zh  3.0M Dec 26 03:52 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__14.root
+-rw-r--r--. 1 otoldaie zh  3.0M Dec 26 04:02 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__15.root
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 04:01 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__16.root
+-rw-r--r--. 1 otoldaie zh  2.5M Dec 26 04:03 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__18.root
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 04:03 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__22.root
+-rw-r--r--. 1 otoldaie zh   85K Dec 26 04:03 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__23.root
+-rw-r--r--. 1 otoldaie zh  3.1M Dec 26 04:00 test/tests/outdir_v9.16/MC2016_noHLT_QCD_HT-100-200__24.root
+0 otoldaie @lxplus088 merging-pietro ~/work/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk
+$ ls test/tests/outdir_v9.16/MC*TT*root -lh | head                                                                                                                                                           
+-rw-r--r--. 1 otoldaie zh  2.1M Dec 26 02:58 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_0.root
+-rw-r--r--. 1 otoldaie zh  2.2M Dec 26 02:54 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_1.root
+-rw-r--r--. 1 otoldaie zh  2.3M Dec 26 02:58 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_10.root
+-rw-r--r--. 1 otoldaie zh  2.2M Dec 26 02:55 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_100.root
+-rw-r--r--. 1 otoldaie zh  1.5M Dec 26 02:49 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_101.root
+-rw-r--r--. 1 otoldaie zh  2.3M Dec 26 03:06 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_102.root
+-rw-r--r--. 1 otoldaie zh  2.3M Dec 26 02:57 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_103.root
+-rw-r--r--. 1 otoldaie zh  2.3M Dec 26 03:04 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_104.root
+-rw-r--r--. 1 otoldaie zh  2.3M Dec 26 02:57 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_105.root
+-rw-r--r--. 1 otoldaie zh  2.2M Dec 26 03:09 test/tests/outdir_v9.16/MC2016_reHLT_TTJets_powheg_elelbar_106.root
+
+# [somehow JetHT B and H crash alot]
+# 1314/1622 j6.7 same as j6.6, fixed eta bins, also last update in json -- RunB v3, RunH PromptReco v2, top-trig json certificate
+# 1221/1559
+# ca2557f72965b2dda9b997bf8fc707b8e40f1957
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFGH-jetht-n-singlemu.json test/tests/outdir_j6.7/
+# the json didn't have jetht datasets, submitting them with
+# bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBH-jetht.json
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBH-jetht.json test/tests/outdir_j6.7/
+# ---------------------------
+
+# 2230/2383 v9.15 run with j6.5 fake rates (new bins)
+# 2431/2526 (after resubmitted SingleMuon RunG, with 5 files per job)
+# updated jet origins (partonFlavour, physics definition) [it seems the physics def segfaults]
+# updated HLT versions for MC (v8 for Ele, v4 for Mu)
+# + return to 30GeV jet pT
+# 583f9141823a6bd5e8f0e9d0dcc5d3d739d95fcc
+# 6fbf5023d52a7af5bc5b39b516a17a7236897d9d -- return to old HLT versions, new ones are for Summer16 MC
+#                                             and segfaults in MC jobs due to missing genParton()->pdgId() ("physics" definition of jet origin)
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.15/
+
+# weird failures in SingleMuon G,
+# resubmit whole dataset:
+bin/ttbar-leptons-80X/analysis/dsets_2016_data-SingleMuon-G-23Sep-well-prescaled.json
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-SingleMuon-G-23Sep-well-prescaled.json test/tests/outdir_v9.15/
+# ---------------------------
+
+# 2324/2383
+# 2333/2394
+add
+bin/ttbar-leptons-80X/analysis/dsets_2016_data-H-PromptReco-v2.json
+to v9.14
+(v3 doesn't have all the files)
+
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-H-PromptReco-v2.json test/tests/outdir_v9.14/
+
+
+reduced json for B-H, supposedly all muons and electrons, HLT_Iso(Tk)Mu22_eta2p1_v* HLT_Iso(Tk)Mu22_eta2p1_v4 and  HLT_Ele32_eta2p1_WPTight_Gsf_v* HLT_Ele32_eta2p1_WPTight_Gsf_v8
+/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/LSForForPath_HLT_Ele32_eta2p1_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG22er_OR_L1_SingleIsoEG24er_OR_L1_SingleIsoEG26er_OR_L1_SingleIsoEG28er_OR_L1_SingleIsoEG30er.json
+
+# getting results:
+#    significantly less MC in single-muon -- MC/Data ~= 0.90
+#    also the ttbar fraction is about 2 smaller at jet selection than what it used to be -- probably due to lower jet pT threshold (20GeV since v9.12)
+# ---------------------------
+# 1991/2047 v9.14 run with j6.5 fakerates, and recording jet fake rates in dileptons (with new bins (fixed eta))
+# 58f87440a1021c7e52c148f9494deea1e6be8707
+# bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json
+# python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled.json test/tests/outdir_v9.14/
+# rerun with fixed eta bins in fakerate distrs and
+# bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json
+#python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.14/
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-H-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.14/
+
+# 892/963 j6.6 same as j6.5 but new bins
+# f9cb9efc256dd5171248c7734fa1f217fd4588a5
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFG-jetht-n-singlemu.json test/tests/outdir_j6.6/
+# ---------------------------
+
+# 243/255 v9.13 run with j6.5 fakerates
+# 0674b3d1a542300c34d7c25d8cdd141d23176b5b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled.json test/tests/outdir_v9.13/
+
+# 253/255 v9.12 lowered the jet pT cut to 20GeV (as in fakerates)
+# 0674b3d1a542300c34d7c25d8cdd141d23176b5b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled.json test/tests/outdir_v9.12/
+
+# 812/962 j6.5 same as j6.4 but with jet pT>20 GeV and all data
+# 6188e5fdcae144e5f85b3e64c9985f98105f6257
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFG-jetht-n-singlemu.json test/tests/outdir_j6.5/
+# ---------------------------
+
+# 768/823 v9.11 added jet fakerate distrs
+# merged-sets1 don't have the 3d jet distrs
+# a554e985ecd7b94cb84cc398fc4f294e64617d70
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.11/
+
+
+# 759/823 v9.10 test fakerates of j6.4
+# 7beed5f04690be09c38981fc4ebc698edef83dc2
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.10/
+
+
+# 697/771 j6.4 same as j6.3 but with goodbins2
+# c272e795f6bed4363774c7bfbb70fa666eaed9d7
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCEFG-jetht-n-singlemu.json test/tests/outdir_j6.4/
+# ---------------------------
+# use:
+# bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCDEFG-jetht-n-singlemu.json
+
+
+# 451/471 v9.9 QCD and DataD, test for electron impact parameter dB < 0.02
+# e7a46d5f138d17130ae7bef568f917d8b0752e99
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_noHLT_QCD-HT.json test/tests/outdir_v9.9/
+
+# / v9.8 QCD and DataD, test for electron impact parameter dB < 0.2 (then 0.05 and 0.02)
+# e7a46d5f138d17130ae7bef568f917d8b0752e99
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-D-23Sep-well-prescaled_noHLT_QCD-HT.json test/tests/outdir_v9.8/
+
+# got result: in muon-taus less MC than expected
+# overall, this run is different from 9.3-4 with jets eta < 2.4
+# and now there is tau ID SF weight
+# maybe the muon-tau issue is doe to resubmit with compiled tau ID SF?
+# resubmit again, whole job
+# ---------------------------
+# getting errors:
+# Error in <TBasket::ReadBasketBuffers>: fNbytes = 6468, fKeylen = 107, fObjlen = 16626, noutot = 0, nout=0, nin=6361, nbuf=16626
+# terminate called after throwing an instance of 'edm::Exception'
+#   what():  An exception of category 'ProductNotFound' occurred.
+#   Exception Message:
+#   RefCore: A request to resolve a reference to a product of type 'std::vector<reco::Track>' with ProductID '2:3060'
+#   can not be satisfied because the product cannot be found.
+#   Probably the branch containing the product is not stored in the input file.
+#
+#   /afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016F_23Sep2016_v1_18.sh: line 10:  5921 Aborted                 ttbarleps80_eventSelection /afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_14/src/UserCode/llvv_fwk/test/tests/outdir_v9.7/Data13TeV_SingleMuon2016F_23Sep2016_v1_18_cfg.py
+# ---------------------------
+# (15666537B) 1946/1989 v9.7 all data & MC run for full-data jet fakerates j6.3 and new QCD control plots
+# checked RunD and all runs (RunX) in JetHT average fakerate = 4.3 10^-3 and 4.2 10^-3
+# WARNING: wasted v9.6 correcting this thing
+# e2aceeb75c06769e5e19ce8c63513f78daaf68d4 (old: f8837b42261fcdae69f678281490a477fd5ff3df)
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-D-E-F-G-23Sep-well-prescaled_MC-Frankenstein_reHLT-TT-DY50-WJets_noHLT-SingleTop-QCD-HT.json test/tests/outdir_v9.7/
+
+# ---------------------------
+# missing jobs after last submition:
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleElectron2016C_23Sep2016_v1_95.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016E_23Sep2016_v1_23.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016E_23Sep2016_v1_74.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016E_23Sep2016_v1_82.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016E_23Sep2016_v1_85.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016F_23Sep2016_v1_18.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016F_23Sep2016_v1_23.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016F_23Sep2016_v1_2.sh
+test/tests/outdir_v9.7//FARM/inputs/Data13TeV_SingleMuon2016G_23Sep2016_v1_14.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_18.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_23.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_25.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_29.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_35.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-300-500_37.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_10.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_11.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_12.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_13.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_14.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_16.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_17.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_18.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_1.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_20.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_23.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_24.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_26.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_27.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_28.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_2.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_30.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_31.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_32.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_33.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_34.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_3.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_4.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_5.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_6.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_7.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_8.sh
+test/tests/outdir_v9.7//FARM/inputs/MC2016_noHLT_QCD_HT-700-1000_9.sh
+
+# Notice: added j6.2 to merget-sets -- all data runs
+# 740/771 j6.3 same as j6.2 on ReReco BCEFG data
+# plus fixed names in N particles control distrs in QCD selection
+# b6de2d411e71e67fafc737c9b30cf050e4951865
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataBCEFG-jetht-n-singlemu.json test/tests/outdir_j6.3/
+# ---------------------------
+
+# FIXME error version v9.6!
+# 420/471 v9.5 -> v9.6 jet, tau, met control distrs for single-leptons, run on DataD and QCD
+# 549ec722eb6f16a85f50300f08731e1865e60a74
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_DataD_MC_noHLT-QCD-HT.json test/tests/outdir_v9.5/
+# ---------------------------
+
+# Result: both Prompt and ReReco now have very close amount of jets and tau-jets in the selection (a bit more tau-jets in ReReco)
+#     --> rerun on other ReReco data (add Prompt later if needed)
+# 724/763(1534 with BCEFG data) j6.2 new record functions in jetSelection
+# control runs on RunD ReReco (23Sep2016) & Prompt (j6.1 found about x5 less tau-jets in ReReco -- reproduce)
+# 549ec722eb6f16a85f50300f08731e1865e60a74
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT-MC_DYJets-WJets-QCD_23Sep2016-n-Prompt_dataD-jetht-n-singlemu.json test/tests/outdir_j6.2/
+# ---------------------------
+
+# No difference, still QCD passes e-tau
+# the IDs (from src/ParUrils) look like https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#SPRING15_selections_25_ns
+# 804/823 v9.5 added Tight Photons (with pT > 55, eta < 1.44) and cross-cleaned electrons from them (dR > 0.1)
+# b5086b868129711d53f0ac89a5eec8beef0a2530
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_DataD_Frankenstein-MC_reHLT-TTbarPowheg-DY50-WJetsInclusive-noHLT-SingleTop-noHLT-QCD-HT.json test/tests/outdir_v9.5/
+# ---------------------------
+
+# mixed with v9.3 into v9.3-4 -- all more or less ok with tau ID SFs included, but 1) lots of QCD passes e-tau 2) ee has about 10% more MC till last (b-tag) requirement
+# 1121/1169 v9.4 data B C _ E F G -- addition to v9.3
+# 177f5ec3b31beb1f240ab8d17e5a93d132505de0
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_data-B-C-_-E-F-G-23Sep-well-prescaled.json test/tests/outdir_v9.4/
+# ---------------------------
+
+
+# 819/821 v9.3 added sigmaIetaIeta and rho in electron ID
+# 1d270aaac54b50769e5ea5d06a655f6b632ac2b0
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_DataD_Frankenstein-MC_reHLT-TTbarPowheg-DY50-WJetsInclusive-noHLT-SingleTop-noHLT-QCD-HT.json test/tests/outdir_v9.3/
+# ---------------------------
+
+
+# shows everywhere ~ 1 ratio but:
+#   mu MC > Data by ~10% at jet and met selection
+#   el MC > Data by ~29-26%% at jet and met, then > by 23% at tau -- the difference comes from QCD
+# (796)793/823 v9.2 Run without tau ID SFs and tau-lepton mass requirement
+# 98bdbce7194af02c8c5667515c3b678d860c94a5
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_DataD_Frankenstein-MC_reHLT-TTbarPowheg-DY50-WJetsInclusive-noHLT-SingleTop-noHLT-QCD-HT.json test/tests/outdir_v9.2/
+# ---------------------------
+
+# shows very low fakerates in the following main selection
+# reason:
+#        about 2 less jets selected and about 5 time less tau-jets...
+# 1268/1346 j6.1 run on 23Sep2016 runs B,C,D,E,F,G
+# with new triggers
+# and noHLT handling -- both triggers are on, so events go to "HLTjetmu" trigger cathegory
+# 2a12affefc38fa535af3aba9fbf4ed8e855079a0
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT-MC_DYJets-WJets-QCD_23Sep2016_dataBCDEFG-jetht-n-singlemu.json  test/tests/outdir_j6.1/
+
+# GOT: muons are ~ 0.90 MC/Data at final selection (and everywhere with tau selection), electrons ~ 0.96...
+#    - checking the fakerates...
+# / v9.1 Added jet origins in pretau [check composition of origins, fakerates in MC, subtractions from data fakerates]
+# running on MC set from v8.47 (which gave about 1 ratio to data in all selection steps) + noHLT QCD-HT
+# 075d6ebe847b8b7ed5add4390a7c1f8a3f55755f
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_DataD_Frankenstein-MC_reHLT-TTbarPowheg-DY50-WJetsInclusive-noHLT-SingleTop-noHLT-QCD-HT.json test/tests/outdir_v9.1/
+# ---------------------------
+
+# 202/255 v9.0 [finally, runs for jet-tau fakes], trying the j6.0 (ran on prompt, no HLT, old settings, only new records) on DataD
+# need to run it on MC to get origins, but with current lack of background MC that's not clear
+# the run on Data should show N approximated fakes < N found taus
+# c941987d7ac6d2510a01db0344e51000496277f1
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_data-D-23Sep-well-prescaled.json test/tests/outdir_v9.0/
+# ---------------------------
+
+rerun on bin/ttbar-leptons-80X/analysis/dsets_testing_23Sep2016_dataD-jetht-n-singlemu.json
+# 534/572 j6.0 new records for jet fake rates
+# e8a9e668d8740630fb2d0adbd1d495a5eb4aa54e
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_j6.0/
+
+# it shows MC ~ 90% in singleleptons, otherwise good ratio
+# / v8.47 run on reHLT TTbar powheg, DY 50-Inf, WJets inclusive and noHLT SingleTop
+# these are main backgrounds at the end of the selection, SingleTop being the largest
+# supposedly noHLT won't spoil everything
+# e8a9e668d8740630fb2d0adbd1d495a5eb4aa54e
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_reHLT-TTbarPowheg-DY50-WJetsInclusive-noHLT-SingleTop.json test/tests/outdir_test_v11_ttbar_v8.47/
+# WJets are submitted, DY DAS failed, submitting the rest:
+# bin/ttbar-leptons-80X/analysis/dsets_2016_reHLT-DY50-noHLT-SingleTop.json
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_reHLT-DY50-noHLT-SingleTop.json test/tests/outdir_v8.47/
+# ---------------------------
+
+
+# shows MC ~ 76% (el), 90% (mu) in singleleptons
+# 465/468 merged-sets1 v8.46 rerun D data and reHLT powheg TTbar with 7 October HLT [the previous run was weird -- check if it is not weird, HLTs are ok..]
+# 3d0381ef364512f3d107f93362e58cec6f5be13b
+# same run with 0.9+-0.1 tau ID SF (NEW)
+# e8a9e668d8740630fb2d0adbd1d495a5eb4aa54e
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT-tt-powheg_data-D-23Sep-well-prescaled.json test/tests/outdir_test_v11_ttbar_v8.46/
+# ---------------------------
+
+/afs/cern.ch/user/o/otoldaie/public/LSfor_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26.json
+
+# custom, xsec-lumi-normalized hadd-like utility for nicknamed MC
+bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-n-amcatnlo-data-D-23Sep2016-TOP-UnprescaledPaths-LumiCert.json
+bin/ttbar-leptons-80X/analysis/dsets_testing_withHLT-MC_tt-powheg-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json
+
+# really weird weightflow:
+#    muons MC passed more than electrons
+#    in reHLT powheg very few elel (Data/MC ~= 10 in last step of selection)
+# 18G -> 1G after deleting MC*root
+# 368/381 MC
+# 1048/1136 Data
+# 1416/1517 v8.45 B+C+D+E+F+G 23Sep data & reHLT and withHLT TTbar
+# 41301c04149dd3edfefb2477516508360db8e61f
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT-n-withHLT-MC-tt-powheg-n-amcatnlo_data-C-D-E-F-G-23Sep-well-prescaled.json test/tests/outdir_test_v11_ttbar_v8.45/
+# ---------------------------
+
+# 719/741 v8.44 full MC with new control distributions
+# 556082bfc0060e61281fec7f0397d8d8863b3d57
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_v8.44/
+# ---------------------------
+
+
+# 2.9G
+# 720/741 v8.43 full MC, latest, the main weightflow is TH1D, the TH1I renamed in weightflow_<el>_I etc (we'll see what's going to happen with the all weights in all steps, after reweighting...)
+# cdfb56dbf12cd10a739cccd9a88e44f7c188fd05
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_v8.43/
+# ---------------------------
+
+# / v8.42 continue with tau nonsense, the SF == 0.83 [seems like that's it -- TH1I saves only integer values in bins, not integer bins, the content is]
+# apparently TH1 saves sum of squares of weights, not weights...
+# it should screw up the MC distributions, but not this much
+# (now just wight in eltau = 821 @ fincal selection, weight * tau_SF gives 264, which ~= 821 * 0.83^6)
+# (how many traps are set up in ROOT and CMSSW?)
+# 
+# ---------------------------
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.42/
+# ---------------------------
+
+# / v8.41 with hyper-control for taus, two weightflows: with and without tau ID SFs, also the distrs of the SFs per multiselect
+# 7b75ed760c4ca6e997ac7502f476b81951acffa5
+# ---------------------------
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.41/
+# ---------------------------
+
+# / v8.40 with tau IDs, applied at n_taus
+# 9034066669ec849a62c1d2d5e8f46217f456711b
+# ---------------------------
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.40/
+# ---------------------------
+
+# / v8.39 control run without tau IDs, ttbar only
+# 9034066669ec849a62c1d2d5e8f46217f456711b
+# ---------------------------
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json test/tests/outdir_test_v11_ttbar_v8.39/
+# ---------------------------
+
+# 183/302 v8.38 new Data, 23Sep2016 (local tier)
+# c62371ee4c4c580908955cdeedc0d2db133f1a97
+# ---------------------------
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-23Sep2016-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.38/
+# reHLT:
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-n-amcatnlo-data-D-23Sep2016-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.38/
+
+
+# 101/308 v8.37 added weight for tau ID efficiency SF (should be the last fix for Data-MC mismatch, last v8)
+# c62371ee4c4c580908955cdeedc0d2db133f1a97
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.37/
+# ---------------------------
+
+
+
+# 838/864 v8.36 run on reHLT TTbar amcatnlo and powheg (and data D) to check the trigger effect in single-lepton channels
+# 8fe8b7d264d3d41d1760ff09fc52764c04eb537a
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-n-amcatnlo-data-D-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.36/
+# data submit failed, adding it:
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_data-D-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.36/
+# ---------------------------
+
+# 333/340 v8.35 (fix for 8.32) fix weight_Gen for amcatnlo DYJets and WJets, run only on all-but-QCD MC
+# dd8ed928a6e9b54a3fa502288fd294d6edbe4f9b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-amcatnlo-mc.json test/tests/outdir_test_v11_ttbar_v8.35/
+# ---------------------------
+
+# 610/616 v8.34 added tau control distrs (pt-eta and phi) and tau+lepton mass>12 GeV
+# 8fe8b7d264d3d41d1760ff09fc52764c04eb537a
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.34/
+# ---------------------------
+
+# 1229/1261 v8.33 run on Prompt B C data
+# fe6736ae34a2dcbde9e8bc4789798e48a9954c6b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_2016_Propmpt-data-B-C.json test/tests/outdir_test_v11_ttbar_v8.33/
+# ---------------------------
+
+# 1428/1473 v8.32 run on all-but-QCD MC
+# fe6736ae34a2dcbde9e8bc4789798e48a9954c6b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_v8.32/
+# ---------------------------
+
+# make jobs on reHLT mcatnlo and powheg TTbar to check Gen weight
+# 
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-n-amcatnlo-dataBD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.test/
+# ---------------------------
+
+
+# 593/616 v8.31 top pT reweighting fixed [data/mc at about 1.08 for dileptons, but still ~ 0.98 sleptons....]
+# 81d66b9ee66d8185d15b0cb3c219f3856a928e10 - fe6736ae34a2dcbde9e8bc4789798e48a9954c6b
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.31/
+# ---------------------------
+
+
+# 604/616 v8.30 (*.job_done dummy file for job control)
+# - medium MVA-based taus [improved singleleptons.. from 0.87 to 0.92, which is close to dileptons]
+# - distrs for jet radius in b-tagged jets
+# - eventflow: count number of events, for weightflow control
+# - checked no ID/Iso, HLT SFs are on
+# 72c89f92a0c31c0f96af378c4fcc913a42b1a048
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.30/
+# ---------------------------
+
+
+# same crap: 86% single leptons, 93% dileptons
+# 610/1653files/616 v8.29 new output, fully implemented (to nicknamed weightflow in R)
+# - return to medium tau IDs
+# - medium b-tag WP and (fixed) SF
+#   light jets are not b-tagged in MC
+# - the b-tag efficiency is recorded with new functions
+# - noLep jets are used in channel selections (>2 jets for single-lep)
+#   noLepNoTau jets are recorded (but in all recording functions...)
+# others:
+#   ICHEP cuts for electrons and muons
+# 2f64e39e91b256a13b6e776ef96292cece67eeea
+python job_submit.py ttbarleps80_eventSelection jobing/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.29/
+# ---------------------------
+
+
+# /616/1990files v8.28_w2 new output, return to medium tau IDs, light jets are not b-tagged in MC, noLepNoTau jets are used (still passJet >2 in singlelep!)
+# e59e5515c686777abf0a9a7c53fa32f0969c2998
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.28_w2/
+# ---------------------------
+
+
+# /616 w1 work new record functions test
+# b33ba9297f4331eba7010dbff37eb7c76fdb6db4
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_w1/
+# ---------------------------
+
+# /616 v8.27 ttbarleps80_eventSelection SF are back, but still no ligt jets b-tagged in MC
+# 42c6d697ae879e3a56b2e7ca9fb2b539532ac0b6
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.27/
+# ---------------------------
+
+# /616 v8.26 ttbarleps80_eventSelection no ligt jets b-tagged in MC
+# 626d9614a0ec8c234cf5ec3c0f83766ace7f5f5f
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.26/
+# ---------------------------
+
+# 609/616 v8.25 ttbarleps80_eventSelection on noHLT ttbar without b-tag scalefactors and back to medium b-tag WP
+# f89acc95eac97504e910c7078d51566c9e20cb24
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.25/
+# ---------------------------
+
+# 1384/1473 v8.24 ttbarleps80_eventSelection_newIDs on QCD
+# d9c59be166498798b3a83688907ca4e615d99f48
+python job_submit.py ttbarleps80_eventSelection_newIDs test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_QCD-mc.json test/tests/outdir_test_v11_ttbar_v8.24/
+
+# ---------------------------
+
+
+# mixed this MC with v8.21 data?
+#
+# 1384/1473 v8.23 ttbarleps80_eventSelection_newIDs new tau & btag IDs
+# full MC run without QCD bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json
+# 848e68cbbcfab970104a9182791b47b6a9050425
+python job_submit.py ttbarleps80_eventSelection_newIDs test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_v8.23/
+
+# ---------------------------
+
+# 603/616 v8.22 ttbarleps80_eventSelection_newIDs new tau & btag IDs
+# and also jets are |eta|<2.4 -- since the b-tag SFs are recommended for this range
+# CORRECTION: the new R03 CutBased tau discriminator was not found (in noHLT ttbar MC?)
+#             reverted it to old CutBased
+# To check:   check MVA-based and new R03 discriminators, in noHLT and reHLT TTbar
+# 848e68cbbcfab970104a9182791b47b6a9050425
+python job_submit.py ttbarleps80_eventSelection_newIDs test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.22/
+
+# ---------------------------
+# try MVA-based b-tagging and tau?
+
+# 610/616 v8.21 noHLT TTbar, tight IDs for tau and b-tag
+# 03cff6ac698e79987830e71306a05de5d3233d7b
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.21/
+
+# ---------------------------
+
+# 608/616 v8.20 noHLT TTbar, removed hits counts from tau selection
+# 297cf8734ff39c970763be64f7cc7b4e46f0d7bb
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.20/
+
+# ---------------------------
+
+# 518/616 v8.19 trying noHLT TTbar [mc failed...]
+# ca3cdd4918378ef5bef18bd245975ce306da135e
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.19/
+
+# ---------------------------
+
+# /679 v8.18 trying withHLT TTbar
+# dfd1576328fc0037691b45c1d6f9331c1e5f5961
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_withHLT-MC_tt-powheg-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.18/
+
+# ---------------------------
+
+# 940/947 v8.17 discarded urils::isGoodVertex -- it is not used anymore? [no difference]
+# running on raw offlineSlimmedVertices
+# dfd1576328fc0037691b45c1d6f9331c1e5f5961
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.17/
+
+# ---------------------------
+
+# 936/947 v8.16 applied Top pT
+# c5c538ea9609e21a3ccabc228e752069ad963623
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.16/
+
+# ---------------------------
+
+# 672/947 v8.15 checking another unprescaled NoL1 LumiCert
+# caf52aa44901d39b1145d02d8fdf54f18be64166
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-NoL1T-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.15/
+
+# ---------------------------
+
+
+# 565/947 v8.14 trying root-only output
+# for jet b-tagging efficiency
+# 76e3a13a6b1806ed934b88338f9a4145d0f286be
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.14/
+
+# ---------------------------
+
+# 926/947 v8.13 new GenEvent weightGen procedure! [no change...]
+# it seems people just multiply by GenEvent weight, not +-1
+# a2564424f04b117e391a206f9967d3e5cab79722
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.13/
+
+# ---------------------------
+
+# /947 v8.12 run on reHLT TTbar powheg and DataD with b-tagg efficiency counters [measure b-tag efficiency in TTbar, weight there is GenWeight * PU only]
+# plus SF distr-s -- to check how many SFs are > 1
+# plus updated the formula for b-SF application (but the value of efficiency is old -- the hardcoded one)
+# 375db197df5dc242a12499ee1b036f7557f5d201
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.12/
+
+# ---------------------------
+
+# /2017 v8.11 [posheg VS RunD not changed, other comb-s are better, amcatnlo is better, amcatnlo VS B is probably best]
+# * new JES table
+# * higher cuts on leptons (>5GeV above HLT)
+# * 1 updated MET gilter
+# * run on amcatnlo TTbar and Data RunB as well
+# 2c26022e95556a7a19c63ff501ffcdd5deb4ca92 ??? really this commit?
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-n-amcatnlo-dataBD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.11/
+
+# ---------------------------
+
+# 94?/947 v8.10 tweak in b-tagging: [no difference, all channels have data/ttbar ~= 92%]
+# just-noLep jets are tagged
+# "comb" SF for b & c flavours
+# 2c26022e95556a7a19c63ff501ffcdd5deb4ca92
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.10/
+
+# ---------------------------
+
+# 936+/947 v8.9 trying merged llvv, new (ICHEP16) IDs for electrons & muons [no diff]
+# e436df70a3533336c4fa8cbd31da4d35554def24
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.9/
+
+# ---------------------------
+
+# 941/947 v8.8 retrying due to forgotten noLepNoJet taus
+# plus couple corrections:
+# - noLep taus and jets in the selection (no cross-cleaning)
+# - goodbins with adjusted ranges from j5.8
+# - >= 1 tau instead of = 1
+# - and >= 3 jets (instead of >=2)
+# - counting N taus and jets in pre- and post-tau selections
+# 115ba0219665d470fd4629cdee6225e6b97a712e
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.8/
+
+# ---------------------------
+
+# /946 jettaufakes_j5.8 the hix in HLT_ channel prefixes!
+# ad94fb72b74ba7f47083f13f0e0c61f5486048b3
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_j5.8/
+
+# ---------------------------
+# tag v8.8_j5.7
+
+# / v8.8 trying selNoLeps jets and taus everywhere
+# [FAILED for noLepNoJet taus]
+# 8b81c1d3f18a7fcf91f52ae3bb87db10860c5f1b
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.8/
+
+# ---------------------------
+
+# /946 jettaufakes_j5.7 trying the goodbins matching the cuts in mainselection
+# 8b81c1d3f18a7fcf91f52ae3bb87db10860c5f1b
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_j5.7/
+
+# ---------------------------
+
+# /946 jettaufakes_j5.6 measuring pt-pt of tau and tau-jet & checking the dset-independance/uniqueness of HLT channels
+# counting amount of all jets, idJets, selLowPtJets (20GeV), selJets (30GeV)
+# all taus, selTaus
+# and their cross-cleanings
+# 2da3e587d1e3b21cdb00937dcffbc3874887d787
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_j5.6/
+
+# ---------------------------
+
+#tag v8.7_j5.5 84942edd623f9a697a311d7c607107a3a70b5bc3
+
+# / v8.7 trying reverse tau-jet cleaning
+# 07c3de4ba7a479fef4b3027ef03b5f2a8a4f57bd
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_v8.7/
+
+# ---------------------------
+
+# failed due to a Type Error in pat::Tau
+# /946 jettaufakes_j5.5 jet PT = 30 GeV, inline record functions for jet distrs
+# "distinct taus" for fake-rate calcualtion [30GeV jet Pt and distinct taus is the goal here]
+# cb58cfcb4bfdd51fee046915ea39a4c0f231b5c0
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_j5.5/
+
+# ---------------------------
+
+# / v11_test8.6 Unprescaled LumiCert
+# fakerates from all distr-s separately
+# 07c3de4ba7a479fef4b3027ef03b5f2a8a4f57bd
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD-TOP-UnprescaledPaths-LumiCert.json test/tests/outdir_test_v11_ttbar_test8.6/
+
+# ---------------------------
+
+# /946 jettaufakes_j5.4 same as j5.3, but with weightflow for the selections
+# 07c3de4ba7a479fef4b3027ef03b5f2a8a4f57bd
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_j5.4/
+
+# ---------------------------
+
+# / v11_test8.5 reHLT TTbar run
+# fakerates from all distr-s separately
+# bd7de5a1538bd0cb70cb9a5369137283a4aae0ba
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8.5/
+
+# ---------------------------
+
+
+# /946 jettaufakes_v5.3_redo there was a bug in initialization of the histograms...
+# ae4436d7ab8dbbc4d585dd8d7720e925e183b6e0
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_v5.3_redo/
+
+# ---------------------------
+
+# / v11_test8.4 reHLT TTbar run
+# fixed weight in saving fakerates!
+# added MC study of jets at pre-tau step, made fill_particle_ids store integers TH1I
+# d6c8f9e89fb291960912991ecd5544f2a91ce903
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8.4/
+
+# ---------------------------
+
+# / v11_test8.3 reHLT TTbar run
+# the same, but on reHLT TTbar
+# 1074918d3f6a6e937a10b91a0a209b532f24b0a7
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_reHLT_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8.3/
+
+# ---------------------------
+
+# / v11_test8.2 withHLT TTbar run
+# the same, with correctly applied fake-rate probabilities (1 - Prod(1-pi))
+# 1074918d3f6a6e937a10b91a0a209b532f24b0a7
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_withHLT-MC_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8.2/
+
+# ---------------------------
+
+# / v11_test8.1 withHLT TTbar run
+# recommended triggers and jet-tau fakerates <= 1
+# 3c00fa82e8867c453c482384544cc0c0e14a81fc
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_withHLT-MC_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8.1/
+
+# ---------------------------
+
+# /946 jettaufakes_v5.3 (goodbins1, qcd & wjets, IsoMu HLT)
+# v5.2 + jet origin for MC, and fixed names of histograms
+# [ running on MV noHLT but checking for JetHT HLT! ]
+# (v5 is about checking the goodbins work)
+# 60d753fb9686a7543f445a64b375af85f4cd6e50
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu-MC-noHLT-qcdHT-wjets-dyjets.json test/tests/outdir_test_jettaufakes_v5.3/
+
+# ---------------------------
+
+# /946 jettaufakes_v5.2 (goodbins1, qcd & wjets, IsoMu HLT)
+# full distribution of distances to fakes
+# 91e31bcde618013919a47ffd9f5486be53e2c637
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu.json test/tests/outdir_test_jettaufakes_v5.2/
+
+# ---------------------------
+
+# / v11_test8 withHLT TTbar run
+# with new jet-tau fakes
+# 91e31bcde618013919a47ffd9f5486be53e2c637
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_withHLT-MC_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test8/
+
+# ---------------------------
+
+# / v11_test7.5 noHLT run: full MC without QCD
+# and with new jet-tau fakes
+# 1d76550779107077f64aff8b0921124dd59cbd16
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_test7.5/
+
+# ---------------------------
+
+# /946 jettaufakes_v5
+# goodbins1 (obtained from raw jets of jetht dataset), and there is the distr of distances from tau the faked jet
+# qcd and wjets selections, added HLT_IsoMu 
+# 439139725736a4fae9ee25c7ad92365d199014f4
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht-n-singlemu.json test/tests/outdir_test_jettaufakes_v5/
+
+# ---------------------------
+
+# / v11_test7.4 noHLT run: full MC without QCD
+# 010f4765f1b2529ce442c815374a02b050374439
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_all-mc-noQCD-dataD.json test/tests/outdir_test_v11_ttbar_test7.4/
+
+# ---------------------------
+
+
+# / v11_test7.3 returned to the loose jets
+# ca0d07a1be271eddae554ba86be1627193bcd449
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_WITH-reHLT-MC_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test7.3/
+
+# ---------------------------
+
+# /946 jettaufakes_v4
+# running on /JetHT/Run2016B dataset & HLT_PFJets40_v* trigger
+# and looser jet definition (loose ID, 20GeV pt)
+# f20076c310e3dc191f250701bd0b073ac3efd1fd
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-jetht.json test/tests/outdir_test_jettaufakes_v4/
+
+# ---------------------------
+
+# / v11_test7.2 only no-reHLT TTbar
+# to find the workable single-electron trigger
+# trying the new withHLT datasets & top-recommended triggers
+# 3322c956919377b7fd3de88b63173d54a84264c5
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_WITH-reHLT-MC_tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test7.2/
+
+# ---------------------------
+
+
+
+
+# / v11_test7 TTbar HLT1 REMAKE with no-reHLT MC for TTbar -- check if triggers are ok
+# MORE PRECISE jet-to-tau fakerates
+# d58afbf34fdb76afc881a6bdb3656716081bc907 + foreign file
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_NO-reHLT-MC_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test7/
+
+# ---------------------------
+
+# / v11_test7 TTbar HLT1 REMAKE with no-reHLT MC for TTbar -- check if triggers are ok
+# MORE PRECISE jet-to-tau fakerates
+# 2318b4ca6102833ea4203ff0fa0f1c1989da12d3 + foreign file
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_NO-reHLT-MC_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test7/
+
+# ---------------------------
+
+# /946 jettaufakes_v3
+# running on /JetHT/Run2016B dataset & HLT_PFJets40_v* trigger
+# f9e4e5c9c1ed33cbb41ae88233276123e109fbe3
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataB-jetht.json test/tests/outdir_test_jettaufakes_v3/
+
+# ---------------------------
+
+
+# / v11_test7 TTbar HLT1
+# MORE PRECISE jet-to-tau fakerates
+# f6434fae849a094d86665f14364561d4492747f8 + foreign file
+python job_submit.py ttbarleps80_eventSelection_jettaufakerates test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test7/
+
+# ---------------------------
+
+# /946 jettaufakes_v2
+# should be the same, but with more precise binnings, especially in jet radius
+# 0fe9f845c090a55ec413403e4caf6c49f2072122
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_tt-powheg-dataD.json test/tests/outdir_test_jettaufakes_v2/
+
+# ---------------------------
+
+# 1652/2607 v11_test5 submit electron data (it didn't go in??)
+# 
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_dataD-only-SingleElectron-unprescaled.json test/tests/outdir_test_v11_ttbar_test5/
+
+# ---------------------------
+
+# 944/946 v11_test6 TTbar HLT1
+# trying application of jet-to-tau fakerates
+# 2a8cb3378e4e0b6764ebc77108665aaebdcebb31 + foreign file
+python job_submit.py ttbarleps80_eventSelection_jettaufakerates test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test6/
+
+# ---------------------------
+
+
+# 1652/2607 v11_test5 TTbar HLT1
+# trying medium tau isolation on
+# all (almost all! all up to 12-8-2016) MCs with reHLT tags
+# 2a8cb3378e4e0b6764ebc77108665aaebdcebb31
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_all-mc-reHLT-HLT1TTbar-dataD.json test/tests/outdir_test_v11_ttbar_test5/
+
+# ---------------------------
+
+# 943/946 v11_test4 TTbar HLT1
+# trying medium tau isolation
+# 2a8cb3378e4e0b6764ebc77108665aaebdcebb31
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test4/
+
+# ---------------------------
+
+# /946 v11_test3 TTbar HLT1 with eTrigg counter
+# all (almost all! all up to 12-8-2016) MCs with reHLT tags
+# 
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_all-mc-reHLT-HLT1TTbar-dataD.json test/tests/outdir_test_v11_ttbar_test3/
+
+# ---------------------------
+
+# /946 jettaufakes_v1 
+# df682d73538fc8d3dbc82a077c2a808543804348
+python job_submit.py jetToTauFakeRate test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_tt-powheg-dataD.json test/tests/outdir_test_jettaufakes_v1/
+
+# ---------------------------
+
+# /946 v11_test2 TTbar HLT1 with eTrigg counter
+# 
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT1-tt-powheg-dataD.json test/tests/outdir_test_v11_ttbar_test2/
+
+# ---------------------------
+
+# 948/948 v11_test TTbar with eTrigg counter
+# 
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT2TTbar.json test/tests/outdir_test_v11_ttbar/
+
+# ---------------------------
+
+# 948/948 v11
+# all MC datasets, HLT2 TTbar, new Ele trigger, pile-up applied
+# 38197ee9dc983fb2c64a8f5c7a25df11fc594010
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_all-mc-HLT2TTbar-dataD.json test/tests/outdir_test_v11/
+
+# ---------------------------
+
+# 662/664 v10
+# trying the [HLT2] TTbar dataset
+# 195faa883510be8d978714cd78c70ceec052d5be
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT2-tt-powheg-dataD.json test/tests/outdir_test_v10/
+
+# ---------------------------
+
+
+
+# /946 v1 [Pile-Up distributions] in all MC (the HLT1 TTbar dataset)
+# 876d2739ae5ebbb45c86841f24aef5586ee4cf82
+python job_submit.py pilupDistr test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_all-mc.json test/tests/outdir_test_pileup_v1/
+
+# ---------------------------
+
+
+# /946 v10
+# trying the [HLT2] TTbar dataset
+# 7422251a8e140269584d73e8dfb6ae116b12314d
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_HLT2-tt-powheg-dataD.json test/tests/outdir_test_v10/
+
+# ---------------------------
+
+
+
+# /946 v9
+# checking the AODSIM of Efe-recommended TTbar dataset
+# since the previous MINIAODSIM is in PRODUCTION and has few files at the moment
+# 7422251a8e140269584d73e8dfb6ae116b12314d
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_EfeAODSIM-tt-powheg-dataD.json test/tests/outdir_test_v9/
+
+# ---------------------------
+
+
+# /946 v8
+# checking one of Efe-recommended TTbar datasets for goof PU
+# 7422251a8e140269584d73e8dfb6ae116b12314d
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_Efe-tt-powheg-dataD.json test/tests/outdir_test_v8/
+
+# ---------------------------
+
+
+# 2622/3232 v7
+# all MC datasets
+# jet corrections ON
+# 7422251a8e140269584d73e8dfb6ae116b12314d
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_all-mc-dataD.json test/tests/outdir_test_v7/
+
+# ---------------------------
+
+# 943/946 new job submition script, v6 run
+# 8_0_14, b-tag scale factors (in 80X, had to update to >8_0_12)
+# ecc0046ad19935d234fb759321f3e1a126563ba4
+python job_submit.py ttbarleps80_eventSelection test/my_runAnalysis_cfg_NEWSUBMIT.templ.py bin/ttbar-leptons-80X/analysis/dsets_testing_tt-powheg-dataD.json test/tests/outdir_test_v6/
+
+# ---------------------------
+
+
+
+# 1511/1676 new job submition script, v2 run - LumiCert ON, first ele/muon HLTs ON:
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataB.json test/tests/outdir_test_v4/
+
+# /1676 new job submition script, v5 run - LumiCert ON, first ele/muon HLTs ON, new TTbar MC sample -- should have all 2016 HLT paths:
+# plus lumi.json output
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataD.json test/tests/outdir_test_v5/
+
+# ---------------------------
+
+# 1511/1676 new job submition script, v2 run - LumiCert ON, first ele/muon HLTs ON:
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataB.json test/tests/outdir_test_v4/
+
+# ---------------------------
+
+
+
+
+# new job submition script:
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataB.json test/tests/outdir_test3/
+
+# ---------------------------
+
+# new job submition script:
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataB.json test/tests/outdir_test2/
+
+# ---------------------------
+
+
+
+# new job submition script:
+python job_submit.py ttbarleps80_eventSelection test/ttbar_cfg.templ.py bin/ttbar-leps-80X/analysis/dsets_testing_only-dataBmuons.json test/tests/outdir_test
+
+# ---------------------------
+
+
+# () 1, test runs on data
+# trying to get the job-scripts submit PromptReco dataset
+# 
+# 2016-7-21, 16:00
+
+runAnalysisOverSamples_goodold_enhanced.py -o /afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_5/src/UserCode/llvv_fwk/data/output/ttbar-leps-80X_1_promptdata/   -e ttbarleps80_eventSelection -j bin/ttbar-leps-80X/analysis/dsets_testing_only-dataBmuons.json -c test/my_runAnalysis_cfg.py.templ
+
+# ---------------------------
+
+
+# () 1, test run
+# 423fb71e3d21afa57ed1e313fbcea17901a1b8a0
+# 2016-7-20, 16:10
+
+#runAnalysisOverSamples.py -o /afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_5/src/UserCode/llvv_fwk/data/output/ttbar-leps-80X_1/ -e ttbarleps80_eventSelection -j bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataABCD.json -c test/runAnalysis_cfg.py.templ
+runAnalysisOverSamples_goodold_enhanced.py -o /afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_5/src/UserCode/llvv_fwk/data/output/ttbar-leps-80X_1/   -e ttbarleps80_eventSelection -j bin/ttbar-leps-80X/analysis/dsets_testing_tt-powheg-dataABCD.json -c test/my_runAnalysis_cfg.py.templ
+
+# ---------------------------
+
