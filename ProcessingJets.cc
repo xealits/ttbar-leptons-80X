@@ -310,7 +310,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	FactorizedJetCorrector *jesCor,
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
-	string& jetResolutionFileName, string& jetResolutionSFFileName,
+	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
 	double pt_cut, double eta_cut,
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -318,10 +318,11 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 
 {
 // the PF ID (in Moriond17 recommended to be applied before corrections)
+/*
 JME::JetResolution resolution = JME::JetResolution(jetResolutionFileName);
 JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
-
 Variation m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+*/
 
 
 pat::JetCollection IDjets;

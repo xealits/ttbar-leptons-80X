@@ -5,7 +5,7 @@
 // CMSSW version 80X (8_0_X, 8_0_5 for example)
 //
 
-#define STANDALONE 1
+//#define STANDALONE 1 // it seems to grab all the memory
 
 #include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
 
@@ -1071,8 +1071,22 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 // <-- used by smearJES
 // (slimmedJets in MINIAOD are AK4PFchs jets)
 
-string jetResolutionFileName   = runProcess.getParameter<edm::FileInPath>("resolutionFile").fullPath();
-string jetResolutionSFFileName = runProcess.getParameter<edm::FileInPath>("scaleFactorFile").fullPath();
+//string jetResolutionFileName   = runProcess.getParameter<edm::FileInPath>("resolutionFile").fullPath();
+//string jetResolutionSFFileName = runProcess.getParameter<edm::FileInPath>("scaleFactorFile").fullPath();
+
+TString TjetResolutionFileName   = runProcess.getParameter<std::string>("resolutionFile");
+TString TjetResolutionSFFileName = runProcess.getParameter<std::string>("scaleFactorFile");
+gSystem->ExpandPathName(TjetResolutionFileName);
+gSystem->ExpandPathName(TjetResolutionSFFileName);
+
+string jetResolutionFileName   (TjetResolutionFileName);
+string jetResolutionSFFileName (TjetResolutionSFFileName);
+// <---- ROOT & CMSSW are best friends
+JME::JetResolution jet_resolution_in_pt = JME::JetResolution(jetResolutionFileName);
+JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
+
+Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+
 
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
@@ -2685,7 +2699,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	FactorizedJetCorrector *jesCor,
 		//	JetCorrectionUncertainty *totalJESUnc,
 		//	double dR_max, // for jet matching in jet corrections smearing for MC
-		//	string& jetResolutionFileName, string& jetResolutionSFFileName,
+		//	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 		//	string& jetID,
 		//	double pt_cut, double eta_cut,
 		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -2696,7 +2710,7 @@ for(size_t f=0; f<urls.size();++f)
 		string jetID("Loose");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jetResolutionFileName, jetResolutionSFFileName, jetID, 30, 2.4, full_jet_corr, selJets, true, debug);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, 30, 2.4, full_jet_corr, selJets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);

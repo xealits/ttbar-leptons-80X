@@ -98,6 +98,10 @@ done_ck:
 	ls test/tests/outdir_"${job}"/*root | wc -l
 	ls test/tests/outdir_"${job}"/*cfg.py | wc -l
 
+ck_errors:
+	wc -l test/tests/outdir_"${job}"/FARM/outputs/* | sort
+
+
 .PHONY:missing_jobs
 missing_jobs:
 	ls test/tests/outdir_${job}/*cfg.py | sed 's/_cfg.py/.job_done/' > submitted_jobs
