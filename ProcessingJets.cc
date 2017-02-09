@@ -313,6 +313,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
 	double pt_cut, double eta_cut,
+	TRandom *r3,   // the randomizer for the smearing
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
 	bool record, bool debug) // more output
 
@@ -357,7 +358,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	pat::Jet& jet = IDjets[ijet];
 
 	// for MC smearing
-	TRandom *r3 = new TRandom3();
+	//TRandom *r3 = new TRandom3();
 
 	if (record)
 		{
