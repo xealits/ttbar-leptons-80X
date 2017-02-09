@@ -1,32 +1,6 @@
 
-#include "CommonTools/Utils/interface/PtComparator.h"
-
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/stream/EDProducer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/ConsumesCollector.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
-#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
-
-#include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/JetReco/interface/GenJetCollection.h"
-#include "DataFormats/Math/interface/deltaR.h"
-
 #include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
-//#include "CondFormats/JetMETObjects/interface/JetResolutionObject.h"
 #include <JetMETCorrections/Modules/interface/JetResolution.h>
-
-
-#include <TFile.h>
-#include <TH1.h>
-#include <TH1F.h>
-
-#include <memory>
-#include <random>
-
-using namespace JME;
 
 
 std::vector<double> smearJER(double pt, double eta, double genPt)
