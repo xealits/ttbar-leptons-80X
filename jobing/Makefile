@@ -155,6 +155,20 @@ calculate_luminosity:
 	mv "${job}".brilcalc.out analysis/job-lumis
 
 
+calculate_prejson:
+	#cat test/tests/outdir_"${job}"/*json > "${job}"_prejson
+	sed -i 's/}{/,/g'     "${prejson}"
+	sed -i 's/,,,*/,/g'   "${prejson}"
+	sed -i 's/ ,"/,\n"/g' "${prejson}"
+	sed -i -e 's/"[0-9]/[&/' -e 's/]]/]]]/' -e 's/{/[/' -e 's/}/]/' -e 's/:/,/' "${prejson}"
+	#cd analysis/job-lumis
+	./merge_json.py "${prejson}" "${prejson}".json
+	brilcalc lumi -u /pb --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json -i "${prejson}".json | tee "${prejson}".brilcalc.out
+	#mv "${prejson}" analysis/job-lumis
+	mv "${prejson}".json analysis/job-lumis
+	mv "${prejson}".brilcalc.out analysis/job-lumis
+
+
 jet_origins:
 	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
 	# "dilep_passjets_jet_partonFlavour dilep_passjetsNbtag_jet_partonFlavour elel_passjets_jet_partonFlavour"
