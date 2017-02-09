@@ -22,14 +22,14 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 8
+#define INPUT_DTAGS_START 9
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr projection1 projection2 rebin_factor name_tag dir dtags";
+char usage_string[128] = "[--verbose] [--normalize] lumi distr projection1 projection2 DrawParams rebin_factor name_tag dir dtags";
 if (argc < 6)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
@@ -64,12 +64,13 @@ cout << "options are taken from " << input_starts << endl;
 
 double lumi = atof(argv[input_starts + 1]);
 TString distr_selection(argv[input_starts + 2]);
-TString projection(argv[input_starts + 3]);
-TString projection(argv[input_starts + 4]);
+TString projection1(argv[input_starts + 3]);
+TString projection2(argv[input_starts + 4]);
+TString DrawParams (argv[input_starts + 5]);
 
-Int_t rebin_factor(atoi(argv[input_starts + 5]));
-TString name_tag(argv[input_starts + 6]);
-TString dir(argv[input_starts + 7]);
+Int_t rebin_factor(atoi(argv[input_starts + 6]));
+TString name_tag(argv[input_starts + 7]);
+TString dir(argv[input_starts + 8]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection1 != TString("x") && projection1 != TString("y") && projection1 != TString("z"))
@@ -117,6 +118,7 @@ std::vector < TH1D * > weightflows;
 TH2D    *hs_data = NULL;
 
 // different jet origin histos:
+int n_jet_origins = 5;
 vector<string> mc_jet_origins = {"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
 vector<TH2D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL};
 //TH1D    *hs_mc_o = NULL; // "other" objects -- not recognized by partonFlavour
@@ -280,8 +282,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			//histo->SetMarkerStyle(20);
 			//histo->SetLineStyle(1);
-			histo->SetLineWidth(3);
-			histo->SetLineColor(origin_n!=0? origin_n : 6);
+			//histo->SetLineWidth(3);
+			//histo->SetLineColor(origin_n!=0? origin_n : 6);
 			//histo->SetMarkerColor(origin_n);
 			//histo->SetFillColor(origin_n);
 
@@ -382,8 +384,6 @@ if (set_logy)
 //hs_data->GetXaxis()->SetTitle(distr_selection);
 //hs_data->SetXTitle(distr_selection);
 //mc_jet_origin_ths[0]->GetXaxis()->SetTitle("Jet Radius for different origins");
-mc_jet_origin_ths[0]->SetXTitle(projection1);
-mc_jet_origin_ths[0]->SetYTitle(projection2);
 
 //cst->Modified();
 
@@ -392,25 +392,40 @@ mc_jet_origin_ths[0]->SetYTitle(projection2);
 // Draw each origin and save it
 for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	{
-	TH1D* distr = mc_jet_origin_ths[origin_n];
+	TH2D* distr = mc_jet_origin_ths[origin_n];
+	distr->SetXTitle(projection1);
+	distr->SetYTitle(projection2);
 	//distr->GetYaxis()->SetRange(0.00001, 1);
 	//distr->GetYaxis()->SetRangeUser(0.00001, 1);
 
 	if (projection1 == TString("z"))
 		{
-		distr->GetXaxis()->SetRange(0, 0.3);
-		distr->GetXaxis()->SetRangeUser(0, 0.3);
-		}
-
-	if (projection2 == TString("z"))
-		{
 		distr->GetYaxis()->SetRange(0, 0.3);
 		distr->GetYaxis()->SetRangeUser(0, 0.3);
 		}
 
-	distr->Draw();
+	if (projection2 == TString("z"))
+		{
+		distr->GetXaxis()->SetRange(0, 0.3);
+		distr->GetXaxis()->SetRangeUser(0, 0.3);
+		}
 
-	cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginDistrs2DSeparately_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + mc_jet_origins[origin_n] + ".png" );
+	if (projection1 == TString("x"))
+		{
+		distr->GetYaxis()->SetRange(0, 150);
+		distr->GetYaxis()->SetRangeUser(0, 150);
+		}
+
+	if (projection2 == TString("x"))
+		{
+		distr->GetXaxis()->SetRange(0, 150);
+		distr->GetXaxis()->SetRangeUser(0, 150);
+		}
+
+
+	distr->Draw(DrawParams);
+
+	cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginDistrs2DSeparately_" + projection1 + projection2 + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + mc_jet_origins[origin_n] + ".png" );
 	}
 
 

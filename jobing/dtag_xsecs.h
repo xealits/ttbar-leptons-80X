@@ -179,6 +179,12 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_QCD_HT-1500-2000",  120.4},
 {"MC2016_noHLT_QCD_HT-2000-Inf",  25.25},
 
+{"MC2016_Summer16_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_W1Jets_madgraph", 9493},
+{"MC2016_Summer16_W2Jets_madgraph", 3120},
+{"MC2016_Summer16_W3Jets_madgrapg", 942.3},
+{"MC2016_Summer16_W4Jets_madgraph", 524.2},
+
 {"MC2016_Summer16_WJets_amcatnlo", 61526.7},
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo", 18610},
 {"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 6025.2}, // FIXME: the DY x-section was updated by about 5%
@@ -204,6 +210,12 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_QCD_HT-100-200_",  27540000},
 //{"MC2016_Summer16_QCD_HT-50-100_", 27540000.*8 }, // FIXME: just trying out the effect from this dset
 {"MC2016_Summer16_QCD_HT-50-100_", 0. }, // FIXME: xsection for 50-100 QCD
+
+{"MC2016_Summer16_W0Jets_amcatnlo_", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_W1Jets_madgraph_", 9493},
+{"MC2016_Summer16_W2Jets_madgraph_", 3120},
+{"MC2016_Summer16_W3Jets_madgrapg_", 942.3},
+{"MC2016_Summer16_W4Jets_madgraph_", 524.2},
 
 {"MC2016_Summer16_WJets_amcatnlo_", 61526.7},
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo_", 18610},

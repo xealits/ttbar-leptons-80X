@@ -331,52 +331,6 @@ namespace utils
 		}
 	}
 
-bool passPFJetID(std::string label, pat::Jet jet)
-	{
-	// Set of cuts from the POG group: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-
-	bool passID(false); 
-
-	// float rawJetEn(jet.correctedJet("Uncorrected").energy() );
-
-	double eta=jet.eta();
- 
- 	// from the twiki:
-	float NHF = jet.neutralHadronEnergyFraction();
-	float NEMF = jet.neutralEmEnergyFraction();
-	float CHF = jet.chargedHadronEnergyFraction();
-	float MUF = jet.muonEnergyFraction();
-	float CEMF = jet.chargedEmEnergyFraction();
-	float NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
-	float NumNeutralParticles =jet.neutralMultiplicity();
-	float CHM = jet.chargedMultiplicity(); 
-	// TODO: check if these change corresponding to jet corrections? Or apply corrections after passing the selection?
-
-	// float nhf( (jet.neutralHadronEnergy() + jet.HFHadronEnergy())/rawJetEn );
-	// float nef( jet.neutralEmEnergy()/rawJetEn );
-	// float cef( jet.chargedEmEnergy()/rawJetEn );
-	// float chf( jet.chargedHadronEnergy()/rawJetEn );
-	// float nch    = jet.chargedMultiplicity();
-	// float nconst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
-	// float muf(jet.muonEnergy()/rawJetEn); 
-
-	if (label=="Loose")
-		// passID = ( ((nhf<0.99 && nef<0.99 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.99) || abs(eta)>2.4)) && abs(eta)<=3.0 );
-		// the same, just with new names:
-		passID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
-	if (label=="Tight")
-		// passID = ( ((nhf<0.90 && nef<0.90 && nconst>1) && ((abs(eta)<=2.4 && chf>0 && nch>0 && cef<0.90) || abs(eta)>2.4)) && abs(eta) <=3.0);
-		passID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4) && abs(eta)<=3.0 ;
-
-	// there is also:
-	//tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4) && abs(eta)<=3.0
-
-	// And the abs(eta)>3.0 part, but we never consider such jets, so... Meh!
-
-	return passID; 
-	}
-
-
 
 bool hasLeptonAsDaughter(const reco::GenParticle p)
 	{
@@ -995,7 +949,13 @@ bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") ));
 bool isPromptReco (!isMC && dtag.Contains("PromptReco")); //"False" picks up correctly the new prompt reco (2015C) and MC
 bool isRun2015B   (!isMC && dtag.Contains("Run2015B"));
 bool isNLOMC      (isMC && (dtag.Contains("amcatnlo") || dtag.Contains("powheg")) );
-	
+
+// Summer16_23Sep2016BCDV4_DATA_        Summer16_23Sep2016EFV4_DATA_        Summer16_23Sep2016GV4_DATA_        Summer16_23Sep2016HV4_DATA_
+bool period_BCD = !isMC && (dtag.Contains("2016B") || dtag.Contains("2016C") || dtag.Contains("2016D"));
+bool period_EF  = !isMC && (dtag.Contains("2016E") || dtag.Contains("2016F"));
+bool period_G   = !isMC && (dtag.Contains("2016G"));
+bool period_H   = !isMC && (dtag.Contains("2016H"));
+
 TString outTxtUrl = outUrl + ".txt";
 FILE *outTxtFile = NULL;
 if (!isMC) outTxtFile = fopen (outTxtUrl.Data (), "w");
@@ -1104,15 +1064,22 @@ else if (period_H)
 FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, jet_corr_files, isMC);
 
 JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + jet_corr_files + "_Uncertainty_AK4PFchs.txt").Data ());
-// v1
-// getJetCorrector(TString baseDir, TString pf, bool isMC)
-//FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
-//TString pf(isMC ? "MC" : "DATA");
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-// JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Spring16_25nsV6_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-// JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/MC_Uncertainty_AK4PFchs.txt").Data ());
+
+//string jetResolutionFileName   = runProcess.getParameter<edm::FileInPath>("resolutionFile").fullPath();
+//string jetResolutionSFFileName = runProcess.getParameter<edm::FileInPath>("scaleFactorFile").fullPath();
+
+TString TjetResolutionFileName   = runProcess.getParameter<std::string>("resolutionFile");
+TString TjetResolutionSFFileName = runProcess.getParameter<std::string>("scaleFactorFile");
+gSystem->ExpandPathName(TjetResolutionFileName);
+gSystem->ExpandPathName(TjetResolutionSFFileName);
+
+string jetResolutionFileName   (TjetResolutionFileName);
+string jetResolutionSFFileName (TjetResolutionSFFileName);
+// <---- ROOT & CMSSW are best friends
+JME::JetResolution jet_resolution_in_pt = JME::JetResolution(jetResolutionFileName);
+JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
+
+Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
 
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
@@ -1990,6 +1957,11 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<pat::JetCollection>jetsHandle;
 		jetsHandle.getByLabel(ev, "slimmedJets");
 		if(jetsHandle.isValid() ) jets = *jetsHandle;
+
+		std::vector<reco::GenJet> genJets;
+		fwlite::Handle<std::vector<reco::GenJet>>genJetsHandle;
+		genJetsHandle.getByLabel(ev, "slimmedGenJets"); // twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#GenJets
+		if(genJetsHandle.isValid() ) genJets = *genJetsHandle;
 
 		// testing WNJets
 		if(debug){

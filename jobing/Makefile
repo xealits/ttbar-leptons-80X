@@ -95,8 +95,11 @@ stacked_fakerate_histos:
 
 done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
-	ls test/tests/outdir_"${job}"/*root | wc -l
-	ls test/tests/outdir_"${job}"/*cfg.py | wc -l
+	ls test/tests/outdir_"${job}"/*root     | wc -l
+	ls test/tests/outdir_"${job}"/*cfg.py   | wc -l
+	ls test/tests/outdir_"${job}"/*TTJ*job_done | wc -l
+	ls test/tests/outdir_"${job}"/*TTJ*root     | wc -l
+	ls test/tests/outdir_"${job}"/*TTJ*cfg.py   | wc -l
 
 ck_errors:
 	wc -l test/tests/outdir_"${job}"/FARM/outputs/* | sort
