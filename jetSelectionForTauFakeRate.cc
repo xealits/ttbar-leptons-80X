@@ -89,6 +89,13 @@
 
 #include "recordFuncs.h"
 
+#include "ProcessingMuons.cc"
+#include "ProcessingElectrons.cc"
+#include "ProcessingTaus.cc"
+#include "ProcessingJets.cc"
+#include "ProcessingBJets.cc"
+#include "ProcessingDRCleaning.cc"
+
 using namespace std;
 
 namespace utils
@@ -1082,14 +1089,29 @@ if(debug) cout << "DEBUG: xsec: " << xsec << endl;
 // ------------------------------------- jet energy scale and uncertainties 
 TString jecDir = runProcess.getParameter < std::string > ("jecDir");
 gSystem->ExpandPathName (jecDir);
+
+TString jet_corr_files;
+if (isMC)
+	jet_corr_files = "/Summer16_23Sep2016V4_MC";
+else if (period_BCD)
+	jet_corr_files = "/Summer16_23Sep2016BCDV4_DATA";
+else if (period_EF)
+	jet_corr_files = "/Summer16_23Sep2016EFV4_DATA";
+else if (period_G)
+	jet_corr_files = "/Summer16_23Sep2016GV4_DATA";
+else if (period_H)
+	jet_corr_files = "/Summer16_23Sep2016HV4_DATA";
+FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, jet_corr_files, isMC);
+
+JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + jet_corr_files + "_Uncertainty_AK4PFchs.txt").Data ());
 // v1
 // getJetCorrector(TString baseDir, TString pf, bool isMC)
-FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
+//FactorizedJetCorrector *jesCor = utils::cmssw::getJetCorrector (jecDir, "/Spring16_25nsV6_", isMC);
 //TString pf(isMC ? "MC" : "DATA");
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/"+pf+"_Uncertainty_AK4PFchs.txt").Data ());
 //JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
 // JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Fall15_25nsV2_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
-JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Spring16_25nsV6_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
+//JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/Spring16_25nsV6_" + (isMC ? "MC" : "DATA") + "_Uncertainty_AK4PFchs.txt").Data ());
 // JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + "/MC_Uncertainty_AK4PFchs.txt").Data ());
 
 // ------------------------------------- muon energy scale and uncertainties
@@ -1117,163 +1139,6 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 LeptonEfficiencySF lepEff;
 
 // --------------------------------------- b-tagging 
-// TODO: move all these numbers to where they are applied??
-// btagMedium is used twice in the code
-// merge those tagging procedures and eliminated the variable?
-
-// Prescriptions taken from: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X
-// TODO: update to https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
-
-// b-tagging working points for 50ns 
-//   (pfC|c)ombinedInclusiveSecondaryVertexV2BJetTags
-//      v2CSVv2L 0.605
-//      v2CSVv2M 0.890
-//      v2CSVv2T 0.970
-double
-	btagLoose(0.605), // not used anywhere in the code
-	//btagMedium(0.890), // used twice in the code
-	btagMedium(0.8), // new medium working point
-	btagTight(0.970); // not used anywhere in the code
-
-//b-tagging: scale factors
-//beff and leff must be derived from the MC sample using the discriminator vs flavor
-//the scale factors are taken as average numbers from the pT dependent curves see:
-//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
-BTagSFUtil btsfutil;
-double beff(0.68), sfb(0.99), sfbunc(0.015);
-double leff(0.13), sfl(1.05), sflunc(0.12);
-
-// Btag SF and eff from https://indico.cern.ch/event/437675/#preview:1629681
-sfb = 0.861; // SF is not used --- BTagCalibrationReader btagCal instead
-// sbbunc =;
-beff = 0.559;
-
-// new btag calibration
-// TODO: check callibration readers in https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
-// and latest standalone callibrator:
-// https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/CondTools/BTau/test/BTagCalibrationStandalone.h
-
-// Setup calibration readers
-//BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/btagSF_CSVv2.csv");
-// BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_76X.csv");
-BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/weights/CSVv2_ichep_80X.csv");
-// and there:
-
-// in *80X
-/*
-The name of the measurements is
-
-  "incl" for light jets,
-  "mujets" (from QCD methods only) or “comb” (combination of QCD and ttbar methods)
-    for b and c jets for what concerns the pT/eta dependence for the different WP for CSVv2.
-    The precision of the “comb” measurement is better than for the “mujets”,
-    however for precision measurements on top physics done in the 2lepton channel, it is recommended to use the "mujets" one.
-  "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2,
-  but only to be used for jets with a pT spectrum similar to that in ttbar.
-  The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-*/
-
-// only 1 reader:
-
-BTagCalibrationReader btagCal(BTagEntry::OP_MEDIUM,  // operating point
-                             "central",             // central sys type
-                             {"up", "down"});      // other sys types
-btagCal.load(btagCalib,              // calibration instance
-            BTagEntry::FLAV_B,      // btag flavour
-            "mujets");               // measurement type
-btagCal.load(btagCalib,              // calibration instance
-            BTagEntry::FLAV_C,      // btag flavour
-            "mujets");              // measurement type
-btagCal.load(btagCalib,              // calibration instance
-            BTagEntry::FLAV_UDSG,   // btag flavour
-            "incl");                // measurement type
-
-/* usage in 80X:
-double jet_scalefactor    = reader.eval_auto_bounds(
-          "central", 
-          BTagEntry::FLAV_B, 
-          b_jet.eta(), 
-          b_jet.pt()
-      );
-double jet_scalefactor_up = reader.eval_auto_bounds(
-          "up", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
-double jet_scalefactor_do = reader.eval_auto_bounds(
-          "down", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt()); 
-
-*/
-
-// in 76X
-
-//The name of the measurements is
-//
-//  * "incl" for light jets,
-//  * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and
-//  * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
-//  * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-// --- so "incl" instead of "comb" for light-quarks
-
-// TODO: update btag CSVv2
-// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Data_MC_Scale_Factors
-// OP_MEDIUM instead of OP_LOOSE?
-// v1
-//BTagCalibrationReader btagCal   (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalUp (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "up"     );  // sys up
-//BTagCalibrationReader btagCalDn (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "down"   );  // sys down
-//BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_LOOSE, "comb", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_LOOSE, "comb", "up"     );  // sys up
-//BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_LOOSE, "comb", "down"   );  // sys down
-//BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "incl", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "up"     );  // sys up
-//BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
-
-
-/* TODO: CMSSW calibration:
-The twiki https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati says
-
-The name of the measurements is
- * "incl" for light jets,
- * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and 
- * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
- * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-
-
-// setup calibration readers
-// Before CMSSW_8_0_11 and CMSSW_8_1_0, one reader was needed 
-// for every OperatingPoint/MeasurementType/SysType combination.
-BTagCalibration calib("csvv1", "CSVV1.csv");
-BTagCalibrationReader reader(BTagEntry::OP_LOOSE,  // operating point
-                             "central");           // systematics type
-BTagCalibrationReader reader_up(BTagEntry::OP_LOOSE, "up");  // sys up
-BTagCalibrationReader reader_do(BTagEntry::OP_LOOSE, "down");  // sys down
-
-reader.load(&calib,               // calibration instance
-            BTagEntry::FLAV_B,    // btag flavour
-            "comb")               // measurement type
-// reader_up.load(...)
-// reader_down.load(...)
-
-
-
-// Usage:
-
-float JetPt = b_jet.pt(); bool DoubleUncertainty = false;
-if (JetPt>MaxBJetPt)  { // use MaxLJetPt for  light jets
-  JetPt = MaxBJetPt; 
-  DoubleUncertainty = true;
-}  
-
-// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-
-if (DoubleUncertainty) {
-   jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
-   jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
-}
-
-*/
-
 
 
 
@@ -2242,144 +2107,25 @@ for(size_t f=0; f<urls.size();++f)
 		//
 
 		// ---------------------------------- ELECTRONS SELECTION
+		/* int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco::Vertex goodPV, double rho, double weight, // input
+		 *         patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                           // config/cuts
+		 *         patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
+		 *         double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+		 *         pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE,                    // output
+		 *         bool record, bool debug) // more output
+		 */
+
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
-		for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
-			{
-			pat::Electron& electron = electrons[n];
-
-			fill_2d(string("control_el_slimmedelectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-			fill_1d(string("control_el_slimmedelectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
-			//fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			bool 
-				passKin(true),     passId(true),     passIso(true),
-				passVetoKin(true), passVetoId(true), passVetoIso(true);
-			bool passSigma(false), passSigmaVeto(false);
-			// from passId( pat::Photon .. ) of PatUtils:
-			//bool elevto = photon.hasPixelSeed();  //LQ  REACTIVATED FOR TIGHT ID, OTHERWISE MANY ELECtRONS pass the photon Id
-			// and then, in Tight ID, they include:
-			// && !elevto 
-			//
-			// So, it would be nice to add it to Tight Electron ID:
-			//bool hasPixelSeed = electron.hasPixelSeed();
-			// but electrons don't have this method
-			// will have to cross-clean with photons or etc
-
-			// removing all electrons close to tight Photons
-			// actually, people do it the other way around, testing v9.5
-			// nope, it doesn't fix anything
-			/*
-			double minDRlg(9999.);
-			for(size_t i=0; i<selPhotons.size(); i++)
-				{
-				minDRlg = TMath::Min(minDRlg, deltaR(electron.p4(), selPhotons[i].p4()));
-				}
-			if(minDRlg<0.1) continue;
-			*/
-
-			int lid(electron.pdgId()); // should always be 11
-
-			//apply electron corrections
-			/* no lepcorrs in 13.6
-			if(abs(lid)==11)
-				{
-				elDiff -= electron.p4();
-				ElectronEnCorrector.calibrate(electron, ev.eventAuxiliary().run(), edm::StreamID::invalidStreamID()); 
-				//electron = patUtils::GenericLepton(electron.el); //recreate the generic electron to be sure that the p4 is ok
-				elDiff += electron.p4();
-				}
-			*/
-
-			// TODO: probably, should make separate collections for each step, for corrected particles, then -- passed ID etc
-			// fill_pt_e( string("all_electrons_corrected_pt"), electron.pt(), weight);
-			// if (n < 2)
-			// 	{
-			// 	fill_pt_e( string("top2pt_electrons_corrected_pt"), electron.pt(), weight);
-			// 	}
-
-			//no need for charge info any longer
-			//lid = abs(lid);
-			//TString lepStr(lid == 13 ? "mu" : "e");
-			// should always be 11!
-					
-			// no need to mess with photon ID // //veto nearby photon (loose electrons are many times photons...)
-			// no need to mess with photon ID // double minDRlg(9999.);
-			// no need to mess with photon ID // for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
-			// no need to mess with photon ID //   minDRlg=TMath::Min(minDRlg,deltaR(leptons[n].p4(),selPhotons[ipho].p4()));
-			// no need to mess with photon ID // if(minDRlg<0.1) continue;
-
-
-			// ------------------------- electron IDs
-			//Cut based identification
-			//https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
-			// full5x5_sigmaIetaIeta is forgotten in our passId for electrons
-			// getting high MC/Data in electrons now -- maybe due to photons,
-			// checking sigmaIetaIeta, then photon rejection (hasPixelSeed()) and cross-cleaning with photons
-			float eta = std::abs(electron.superCluster()->position().eta());
-			float sigmaIetaIeta = electron.full5x5_sigmaIetaIeta();
-			if (eta <= 1.479) // barrel, newer selection is precise?
-				{
-				passSigma =     sigmaIetaIeta < 0.00998; // Tight WP
-				passSigmaVeto = sigmaIetaIeta < 0.0115;  // Veto WP
-				}
-			else if (eta > 1.479) // endcap
-				{
-				passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
-				passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
-				}
-			passId     = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut) && passSigma;
-			passVetoId = patUtils::passId(electron, goodPV, patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut) && passSigmaVeto;
-
-			// ------------------------- electron isolation
-
-			passIso     = patUtils::passIso(electron, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
-			passVetoIso = patUtils::passIso(electron, patUtils::llvvElecIso::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
-
-
-			// ---------------------------- Electron Kinematics
-			//double leta(fabs(lid==11 ? lepton.el.superCluster()->eta() : lepton.eta()));
-			double leta( electron.superCluster()->eta() );
-
-			// ---------------------- Main lepton kin
-			//if(electron.pt() < 30.)                passKin = false;
-			if(electron.pt() < 35.)                passKin = false;
-			// if(leta > 2.1)                         passKin = false;
-			if(leta > 2.4)                         passKin = false;
-			if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
-
-			// ---------------------- Veto lepton kin
-			// if (electron.pt () < 20)            passVetoKin = false;
-			if (electron.pt () < 15)            passVetoKin = false;
-			// if (leta > 2.1)                     passVetoKin = false;
-			if (leta > 2.5)                     passVetoKin = false;
-			if (leta > 1.4442 && leta < 1.5660) passVetoKin = false; // Crack veto
-
-
-			if     (passKin     && passId     && passIso)
-				{
-				selElectrons.push_back(electron);
-				fill_2d(string("control_el_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
-				fill_1d(string("control_el_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
-				}
-			else if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
-
-			}
-
-		// TODO: there should be no need to sort selected electrons here again -- they are in order of Pt
-		std::sort(selElectrons.begin(),   selElectrons.end(),   utils::sort_CandidatesByPt);
-
+		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
+			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
 			}
-
-
-
-
 
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
@@ -2387,143 +2133,23 @@ for(size_t f=0; f<urls.size();++f)
 		pat::MuonCollection selMuons;
 		unsigned int nVetoMu(0);
 		// unsigned int count_idiso_muons = 0;
-
-		for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
-			{
-			// patUtils::GenericLepton& lepton = leptons[n];
-			pat::Muon& muon = muons[n];
-
-			fill_2d(string("control_mu_slimmedmions_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-			fill_1d(string("control_mu_slimmedmions_phi"), 128, -3.2, 3.2, muon.phi(), weight);
-
-			bool
-				passKin(true),     passId(true),     passIso(true),
-				passVetoKin(true), passVetoId(true), passVetoIso(true);
-
-			int lid(muon.pdgId()); // should always be 13
-
-			//apply muon corrections
-			/* no lepcorrs in 13.6
-			if(abs(lid) == 13 && muCor)
-				{
-				float qter;
-				TLorentzVector p4(muon.px(), muon.py(), muon.pz(), muon.energy());
-				// old corrections:
-				// muCor->applyPtCorrection(p4, lid < 0 ? -1 : 1);
-				// if(isMC) muCor->applyPtSmearing(p4, lid < 0 ? -1 : 1, false);
-				// roch-cor (rochcor) corrections:
-				if (isMC) muCor->momcor_mc  (p4, lid<0 ? -1 :1, 0, qter);
-				else muCor->momcor_data(p4, lid<0 ? -1 :1, 0, qter);
-				muDiff -= muon.p4();
-				muon.setP4(LorentzVector(p4.Px(), p4.Py(), p4.Pz(), p4.E()));
-				muDiff += muon.p4();
-				}
-			*/
-
-
-			//no need for charge info any longer
-			//lid = abs(lid);
-			//TString lepStr(lid == 13 ? "mu" : "e");
-					
-			// no need to mess with photon ID // //veto nearby photon (loose electrons are many times photons...)
-			// no need to mess with photon ID // double minDRlg(9999.);
-			// no need to mess with photon ID // for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
-			// no need to mess with photon ID //   minDRlg=TMath::Min(minDRlg,deltaR(leptons[ilep].p4(),selPhotons[ipho].p4()));
-			// no need to mess with photon ID // if(minDRlg<0.1) continue;
-
-			//Cut based identification
-
-			// ------------------------- muon IDs
-			passId     = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdTight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoId = patUtils::passId(muon, goodPV, patUtils::llvvMuonId::StdLoose, patUtils::CutVersion::ICHEP16Cut);
-
-			// ------------------------- muon isolation
-			passIso     = patUtils::passIso(muon, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut);
-			passVetoIso = patUtils::passIso(muon, patUtils::llvvMuonIso::Loose, patUtils::CutVersion::ICHEP16Cut);
-
-			if (passId && passIso)
-				{
-				fill_pt_e( string("all_muons_idiso_pt"), muon.pt(), weight);
-				if (count_idiso_muons < 2) fill_pt_e( string("top2pt_muons_idiso_pt"), muon.pt(), weight);
-				count_idiso_muons += 1;
-				}
-
-
-			// ---------------------------- Muon Kinematics
-			double leta( muon.eta());
-
-			// ---------------------- Main muon kin
-			if(muon.pt() < 30.)   passKin = false;
-			// if(leta > 2.1)        passKin = false;
-			//if(muon.pt() < 26.)   passKin = false;
-			if(leta > 2.4)        passKin = false;
-
-			// ---------------------- Veto muon kin
-			//if (muon.pt () < 20)  passVetoKin = false;
-			// if (leta > 2.1)       passVetoKin = false;
-			if (muon.pt () < 10)  passVetoKin = false;
-			if (leta > 2.5)       passVetoKin = false;
-
-			if     (passKin     && passId     && passIso)
-				{
-				selMuons.push_back(muon);
-				fill_2d(string("control_mu_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
-				fill_1d(string("control_mu_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
-				}
-			else if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
-
-			// TODO: ------------ ID/Iso scale factors:
-			// https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Muon_reconstruction_identificati
-			// if it is MC and ID tight muon is found -- multiply weight by factor,
-			// corresponding to its' tight scale factor distr
-			// if loose -- loose scale factor
-
-			/* TODO: add ID/Iso and run
-			if (isMC) {
-				if (passId) {
-					// NOTE: scale factors are given for absolute eta
-					weight *= muID_Tight_sf.GetBinContent( muID_Tight_sf.FindBin(leta, muon.pt()) );
-				} else if (passVetoId) {
-					weight *= muID_Loose_sf.GetBinContent( muID_Loose_sf.FindBin(leta, muon.pt()) );
-				}
-				if (passIso) {
-					// NOTE: scale factors are given for absolute eta
-					weight *= muIso_Tight_sf.GetBinContent( muIso_Tight_sf.FindBin(leta, muon.pt()) );
-				} else if (passVetoIso) {
-					weight *= muIso_Loose_sf.GetBinContent( muIso_Loose_sf.FindBin(leta, muon.pt()) );
-				}
-			}
-			*/
-			}
-
-
-		// TODO: there should be no need to sort selected muons here again -- they are in order of Pt
-		std::sort(selMuons.begin(),   selMuons.end(),   utils::sort_CandidatesByPt);
+		/*
+		 * int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV,            // input
+		 *         patUtils::llvvMuonId::MuonId mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,       // config/cuts
+		 *         patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
+		 *         double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+		 *         pat::MuonCOllection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,       //output
+		 *         bool record, bool debug) // more output
+		 */
+		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
+			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
 
 		if(debug){
 			cout << "processed muons" << endl;
 			}
 
 
-		// Check for the single-electron/single-muon channels and save Pt-s if the event is in channel
 
-		// Here we can already assign leptonic channel
-		// electron or muon -- tau
-		// the selection is:
-
-		// ------------------------------------- Propagate lepton energy scale to MET
-		// Propagate now (v13)
-		/* no lepton corrections propagation v13.1
-		met.setP4(met.p4() - muDiff - elDiff); // TODO: note this also propagates to all MET uncertainties -- does it??
-		met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
-		met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
-		met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
-		met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
-		*/
-
-		if(debug){
-			cout << "NOT propagated lepton corrections to met" << endl;
-			}
 
 
 		// Finally, merge leptons for cross-cleaning with taus and jets:
@@ -2538,185 +2164,46 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "merged selected leptons" << endl;
 			}
 
+
+
+
 		// ------------------------------------------ TAUS SELECTION
 		pat::TauCollection selTaus;
-		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
-			{
-			pat::Tau& tau = taus[n];
+		//int processTaus_ID_ISO_Kinematics(pat::TauCollection& taus, double weight, // input
+		//        string& tauID_decayMode, string& tauID,               // config/cuts
+		//        string& tauID_IsoMuons,  string& tauID_IsoElectrons,
+		//        double pt_cut, double eta_cut, 
+		//        pat::TauCollection& selTaus,                          // output
+		//        bool record, bool debug) // more output
+		string tau_decayMode("decayModeFinding"),
+			//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
+			tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
+			tau_againstMuon("againstMuonTight3"),
+			tau_againstElectron("againstElectronTightMVA6");
 
-			fill_2d(string("control_tau_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			// ---------- IDs
-					
-			// if(!tau.isPFTau()) continue; // Only PFTaus // It should be false for slimmedTaus
-			// if(tau.emFraction() >=2.) continue;
-					
-			// Discriminators from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-			// "The tau passes the discriminator if pat::Tau::tauID("name") returns a value of 0.5 or greater"
-			//if(tau.tauID("decayModeFindingNewDMs")<0.5) continue; // High pt tau. Otherwise, OldDMs
-			if (tau.tauID("decayModeFinding")<0.5) continue; // OldDMs is synonim for no <DMs>
-			// Anyways, the collection of taus from miniAOD should be already afer decayModeFinding cut (the tag - Old or New - is unspecified in the twiki, though).
-			// Consequently, there might be a small bias due to events that are cut by the OldDM and would not be cut by the NewDM
-			//if (tau.tauID ("byMediumCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
-			// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
-			if (tau.tauID ("byMediumIsolationMVArun2v1DBoldDMwLT")<0.5) continue;
-
-			if (tau.tauID ("againstMuonTight3")                          <0.5) continue; // Medium working point not usable. Available values: Loose, Tight
-			//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
-			// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
-			if (tau.tauID ("againstElectronTightMVA6")                  <0.5) continue;
-
-			// maybe use MVA-based discriminators:
-			// byVLooseIsolationMVArun2v1DBoldDMwLT
-			// byLooseIsolationMVArun2v1DBoldDMwLT
-			// byMediumIsolationMVArun2v1DBoldDMwLT
-			// byTightIsolationMVArun2v1DBoldDMwLT
-			// byVTightIsolationMVArun2v1DBoldDMwLT
-
-			// or the new discriminators:
-			// byLooseCombinedIsolationDeltaBetaCorr3HitsdR03
-			// byMediumCombinedIsolationDeltaBetaCorr3HitsdR03
-			// byTightCombinedIsolationDeltaBetaCorr3HitsdR03
-			// -- recommended for multi-object final states (ttH, H->tau-tau)
-			// -- not found in noHLT TTbar
-
-			fill_2d(string("control_tau_idedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_idedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-			//fill_pt_e( string("all_taus_4discrs_pt"), tau.pt(), weight);
-
-			// Pixel hits cut (will be available out of the box in new MINIAOD production)
-			//{
-			//int nChHadPixelHits = 0;
-			//reco::CandidatePtrVector chCands = tau.signalChargedHadrCands();
-			//for(reco::CandidatePtrVector::const_iterator iter = chCands.begin(); iter != chCands.end(); iter++)
-			//	{
-			//	pat::PackedCandidate const* packedCand = dynamic_cast<pat::PackedCandidate const*>(iter->get());
-			//	int pixelHits = packedCand->numberOfPixelHits();
-			//	if(pixelHits > nChHadPixelHits) nChHadPixelHits = pixelHits;
-			//	}
-			//if(nChHadPixelHits==0) continue;
-			//}
-
-			/*
-			fill_pt_e( string("all_taus_ided_pt"), tau.pt(), weight);
-			if (count_ided_taus<1)
-				{
-				fill_pt_e( string("top1pt_taus_ided_pt"), tau.pt(), weight);
-				count_ided_taus += 1;
-				}
-			*/
-
-			// --------- Tau Kinematics
-			if (tau.pt() < 20. || fabs (tau.eta()) > 2.3) continue;
-
-			selTaus.push_back(tau);
-			fill_2d(string("control_tau_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-			}
-
-		std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
-
+		processTaus_ID_ISO_Kinematics(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron,
+			20, 2.3, selTaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
 			}
 
 
+
 		// ------------------------------------------ select the taus cleaned from leptons
 
+
+		//int crossClean_in_dR(pat::TauCollection& selTaus, std::vector<patUtils::GenericLepton>& leptons,
+		//	float min_dR,
+		//	pat::TauCollection& selTausNoLep, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
+
 		pat::TauCollection selTausNoLep;
-		int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
-		for (size_t itau = 0; itau < selTaus.size(); ++itau)
-			{
-			pat::Tau& tau = selTaus[itau];
-			if(debug) cout << "selecting NoLep taus " << itau << endl;
+		crossClean_in_dR(selTaus, selLeptons, 0.4, selTausNoLep, weight, string("selTausNoLep"), false, debug);
 
-			// cross-cleaning taus with leptons
-			bool overlapWithLepton(false);
-			for(int l=0; l<(int)selLeptons.size();++l)
-				{
-				if (reco::deltaR(tau, selLeptons[l])<0.4)
-					{ overlapWithLepton=true; break; }
-				}
-			if (overlapWithLepton) continue;
-
-			selTausNoLep.push_back(tau);
-			// so these are the final taus we use in the selection
-			fill_2d(string("control_tau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
-			fill_1d(string("control_tau_selTausNoLep_phi"), 128, -3.2, 3.2, tau.phi(), weight);
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			//increment(string("number_of_tausnolep_found"), 1);
-
-			// for MC find the generated candidate closest to the tau
-			// to get the fakeness
-			/*
-			if (isMC)
-				{
-				double min_deltaR = 99999.9;
-				for(size_t i = 0; i < gen.size(); ++ i)
-					{
-					const reco::GenParticle & p = gen[i];
-					double deltaR_to_p = reco::deltaR(tau, p);
-					if (deltaR_to_p < min_deltaR)
-						{
-						min_deltaR = deltaR_to_p;
-						closest_totaunolep_particle_id = p.pdgId();
-						}
-					//int id = p.pdgId();
-					//int st = p.status();
-					//int n = p.numberOfDaughters();
-					//cout << i << ": " << id << " " << st;
-					//if (p.numberOfMothers() != 0) cout << " <- " ;
-					//for (int j = 0 ; j < p.numberOfMothers(); ++j)
-					//	{
-					//	const reco::Candidate * mom = p.mother(j);
-					//	cout << " " << mom->pdgId() << " " << mom->status() << ";";
-					//	}
-					//cout << "\n";
-					//if (n>0)
-					//	{
-					//	cout << "\t|-> " ;
-					//	for (int j = 0; j < n; ++j)
-					//		{
-					//		const reco::Candidate * d = p.daughter( j );
-					//		cout << d->pdgId() << " " << d->status() << "; " ;
-					//		}
-					//	cout << "\n";
-					//	}
-					}
-				fill_particle_ids(string("nearest_particle_around_taunolep"), closest_totaunolep_particle_id, weight);
-				// electron-tau fake-rate scale factor
-				if (fabs(closest_totaunolep_particle_id)==11)
-					{
-					increment(string("number_of_tausnolep_from_electron_found"), 1);
-					// apply the data/MC fake rate scale factor
-					// (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Electron_to_tau_fake_rate)
-					// for tight working points it is 1.80 +- 0.23 in barrel (eta < 1.460)
-					// and 1.3 +- 0.42 in endcaps (eta > 1.558)
-					// repeating 13.4, no electron-to-tau sf
-					if (fabs(tau.eta()) < 1.460)
-						{
-						weight *= 1.8 + r3->Gaus(0, 0.2);  // gaussian +- 0.2
-						}
-					else if (fabs(tau.eta()) > 1.558)
-						{
-						weight *= 1.3 + r3->Gaus(0, 0.42); // gaussian +- 0.42
-						}
-					//
-					// TODO: and then I need to renormalize the MC integral??
-					}
-
-				if (fabs(closest_totaunolep_particle_id)==13)
-					{
-					increment(string("number_of_tausnolep_from_muon_found"), 1);
-					// TODO: add muon-tau fake rate?
-					}
-				}
-			*/
-			}
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
+		// Medium MVA (no dR03) is 0.97 +- 0.05
 
 		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
 			{
@@ -2725,7 +2212,9 @@ for(size_t f=0; f<urls.size();++f)
 				//pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
 				// recommendations update (noticed 8-11-2016, last page update 2016-11-07)
 				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
-				pre_weight_tauIDsf *= (1 - 0.9 + r3->Gaus(0, 0.1)); // gaussian +- 0.1
+				// in ReReco it's different
+				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
+				pre_weight_tauIDsf *= (1 - 0.97 + r3->Gaus(0, 0.05)); // gaussian +- 0.05
 			weight_tauIDsf = 1 - pre_weight_tauIDsf;
 			}
 			// TODO: should here be a normalization to all MC events?
@@ -2737,12 +2226,6 @@ for(size_t f=0; f<urls.size();++f)
 		if(debug){
 			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
 			cout << "ID SF = " << weight_tauIDsf << endl;
-			}
-
-
-
-		if(debug){
-			cout << "processed taus" << endl;
 			}
 
 
@@ -2763,387 +2246,92 @@ for(size_t f=0; f<urls.size();++f)
 		// up to here jets were not processed in any way
 		// now goes the procedure of corrections to jets and then METs
 
+
+
+
 		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
 
-		//void updateJEC(pat::JetCollection& jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC){
+		//int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
+		//	bool isMC, double weight,
+		//	double rho, unsigned int nGoodPV,
+		//	FactorizedJetCorrector *jesCor,
+		//	JetCorrectionUncertainty *totalJESUnc,
+		//	double dR_max, // for jet matching in jet corrections smearing for MC
+		//	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
+		//	string& jetID,
+		//	double pt_cut, double eta_cut,
+		//	TRandom *r3,   // the randomizer for the smearing
+		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
+		//	bool record, bool debug) // more output
 
-		// inline control functions usage:
-		//   fill_pt_e( "control_point_name", value, weight)
-		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
-		//   increment( "control_point_name", weight )
-
-
-		if(debug) cout << "jet eta pt e, e x y z" << endl;
-
-		// v6, adding jet corrections and b-tagging
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
-		for(size_t ijet=0; ijet<jets.size(); ijet++)
-			{
-			// TODO: so does this mean "in place"?
-			pat::Jet& jet = jets[ijet];
-			//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_2d(string("control_jet_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-			LorentzVector jet_corr(0., 0., 0., 0.);
-
-			LorentzVector jet_initial_momentum = jet.p4();
-
-			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-			//correct JES
-			LorentzVector rawJet = jet.correctedP4("Uncorrected");
-
-			fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
-
-			if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
-
-			//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
-			//LorentzVector rawJet(jet*toRawSF);
-			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
-			jesCor->setJetEta(rawJet.eta());
-			jesCor->setJetPt(rawJet.pt());
-			jesCor->setJetA(jet.jetArea());
-			jesCor->setRho(rho);
-			jesCor->setNPV(nGoodPV);
-			float jes_correction = jesCor->getCorrection();
-			jet.setP4(rawJet*jes_correction);
-
-			fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
-
-			if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-
-			//smear JER
-			//https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-			//double newJERSF(1.0);
-			// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
-			if(isMC)
-				{
-				const reco::GenJet* genJet=jet.genJet();
-				if(genJet)
-					{
-					double genjetpt( genJet ? genJet->pt(): 0.);                    
-					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-					double jer_smearing = smearJER[0];
-					jet.setP4(jet.p4()*jer_smearing);
-					fill_1d(string("control_jet_slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
-					
-					//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, smearJER[0], smearJER[1], smearJER[2]);
-					// //set the JER up/down alternatives
-					jet.addUserFloat("jerup", smearJER[1]);  //kept for backward compatibility
-					jet.addUserFloat("jerdown", smearJER[2] ); //kept for backward compatibility
-					jet.addUserFloat("_res_jup", smearJER[1]);
-					jet.addUserFloat("_res_jdown", smearJER[2] );
-					}
-				else{
-					jet.addUserFloat("jerup", 1.0); //kept for backward compatibility
-					jet.addUserFloat("jerdown", 1.0);  //kept for backward compatibility
-					jet.addUserFloat("_res_jup", 1.0);
-					jet.addUserFloat("_res_jdown", 1.0 );
-					}
-				fill_2d(string("control_jet_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				}
-
-
-			// here is the correct3 jet correction point
-
-			if(isMC)
-				{
-				////set the JES up/down pT alternatives
-				std::vector<float> ptUnc=utils::cmssw::smearJES(jet.pt(),jet.eta(), totalJESUnc);
-				jet.addUserFloat("jesup",    ptUnc[0] );  //kept for backward compatibility
-				jet.addUserFloat("jesdown",  ptUnc[1] );  //kept for backward compatibility
-				jet.addUserFloat("_scale_jup",    ptUnc[0] );
-				jet.addUserFloat("_scale_jdown",  ptUnc[1] );
-				}
-
-			// FIXME: this is not to be re-set. Check that this is a desired non-feature.
-			// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
-			//to get the raw jet again
-			//jets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
-
-			// Add the jet momentum correction:
-			// jet_cor propagation is on in 13.4
-			jet_corr = jet.p4() - jet_initial_momentum;
-			full_jet_corr += jet_corr;
-
-			fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
-
-			if(debug)
-				{
-				cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-				cout << "-" << jet_initial_momentum.eta() << " " << jet_initial_momentum.pt() << " " << jet_initial_momentum.energy() << endl;
-				}
-			}
-
-
-		std::sort (jets.begin(),  jets.end(),  utils::sort_CandidatesByPt);
-
-		// ----------------------------------- here is the correctF jet correction point
-		// Propagate full_jet_corr to MET:
-		met.setP4(met.p4() - full_jet_corr);
-		// TODO: uncertainties?
-		// for leptons they are done as:
-		//met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
-		//met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
-		//met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
-		//met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
-
-
-
-		// FIXME: So are these MET corrections?
-		if(debug) cout << "Update also MET" << endl;
-		// LorentzVector n_met = met.p4();
-		// std::vector<LorentzVector> newMet = utils::cmssw::getMETvariations(n_met/*recoMet*/,jets,selLeptons,isMC);
-		// FIXME: Must choose a lepton collection. Perhaps loose leptons?
-		// n_met = newMet[utils::cmssw::METvariations::NOMINAL];
-
-		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), n_met.pt(), weight);
-		//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
-		//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
-		//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
-		fill_1d(string("control_met_allcorr_pt"), 200, 0., 200., met.pt(), weight);
-
-		if(debug) cout << "Jet Energy Corrections updated" << endl;
-
-
-		// TODO: should MET corrections be done here?
-		// METs with corrections
-		// not used now
-		//
-		//double met_pt_values[7];
-		//met_pt_values[0] = n_met.pt();
-		//met_pt_values[1] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnUp).pt();
-		//met_pt_values[2] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnDown).pt();
-		//met_pt_values[3] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResUp).pt();
-		//met_pt_values[4] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResDown).pt();
-		//met_pt_values[5] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp).pt();
-		//met_pt_values[6] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown).pt();
-
-		// ------------------------------- JETS SELECTION
-		// I need different collections because of tau cleaning, but this is needed only for the single lepton channels, so the tau cleaning is performed later.
 		pat::JetCollection selJets;
-		// TODO: do all jet selection right here
-		// now selBJets are not used anywhere
-		// selJets pass cross-cleaning with taus later
-		// and b-tagging again
-		double mindphijmet (9999.);
-		for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
-			{
-			pat::Jet& jet = jets[ijet];
+		string jetID("Loose");
 
-			fill_2d(string("control_jet_jetscorrected_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_jetscorrected_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-			// TODO: what do we do here exactly?
-			// a loose selection on jets, and then tighten it later?
-			// if (jet.pt() < 15 || fabs (jet.eta()) > 3.0) continue;
-			// Was 4.7 in eta. Tightened for computing time. 3.0 ensures that we don't cut associations with leptons (0.4 from 2.4)
-
-			//mc truth for this jet
-			//const reco::GenJet * genJet = jet.genJet();
-			//TString jetType (genJet && genJet->pt() > 0 ? "truejetsid" : "pujetsid");
-			// TODO: this mctruth for jets it is never used in the code
-
-			//jet id
-			bool passPFloose = passPFJetID("Loose", jet); 
-			// bool passPFloose = passPFJetID("Tight", jet); 
-			//if (label=="Tight")
-			// FIXME: check when pileup ID will come out
-
-			if (passPFloose)
-				{
-				fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-				}
-
-			// Jet Kinematics
-			double eta = jet.eta();
-			double pt  = jet.pt();
-			bool passKino = pt > 20. && fabs(eta) < 2.4;
-
-			// corrections:
-			// TODO: are they MC-only?
-			/* no smeared  jet pt values for now
-			std::vector<double> pt_values;
-			if (isMC)
-				pt_values = utils::cmssw::smearJES(pt, eta, totalJESUnc);
-			else
-				{
-				pt_values.push_back(pt);
-				pt_values.push_back(pt);
-				}
-			*/
-			// vary JesUp   is pt_values[0]
-			// vary JesDown is pt_values[1]
-			// if (!passPFloose || jet.pt() <30. || fabs(jet.eta()) > 2.5) continue;
-			// if (passPFloose && (pt > 30. || pt_values[0] > 30. || pt_values[1] > 30.) && fabs(eta) < 2.5)
+		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, 20, 2.4, r3, full_jet_corr, selJets, false, debug);
 
 
-			if (passPFloose && passKino)
-				{
-				selJets.push_back(jet);
+		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
+		// 1000 bins
 
-				fill_2d(string("control_jet_selJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_selJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, 0., 100., 100, 0., 100.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
+		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, 0., 100., full_jet_corr.Z(), weight);
+		// 10 000 and 100 bins
 
-				// double dphijmet = fabs (deltaPhi (n_met.phi(), jet.phi()));
-				double dphijmet = fabs (deltaPhi (met.phi(), jet.phi()));
-				if (dphijmet < mindphijmet) mindphijmet = dphijmet;
-				// FIXME: mindphijmet is not used anywhere now
-				}
-			}
+		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
 
-		std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
+		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weight);
+		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
 
 
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?
 
+		//int crossClean_in_dR(pat::JetCollection& selJets, std::vector<patUtils::GenericLepton>& selLeptons,
+		//	float min_dR,
+		//	pat::JetCollection& selJetsNoLep, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
+
 		pat::JetCollection selJetsNoLep;
-		for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
-			{
-			pat::Jet& jet = selJets[ijet];
-
-			double minDRlj (9999.);
-
-			for (size_t ilep = 0; ilep < selLeptons.size(); ilep++)
-				minDRlj = TMath::Min(minDRlj, reco::deltaR (jet, selLeptons[ilep]));
-
-			if (minDRlj < 0.4) continue;
-
-			selJetsNoLep.push_back(jet);
-
-			fill_2d(string("control_jet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_selJetsNoLep_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-			}
+		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), false, debug);
 
 
 
 		// ---------------------------- Clean jet collection from selected taus
+
+		//int crossClean_in_dR(pat::JetCollection& selJets, pat::TauCollection& selTaus,
+		//	float min_dR,
+		//	pat::JetCollection& selJetsOut, // output
+		//	string control_name,
+		//	bool record, bool debug) // more output
 		pat::JetCollection selJetsNoLepNoTau;
-
-		for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-			{
-			pat::Jet& jet = selJetsNoLep[ijet];
-
-			double minDRtj(9999.);
-
-			for(size_t itau=0; itau < selTausNoLep.size(); ++itau)
-				minDRtj = TMath::Min(minDRtj, reco::deltaR(jet, selTausNoLep[itau]));
-
-			if (minDRtj < 0.4) continue;
-
-			selJetsNoLepNoTau.push_back(jet);
-
-			fill_2d(string("control_jet_selJetsNoLepNoTau_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_selJetsNoLepNoTau_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-			}
-
+		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weight, string("selJetsNoLepNoTau"), false, debug);
 
 		if(debug){
 			cout << "processed jets" << endl;
 			}
 
 
+
 		/*
 		// --------------------------- B-TAGGED JETS
 		pat::JetCollection selBJets;
 
-		// for (size_t ijet = 0; ijet < selJetsNoLep.size(); ++ijet)
-		for (size_t ijet = 0; ijet < selJetsNoLepNoTau.size(); ++ijet)
-			{
-			pat::Jet& jet = selJetsNoLep[ijet];
+		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double weight, // input
+		//	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+		//	string& b_tagger_label, float b_tag_WP,
+		//	float beff, leff,
+		//	pat::JetCollection& selBJets,                          // output
+		//	bool record, bool debug) // more output
 
-			fill_2d(string("control_jet_bjetCandidates_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-			fill_1d(string("control_jet_bjetCandidates_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-
-			double eta=jet.eta();
-
-			bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > btagMedium);
-			//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
-			bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
-
-			fill_2d(string("all_b_tagging_candidate_jets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-
-			//update according to the SF measured by BTV
-			// new fency procedure with CSV files
-			// 80X calibrators in btagCal
-			// usage:
-			// btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
-			// -- one calibrator for central value, and up/down
-			// thus the specification of the value to callibrate,
-			// instead of different callibrators
-			if(isMC){
-				// int flavId=jet.partonFlavour();
-				int flavId=jet.hadronFlavour();
-				// fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
-
-				double sf;
-				if (abs(flavId)==5) {
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					// int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight)
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					// jet_radius(pat::Jet& jet)
-					fill_1d(string("btag_radius_flavour_b"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_b"), sf, weight);
-					// fill_1i(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
-					fill_1d(string("btag_sf_flavour_b"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_B   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_b_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				} else if(abs(flavId)==4) {
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					fill_1d(string("btag_radius_flavour_c"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCal.eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_c"), sf, weight);
-					fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalUp .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalDn .eval(BTagEntry::FLAV_C   , eta, jet.pt()), beff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_c_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				} else {
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_beforesf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-					fill_1d(string("btag_radius_flavour_udsg"), 400, 0., 4.,   jet_radius(jet), weight);
-
-					// hasCSVtag = false; // FIXME: 8.26-27 no b-tagged light jets in MC <<<<<-----------------------------------
-
-					// btsfutil.modifyBTagsWithSF(hasCSVtag, btagCalL.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, jet.pt(), 0.);
-					// fill_btag_sf(string("btag_sf_flavour_udsg"), sf, weight);
-					fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
-
-					btsfutil.modifyBTagsWithSF(hasCSVtag, sf, leff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCalLUp.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					// btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCalLDn.eval(BTagEntry::FLAV_UDSG, eta, jet.pt()), leff);
-					// if (hasCSVtag) fill_btag_eff(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), jet.pt(), eta, weight);
-					if (hasCSVtag) fill_2d(string("mc_all_b_tagged_udsg_jets_pt_eta_aftersf"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-				}
-			if (hasCSVtag) fill_2d(string("all_b_tagging_candidate_jets_pt_eta_tagged_after_mc_sfs"), 250, 0., 500., 200, -4., 4., jet.pt(), eta, weight);
-			}
-
-			if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
-				{
-				selBJets.push_back(jet);
-				fill_2d(string("control_jet_selBJets_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
-				fill_1d(string("control_jet_selBJets_phi"), 128, -3.2, 3.2, jet.phi(), weight);
-				}
-			}
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+		float btag_WP = 0.8484; // medium
+		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, btagCal, btsfutil, btagger_label, btag_WP, 0.747, 0.13, selBJets, true, debug);
 
 		if(debug){
 			cout << "processed b-tagged jets" << endl;
@@ -3155,101 +2343,10 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// ------------------------------------------ the taus far from jets
+		pat::TauCollection selTausNoLepNoJet;
+		crossClean_in_dR(selTausNoLep, selJetsNoLep, 0.4, selTausNoLepNoJet, weight, string("selTausNoLepNoJet"), false, debug);
 
-		pat::TauCollection selTausNoLepNoJet; // selTausNoLep
-		// int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
-		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-			{
-			pat::Tau& tau = selTausNoLep[itau];
 
-			// cross-cleaning taus from selected jets
-			bool overlapWithJet(false);
-			for(int n=0; n<(int)selJetsNoLep.size();++n)
-				{
-				if (reco::deltaR(tau, selJetsNoLep[n])<0.4)
-					{ overlapWithJet=true; break; }
-				}
-			if (overlapWithJet) continue;
-
-			selTausNoLepNoJet.push_back(tau);
-			// so these are the final taus we use in the selection
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			increment(string("weight_of_tausnolepnojet_found"), weight);
-			}
-
-		/*
-		double selTausNoLep_noAnyJets = 0;
-		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-			{
-			pat::Tau& tau = selTausNoLep[itau];
-
-			// cross-cleaning taus with leptons
-			bool overlapWithJet(false);
-			for(int n=0; n<(int)jets.size();++n)
-				{
-				if (reco::deltaR(tau, jets[n])<0.4)
-					{ overlapWithJet=true; break; }
-				}
-			if (overlapWithJet) continue;
-
-			selTausNoLep_noAnyJets += weight;
-			// selTausNoLepNoJet.push_back(tau);
-			// so these are the final taus we use in the selection
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			// increment(string("weight_of_tausnolepnojet_found"), weight);
-			}
-
-		double selTausNoLep_noIdJets = 0;
-		double selTausNoLep_noSelLowPtJets = 0;
-
-		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-			{
-			pat::Tau& tau = selTausNoLep[itau];
-
-			// cross-cleaning taus with leptons
-			bool overlapWithJet(false);
-			for(int n=0; n<(int)idJets.size();++n)
-				{
-				if (reco::deltaR(tau, idJets[n])<0.4)
-					{ overlapWithJet=true; break; }
-				}
-			if (overlapWithJet) continue;
-
-			selTausNoLep_noIdJets += weight;
-			// selTausNoLepNoJet.push_back(tau);
-			// so these are the final taus we use in the selection
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			// increment(string("weight_of_tausnolepnojet_found"), weight);
-			}
-
-		for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
-			{
-			pat::Tau& tau = selTausNoLep[itau];
-
-			// cross-cleaning taus with leptons
-			bool overlapWithJet(false);
-			for(int n=0; n<(int)selLowPtJets.size();++n)
-				{
-				if (reco::deltaR(tau, selLowPtJets[n])<0.4)
-					{ overlapWithJet=true; break; }
-				}
-			if (overlapWithJet) continue;
-
-			selTausNoLep_noSelLowPtJets += weight;
-			// selTausNoLepNoJet.push_back(tau);
-			// so these are the final taus we use in the selection
-
-			// for the fake-rate counts (in MC)
-			// let's save how many taus we find:
-			// increment(string("weight_of_tausnolepnojet_found"), weight);
-			}
-		*/
 
 
 		// -------------------------------------------------- All particles are selected
