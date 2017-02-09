@@ -2642,7 +2642,7 @@ for(size_t f=0; f<urls.size();++f)
 			tau_againstElectron("againstElectronTightMVA6");
 
 		processTaus_ID_ISO_Kinematics(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron,
-			20, 2.3, selTaus, false, debug);
+			25, 2.3, selTaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;

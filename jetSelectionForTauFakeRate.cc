@@ -1754,7 +1754,9 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
-		string jetHLT("HLT_PFJet40_v"), // jetHLT("HLT_AK4PFJet30_v*"),
+		// it seems (from ConfDB /dev/CMSSW/CMSSW_8_0_25/...) PFJet140 should not be prescaled
+		// and PFJet450 is also not prescaled
+		string jetHLT("HLT_PFJet140_v"), //jetHLT("HLT_PFJet40_v"), // jetHLT("HLT_AK4PFJet30_v*"),
 			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
 
