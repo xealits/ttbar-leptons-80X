@@ -13,6 +13,7 @@ double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	Int_t global_bin_id = bEffs.b_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.b_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.b_tagged->GetBinContent(global_bin_id);
+	if (N_alljets < 0.001 || N_tagged < 0.001) return 0; // whatch out -- equality of floats
 	return N_tagged/N_alljets;
 	}
 
@@ -21,6 +22,7 @@ double bTagging_c_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	Int_t global_bin_id = bEffs.c_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.c_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.c_tagged->GetBinContent(global_bin_id);
+	if (N_alljets < 0.001 || N_tagged < 0.001) return 0;
 	return N_tagged/N_alljets;
 	}
 
@@ -29,8 +31,12 @@ double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, 
 	Int_t global_bin_id = bEffs.udsg_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.udsg_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.udsg_tagged->GetBinContent(global_bin_id);
+	if (N_alljets < 0.001 || N_tagged < 0.001) return 0;
 	return N_tagged/N_alljets;
 	}
+
+
+
 
 int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
 	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
