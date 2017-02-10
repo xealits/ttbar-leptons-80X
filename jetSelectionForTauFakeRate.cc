@@ -868,7 +868,7 @@ gSystem->Load ("libFWCoreFWLite");
 AutoLibraryLoader::enable ();
 
 // random numbers for corrections & uncertainties
-TRandom *r3 = new TRandom3();
+TRandom3 *r3 = new TRandom3();
 
 // configure the process
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
@@ -904,7 +904,9 @@ std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vecto
 //    }
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 TString outdir = runProcess.getParameter<std::string>("outdir");
-	
+
+cout << "Output directory: " << outdir << endl;
+
 // Good lumi mask
 // v2
 lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));

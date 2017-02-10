@@ -839,7 +839,7 @@ gSystem->Load ("libFWCoreFWLite");
 AutoLibraryLoader::enable ();
 
 // random numbers for corrections & uncertainties
-TRandom *r3 = new TRandom3();
+TRandom3 *r3 = new TRandom3();
 
 // configure the process
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
@@ -859,6 +859,8 @@ JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 TString outdir = runProcess.getParameter<std::string>("outdir");
+
+cout << "Output directory: " << outdir << endl;
 	
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
@@ -2771,8 +2773,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
 		// 1000 bins
 
-		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, 0., 100., 100, 0., 100.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
-		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, 0., 100., full_jet_corr.Z(), weight);
+		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
+		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr.Z(), weight);
 		// 10 000 and 100 bins
 
 		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place

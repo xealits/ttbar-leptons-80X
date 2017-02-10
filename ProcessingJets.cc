@@ -287,7 +287,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
 	double pt_cut, double eta_cut,
-	TRandom *r3,   // the randomizer for the smearing
+	TRandom3 *r3,   // the randomizer for the smearing
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
 	bool record, bool debug) // more output
 
@@ -337,26 +337,25 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	if (record)
 		{
 		//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-		fill_2d(string("control_jet_slimmedjet_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+		fill_2d(string("control_jet_slimmedjet_pt_eta"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
 		fill_1d(string("control_jet_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
 		}
-
-	LorentzVector jet_corr(0., 0., 0., 0.);
 
 	LorentzVector jet_initial_momentum = jet.p4();
 
 	if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
-	//correct JES
+
+	// no-corrections jet
 	LorentzVector rawJet = jet.correctedP4("Uncorrected");
 
 	if (record)
-		fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 400, 0., 400., 200, -4., 4., rawJet.pt(), rawJet.eta(), weight);
+		fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 200, 0., 400., 100, -4., 4., rawJet.pt(), rawJet.eta(), weight);
 
 	if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
 
 	//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
 	//LorentzVector rawJet(jet*toRawSF);
-	// 13.8_2 trying all jet corrections + new (if it is new) jetID procedure
+	// FactorizedCorrector with all jet correction files
 	jesCor->setJetEta(rawJet.eta());
 	jesCor->setJetPt(rawJet.pt());
 	jesCor->setJetA(jet.jetArea());
@@ -367,7 +366,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 
 	if (record)
 		{
-		fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+		fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
 		fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
 		}
 
@@ -383,7 +382,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 		{
 		if (record)
 		       {
-		       fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_before"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+		       fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_before"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
 		       }
 		// the JER SF and resolution for the jet:
 		//std::vector<double> jer_sf_pair = JER_SF(jet.eta());
@@ -432,7 +431,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 
 			if (record)
 				{
-				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_scaling_done"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_scaling_done"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 			}
 		else
@@ -441,67 +440,16 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			//double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
 			// this is the twiki:
-			double smearFactor = 1 + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+			double smearFactor = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
 			jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
 			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
 
 			if (record)
 				{
-				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_smearing_done"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_smearing_done"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 			}
 		}
-
-	/*
-	if(isMC)
-		{
-		const reco::GenJet* genJet=jet.genJet();
-		// the PAT doc describes it as "return the matched generated jet"
-		// what's the matching procedure?
-		// for now I'll do it manually in dR, as shown in Jet POG example
-
-		if(genJet)
-			{
-			double genjetpt( genJet ? genJet->pt(): 0.);                    
-			//std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-			// using the local smear:
-			std::vector<double> JER_smearing_factor = smearJER(jet.pt(),jet.eta(),genjetpt);
-			double jer_smearing = JER_smearing_factor[0];
-			jet.setP4(jet.p4()*jer_smearing);
-			fill_1d(string("control_jet_slimmedjet_mc_jersmearing"), 400, 0., 2., jer_smearing, weight);
-
-			//printf("jet pt=%f gen pt = %f smearing %f %f %f\n", jet.pt(), genjetpt, JER_smearing_factor[0], JER_smearing_factor[1], JER_smearing_factor[2]);
-			// //set the JER up/down alternatives
-			jet.addUserFloat("jerup", JER_smearing_factor[1]);  //kept for backward compatibility
-			jet.addUserFloat("jerdown", JER_smearing_factor[2] ); //kept for backward compatibility
-			jet.addUserFloat("_res_jup", JER_smearing_factor[1]);
-			jet.addUserFloat("_res_jdown", JER_smearing_factor[2] );
-			}
-		else{
-			jet.addUserFloat("jerup", 1.0); //kept for backward compatibility
-			jet.addUserFloat("jerdown", 1.0);  //kept for backward compatibility
-			jet.addUserFloat("_res_jup", 1.0);
-			jet.addUserFloat("_res_jdown", 1.0 );
-			}
-		if (record)
-			fill_2d(string("control_jet_slimmedjet_mc_jercor_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
-		}
-	*/
-
-
-	// here is the correct3 jet correction point
-
-	/*
-	if(isMC)
-		{
-		////set the JES up/down pT alternatives
-		std::vector<float> ptUnc = utils::cmssw::smearJES(jet.pt(),jet.eta(), totalJESUnc);
-		jet.addUserFloat("jesup",    ptUnc[0] );  //kept for backward compatibility
-		jet.addUserFloat("jesdown",  ptUnc[1] );  //kept for backward compatibility
-		jet.addUserFloat("_scale_jup",    ptUnc[0] );
-		jet.addUserFloat("_scale_jdown",  ptUnc[1] );
-		}
-	*/
 
 	// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 	// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
@@ -509,17 +457,19 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	//IDjets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
 
 	// Add the jet momentum correction:
-	// jet_cor propagation is on in 13.4
+	LorentzVector jet_corr(0., 0., 0., 0.);
 	jet_corr = jet.p4() - jet_initial_momentum;
 	full_jet_corr += jet_corr;
 
 	if (record)
 		{
-		fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), full_jet_corr.eta(), weight);
+		fill_2d(string("control_jet_slimmedjet_jet_corr_pt_eta"), 200,   0., 400., 100, -4., 4., jet_corr.pt(), jet_corr.eta(), weight);
+		fill_2d(string("control_jet_slimmedjet_jet_corr_pX_pY"),  100, -50.,  50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
+		fill_1d(string("control_jet_slimmedjet_jet_corr_pZ"),     100, -50.,  50., full_jet_corr.Z(), weight);
 		// so, jes & jer shouldn't change the eta of the jet -- only the energy (pt)
 		// record the correction per jet's eta and per original pt
-		fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
-		fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_pt"), 400, 0., 400., 200, -4., 4.,  full_jet_corr.pt(), jet_initial_momentum.eta(), weight);
+		//fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
+		//fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_pt"), 400, 0., 400., 200, -4., 4.,  full_jet_corr.pt(), jet_initial_momentum.eta(), weight);
 		}
 
 	if(debug)
