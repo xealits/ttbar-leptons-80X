@@ -452,6 +452,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
 			// this is the twiki:
 			double smearFactor = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+			// multiplying a Gaussian should = to multiplying the sigma
 			jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
 			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
 
