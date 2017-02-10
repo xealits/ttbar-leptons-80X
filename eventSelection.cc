@@ -3352,6 +3352,9 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_no_fake_rate_elmu = 1.0;
 					double jet_to_tau_fake_rate_elmu = 1.0;
 
+					double jet_to_tau_no_fake_rate_mumu = 1.0;
+					double jet_to_tau_fake_rate_mumu = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -3397,6 +3400,7 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 
@@ -3408,6 +3412,7 @@ for(size_t f=0; f<urls.size();++f)
 					jet_to_tau_fake_rate2_w = 1.0 - jet_to_tau_no_fake_prob2_w; // only histo 2
 
 					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
+					jet_to_tau_fake_rate_mumu = 1.0 - jet_to_tau_no_fake_rate_mumu;
 
 					if (debug)
 						{
@@ -3422,6 +3427,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
 
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 7,  weight * (jet_to_tau_fake_rate_mumu  < 1. ? jet_to_tau_fake_rate_mumu  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
@@ -3624,6 +3630,9 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_no_fake_rate_elmu = 1.0;
 					double jet_to_tau_fake_rate_elmu = 1.0;
 
+					double jet_to_tau_no_fake_rate_mumu = 1.0;
+					double jet_to_tau_fake_rate_mumu = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -3662,6 +3671,7 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, jet.pt(), jet.eta(), jet_radius(jet), debug));
 
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 
@@ -3673,6 +3683,7 @@ for(size_t f=0; f<urls.size();++f)
 					jet_to_tau_fake_rate2_w = 1.0 - jet_to_tau_no_fake_prob2_w; // only histo 2
 
 					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
+					jet_to_tau_fake_rate_mumu = 1.0 - jet_to_tau_no_fake_rate_mumu;
 
 					if (debug)
 						{
@@ -3693,6 +3704,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 5,  weight * (jet_to_tau_fake_rate2_w  < 1. ? jet_to_tau_fake_rate2_w  : 1.));
 
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 7,  weight * (jet_to_tau_fake_rate_mumu  < 1. ? jet_to_tau_fake_rate_mumu  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection)
