@@ -364,11 +364,10 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	float jes_correction = jesCor->getCorrection();
 	jet.setP4(rawJet*jes_correction);
 
+	fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
+
 	if (record)
-		{
 		fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
-		fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
-		}
 
 	if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
 
@@ -391,6 +390,10 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 		// getting it with the tool from files:
 		double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
 		double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
+
+		// it's needed to control smearing calculation -- do it in according branches of genJet-matching bellow
+		//fill_1d(string("control_jet_slimmedjet_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+		//fill_1d(string("control_jet_slimmedjet_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
 
 		// matching to generation jet:
 		//const reco::GenJet* genJet=jet.genJet();
@@ -415,8 +418,13 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			matched_genJet = &genJet;
 			}
 
+		// calculate and apply the smearing factor to jet energy
+		// with one of the two algorithms, if jet matched to genJet or not
 		if (matched_genJet)
 			{ // the scaling is ok
+			fill_1d(string("control_jet_slimmedjet_matched_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+			fill_1d(string("control_jet_slimmedjet_matched_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
+
 			double dPt = jet.pt() - matched_genJet->pt();
 			//double genjetpt( genJet ? genJet->pt(): 0.);                    
 			//std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
@@ -436,6 +444,9 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 			}
 		else
 			{ // the smearing with gaussian randomizer
+			fill_1d(string("control_jet_slimmedjet_notmatched_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+			fill_1d(string("control_jet_slimmedjet_notmatched_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
+
 			// this is the example:
 			//double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
@@ -464,8 +475,8 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	if (record)
 		{
 		fill_2d(string("control_jet_slimmedjet_jet_corr_pt_eta"), 200,   0., 400., 100, -4., 4., jet_corr.pt(), jet_corr.eta(), weight);
-		fill_2d(string("control_jet_slimmedjet_jet_corr_pX_pY"),  100, -50.,  50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
-		fill_1d(string("control_jet_slimmedjet_jet_corr_pZ"),     100, -50.,  50., full_jet_corr.Z(), weight);
+		fill_2d(string("control_jet_slimmedjet_jet_corr_pX_pY"),  100, -50.,  50., 100, -50., 50.,  jet_corr.X(), jet_corr.Y(), weight);
+		fill_1d(string("control_jet_slimmedjet_jet_corr_pZ"),     100, -50.,  50., jet_corr.Z(), weight);
 		// so, jes & jer shouldn't change the eta of the jet -- only the energy (pt)
 		// record the correction per jet's eta and per original pt
 		//fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
