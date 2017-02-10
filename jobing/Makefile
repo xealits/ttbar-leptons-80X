@@ -97,9 +97,17 @@ done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
 	ls test/tests/outdir_"${job}"/*root     | wc -l
 	ls test/tests/outdir_"${job}"/*cfg.py   | wc -l
+	ls test/tests/outdir_"${job}"/*txt | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*job_done | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*root     | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*cfg.py   | wc -l
+
+ck_running:
+	for j in `sed 's/^.*-J \([^ ]*\).*$$/\1/' test/tests/outdir_${job}/FARM/inputs/*_bsub.sh`; \
+	do                                 \
+	st=$$(bjobs -J $$j 2>/dev/null);     \
+	if ! [[ $$st == "" ]]; then echo $$j; fi;  \
+	done | tee ${job}.running_jobs
 
 ck_errors:
 	wc -l test/tests/outdir_"${job}"/FARM/outputs/* | sort

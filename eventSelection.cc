@@ -925,10 +925,14 @@ bool period_EF  = !isMC && (dtag.Contains("2016E") || dtag.Contains("2016F"));
 bool period_G   = !isMC && (dtag.Contains("2016G"));
 bool period_H   = !isMC && (dtag.Contains("2016H"));
 
-TString outTxtUrl = outUrl + ".txt";
+/* not in use now
+ * I need some method to check which jobs run now
+TString outTxtUrl = outUrl + ".ran";
 FILE *outTxtFile = NULL;
 if (!isMC) outTxtFile = fopen (outTxtUrl.Data (), "w");
-printf ("TextFile URL = %s\n", outTxtUrl.Data ());
+printf ("StartFile URL = %s\n", outTxtUrl.Data ());
+if (outTxtFile) fclose (outTxtFile);
+*/
 
 //tree info
 TString dirname = runProcess.getParameter < std::string > ("dirName");
@@ -4289,7 +4293,6 @@ fprintf(csv_out, "%s,weightflow_control_elmu_selection,%g\n", job_num.c_str(), w
 
 fclose(csv_out);
 
-if (outTxtFile) fclose (outTxtFile);
 
 // Now that everything is done, dump the list of lumiBlock that we processed in this job
 if(!isMC){
