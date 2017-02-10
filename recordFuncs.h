@@ -416,7 +416,7 @@ int fill_btag_efficiency(string control_point_name, Double_t weight, Double_t pt
 	if (th2d_distr_maps_control.find(mc_decay) == th2d_distr_maps_control.end() )
 		{
 		//
-		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
+		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH2D>()));
 		}
 
 	if (th2d_distr_maps_control[mc_decay].find(control_point_name) == th2d_distr_maps_control[mc_decay].end() )
@@ -425,7 +425,7 @@ int fill_btag_efficiency(string control_point_name, Double_t weight, Double_t pt
 		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
 		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
 		//         O M G
-		th2d_distr_maps_control[mc_decay][control_point_name] = TH3D((control_point_name + mc_decay).c_str(), ";;", beff_n_bins_pt, beff_bins_pt, beff_n_bins_eta, beff_bins_eta);
+		th2d_distr_maps_control[mc_decay][control_point_name] = TH2D((control_point_name + mc_decay).c_str(), ";;", beff_n_bins_pt, beff_bins_pt, beff_n_bins_eta, beff_bins_eta);
 		// later on, when writing to the file,
 		// I'll have to rename histograms on each write
 		// and probably delete them along the way, so that they don't collide...
@@ -433,15 +433,12 @@ int fill_btag_efficiency(string control_point_name, Double_t weight, Double_t pt
 		//cout << "creating " << control_point_name << endl;
 		}
 
-
 	// fill the distribution:
 	th2d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, weight);
 
 	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
 		{
-		// th2d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
-		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
-		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH3D((string("Header of ") + control_point_name).c_str(), ";;", n_bins_pt, bins_pt, n_bins_eta, bins_eta, n_bins_rad, bins_rad)));
+		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH2D((string("Header of ") + control_point_name).c_str(), ";;", n_bins_pt, bins_pt, n_bins_eta, bins_eta)));
 		}
 
 	// return success:
