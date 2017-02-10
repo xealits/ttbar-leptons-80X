@@ -1118,9 +1118,45 @@ Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should b
 LeptonEfficiencySF lepEff;
 
 // --------------------------------------- b-tagging 
-// TODO: move all these numbers to where they are applied??
-// btagMedium is used twice in the code
-// merge those tagging procedures and eliminated the variable?
+
+/* https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation
+ * https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods
+ * --- doing the simple 1) method, with event weight = P(Data)/P(MC)
+ *     where P(Data) = Pow(SFi * effi) * Pow(1 - SFj * effj)
+ *           p(MC)   = Pow(effi) * Pow(1 - effj)
+ *     (so, the Pow(effi) cancels out)
+ * the efficiencies are measured as in twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#b_tagging_efficiency_in_MC_sampl
+ * per hadronFlavour
+ * and passed to the job in the bTaggingEfficiencies parameter as the filename
+ */
+
+TString bTaggingEfficiencies_filename   = runProcess.getParameter<std::string>("bTaggingEfficiencies");
+gSystem->ExpandPathName(bTaggingEfficiencies_filename);
+TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Data());
+TH2F* bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get("btag_b_hadronFlavour_candidates");
+TH2F* bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get("btag_b_hadronFlavour_candidates_tagged");
+TH2F* bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get("btag_c_hadronFlavour_candidates");
+TH2F* bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get("btag_c_hadronFlavour_candidates_tagged");
+TH2F* bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get("btag_udsg_hadronFlavour_candidates");
+TH2F* bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get("btag_udsg_hadronFlavour_candidates_tagged");
+
+
+//struct bTaggingEfficiencyHistograms {
+//	TH2F* b_alljet   ;
+//	TH2F* b_tagged   ;
+//	TH2F* c_alljet   ;
+//	TH2F* c_tagged   ;
+//	TH2F* udsg_alljet;
+//	TH2F* udsg_tagged;
+//	};
+struct bTaggingEfficiencyHistograms bEffs;
+
+bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
+bEffs.b_tagged    = bTaggingEfficiencies_b_tagged   ;
+bEffs.c_alljet    = bTaggingEfficiencies_c_alljet   ;
+bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
+bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
+bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
 
 // Prescriptions taken from: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X
 // TODO: update to https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
@@ -1674,6 +1710,9 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_PU         (1.0);
 		double weight_PU_up      (1.0);
 		double weight_PU_down    (1.0);
+
+		// ---------------------------------- b-tagging SF weight
+		double weight_bTaggingSF (1.0);
 
 		// --------------------------------- tau ID SF
 		double weight_tauIDsf         (1.0);
@@ -2681,7 +2720,7 @@ for(size_t f=0; f<urls.size();++f)
 			weight_tauIDsf = 1 - pre_weight_tauIDsf;
 			}
 			// TODO: should here be a normalization to all MC events?
-		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);;
+		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);
 
 		weight_without_tauIDsf = weight;
 		// weight *= weight_tauIDsf;// apply tau weight at selection
@@ -2810,17 +2849,19 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------- B-TAGGED JETS
 		pat::JetCollection selBJets;
 
-		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double weight, // input
+		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
 		//	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+		//	struct bTaggingEfficiencyHistograms& bEffs,
 		//	string& b_tagger_label, float b_tag_WP,
-		//	float beff, leff,
 		//	pat::JetCollection& selBJets,                          // output
 		//	bool record, bool debug) // more output
 
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 		float btag_WP = 0.8484; // medium
-		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, btagCal, btsfutil, btagger_label, btag_WP, 0.747, 0.13, selBJets, true, debug);
+		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, weight_bTaggingSF, btagCal, btsfutil, bEffs, btagger_label, btag_WP, selBJets, true, debug);
+
+		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);
 
 		if(debug){
 			cout << "processed b-tagged jets" << endl;

@@ -296,6 +296,7 @@ runProcess = cms.PSet(
     dataDriven_tauFakeRates1 = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates1.root'),
     dataDriven_tauFakeRates2 = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates2.root'),
     dataDriven_tauFakeRates_dileptons = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates_dileptons.root'),
+    bTaggingEfficiencies = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/b-tagging-efficiencies.root'),
     tau_fake_rate_histo1_fraction = cms.double(0.5),
     #muscleDir =  cms.string('{{project_dir}}/src/UserCode/llvv_fwk/data/jec/'),
     #jecDir = cms.string('{{project_dir}}/src/UserCode/llvv_fwk/data/jec/25ns/'),
