@@ -86,9 +86,11 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 				/* recording the jets, per-flavour, candidates and tagged --- for the efficiency measurement and for control
 				 * NOTICE: the recorded jets are weighted with the current genWeight, pile-up etc
 				 */
-				fill_2d(string("btag_b_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				//fill_2d(string("btag_b_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_btag_efficiency(string("btag_b_hadronFlavour_candidates"), pt, eta, weight); // shouldn't weight be = 1?
 				if (hasCSVtag)
-					fill_2d(string("btag_b_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+					fill_btag_efficiency(string("btag_b_hadronFlavour_candidates_tagged"), pt, eta, weight); // shouldn't weight be = 1?
+					//fill_2d(string("btag_b_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
 				}
 
 			// get SF for the jet
@@ -103,9 +105,11 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 
 			if (record)
 				{ 
-				fill_2d(string("btag_c_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				//fill_2d(string("btag_c_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_btag_efficiency(string("btag_c_hadronFlavour_candidates"), pt, eta, weight);
 				if (hasCSVtag)
-					fill_2d(string("btag_c_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+					fill_btag_efficiency(string("btag_c_hadronFlavour_candidates_tagged"), pt, eta, weight);
+					//fill_2d(string("btag_c_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
 				}
 
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, pt, 0.);
@@ -118,9 +122,11 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 
 			if (record)
 				{ 
-				fill_2d(string("btag_udsg_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				//fill_2d(string("btag_udsg_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_btag_efficiency(string("btag_udsg_hadronFlavour_candidates"), pt, eta, weight);
 				if (hasCSVtag)
-					fill_2d(string("btag_udsg_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+					fill_btag_efficiency(string("btag_udsg_hadronFlavour_candidates_tagged"), pt, eta, weight);
+					//fill_2d(string("btag_udsg_hadronFlavour_candidates_tagged"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
 				}
 
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, pt, 0.);

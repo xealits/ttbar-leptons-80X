@@ -396,6 +396,61 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 	}
 
 
+// btag-efficiency bins
+// 0.1 pt bins
+static Float_t beff_bins_pt[49] = { 0, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 65, 70, 75, 80, 100, 150, 500 }; // 48 bins 49 edges
+static int beff_n_bins_pt = 48;
+
+// 0.1 eta bins
+static Float_t beff_bins_eta[51] = { -2.5, -2.4, -2.3, -2.2, -2.1, -2., -1.9, -1.8, -1.7, -1.6, -1.5, -1.4, -1.3, -1.2, -1.1, -1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.1, 2.2, 2.3, 2.4, 2.5 }; // 50 bins 51 edges
+static int beff_n_bins_eta = 50;
+
+
+int fill_btag_efficiency(string control_point_name, Double_t weight, Double_t pt, Double_t eta)
+	{
+	// for tau (and other) fake-rates
+	// check if the key (mc_decay, control point) has been initialized
+	// std::pair <string,string> key (mc_decay, control_point_name);
+
+	// create channel map in th2d_distr_maps_control
+	if (th2d_distr_maps_control.find(mc_decay) == th2d_distr_maps_control.end() )
+		{
+		//
+		th2d_distr_maps_control.insert( std::make_pair(mc_decay, std::map<string, TH3D>()));
+		}
+
+	if (th2d_distr_maps_control[mc_decay].find(control_point_name) == th2d_distr_maps_control[mc_decay].end() )
+		{
+		// the control point distr has not been created/initialized
+		// THE HISTOGRAM NAMES HAVE TO BE DIFFERENT
+		// BECAUSE O M G ROOT USES IT AS A REAL POINTER TO THE OBJECT
+		//         O M G
+		th2d_distr_maps_control[mc_decay][control_point_name] = TH3D((control_point_name + mc_decay).c_str(), ";;", beff_n_bins_pt, beff_bins_pt, beff_n_bins_eta, beff_bins_eta);
+		// later on, when writing to the file,
+		// I'll have to rename histograms on each write
+		// and probably delete them along the way, so that they don't collide...
+		// ROOT SUCKS
+		//cout << "creating " << control_point_name << endl;
+		}
+
+
+	// fill the distribution:
+	th2d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, weight);
+
+	if (th2d_distr_maps_control_headers.find(control_point_name) == th2d_distr_maps_control_headers.end() )
+		{
+		// th2d_distr_maps_control_headers[control_point_name] = TH3D("Header of Pt/E distributions", ";;Pt/E(GeV)", 400, 0., 400.);
+		// th3f_distr_control_headers.insert( std::make_pair(string("j_distr"), TH3F("Header of jets distribution",      ";;", 10, bins_pt, 5, bins_eta, 15, bins_rad)));
+		th2d_distr_maps_control_headers.insert( std::make_pair(control_point_name, TH3D((string("Header of ") + control_point_name).c_str(), ";;", n_bins_pt, bins_pt, n_bins_eta, bins_eta, n_bins_rad, bins_rad)));
+		}
+
+	// return success:
+	return 0;
+	}
+
+
+
+
 
 int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC)
 	{
