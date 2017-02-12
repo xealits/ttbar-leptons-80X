@@ -406,7 +406,7 @@ static Float_t beff_bins_eta[51] = { -2.5, -2.4, -2.3, -2.2, -2.1, -2., -1.9, -1
 static int beff_n_bins_eta = 50;
 
 
-int fill_btag_efficiency(string control_point_name, Double_t weight, Double_t pt, Double_t eta)
+int fill_btag_efficiency(string control_point_name, Double_t pt, Double_t eta, Double_t weight)
 	{
 	// for tau (and other) fake-rates
 	// check if the key (mc_decay, control point) has been initialized

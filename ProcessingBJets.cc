@@ -17,7 +17,7 @@ double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	return N_tagged/N_alljets;
 	}
 
-double bTagging_c_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& eta, double& pt)
+double bTagging_c_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
 	{
 	Int_t global_bin_id = bEffs.c_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.c_alljet->GetBinContent(global_bin_id);
@@ -26,7 +26,7 @@ double bTagging_c_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	return N_tagged/N_alljets;
 	}
 
-double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& eta, double& pt)
+double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
 	{
 	Int_t global_bin_id = bEffs.udsg_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.udsg_alljet->GetBinContent(global_bin_id);
@@ -104,7 +104,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record) fill_1d(string("btag_sf_flavour_b"), 200, 0., 2.,   sf, weight);
 
 			// get eff for the jet
-			eff = bTagging_b_jet_efficiency(bEffs, eta, pt);
+			eff = bTagging_b_jet_efficiency(bEffs, pt, eta);
 			if (record) fill_1d(string("btag_eff_flavour_b"), 200, 0., 2.,   eff, weight);
 			}
 		else if(abs(flavId)==4) {
@@ -121,7 +121,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, pt, 0.);
 			if (record) fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
 
-			eff = bTagging_c_jet_efficiency(bEffs, eta, pt);
+			eff = bTagging_c_jet_efficiency(bEffs, pt, eta);
 			if (record) fill_1d(string("btag_eff_flavour_c"), 200, 0., 2.,   eff, weight);
 			}
 		else {
@@ -138,7 +138,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, pt, 0.);
 			if (record) fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
 
-			eff = bTagging_udsg_jet_efficiency(bEffs, eta, pt);
+			eff = bTagging_udsg_jet_efficiency(bEffs, pt, eta);
 			if (record) fill_1d(string("btag_eff_flavour_udsg"), 200, 0., 2.,   eff, weight);
 			}
 
