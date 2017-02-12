@@ -2863,6 +2863,7 @@ for(size_t f=0; f<urls.size();++f)
 		float btag_WP = 0.8484; // medium
 		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, weight_bTaggingSF, btagCal, btsfutil, bEffs, btagger_label, btag_WP, selBJets, true, debug);
 
+		weight *= weight_bTaggingSF;
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);
 
 		if(debug){
