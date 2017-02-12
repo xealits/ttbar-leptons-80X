@@ -105,7 +105,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 
 			// get eff for the jet
 			eff = bTagging_b_jet_efficiency(bEffs, eta, pt);
-			if (record) fill_1d(string("btag_eff_flavour_b"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_eff_flavour_b"), 200, 0., 2.,   eff, weight);
 			}
 		else if(abs(flavId)==4) {
 
@@ -122,7 +122,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record) fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
 
 			eff = bTagging_c_jet_efficiency(bEffs, eta, pt);
-			if (record) fill_1d(string("btag_eff_flavour_c"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_eff_flavour_c"), 200, 0., 2.,   eff, weight);
 			}
 		else {
 
@@ -139,7 +139,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record) fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
 
 			eff = bTagging_udsg_jet_efficiency(bEffs, eta, pt);
-			if (record) fill_1d(string("btag_eff_flavour_udsg"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_eff_flavour_udsg"), 200, 0., 2.,   eff, weight);
 			}
 
 	if (hasCSVtag) // a tagged jet
