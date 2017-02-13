@@ -67,6 +67,15 @@ extract_fakerates:
 
 extract_pileup:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv pileup_passtrig_num_inters_rawWeight pileup_passtrig_num_inters_weight
+	#pileup_beforetrig_num_inters_rawWeight
+	#pileup_beforetrig_num_inters_weight
+	#pileup_beforetrig_nGoodPV_rawWeight
+	#pileup_beforetrig_nGoodPV_weight
+	#pileup_passtrig_num_inters_rawWeight
+	#pileup_passtrig_num_inters_weight
+	#pileup_passtrig_nGoodPV_rawWeight
+	#pileup_passtrig_nGoodPV_weight
+
 
 get_dtags:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
