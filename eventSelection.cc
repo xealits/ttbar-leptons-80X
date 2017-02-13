@@ -1731,6 +1731,11 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_down      (1.0);
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
+
+
+
+		// -------------------------------------------------- FIRST SECTION OF MC WEIGHTS, [1, 10]
+
 		// increment( string("weightflow_n_miniaod_events"), 1.0 );
 		// iniweight 1
 		fill_1d(string("weightflow_mu"), 300, 0, 300,   1, weight);
@@ -2109,7 +2114,28 @@ for(size_t f=0; f<urls.size();++f)
 		// }
 
 		// it's not needed with the latest versions of RunB rereconstruction
-		
+
+		// -------------------------------------------------- FIRST SECTION OF MC WEIGHT is over
+
+		// FISRT SECTION SUM
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   10, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   10, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 10, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 10, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 10, weight);
+
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   10, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   10, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 10, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 10, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 10, 1);
+
+
+
+
+
+		// -------------------------------------------------- SECOND SECTION -- cuts on trigger, lumi etc [11, 20]
+
 		// -------------------------------------------------- Skip bad lumi
 		// 80X, v2
 		if(!goodLumiFilter.isGoodLumi(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock())) continue; 
@@ -2127,17 +2153,17 @@ for(size_t f=0; f<urls.size();++f)
 		// increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
 		// passlumi 5
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   5, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   5, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 5, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 5, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 5, weight);
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   11, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   11, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 11, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 11, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 11, weight);
 
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   5, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   5, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 5, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 5, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 5, 1);
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   11, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   11, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 11, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 11, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 11, 1);
 
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -2285,17 +2311,17 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_efficiency_sf *= muTrigger ? muHLT_SF[] : 1 ;
 
 		// passtrig 6
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   6, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   6, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 6, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 6, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 6, weight);
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   12, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   12, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 12, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 12, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 12, weight);
 
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   6, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   6, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 6, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 6, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 6, 1);
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   12, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   12, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 12, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 12, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 12, 1);
 		// increment( string("eventflow_1_passed_trig"), weight ); // should not matter
 		// increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
 		// increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
@@ -2396,21 +2422,35 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		// passmetfilters 7
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   7, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   7, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 7, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 7, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 7, weight);
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   13, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   13, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 13, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 13, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 13, weight);
 
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   7, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   7, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 7, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 7, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 7, 1);
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   13, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   13, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 13, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 13, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 13, 1);
+
+		// -------------------------------------------------- SECOND SECTION OF event cuts is over
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   20, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   20, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 20, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 20, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 20, weight);
+
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   20, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   20, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 20, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 20, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 20, 1);
 
 		// ------------------------- event physics and the corresponding selection
 
 		//------------------------- PROCESS OBJECTS
+		// -------------------------------------------------- possible THIRD SECTION of MC WEIGHTS and corrections (with efficiency SFs used as event probability correction)
 
 		double rho = 0;
 		fwlite::Handle<double> rhoHandle;
@@ -2925,6 +2965,20 @@ for(size_t f=0; f<urls.size();++f)
 		// fill_1i(string("weightflow_elmu_passmetfilters"), 300, 0, 300, 7, weight);
 		// fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
 
+		// -------------------------------------------------- THIRD SECTION OF mc weights for event probability SF-s
+		fill_1d(string("weightflow_mu"), 300, 0, 300,   30, weight);
+		fill_1d(string("weightflow_el"), 300, 0, 300,   30, weight);
+		fill_1d(string("weightflow_elel"), 300, 0, 300, 30, weight);
+		fill_1d(string("weightflow_elmu"), 300, 0, 300, 30, weight);
+		fill_1d(string("weightflow_mumu"), 300, 0, 300, 30, weight);
+
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   30, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   30, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 30, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 30, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 30, 1);
+
+
 		if(debug){
 			cout << "all particle-objects are processed, checking channel selection" << endl;
 			}
@@ -3307,13 +3361,13 @@ for(size_t f=0; f<urls.size();++f)
 
 						//fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_mu"), 300, 0, 300,   10 + multi, weight );
-						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
-						fill_1d(string("eventflow_mu"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_mu"), 300, 0, 300,   31 + multi, weight );
+						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+						fill_1d(string("eventflow_mu"), 300, 0, 300,   31 + multi, 1);
 
-						fill_1i(string("weightflow_mu_I"), 300, 0, 300,   10 + multi, weight );
-						fill_1i(string("weightflow_mu_without_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
-						fill_1i(string("eventflow_mu_I"), 300, 0, 300,   10 + multi, 1);
+						fill_1i(string("weightflow_mu_I"), 300, 0, 300,   31 + multi, weight );
+						fill_1i(string("weightflow_mu_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+						fill_1i(string("eventflow_mu_I"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
@@ -3594,13 +3648,13 @@ for(size_t f=0; f<urls.size();++f)
 
 						//fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_el"), 300, 0, 300,   10 + multi, weight );
-						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
-						fill_1d(string("eventflow_el"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_el"), 300, 0, 300,   31 + multi, weight );
+						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+						fill_1d(string("eventflow_el"), 300, 0, 300,   31 + multi, 1);
 
-						fill_1i(string("weightflow_el_I"), 300, 0, 300,   10 + multi, weight );
-						fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   10 + multi, weight_without_tauIDsf);
-						fill_1i(string("eventflow_el_I"), 300, 0, 300,   10 + multi, 1);
+						fill_1i(string("weightflow_el_I"), 300, 0, 300,   31 + multi, weight );
+						fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+						fill_1i(string("eventflow_el_I"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
@@ -3909,8 +3963,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1d(string("weightflow_elel"), 300, 0, 300,   10 + multi, weight);
-						fill_1d(string("eventflow_elel"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_elel"), 300, 0, 300,   31 + multi, weight);
+						fill_1d(string("eventflow_elel"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
@@ -4023,8 +4077,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1d(string("weightflow_mumu"), 300, 0, 300,   10 + multi, weight);
-						fill_1d(string("eventflow_mumu"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_mumu"), 300, 0, 300,   31 + multi, weight);
+						fill_1d(string("eventflow_mumu"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
@@ -4135,8 +4189,8 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1d(string("weightflow_elmu"), 300, 0, 300,   10 + multi, weight);
-						fill_1d(string("eventflow_elmu"), 300, 0, 300,   10 + multi, 1);
+						fill_1d(string("weightflow_elmu"), 300, 0, 300,   31 + multi, weight);
+						fill_1d(string("eventflow_elmu"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
