@@ -155,29 +155,32 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record) fill_1d(string("btag_eff_flavour_udsg"), 100, 0., 2.,   eff, weight);
 			}
 
-	double jet_weight_factor = 1;
-	if (hasCSVtag) // a tagged jet
-		{
-		jet_weight_factor = sf;
-		if (abs(flavId)==5)
-			fill_1d(string("btag_jetweight_flavour_b_tagged"), 100, 0., 2., jet_weight_factor, 1);
-		else if (abs(flavId)==4)
-			fill_1d(string("btag_jetweight_flavour_c_tagged"), 100, 0., 2., jet_weight_factor, 1);
-		else
-			fill_1d(string("btag_jetweight_flavour_udsg_tagged"), 100, 0., 2., jet_weight_factor, 1);
-		}
-	else // not tagged
-		{
-		jet_weight_factor = (1 - sf*eff) / (1 - eff);
-		if (abs(flavId)==5)
-			fill_1d(string("btag_jetweight_flavour_b_notag"), 100, 0., 2., jet_weight_factor, 1);
-		else if (abs(flavId)==4)
-			fill_1d(string("btag_jetweight_flavour_c_notag"), 100, 0., 2., jet_weight_factor, 1);
-		else
-			fill_1d(string("btag_jetweight_flavour_udsg_notag"), 100, 0., 2., jet_weight_factor, 1);
-		}
+		double jet_weight_factor = 1;
+		if (hasCSVtag) // a tagged jet
+			{
+			jet_weight_factor = sf;
+			if (abs(flavId)==5)
+				fill_1d(string("btag_jetweight_flavour_b_tagged"), 100, 0., 2., jet_weight_factor, 1);
+			else if (abs(flavId)==4)
+				fill_1d(string("btag_jetweight_flavour_c_tagged"), 100, 0., 2., jet_weight_factor, 1);
+			else
+				fill_1d(string("btag_jetweight_flavour_udsg_tagged"), 100, 0., 2., jet_weight_factor, 1);
+			}
+		else // not tagged
+			{
+			// truncate efficiency to 0 and 0.99
+			eff = (eff < 0. ? 0. : (eff > 0.99 ? 0.99 : eff));
+			jet_weight_factor = (1 - sf*eff) / (1 - eff);
+			if (abs(flavId)==5)
+				fill_1d(string("btag_jetweight_flavour_b_notag"), 100, 0., 2., jet_weight_factor, 1);
+			else if (abs(flavId)==4)
+				fill_1d(string("btag_jetweight_flavour_c_notag"), 100, 0., 2., jet_weight_factor, 1);
+			else
+				fill_1d(string("btag_jetweight_flavour_udsg_notag"), 100, 0., 2., jet_weight_factor, 1);
+			}
 
-	bTaggingSF_eventWeight *= jet_weight_factor;
+		bTaggingSF_eventWeight *= jet_weight_factor;
+		}
 
 	if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
 		{
