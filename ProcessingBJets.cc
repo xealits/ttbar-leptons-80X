@@ -13,7 +13,12 @@ double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	Int_t global_bin_id = bEffs.b_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.b_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.b_tagged->GetBinContent(global_bin_id);
-	if (N_alljets < 0.001 || N_tagged < 0.001) return 0; // whatch out -- equality of floats
+	if (N_alljets < 0.001 || N_tagged < 0.001)
+		{
+		//fill_2d(string("btag_eff_retrieved0_flavour_b"), 250, 0., 500., 200, -4., 4., pt, eta, 1);
+		fill_btag_efficiency(string("btag_eff_retrieved0_flavour_b"), pt, eta, 1);
+		return 0; // whatch out -- equality of floats
+		}
 	return N_tagged/N_alljets;
 	}
 
@@ -22,7 +27,11 @@ double bTagging_c_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, dou
 	Int_t global_bin_id = bEffs.c_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.c_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.c_tagged->GetBinContent(global_bin_id);
-	if (N_alljets < 0.001 || N_tagged < 0.001) return 0;
+	if (N_alljets < 0.001 || N_tagged < 0.001)
+		{
+		fill_btag_efficiency(string("btag_eff_retrieved0_flavour_c"), pt, eta, 1);
+		return 0;
+		}
 	return N_tagged/N_alljets;
 	}
 
@@ -31,7 +40,11 @@ double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, 
 	Int_t global_bin_id = bEffs.udsg_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
         Double_t N_alljets  = bEffs.udsg_alljet->GetBinContent(global_bin_id);
 	Double_t N_tagged   = bEffs.udsg_tagged->GetBinContent(global_bin_id);
-	if (N_alljets < 0.001 || N_tagged < 0.001) return 0;
+	if (N_alljets < 0.001 || N_tagged < 0.001)
+		{
+		fill_btag_efficiency(string("btag_eff_retrieved0_flavour_udsg"), pt, eta, 1);
+		return 0;
+		}
 	return N_tagged/N_alljets;
 	}
 
@@ -101,11 +114,11 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 
 			// get SF for the jet
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_B, eta, pt, 0.);
-			if (record) fill_1d(string("btag_sf_flavour_b"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_sf_flavour_b"), 100, 0., 2.,   sf, weight);
 
 			// get eff for the jet
 			eff = bTagging_b_jet_efficiency(bEffs, pt, eta);
-			if (record) fill_1d(string("btag_eff_flavour_b"), 200, 0., 2.,   eff, weight);
+			if (record) fill_1d(string("btag_eff_flavour_b"), 100, 0., 2.,   eff, weight);
 			}
 		else if(abs(flavId)==4) {
 
@@ -119,10 +132,10 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 				}
 
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_C, eta, pt, 0.);
-			if (record) fill_1d(string("btag_sf_flavour_c"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_sf_flavour_c"), 100, 0., 2.,   sf, weight);
 
 			eff = bTagging_c_jet_efficiency(bEffs, pt, eta);
-			if (record) fill_1d(string("btag_eff_flavour_c"), 200, 0., 2.,   eff, weight);
+			if (record) fill_1d(string("btag_eff_flavour_c"), 100, 0., 2.,   eff, weight);
 			}
 		else {
 
@@ -136,17 +149,35 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 				}
 
 			sf = btagCal.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, eta, pt, 0.);
-			if (record) fill_1d(string("btag_sf_flavour_udsg"), 200, 0., 2.,   sf, weight);
+			if (record) fill_1d(string("btag_sf_flavour_udsg"), 100, 0., 2.,   sf, weight);
 
 			eff = bTagging_udsg_jet_efficiency(bEffs, pt, eta);
-			if (record) fill_1d(string("btag_eff_flavour_udsg"), 200, 0., 2.,   eff, weight);
+			if (record) fill_1d(string("btag_eff_flavour_udsg"), 100, 0., 2.,   eff, weight);
 			}
 
+	double jet_weight_factor = 1;
 	if (hasCSVtag) // a tagged jet
-		bTaggingSF_eventWeight *= sf;
+		{
+		jet_weight_factor = sf;
+		if (abs(flavId)==5)
+			fill_1d(string("btag_jetweight_flavour_b_tagged"), 100, 0., 2., jet_weight_factor, 1);
+		else if (abs(flavId)==4)
+			fill_1d(string("btag_jetweight_flavour_c_tagged"), 100, 0., 2., jet_weight_factor, 1);
+		else
+			fill_1d(string("btag_jetweight_flavour_udsg_tagged"), 100, 0., 2., jet_weight_factor, 1);
+		}
 	else // not tagged
-		bTaggingSF_eventWeight *= (1 - sf*eff) / (1 - eff);
-	}
+		{
+		jet_weight_factor = (1 - sf*eff) / (1 - eff);
+		if (abs(flavId)==5)
+			fill_1d(string("btag_jetweight_flavour_b_notag"), 100, 0., 2., jet_weight_factor, 1);
+		else if (abs(flavId)==4)
+			fill_1d(string("btag_jetweight_flavour_c_notag"), 100, 0., 2., jet_weight_factor, 1);
+		else
+			fill_1d(string("btag_jetweight_flavour_udsg_notag"), 100, 0., 2., jet_weight_factor, 1);
+		}
+
+	bTaggingSF_eventWeight *= jet_weight_factor;
 
 	if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
 		{
