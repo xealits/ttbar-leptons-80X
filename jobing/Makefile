@@ -66,7 +66,7 @@ extract_fakerates:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
 
 extract_pileup:
-	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv pileup_passtrig_num_inters_rawWeight pileup_passtrig_num_inters_weight
 
 get_dtags:
 	ls test/tests/outdir_"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
