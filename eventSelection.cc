@@ -2036,13 +2036,13 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 4, 1);
 
 		// pu distrs
-		fill_1d( string("pileup_passtrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
-		fill_1d( string("pileup_passtrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
+		fill_1d( string("pileup_beforetrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
+		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
 		// nGoodPV = vtx.size() now
 
 		// pu distrs
-		fill_1d( string("pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
 		// nGoodPV = vtx.size() now
 
 		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
@@ -2330,12 +2330,16 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "Set triggers" << endl;
 			}
 
-		fill_1d( string("pileup_passtrig_rawWeight_pergoodpv"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_weight_pergoodpv"),    100, 0, 100, nGoodPV, weight);
+		// pu distrs
+		fill_1d( string("pileup_passtrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
+		fill_1d( string("pileup_passtrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
 		// nGoodPV = vtx.size() now
 
-		fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
+		// pu distrs
+		fill_1d( string("pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		// nGoodPV = vtx.size() now
+
 
 		// fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
 		// fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
