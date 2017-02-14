@@ -46,7 +46,8 @@ pileup2016_direct_old = cms.vdouble(
 0.0000000000)
 
 
-pileup2016_direct2 = cms.vdouble(
+# corrected to start from 0
+pileup2016_direct2 = cms.vdouble(0,
 0.362487235656909, 0.915590545812284, 1.21132246509444, 0.947925601013885, 1.08017689821023, 1.11710415838814, 0.767987830322152, 0.481845466639102, 0.737226697541913, 0.88542246406117,
 0.968234885998274, 1.07515806511256, 1.13011024238979, 1.17914792355314, 1.2081221075371, 1.21396216274561, 1.20627443861416, 1.18852262623873, 1.14957508795551, 1.10152205723583,
 1.07069598583705, 1.05669944544375, 1.05681198316238, 1.05584403601945, 1.05432721315647, 1.06286485823505, 1.07791370920327, 1.08874014134848, 1.10005952131492, 1.11346269075817,
@@ -111,8 +112,6 @@ runProcess = cms.PSet(
     pileup_reweight_direct      = pileup2016_direct2,
     pileup_reweight_direct_down = pileup2016_direct2,
     pileup_reweight_direct_up   = pileup2016_direct2,
-    datapileup = datapileup_official, 
-    datapileupSingleLep = datapileup_official,
     debug = cms.bool(False),
     debug_len = cms.int32(100),
     lumisToProcess = LumiList.LumiList(filename = theLumiMask).getVLuminosityBlockRange(),
