@@ -10,7 +10,7 @@ void MyDataPileupHistogram_6-12-2016()
    c1->SetLogy();
    c1->SetFrameBorderMode(0);
    c1->SetFrameBorderMode(0);
-   
+
    TH1D *pileup__1 = new TH1D("pileup__1","pileup",100,0,100);
    pileup__1->SetBinContent(1,238796);
    pileup__1->SetBinContent(2,837538.4);
@@ -215,7 +215,7 @@ void MyDataPileupHistogram_6-12-2016()
    pileup__1->SetMinimum(1794288);
    pileup__1->SetMaximum(3.622205e+09);
    pileup__1->SetEntries(2.314917e+07);
-   
+
    TPaveStats *ptstats = new TPaveStats(0.78,0.775,0.98,0.935,"brNDC");
    ptstats->SetName("stats");
    ptstats->SetBorderSize(1);
