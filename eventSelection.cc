@@ -3818,7 +3818,7 @@ for(size_t f=0; f<urls.size();++f)
 			// Event selection booleans
 			// or dilepton mass > 20GeV?
 			// and only for ee/mumu?
-			bool passMllVeto(isEMu ? dileptonSystem.mass()>12. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>12. ) );
+			bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 			// bool passJetSelection(selJets.size()>1);
 			bool passJetSelection(n_jets>1);
 			bool passMetSelection(met.pt()>40.);
