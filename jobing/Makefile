@@ -86,11 +86,11 @@ get_job_dtags:
 selection_control_histos:
 	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
 	do                                                \
-	stacked_histo_distr ${lumi} $$h 4 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${lumi} $$h 4 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other`;             \
 	do                                                \
-	stacked_histo_distr ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:

@@ -155,6 +155,7 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_W1Jets_madgraph", 9493},
 {"MC2016_noHLT_W2Jets_madgraph", 3120},
 {"MC2016_noHLT_W3Jets_madgrapg", 942.3},
+{"MC2016_noHLT_W3Jets_madgraph", 942.3},
 {"MC2016_noHLT_W4Jets_madgraph", 524.2},
 {"MC2016_reHLT_WJets_amcatnlo", 61526.7},
 {"MC2016_reHLT_DYJetsToLL_10to50_amcatnlo", 18610},
@@ -183,6 +184,7 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_W1Jets_madgraph", 9493},
 {"MC2016_Summer16_W2Jets_madgraph", 3120},
 {"MC2016_Summer16_W3Jets_madgrapg", 942.3},
+{"MC2016_Summer16_W3Jets_madgraph", 942.3},
 {"MC2016_Summer16_W4Jets_madgraph", 524.2},
 
 {"MC2016_Summer16_WJets_amcatnlo", 61526.7},
@@ -215,6 +217,7 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_W1Jets_madgraph_", 9493},
 {"MC2016_Summer16_W2Jets_madgraph_", 3120},
 {"MC2016_Summer16_W3Jets_madgrapg_", 942.3},
+{"MC2016_Summer16_W3Jets_madgraph_", 942.3},
 {"MC2016_Summer16_W4Jets_madgraph_", 524.2},
 
 {"MC2016_Summer16_WJets_amcatnlo_", 61526.7},
@@ -223,9 +226,9 @@ std::map<TString, double> xsecs = {
 
 {"MC2016_Summer16_SingleT_tW_5FS_powheg_",    35.6},
 {"MC2016_Summer16_SingleTbar_tW_5FS_powheg_", 35.6},
-{"MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo_", 3.36},
-{"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg_", 70.69/2},
-{"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg_", 70.69/2},
+{"MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo_", 10.11}, //3.36},
+{"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg_", 80.95}, //70.69/2},
+{"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg_", 136.02}, //70.69/2},
 
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
