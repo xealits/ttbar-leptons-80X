@@ -102,8 +102,37 @@ namespace utils
 	{
 	namespace cmssw
 		{
-		// TODO: it is the same jetCorrector as in MacroUtils, only Fall_ prefix is set
-		// Fall15_25nsV2_
+		FactorizedJetCorrector* getJetCorrector(TString baseDir, TString pf, bool isMC)
+			{
+			gSystem->ExpandPathName(baseDir);
+			//TString pf(isMC ? "MC" : "DATA");
+			// TString pf("Fall15_25nsV2_");
+			//pf += (isMC ? "MC" : "DATA");
+
+			//order matters: L1 -> L2 -> L3 (-> Residuals)
+			std::vector<std::string> jetCorFiles;
+			std::cout << baseDir+"/"+pf+"_L1FastJet_AK4PFchs.txt" << std::endl;
+			jetCorFiles.push_back((baseDir+"/"+pf+"_L1FastJet_AK4PFchs.txt").Data());
+			jetCorFiles.push_back((baseDir+"/"+pf+"_L2Relative_AK4PFchs.txt").Data());
+			jetCorFiles.push_back((baseDir+"/"+pf+"_L3Absolute_AK4PFchs.txt").Data());
+			if(!isMC) jetCorFiles.push_back((baseDir+"/"+pf+"_L2L3Residual_AK4PFchs.txt").Data());
+			// now there is a practically empty file Fall15_25nsV2_MC_L2L3Residual_AK4PFchs.txt
+			// adding the run on it anyway
+			//jetCorFiles.push_back((baseDir+"/"+pf+"_L2L3Residual_AK4PFchs.txt").Data());
+			// it is dummy/empty file for MC and apparently is is not used
+			// but in v13.1 it seemed to influence selection a bit
+			// adding it for v13.4 -- will test later without it
+			// and removing in 13.7 test -- compare with 13.4 & 13.4_repeat
+
+			//init the parameters for correction
+			std::vector<JetCorrectorParameters> corSteps;
+			for(size_t i=0; i<jetCorFiles.size(); i++) corSteps.push_back(JetCorrectorParameters(jetCorFiles[i]));
+			
+			//return the corrector
+			return new FactorizedJetCorrector(corSteps);
+			}
+
+		/*
 		FactorizedJetCorrector* getJetCorrector(TString baseDir, TString pf, bool isMC)
 			{
 			gSystem->ExpandPathName(baseDir);
@@ -133,6 +162,7 @@ namespace utils
 			//return the corrector
 			return new FactorizedJetCorrector(corSteps);
 			}
+		*/
 
 		std::vector<double> smearJER(double pt, double eta, double genPt)
 			{
