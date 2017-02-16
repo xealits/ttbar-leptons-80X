@@ -225,7 +225,7 @@ hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_data->GetYaxis()->SetLabelFont(63);
 hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 
-hs->Draw("UO"); // the stack
+hs->Draw(); // the stack
 // also draw the sum of the stack and its' errors:
 //((TObjArray*) hs->GetStack())->Last()->Draw("e4 same"); // then, how to set styles with the hatched error bars?
 
@@ -237,12 +237,12 @@ if (hs_sum != NULL)
 	hs_sum->SetMarkerColorAlpha(0, 0.1);
 	hs_sum->SetMarkerStyle(1);
 	hs_sum->SetMarkerColor(0);
-	hs_sum->Draw("UO e2 same"); // the errors on the stack
+	hs_sum->Draw("e2 same"); // the errors on the stack
 	}
 else
 	cout << "NO HS_SUM!!!!!!!!!!!!!!" << endl;
 
-hs_data->Draw("UO e p same"); // the data with the errors
+hs_data->Draw("e p same"); // the data with the errors
 
 // histo->SetTitle("boxtitle;x axis title [unit];y axis title [unit]")
 cout << "setting the stack title" << endl;
@@ -288,19 +288,21 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 	double mc_content = hs_sum_relative->GetBinContent(i);
 	double mc_error   = hs_sum_relative->GetBinError(i);
 	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-	hs_sum_relative->SetBinContent(i, 1);	
-	hs_sum_relative->SetBinError(i, mc_error/mc_content);	
 
 	double data_content = hs_data_relative->GetBinContent(i);
 	double data_error   = hs_data_relative->GetBinError(i);
 	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 	if (mc_content > 0)
 		{
+		hs_sum_relative->SetBinContent(i, 1);
+		hs_sum_relative->SetBinError(i, mc_error/mc_content);	
 		hs_data_relative->SetBinContent(i, data_content/mc_content);
 		hs_data_relative->SetBinError(i, data_error/mc_content);
 		}
 	else
 		{
+		hs_sum_relative->SetBinContent(i, 1);
+		hs_sum_relative->SetBinError(i, mc_error);
 		hs_data_relative->SetBinContent(i, 1);
 		hs_data_relative->SetBinError(i, data_error);
 		}
