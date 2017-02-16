@@ -222,7 +222,8 @@ std::map<TString, double> xsecs = {
 
 {"MC2016_Summer16_WJets_amcatnlo_", 61526.7},
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo_", 18610},
-{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph_", 6025.2}, // FIXME: the DY x-section was updated by about 5%
+//{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph_", 6025.2}, // FIXME: the DY x-section was updated by about 5%
+{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph_", 4970}, // FIXME: the DY x-section was updated by about 5%
 
 {"MC2016_Summer16_SingleT_tW_5FS_powheg_",    35.6},
 {"MC2016_Summer16_SingleTbar_tW_5FS_powheg_", 35.6},
@@ -233,12 +234,12 @@ std::map<TString, double> xsecs = {
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
 { "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
-{ "MC2016_Summer16_TTJets_powheg_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br * 2},
 { "MC2016_Summer16_TTJets_powheg_eell"        , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_elmu"        , ttbar_xsec * W_lep_br2 * 2 },
-{ "MC2016_Summer16_TTJets_powheg_elq"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_elq"         , ttbar_xsec * W_lep_br*W_qar_br * 2},
 { "MC2016_Summer16_TTJets_powheg_mmuu"        , ttbar_xsec * W_lep_br2 },
-{ "MC2016_Summer16_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br },
+{ "MC2016_Summer16_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br * 2},
 { "MC2016_Summer16_TTJets_powheg_qq"          , ttbar_xsec * W_qar_br2 },
 
 };
