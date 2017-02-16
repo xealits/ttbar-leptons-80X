@@ -311,6 +311,8 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
 hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
 hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
 
 hs_sum_relative->Draw("e2");
