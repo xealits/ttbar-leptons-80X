@@ -402,9 +402,10 @@ double top_pT_SF(double x)
 	// 8 TeV 	all combined 	0.156 	-0.00137
 	// 8 TeV 	l+jets       	0.159 	-0.00141
 	// 8 TeV 	dilepton     	0.148 	-0.00129
-	// -- taking all combined for 8 TeV
-	double a = 0.156;
-	double b = -0.00137;
+	// 13 TeV	all combined	0.0615	-0.0005
+	// -- taking all combined 13 TeV
+	double a = 0.0615;
+	double b = -0.0005;
 	return TMath::Exp(a + b*x);
 	}
 
