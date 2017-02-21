@@ -2272,11 +2272,11 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
-		pat::JetCollection selJets;
+		pat::JetCollection IDjets;
 		string jetID("Loose");
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, 20, 2.4, r3, full_jet_corr, selJets, false, debug);
+		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, r3, full_jet_corr, IDjets, false, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
@@ -2291,7 +2291,14 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weight);
 		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
+		//int processJets_Kinematics(pat::JetCollection& jets, // input
+		//	//bool isMC, double weight,
+		//	double pt_cut, double eta_cut,
+		//	pat::JetCollection& selJets,                 // output
+		//	bool record, bool debug) // more output
 
+		pat::JetCollection selJets;
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 20, 2.4, selJets, true, debug);
 
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?

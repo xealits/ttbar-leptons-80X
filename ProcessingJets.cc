@@ -278,7 +278,7 @@ bool passPFJetID(std::string label, pat::Jet jet)
 
 
 
-int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
+int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
 	bool isMC, double weight,
 	double rho, unsigned int nGoodPV,
 	FactorizedJetCorrector *jesCor,
@@ -286,7 +286,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& je
 	double dR_max, // for jet matching in jet corrections smearing for MC
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
-	double pt_cut, double eta_cut,
+	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
 	bool record, bool debug) // more output
@@ -299,9 +299,6 @@ JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor(jetR
 Variation m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
 */
 
-
-pat::JetCollection IDjets;
-
 for(size_t ijet=0; ijet<jets.size(); ijet++)
 	{
 	// the input jets here are, supposedly, slimmedJets from MINIAODs -- which are already corrected
@@ -313,7 +310,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 
 	if (passID)
 		{
-		IDjets.push_back(jet);
+		selJets.push_back(jet);
 		if (record)
 			{
 			fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
@@ -326,10 +323,10 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 
 // v6, adding jet corrections and b-tagging
 //LorentzVector full_jet_corr(0., 0., 0., 0.);
-for(size_t ijet=0; ijet<IDjets.size(); ijet++)
+for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	{
 	// TODO: so does this mean "in place"?
-	pat::Jet& jet = IDjets[ijet];
+	pat::Jet& jet = selJets[ijet];
 
 	// for MC smearing
 	//TRandom *r3 = new TRandom3();
@@ -466,7 +463,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 	// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
 	//to get the raw jet again
-	//IDjets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
+	//selJets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
 
 	// Add the jet momentum correction:
 	LorentzVector jet_corr(0., 0., 0., 0.);
@@ -492,7 +489,7 @@ for(size_t ijet=0; ijet<IDjets.size(); ijet++)
 	}
 
 
-std::sort (IDjets.begin(),  IDjets.end(),  utils::sort_CandidatesByPt);
+std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
 
 // ----------------------------------- here is the correctF jet correction point
 // Propagate full_jet_corr to MET:
@@ -505,19 +502,6 @@ std::sort (IDjets.begin(),  IDjets.end(),  utils::sort_CandidatesByPt);
 //met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
 
 
-
-// FIXME: So are these MET corrections?
-//if(debug) cout << "Update also MET" << endl;
-// LorentzVector n_met = met.p4();
-// std::vector<LorentzVector> newMet = utils::cmssw::getMETvariations(n_met/*recoMet*/,IDjets,selLeptons,isMC);
-// FIXME: Must choose a lepton collection. Perhaps loose leptons?
-// n_met = newMet[utils::cmssw::METvariations::NOMINAL];
-
-//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), n_met.pt(), weight);
-//if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), n_met.pt(), weight);
-//if (isSingleE)  fill_pt_e( string("met0_all_leptoncorr_jetcorr_singleel_pt"), n_met.pt(), weight);
-//fill_pt_e( string("met0_all_leptoncorr_jetcorr_pt"), met.pt(), weight);
-//fill_1d(string("control_met_allcorr_pt"), 200, 0., 200., met.pt(), weight);
 
 if(debug) cout << "Jet Energy Corrections updated" << endl;
 
@@ -536,7 +520,18 @@ if(debug) cout << "Jet Energy Corrections updated" << endl;
 //met_pt_values[6] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown).pt();
 
 
+return 0;
+}
 
+
+int processJets_Kinematics(pat::JetCollection& jets, // input
+	//bool isMC,
+	double weight,
+	double pt_cut, double eta_cut,
+	pat::JetCollection& selJets,                 // output
+	bool record, bool debug) // more output
+
+{
 
 // ------------------------------- JETS SELECTION
 // the kinematics only, now (at Moriond17) the IDs are recommended to be applied before corrections
@@ -548,9 +543,9 @@ if(debug) cout << "Jet Energy Corrections updated" << endl;
 // selJets pass cross-cleaning with taus later
 // and b-tagging again
 double mindphijmet (9999.);
-for (unsigned int count_ided_jets = 0, ijet = 0; ijet < IDjets.size(); ++ijet)
+for (unsigned int count_ided_jets = 0, ijet = 0; ijet < jets.size(); ++ijet)
 	{
-	pat::Jet& jet = IDjets[ijet];
+	pat::Jet& jet = jets[ijet];
 
 	if (record)
 		{
@@ -579,27 +574,6 @@ for (unsigned int count_ided_jets = 0, ijet = 0; ijet < IDjets.size(); ++ijet)
 	double pt  = jet.pt();
 	//bool passKino = pt > 30. && fabs(eta) < 2.4;
 
-	// corrections:
-	// TODO: are they MC-only?
-	/* no smeared  jet pt values for now
-	std::vector<double> pt_values;
-	if (isMC)
-		pt_values = utils::cmssw::smearJES(pt, eta, totalJESUnc);
-	else
-		{
-		pt_values.push_back(pt);
-		pt_values.push_back(pt);
-		}
-	*/
-	// vary JesUp   is pt_values[0]
-	// vary JesDown is pt_values[1]
-	// if (!passPFloose || jet.pt() <30. || fabs(jet.eta()) > 2.5) continue;
-	// if (passPFloose && (pt > 30. || pt_values[0] > 30. || pt_values[1] > 30.) && fabs(eta) < 2.5)
-
-
-	//if (passPFloose && passKino)
-	//if (passPFloose && (fabs(eta) < eta_cut) && pt > pt_cut)
-	// now the ID is applied before even corrections
 	if ((fabs(eta) < eta_cut) && pt > pt_cut)
 		{
 		//if (pt > 30.)
@@ -630,9 +604,6 @@ for (unsigned int count_ided_jets = 0, ijet = 0; ijet < IDjets.size(); ++ijet)
 		}
 	}
 
-std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
-
 return 0;
 }
-
 

@@ -2799,7 +2799,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
 
-		//int processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
+		//int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
 		//	bool isMC, double weight,
 		//	double rho, unsigned int nGoodPV,
 		//	FactorizedJetCorrector *jesCor,
@@ -2807,17 +2807,17 @@ for(size_t f=0; f<urls.size();++f)
 		//	double dR_max, // for jet matching in jet corrections smearing for MC
 		//	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 		//	string& jetID,
-		//	double pt_cut, double eta_cut,
-		//	TRandom *r3,   // the randomizer for the smearing
+		//	//double pt_cut, double eta_cut,
+		//	TRandom3 *r3,   // the randomizer for the smearing
 		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
 		//	bool record, bool debug) // more output
 
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
-		pat::JetCollection selJets;
+		pat::JetCollection IDjets;
 		string jetID("Loose");
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO_Kinematics(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, 30, 2.4, r3, full_jet_corr, selJets, true, debug);
+		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, r3, full_jet_corr, IDjets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
@@ -2832,6 +2832,18 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weight);
 		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
+		//int processJets_Kinematics(pat::JetCollection& jets, // input
+		//	//bool isMC,
+		//	double weight,
+		//	double pt_cut, double eta_cut,
+		//	pat::JetCollection& selJets,                 // output
+		//	bool record, bool debug) // more output
+
+		pat::JetCollection selJets;
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 30, 2.4, selJets, true, debug);
+
+		pat::JetCollection selJets_20GeV; // for fake rates in dileptons
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 20, 2.4, selJets_20GeV, true, debug);
 
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?
@@ -2844,6 +2856,9 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::JetCollection selJetsNoLep;
 		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), false, debug);
+
+		pat::JetCollection selJets_20GeV_NoLep;
+		crossClean_in_dR(selJets_20GeV, selLeptons, 0.4, selJets_20GeV_NoLep, weight, string("selJets_20GeV_NoLep"), false, debug);
 
 		/*
 		// so, just for the fake rates:
@@ -3245,7 +3260,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singlemu_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
-					record_jets_fakerate_distrs(string("singlemu_"), string("passjet"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singlemu_"), string("passjet"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singlemu_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
@@ -3378,7 +3393,7 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
-					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//
 					/*
@@ -3533,7 +3548,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singleel_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
-					record_jets_fakerate_distrs(string("singleel_"), string("passjet"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singleel_"), string("passjet"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singleel_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
@@ -3666,7 +3681,7 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// pre-tau selection
 					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
-					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
@@ -3835,53 +3850,34 @@ for(size_t f=0; f<urls.size();++f)
 			multisel += (passOS ? 8 : 0);
 			multisel += (passBtagsSelection ? 16 : 0);
 
-			//record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-			//record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 			if (passJetSelection)
 				{
-				//record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				//record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjets"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 				}
 
 			if (passJetSelection && passBtagsSelection)
 				{
-				//record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				//record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+				record_jets_fakerate_distrs(string("dilep_"), string("passjetsNbtag"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 				}
-
-			/*
-			if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
-				{
-				record_jets_fakerate_distrs(string("dilep_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, weight, isMC);
-				}
-			*/
 
 			if (isDoubleE)
 				{
 
 				if (passJetSelection)
 					{
-					//record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjetsNbtag"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -3979,23 +3975,17 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					//record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjetsNbtag"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4092,23 +4082,17 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passJetSelection)
 					{
-					//record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passJetSelection && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjetsNbtag"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 					}
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
-					//record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets20GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					//record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets30GeVNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets_20GeV_NoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("elmu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);

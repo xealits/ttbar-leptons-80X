@@ -490,7 +490,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 					minDRtj = jet_tau_distance;
 					}
 				}
-			//if (jet_origin == 0 && (minDRtj < tau_fake_distance)) jet_origin = 15;
+			if (jet_origin == 0 && (minDRtj < tau_fake_distance)) jet_origin = 15; // BEST so far
 			// maybe the true taus are lost here?
 			// 1) dR can be too wide and include non-tau jets
 			//    (where is the tau jet then? -- maybe mixed into a wide jet, or not reconstructed altogether?) 
@@ -501,7 +501,9 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			//if (minDRtj < tau_fake_distance) jet_origin = 15;
 			// the fake rate in qcd is lower than it was and lower than in wjets
 			// try partonFlavour != gluons
-			if (jet_origin != 21 && (minDRtj < tau_fake_distance)) jet_origin = 15;
+			//if (jet_origin != 21 && (minDRtj < tau_fake_distance)) jet_origin = 15;
+			// 3) TODO: can also try light tau & other + light quarks (partonFlavour < 5)
+			//if (jet_origin < 5 && (minDRtj < tau_fake_distance)) jet_origin = 15;
 
 			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
 			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
