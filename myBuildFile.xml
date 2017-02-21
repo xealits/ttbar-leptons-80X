@@ -33,6 +33,7 @@
   <bin name="ttbarleps80_eventSelection"  file="ttbar-leptons-80X/eventSelection.cc"></bin>
   <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
   <bin name="jetToTauFakeRate"  file="ttbar-leptons-80X/jetSelectionForTauFakeRate.cc"></bin>
+  <bin name="v930_jetToTauFakeRate"  file="ttbar-leptons-80X/v930_jetSelectionForTauFakeRate.cc"></bin>
   <bin name="tauOrigins"  file="ttbar-leptons-80X/tauOrigins.cc"></bin>
   <bin name="triggerMatching"  file="ttbar-leptons-80X/triggerMatching.cc"></bin>
   <bin name="generationTree"  file="ttbar-leptons-80X/generationTree.cc"></bin>
@@ -56,6 +57,7 @@
   <bin name="stacked_histo_distr2D"            file="ttbar-leptons-80X/jobing/stacked_histo_distr2D.cc"></bin>
   <bin name="stacked_histo_distr2D_with_ratio" file="ttbar-leptons-80X/jobing/stacked_histo_distr2D_with_ratio.cc"></bin>
 
+  <bin name="jet_fakerate_measurements"          file="ttbar-leptons-80X/jobing/jet_fakerate_measurements.cc"></bin>
   <bin name="jet_origins"          file="ttbar-leptons-80X/jobing/jet_origins.cc"></bin>
   <bin name="jet_weightflow"          file="ttbar-leptons-80X/jobing/jet_weightflow.cc"></bin>
 

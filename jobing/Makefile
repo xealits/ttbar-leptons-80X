@@ -17,10 +17,12 @@ extract_weightflow:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu weightflow_el weightflow_elmu weightflow_elel weightflow_mumu
 
 extract_jet_origins:
-	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singlemu_pretau_jet_partonFlavour singleel_pretau_jet_partonFlavour
 
 extract_all_jet_origins:
-	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} smu_pretau_jet_origin_ids sel_pretau_jet_origin_ids \
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singlemu_pretau_jet_partonFlavour singleel_pretau_jet_partonFlavour \
+	singlemu_passjet_jet_partonFlavour      \
+	singleel_passjet_jet_partonFlavour      \
 	dilep_pass2leps_jet_partonFlavour       \
 	dilep_pass2leps_jet_hadronFlavour       \
 	dilep_passjets_jet_partonFlavour        \
@@ -66,15 +68,11 @@ extract_fakerates:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singleel_pretauselection_jettotaufakerates singlemu_pretauselection_jettotaufakerates
 
 extract_pileup:
-	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_passtrig_rawWeight_pergoodpv pileup_passtrig_weight_pergoodpv pileup_passtrig_num_inters_rawWeight pileup_passtrig_num_inters_weight
-	#pileup_beforetrig_num_inters_rawWeight
-	#pileup_beforetrig_num_inters_weight
-	#pileup_beforetrig_nGoodPV_rawWeight
-	#pileup_beforetrig_nGoodPV_weight
-	#pileup_passtrig_num_inters_rawWeight
-	#pileup_passtrig_num_inters_weight
-	#pileup_passtrig_nGoodPV_rawWeight
-	#pileup_passtrig_nGoodPV_weight
+	extract_long_csv pileup_beforetrig_num_inters_rawWeight pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_beforetrig_num_inters_rawWeight.long.csv
+	extract_long_csv pileup_beforetrig_num_inters_weight    pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_beforetrig_num_inters_weight.long.csv
+	extract_long_csv pileup_passtrig_num_inters_rawWeight pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_passtrig_num_inters_rawWeight.long.csv
+	extract_long_csv pileup_passtrig_num_inters_weight    pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_passtrig_num_inters_weight.long.csv
+	#./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_beforetrig_num_inters_rawWeight pileup_beforetrig_num_inters_weight pileup_beforetrig_nGoodPV_rawWeight pileup_beforetrig_nGoodPV_weight pileup_passtrig_num_inters_rawWeight pileup_passtrig_num_inters_weight pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight
 
 
 get_dtags:
@@ -112,6 +110,9 @@ done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
 	ls test/tests/outdir_"${job}"/*root     | wc -l
 	ls test/tests/outdir_"${job}"/*cfg.py   | wc -l
+	ls test/tests/outdir_"${job}"/MC*job_done | wc -l
+	ls test/tests/outdir_"${job}"/MC*root     | wc -l
+	ls test/tests/outdir_"${job}"/MC*cfg.py   | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*job_done | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*root     | wc -l
 	ls test/tests/outdir_"${job}"/*TTJ*cfg.py   | wc -l
@@ -271,6 +272,9 @@ elel_fakerate_ratio_plots: selection=elel_passjets
 elel_fakerate_ratio_plots: fakerate_ratio_plots
 
 dilep_fakerate_ratio_plots: elel_fakerate_ratio_plots mumu_fakerate_ratio_plots elmu_fakerate_ratio_plots
+
+fakerate_study_extract_all:
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} HLTjet_qcd_jet_partonFlavour HLTmu_wjets_jet_partonFlavour elmu_passjets_jet_partonFlavour mumu_passjets_jet_partonFlavour
 
 jet_mc_distrs:
 	stacked_histo_project3to1_distr --normalize 1.7 HLTjet_qcd_jets_distr x 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
