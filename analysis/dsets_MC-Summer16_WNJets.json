@@ -15,7 +15,7 @@
           "dset":"/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"  },
         { "dtag":"MC2016_Summer16_W2Jets_madgraph"                            , "split_NoUse_TestingAutomaticOne":100, "xsec":3120        , "br":[ 1.0 ] ,
           "dset":"/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"  },
-        { "dtag":"MC2016_Summer16_W3Jets_madgrapg"                            , "split_NoUse_TestingAutomaticOne":100, "xsec":942.3       , "br":[ 1.0 ] ,
+        { "dtag":"MC2016_Summer16_W3Jets_madgraph"                            , "split_NoUse_TestingAutomaticOne":100, "xsec":942.3       , "br":[ 1.0 ] ,
           "dset":"/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"  },
         { "dtag":"MC2016_Summer16_W4Jets_madgraph"                            , "split_NoUse_TestingAutomaticOne":100, "xsec":524.2       , "br":[ 1.0 ] ,
           "dset":"/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"   }
