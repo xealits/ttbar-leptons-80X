@@ -2174,21 +2174,30 @@ for(size_t f=0; f<urls.size();++f)
 
 
 		// ------------------------------------------ TAUS SELECTION
-		pat::TauCollection selTaus;
-		//int processTaus_ID_ISO_Kinematics(pat::TauCollection& taus, double weight, // input
-		//        string& tauID_decayMode, string& tauID,               // config/cuts
-		//        string& tauID_IsoMuons,  string& tauID_IsoElectrons,
-		//        double pt_cut, double eta_cut, 
-		//        pat::TauCollection& selTaus,                          // output
-		//        bool record, bool debug) // more output
+
+		//int processTaus_ID_ISO(pat::TauCollection& taus, double weight, // input
+		//	string& tauID_decayMode, string& tauID,               // config/cuts
+		//	string& tauID_IsoMuons,  string& tauID_IsoElectrons,
+		//	pat::TauCollection& selTaus,                          // output
+		//	bool record, bool debug) // more output
+
+		pat::TauCollection IDtaus, selTaus;
+
 		string tau_decayMode("decayModeFinding"),
 			//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
 			tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
 			tau_againstMuon("againstMuonTight3"),
 			tau_againstElectron("againstElectronTightMVA6");
 
-		processTaus_ID_ISO_Kinematics(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron,
-			20, 2.3, selTaus, false, debug);
+		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug); 
+
+		//int processTaus_Kinematics(pat::TauCollection& taus,          // input
+		//	double weight,
+		//	double pt_cut, double eta_cut,
+		//	pat::TauCollection& selTaus,                          // output
+		//	bool record, bool debug) // more output
+
+		processTaus_Kinematics(IDtaus, weight, 20, 2.3, selTaus,       false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;

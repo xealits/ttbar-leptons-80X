@@ -1,14 +1,13 @@
 
 
 
-int processTaus_ID_ISO_Kinematics(pat::TauCollection& taus, double weight, // input
+int processTaus_ID_ISO(pat::TauCollection& taus, double weight, // input
 	string& tauID_decayMode, string& tauID,               // config/cuts
 	string& tauID_IsoMuons,  string& tauID_IsoElectrons,
-	double pt_cut, double eta_cut,
 	pat::TauCollection& selTaus,                          // output
 	bool record, bool debug) // more output
-{
 
+{
 for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 	{
 	pat::Tau& tau = taus[n];
@@ -81,6 +80,26 @@ for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 		count_ided_taus += 1;
 		}
 	*/
+	}
+
+std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
+
+return 0;
+}
+
+
+
+int processTaus_Kinematics(pat::TauCollection& taus,          // input
+	double weight,
+	double pt_cut, double eta_cut,
+	pat::TauCollection& selTaus,                          // output
+	bool record, bool debug) // more output
+
+{
+
+for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
+	{
+	pat::Tau& tau = taus[n];
 
 	// --------- Tau Kinematics
 	if (tau.pt() < pt_cut || fabs (tau.eta()) > eta_cut) continue;
@@ -91,11 +110,7 @@ for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 		fill_2d(string("control_tau_selTaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
 		fill_1d(string("control_tau_selTaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
 		}
+
 	}
-
-std::sort (selTaus.begin(), selTaus.end(), utils::sort_CandidatesByPt);
-
 return 0;
 }
-
-
