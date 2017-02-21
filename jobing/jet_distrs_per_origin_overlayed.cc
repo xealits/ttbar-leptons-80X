@@ -59,7 +59,7 @@ else if (inp1 == string("--normalize"))
 	}
 
 if (be_verbose) cout << "being verbose" << endl;
-if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
+if (normalize_MC) cout << "will normalize MC sets to 1" << endl;
 cout << "options are taken from " << input_starts << endl;
 
 double lumi = atof(argv[input_starts + 1]);
@@ -304,7 +304,7 @@ if (normalize_MC)
 	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		{
 		double integral = mc_jet_origin_ths[origin_n]->Integral();
-		double ratio = integral_data / integral;
+		double ratio = 1. / integral;
 		mc_jet_origin_ths[origin_n]->Scale(ratio);
 		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 		}
@@ -362,8 +362,8 @@ mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0, 10000);
 
 bool set_logy = false;
 
-//if (projection == string("x") || projection == string("z"))
-	//set_logy = true;
+if (projection == string("x"))
+	set_logy = true;
 
 if (set_logy)
 	cst->SetLogy();
@@ -381,7 +381,7 @@ mc_jet_origin_ths[0]->SetXTitle(projection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginOverlayed_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_DistrsOriginOverlayed_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 return 0;
 }

@@ -861,6 +861,14 @@ JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 TString outdir = runProcess.getParameter<std::string>("outdir");
 
+string  muHLT_MC1   = runProcess.getParameter<std::string>("muHLT_MC1"),   muHLT_MC2   = runProcess.getParameter<std::string>("muHLT_MC2"),
+	muHLT_Data1 = runProcess.getParameter<std::string>("muHLT_Data1"), muHLT_Data2 = runProcess.getParameter<std::string>("muHLT_Data2"),
+	elHLT_Data  = runProcess.getParameter<std::string>("elHLT_Data"),  elHLT_MC    = runProcess.getParameter<std::string>("elHLT_MC");
+
+cout << "Triggers:" << endl;
+cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
+cout << elHLT_Data << '\t' << elHLT_MC << endl;
+
 cout << "Output directory: " << outdir << endl;
 	
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
@@ -1404,19 +1412,13 @@ Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fa
 // So here we got all the parameters from the config
 
 
-if(debug)
-	{
-	cout << "Some input parameters\n";
-
-	cout << "isMC = " << isMC << "\n";
-	cout << "isW0JetsSet = " << isW0JetsSet << "\n";
-
-	cout << "isTTbarMC = "    << isTTbarMC << "\n";
-	cout << "isNLOMC = "      << isNLOMC << "\n";
-	cout << "period BCD EF G H = " << period_BCD << " " << period_EF << " " << period_G << " " << period_H << endl;
-
-	cout << "jecDir = "      << jecDir << "\n";
-	}
+cout << "Some input parameters\n";
+cout << "isMC = " << isMC << "\n";
+cout << "isW0JetsSet = " << isW0JetsSet << "\n";
+cout << "isTTbarMC = "    << isTTbarMC << "\n";
+cout << "isNLOMC = "      << isNLOMC << "\n";
+cout << "period BCD EF G H = " << period_BCD << " " << period_EF << " " << period_G << " " << period_H << endl;
+cout << "jecDir = "      << jecDir << "\n";
 
 
 
@@ -2169,10 +2171,12 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
+		/* passed from job cfg.py
 		string //jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
 			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*"),
 			elHLT_MC("HLT_Ele32_eta2p1_WPTight_Gsf_v8"), elHLT_Data("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+		*/
 
 			/* more triggers:
 			for Run2016B,C, D, E, F and G 25 ns data with RunIISpring16reHLT80 MC (7th October Update)

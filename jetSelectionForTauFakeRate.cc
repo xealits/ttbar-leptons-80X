@@ -916,7 +916,14 @@ string job_num       = runProcess.getParameter<std::string>("job_num");
 
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
-	
+string jetHLT = runProcess.getParameter<std::string>("jetHLT"),
+	muHLT_MC1   = runProcess.getParameter<std::string>("muHLT_MC1"), muHLT_MC2   = runProcess.getParameter<std::string>("muHLT_MC2"),
+	muHLT_Data1 = runProcess.getParameter<std::string>("muHLT_Data1"), muHLT_Data2 = runProcess.getParameter<std::string>("muHLT_Data2");
+
+cout << "Triggers:" << endl;
+cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
+cout << jetHLT << endl;
+
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
 const edm::ParameterSet& myVidElectronVetoIdWPConf = myVidElectronIdConf.getParameterSet("loose");
@@ -1219,6 +1226,14 @@ Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fa
 // ----------------------------
 // So here we got all the parameters from the config
 
+
+cout << "Some input parameters\n";
+cout << "isMC = " << isMC << "\n";
+cout << "isW0JetsSet = " << isW0JetsSet << "\n";
+cout << "isTTbarMC = "    << isTTbarMC << "\n";
+cout << "isNLOMC = "      << isNLOMC << "\n";
+cout << "period BCD EF G H = " << period_BCD << " " << period_EF << " " << period_G << " " << period_H << endl;
+cout << "jecDir = "      << jecDir << "\n";
 
 
 
@@ -1755,9 +1770,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		// it seems (from ConfDB /dev/CMSSW/CMSSW_8_0_25/...) PFJet140 should not be prescaled
 		// and PFJet450 is also not prescaled
+		/* passing from cfg.py
 		string jetHLT("HLT_PFJet140_v"), //jetHLT("HLT_PFJet40_v"), // jetHLT("HLT_AK4PFJet30_v*"),
 			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
 			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*");
+		*/
 
 		// Spring16 MC has these couple issues with HLT
 		// some sets don't have it at all -- noHLT (madgraf QCD, DY)
