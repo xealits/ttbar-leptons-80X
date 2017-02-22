@@ -35,6 +35,8 @@ for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 	if (tau.tauID(tauID_IsoMuons) < 0.5)  continue; // Medium working point not usable. Available values: Loose, Tight
 	if (tau.tauID(tauID_IsoElectrons) < 0.5) continue;
 
+	selTaus.push_back(tau);
+
 	//if (tau.tauID ("againstElectronMediumMVA5")                  <0.5) continue; // Tight working point not usable. Avaiable values: VLoose, Loose, Medium
 	// if (tau.tauID ("againstElectronMediumMVA6")                  <0.5) continue;
 	// if (tau.tauID ("byTightCombinedIsolationDeltaBetaCorr3Hits")<0.5) continue;
