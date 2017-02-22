@@ -47,17 +47,9 @@ pileup2016_direct_old = cms.vdouble(
 
 
 # corrected to start from 0
-pileup2016_direct2 = cms.vdouble(0,
-0.362487235656909, 0.915590545812284, 1.21132246509444, 0.947925601013885, 1.08017689821023, 1.11710415838814, 0.767987830322152, 0.481845466639102, 0.737226697541913, 0.88542246406117,
-0.968234885998274, 1.07515806511256, 1.13011024238979, 1.17914792355314, 1.2081221075371, 1.21396216274561, 1.20627443861416, 1.18852262623873, 1.14957508795551, 1.10152205723583,
-1.07069598583705, 1.05669944544375, 1.05681198316238, 1.05584403601945, 1.05432721315647, 1.06286485823505, 1.07791370920327, 1.08874014134848, 1.10005952131492, 1.11346269075817,
-1.09673780288763, 1.0837667430807, 1.04106716957985, 0.978950963457705, 0.897772213183913, 0.801528577203105, 0.688788869236312, 0.573188095041245, 0.459464269533227, 0.357497209983643,
-0.261420202686356, 0.183111774431868, 0.123777241466712, 0.0805931851814276, 0.0512536704394901, 0.0313586759601685, 0.0182617446559743, 0.0106559801209177, 0.00604011048146159, 0.00339109943597573,
-0.00188612750875933, 0.00108135060186278, 0.000659922139719069, 0.000451314775712517, 0.0004191474663296, 0.00048513875353278, 0.000627355131909455, 0.000881284041932056, 0.00131150610243989, 0.00185916799436497,
-0.00315009081785925, 0.00408586938467248, 0.00470129211639372, 0.00507783574951596, 0.00565732590241663, 0.00561798767875606, 0.0052558923056507, 0.0045310067042737, 0.00397360705412749, 0.00332299989704563,
-0.00309960042285951, 0.00279294518017171, 0.00225110283573207, 0.00197674921968105, 0.00185705531699362, 0.0, 0.0, 0.0, 0.0, 0.0,
-0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+pileup2016_direct2      = cms.vdouble({pileup_reweight_direct})
+pileup2016_direct2_up   = cms.vdouble({pileup_reweight_direct_up})
+pileup2016_direct2_down = cms.vdouble({pileup_reweight_direct_down})
 
 
 from os import path as path
@@ -71,13 +63,13 @@ runProcess = cms.PSet(
     outfile = cms.string("{outfile}"),
     outdir = cms.string("{outdir}"),
     isMC = cms.bool({isMC}),
-    elHLT_MC   = cms.string("HLT_Ele32_eta2p1_WPTight_Gsf_v8"), # should I just pass v8 and in matching always add * at the end?
-    elHLT_Data = cms.string("HLT_Ele32_eta2p1_WPTight_Gsf_v*"),
-    muHLT_MC1   = cms.string("HLT_IsoMu24_v4"),
-    muHLT_MC2   = cms.string("HLT_IsoTkMu24_v4"),
-    muHLT_Data1 = cms.string("HLT_IsoMu24_v*"),
-    muHLT_Data2 = cms.string("HLT_IsoTkMu24_v*"),
-    jetHLT      = cms.string("HLT_PFJet140_v"),
+    elHLT_MC     = cms.string("{elHLT_MC}"), # should I just pass v8 and in matching always add * at the end?
+    elHLT_Data   = cms.string("{elHLT_Data}"),
+    muHLT_MC1    = cms.string("{muHLT_MC1}"),
+    muHLT_MC2    = cms.string("{muHLT_MC2}"),
+    muHLT_Data1  = cms.string("{muHLT_Data1}"),
+    muHLT_Data2  = cms.string("{muHLT_Data2}"),
+    jetHLT       = cms.string("{jetHLT}"),
     withTauIDSFs = cms.bool({withTauIDSFs}),
     #triggerstudy = cms.bool(@trig),
     triggerstudy = cms.bool(False),
@@ -103,22 +95,22 @@ runProcess = cms.PSet(
     #useMVA = cms.bool(@useMVA),
     useMVA = cms.bool(False),
     tmvaInput = mySignalMVA,
-    muscleDir =  cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/data/jec/'),
-    jecDir = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/data/jec/25ns/'),
-    resolutionFile =  cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/data/jec/25ns/Spring16_25nsV10_MC_PtResolution_AK4PFchs.txt'),
-    scaleFactorFile = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/data/jec/25ns/Spring16_25nsV10_MC_SF_AK4PFchs.txt'),
-    dataDriven_tauFakeRates1 = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates1.root'),
-    dataDriven_tauFakeRates2 = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates2.root'),
-    dataDriven_tauFakeRates_dileptons = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates_dileptons.root'),
-    bTaggingEfficiencies = cms.string('${{CMSSW_BASE}}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/b-tagging-efficiencies.root'),
-    tau_fake_rate_histo1_fraction = cms.double(0.5),
-    #muscleDir =  cms.string('{{project_dir}}/src/UserCode/llvv_fwk/data/jec/'),
+    muscleDir                         = cms.string('{muscleDir}'),
+    jecDir                            = cms.string('{jecDir}'),
+    resolutionFile                    = cms.string('{resolutionFile}'),
+    scaleFactorFile                   = cms.string('{scaleFactorFile}'),
+    dataDriven_tauFakeRates1          = cms.string('{dataDriven_tauFakeRates1}'),
+    dataDriven_tauFakeRates2          = cms.string('{dataDriven_tauFakeRates2}'),
+    dataDriven_tauFakeRates_dileptons = cms.string('{dataDriven_tauFakeRates_dileptons}'),
+    bTaggingEfficiencies              = cms.string('{bTaggingEfficiencies}'),
+    tau_fake_rate_histo1_fraction     = cms.double({tau_fake_rate_histo1_fraction}),
+    #muscleDir =  cms.string(''),
     #jecDir = cms.string('{{project_dir}}/src/UserCode/llvv_fwk/data/jec/25ns/'),
     #pileup_reweight_direct = pileup_reweight_direct04,
     #pileup_reweight_direct = pileup_reweight_direct05,
     pileup_reweight_direct      = pileup2016_direct2,
-    pileup_reweight_direct_down = pileup2016_direct2,
-    pileup_reweight_direct_up   = pileup2016_direct2,
+    pileup_reweight_direct_down = pileup2016_direct2_down,
+    pileup_reweight_direct_up   = pileup2016_direct2_up,
     debug = cms.bool(False),
     debug_len = cms.int32(100),
     lumisToProcess = LumiList.LumiList(filename = theLumiMask).getVLuminosityBlockRange(),

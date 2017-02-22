@@ -1,5 +1,6 @@
 # very bad practice:
 from job_handling import *
+import yaml
 
 
 # why __main__ if the whole file is script?
@@ -12,6 +13,7 @@ if __name__ == "__main__":
         )
 
     parser.add_argument("execname", help="the name of the executable in cmssw project to run the jobs of")
+    parser.add_argument("defaults", help="the filename (relational path) of the YAML file with default configs")
     parser.add_argument("cfg",      help="the filename (relational path) of the cfg.py template for the jobs")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
@@ -37,7 +39,6 @@ if __name__ == "__main__":
     #exit(1) # will crash
 
     exec_name = args.execname
-    cfg_templ_filename = args.cfg
     dsets_json_filename = args.dsets
     outdirname = args.outdir
     outdirname = os.path.abspath(outdirname.strip()) + '/' # just in case
@@ -49,9 +50,13 @@ if __name__ == "__main__":
     else:
         file_info_source = get_dset
 
-    with open(cfg_templ_filename) as t_f, open(dsets_json_filename) as d_f:
+    with open(args.cfg) as t_f, open(dsets_json_filename) as d_f:
         dsets = json.load(d_f)
         cfg_templ = t_f.read()
+
+    with open(args.defaults) as cfg_defs:
+        defaults  = yaml.load(cfg_defs)
+    configs = defaults
 
 
     job_dir = outdirname + "/FARM/inputs/"
@@ -176,12 +181,14 @@ if __name__ == "__main__":
 
                 #if i < 5: print(input_files)
 
-                job_cfg = cfg_templ.format(input = input_files, lumiMask = lumiMask, dtag = dtag, job_num = i, isMC = not isdata,
-                                           outfile = outdirname + dtag + '_' + str(i) + '.root',
-                                           outdir = outdirname + '/',
-                                           project_dir = project_dir,
-                                           withTauIDSFs = args.tausf)
-                # job_cfg = cfg_templ.format(job_files = job_chunk, lumiCert = lumiMask, dtag = dtag, outdir = outdirname, jobID = i, isdata = isdata)
+                # first configs are filled with defaults and for each jobs
+                # they are filled with parameters passed on command line
+                configs.update({'input': input_files, 'lumiMask': lumiMask, 'dtag': dtag, 'job_num': i, 'isMC': not isdata,
+                                'outfile'      : outdirname + dtag + '_' + str(i) + '.root',
+                                'outdir'       : outdirname + '/',
+                                'project_dir'  : project_dir,
+                                'withTauIDSFs' : args.tausf})
+                job_cfg = cfg_templ.format(**configs)
 
                 job_cfg_filename = outdirname + dtag + '_' + str(i) + '_cfg.py'
                 with open(job_cfg_filename, 'w') as cfg_file:
