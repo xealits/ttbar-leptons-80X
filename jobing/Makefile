@@ -134,7 +134,7 @@ missing_jobs:
 	for j in `cat submitted_jobs`;        \
 	do                                    \
 	if [ ! -e $$j ]; then echo $$j; fi;   \
-	done | sed -e 's/job_done/sh/' -e "s_"${job}"_"${job}"//FARM/inputs_" > missing_jobs
+	done | sed -e 's/job_done/sh/' -e "s;"${job}";"${job}"//FARM/inputs;" > missing_jobs
 	wc -l missing_jobs
 
 resubmit: missing_jobs

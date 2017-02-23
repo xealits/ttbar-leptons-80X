@@ -14,7 +14,8 @@ if __name__ == "__main__":
 
     parser.add_argument("execname", help="the name of the executable in cmssw project to run the jobs of")
     parser.add_argument("defaults", help="the filename (relational path) of the YAML file with default configs")
-    parser.add_argument("cfg",      help="the filename (relational path) of the cfg.py template for the jobs")
+    parser.add_argument("-c", "--configs", help="the filename (relational path) of the YAML file with additional configs")
+    parser.add_argument("template",      help="the filename (relational path) of the cfg.py template for the jobs")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
     parser.add_argument("--no-submit",  help="don't submit the generated jobs",
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     else:
         file_info_source = get_dset
 
-    with open(args.cfg) as t_f, open(dsets_json_filename) as d_f:
+    with open(args.template) as t_f, open(dsets_json_filename) as d_f:
         dsets = json.load(d_f)
         cfg_templ = t_f.read()
 
@@ -58,6 +59,10 @@ if __name__ == "__main__":
         defaults  = yaml.load(cfg_defs)
     configs = defaults
 
+    if args.configs:
+        with open(args.configs) as cfg_defs:
+            additional_configs  = yaml.load(cfg_defs)
+        configs.update(additional_configs)
 
     job_dir = outdirname + "/FARM/inputs/"
     job_outs = outdirname + "/FARM/outputs/"
