@@ -869,6 +869,22 @@ cout << "Triggers:" << endl;
 cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
 cout << elHLT_Data << '\t' << elHLT_MC << endl;
 
+// Tau IDs:
+/*
+string tau_decayMode("decayModeFinding"),
+	//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
+	tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
+	tau_againstMuon("againstMuonTight3"),
+	tau_againstElectron("againstElectronTightMVA6");
+*/
+string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
+	tau_ID       = runProcess.getParameter<std::string>("tau_ID"),
+	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
+	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
+
+cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
+
+
 cout << "Output directory: " << outdir << endl;
 	
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
@@ -2733,12 +2749,6 @@ for(size_t f=0; f<urls.size();++f)
 		//	string& tauID_IsoMuons,  string& tauID_IsoElectrons,
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
-
-		string tau_decayMode("decayModeFinding"),
-			//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
-			tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
-			tau_againstMuon("againstMuonTight3"),
-			tau_againstElectron("againstElectronTightMVA6");
 
 		pat::TauCollection IDtaus, selTaus, selTaus_20GeV;
 

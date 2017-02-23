@@ -28,3 +28,7 @@ dataDriven_tauFakeRates2 : '${CMSSW_BASE}/src/UserCode/llvv_fwk/bin/ttbar-lepton
 dataDriven_tauFakeRates_dileptons : '${CMSSW_BASE}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/jet_to_tau_fakerates_dileptons.root'
 bTaggingEfficiencies          : '${CMSSW_BASE}/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/b-tagging-efficiencies.root'
 tau_fake_rate_histo1_fraction : 0.5
+tau_decayMode       : "decayModeFinding"
+tau_ID              : "byMediumCombinedIsolationDeltaBetaCorr3Hits"
+tau_againstMuon     : "againstMuonTight3"
+tau_againstElectron : "againstElectronTightMVA6"
