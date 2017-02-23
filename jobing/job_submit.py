@@ -20,10 +20,13 @@ if __name__ == "__main__":
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
     parser.add_argument("--no-submit",  help="don't submit the generated jobs",
         action = "store_true")
+    parser.add_argument("--test-configs",  help="don't generate and don't submit jobs, just check the config",
+        action = "store_true")
     parser.add_argument("-d", "--dsets-dir",  help="use local directory for dsets files")
     parser.add_argument("--tausf",  help="turn on tau ID efficiency SF in cfg.py of jobs",
         action = "store_true")
     parser.add_argument("-s", "--file-server",  help='set file-server for the jobs, example: "root://eoscms//eos/cms/"')
+    parser.add_argument("-m", "--more-configs", nargs='*', help='final configs of var=val form, overwriting the config files')
 
     #if len(argv) != 5:
         #print("Usage:\njob_submit.py executable_filename cfg.py_template_filename dsets.json outdirname")
@@ -64,6 +67,13 @@ if __name__ == "__main__":
             additional_configs  = yaml.load(cfg_defs)
         configs.update(additional_configs)
 
+    if args.more_configs:
+        # var=val list
+        print args.more_configs
+        top_configs = dict([c.split('=') for c in args.more_configs])
+        print top_configs
+        configs.update(top_configs)
+
     job_dir = outdirname + "/FARM/inputs/"
     job_outs = outdirname + "/FARM/outputs/"
 
@@ -94,6 +104,10 @@ if __name__ == "__main__":
     # Go through dsets.json
     # Create jobs.sh
     # Submit them
+
+    if args.test_configs:
+        print "Config test: all configs are parsed, exiting."
+        exit(0)
 
     proxy_file = outdirname + "/FARM/inputs/x509_proxy"
     print("Initializing proxy in " + proxy_file)
