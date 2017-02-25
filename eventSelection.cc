@@ -3284,7 +3284,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singlemu_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
-					record_jets_fakerate_distrs(string("singlemu_"), string("passjet"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singlemu_"), string("control_passjet"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singlemu_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
@@ -3417,7 +3417,11 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
-					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					// control fake rates (might be useful)
+					record_jets_fakerate_distrs(string("singlemu_"), string("control_pretau"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					// and the region of our selection fake rates
+					// (used for jet origins mainly, plus for control)
+					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//
 					/*
@@ -3572,7 +3576,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_2d(string("control_lep_singleel_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 
 				if (passJetSelection) {
-					record_jets_fakerate_distrs(string("singleel_"), string("passjet"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singleel_"), string("control_passjet"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singleel_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep.size(); i++)
@@ -3705,7 +3709,10 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					// pre-tau selection
 					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
-					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					// control
+					record_jets_fakerate_distrs(string("singleel_"), string("control_pretau"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
+					// and our selection fake rates (counting jet origins)
+					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 					//
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
