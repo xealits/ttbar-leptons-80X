@@ -2064,6 +2064,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
 		// nGoodPV = vtx.size() now
 
+		// vtx.size
+		// now nGoodPV = vtx.size()
+		//fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+		//fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
 		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
