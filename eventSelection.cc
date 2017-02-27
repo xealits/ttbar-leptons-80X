@@ -856,6 +856,12 @@ TString dtag         = runProcess.getParameter<std::string>("dtag");
 string dtag_s        = runProcess.getParameter<std::string>("dtag");
 string job_num       = runProcess.getParameter<std::string>("job_num");
 
+// Kino cuts
+double jet_kino_cuts_pt          = runProcess.getParameter<double>("jet_kino_cuts_pt");
+double jet_kino_cuts_eta         = runProcess.getParameter<double>("jet_kino_cuts_eta");
+double tau_kino_cuts_pt          = runProcess.getParameter<double>("tau_kino_cuts_pt");
+double tau_kino_cuts_eta         = runProcess.getParameter<double>("tau_kino_cuts_eta");
+
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
 TString outUrl = runProcess.getParameter<std::string>("outfile");
@@ -2769,7 +2775,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
 
-		processTaus_Kinematics(IDtaus, weight, 25, 2.3, selTaus,       false, debug);
+		processTaus_Kinematics(IDtaus, weight, tau_kino_cuts_pt, tau_kino_cuts_eta, selTaus,       false, debug);
 		processTaus_Kinematics(IDtaus, weight, 20, 2.3, selTaus_20GeV, false, debug);
 
 		// ------------------------------------------ select the taus cleaned from leptons
@@ -2869,7 +2875,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::JetCollection selJets;
-		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 30, 2.4, selJets, true, debug);
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
 
 		pat::JetCollection selJets_20GeV; // for fake rates in dileptons
 		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 20, 2.4, selJets_20GeV, true, debug);
