@@ -3256,22 +3256,22 @@ for(size_t f=0; f<urls.size();++f)
 			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 			// bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLepNoJet[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 
-			// check no w-mass di-jet system
+			// check no w-mass di-jet system for fake rates
+			// thus, the tau should not couple with another jet into W-mass system
 			bool noWmassDiJet = true;
 			if (passTauSelection && passBtagsSelection) // to compute less
 				{
 				LorentzVector dijetSystem (0, 0, 0, 0);
-				for (int i1=0; i1<selJetsNoLep.size(); i1++)
+				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
-					if (!noWmassDiJet) break;
-					for (int i2=0; i2<selJetsNoLep.size(); i2++)
-						{
-						dijetSystem = selJetsNoLep[i1].p4() + selJetsNoLep[i2].p4();
-						if (dijetSystem.mass() > 70 && dijetSystem.mass() < 90)
-							{ // needed if to do break
-							noWmassDiJet = false;
-							break;
-							}
+					dijetSystem = selJetsNoLep[i].p4() + selTausNoLep[0].p4();
+					double dijet_mass = dijetSystem.mass();
+					if (dijet_mass > 70 && dijet_mass < 90) // or make the window narrower?
+						{ // needed if to do break
+						if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
+							fill_1d(string("slep_vanila_selection_dijet_mass"), 40, 60, 100,   dijet_mass, weight);
+						noWmassDiJet = false;
+						break;
 						}
 					}
 				}
