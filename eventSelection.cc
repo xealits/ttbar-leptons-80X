@@ -856,12 +856,6 @@ TString dtag         = runProcess.getParameter<std::string>("dtag");
 string dtag_s        = runProcess.getParameter<std::string>("dtag");
 string job_num       = runProcess.getParameter<std::string>("job_num");
 
-// Kino cuts
-double jet_kino_cuts_pt          = runProcess.getParameter<double>("jet_kino_cuts_pt");
-double jet_kino_cuts_eta         = runProcess.getParameter<double>("jet_kino_cuts_eta");
-double tau_kino_cuts_pt          = runProcess.getParameter<double>("tau_kino_cuts_pt");
-double tau_kino_cuts_eta         = runProcess.getParameter<double>("tau_kino_cuts_eta");
-
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
 TString outUrl = runProcess.getParameter<std::string>("outfile");
@@ -874,6 +868,16 @@ string  muHLT_MC1   = runProcess.getParameter<std::string>("muHLT_MC1"),   muHLT
 cout << "Triggers:" << endl;
 cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
 cout << elHLT_Data << '\t' << elHLT_MC << endl;
+
+// Kino cuts
+double jet_kino_cuts_pt          = runProcess.getParameter<double>("jet_kino_cuts_pt");
+double jet_kino_cuts_eta         = runProcess.getParameter<double>("jet_kino_cuts_eta");
+double tau_kino_cuts_pt          = runProcess.getParameter<double>("tau_kino_cuts_pt");
+double tau_kino_cuts_eta         = runProcess.getParameter<double>("tau_kino_cuts_eta");
+
+cout << "Kino cuts" << endl;
+cout << "jets: (pt)\t" << jet_kino_cuts_pt << "\t(eta)" << jet_kino_cuts_eta << endl;
+cout << "taus: (pt)\t" << tau_kino_cuts_pt << "\t(eta)" << tau_kino_cuts_eta << endl;
 
 // Tau IDs:
 /*
