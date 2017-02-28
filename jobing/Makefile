@@ -7,7 +7,7 @@ SHELL:=/bin/bash
 reduce:
 	./jobing/reduce.zsh ${job} jobing/dtags/${dtags}
 
-extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_fakerates extract_pileup
+extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_taujet_origins extract_fakerates extract_pileup
 	# DONE
 
 extract_eventflow:
@@ -18,6 +18,9 @@ extract_weightflow:
 
 extract_jet_origins:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singlemu_pretau_jet_partonFlavour singleel_pretau_jet_partonFlavour
+
+extract_taujet_origins:
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singlemu_pretau_taujet_origins singleel_pretau_taujet_origins
 
 extract_all_jet_origins:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} singlemu_pretau_jet_partonFlavour singleel_pretau_jet_partonFlavour \
