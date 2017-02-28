@@ -3216,19 +3216,6 @@ for(size_t f=0; f<urls.size();++f)
 			//singlelep_ttbar_preselectedevents->Fill(1);
 
 
-			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
-			//bool passJetSelection(selSingleLepJets.size()>1); // 2 jets // 2^4
-			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
-			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
-			bool passJetSelection(n_jets>2); // >= 3 jets
-			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
-			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
-			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
-			//bool passBtagsSelection(selBJets.size()>0); // 1 b jet // 2^2
-			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
-			// bool passTauSelection(n_taus==1); // only 1 tau // 2^1
-			//bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
-
 			// lepton+tau mass > 12 GeV, as in dilepton case
 			LorentzVector dileptonSystem (0, 0, 0, 0);
 			if(n_taus>0)
@@ -3247,11 +3234,45 @@ for(size_t f=0; f<urls.size();++f)
 			weight *= weight_tauIDsf;
 			//fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
 
+			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
+			//bool passJetSelection(selSingleLepJets.size()>1); // 2 jets // 2^4
+			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
+			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
+			bool passJetSelection(n_jets>2); // >= 3 jets
+			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
+			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
+			//bool passBtagsSelection(selBJets.size()>0); // 1 b jet // 2^2
+			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
+			// bool passTauSelection(n_taus==1); // only 1 tau // 2^1
+			//bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
+
 			//bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
 			bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 			bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 			// bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLepNoJet[0].pdgId() < 0 : 0); // Oposite sign // 2^0
 
+			// check no w-mass di-jet system
+			bool noWmassDiJet = true;
+			if (passTauSelection && passBtagsSelection) // to compute less
+				{
+				LorentzVector dijetSystem (0, 0, 0, 0);
+				for (int i1=0; i1<selJetsNoLep.size(); i1++)
+					{
+					if (!noWmassDiJet) break;
+					for (int i2=0; i2<selJetsNoLep.size(); i2++)
+						{
+						dijetSystem = selJetsNoLep[i1].p4() + selJetsNoLep[i2].p4();
+						if (dijetSystem.mass() > 70 && dijetSystem.mass() < 90)
+							{ // needed if to do break
+							noWmassDiJet = false;
+							break;
+							}
+						}
+					}
+				}
+			// add it into tau selection
+			passTauSelection &= noWmassDiJet;
 
 			// MULTISELECT
 			unsigned int multisel = 0;
