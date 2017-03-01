@@ -66,6 +66,7 @@
   <bin name="jet_weightflow"          file="ttbar-leptons-80X/jobing/jet_weightflow.cc"></bin>
 
   <bin name="extract_long_csv"          file="ttbar-leptons-80X/jobing/extract_long_csv.cc"></bin>
+  <bin name="extract_long_histo3D_csv"          file="ttbar-leptons-80X/jobing/extract_long_histo3D_csv.cc"></bin>
 
   <bin name="histo_project3toN_ratio_distr"          file="ttbar-leptons-80X/jobing/histo_project3toN_ratio_distr.cc"></bin>
   <bin name="histo_project3toN_distr"                file="ttbar-leptons-80X/jobing/histo_project3toN_distr.cc"></bin>
