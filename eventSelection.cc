@@ -3259,24 +3259,38 @@ for(size_t f=0; f<urls.size();++f)
 			// check no w-mass di-jet system for fake rates
 			// thus, the tau should not couple with another jet into W-mass system
 			bool noWmassDiJet = true;
-			if (passTauSelection && passBtagsSelection) // to compute less
+			//if (passTauSelection && passJetSelection && passBtagsSelection) // to compute less
+			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 				{
 				LorentzVector dijetSystem (0, 0, 0, 0);
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
+					// record jets around tau in dijet mass
 					dijetSystem = selJetsNoLep[i].p4() + selTausNoLep[0].p4();
 					double dijet_mass = dijetSystem.mass();
-					if (dijet_mass > 70 && dijet_mass < 90) // or make the window narrower?
-						{ // needed if to do break
-						if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
-							fill_1d(string("slep_vanila_selection_dijet_mass"), 40, 60, 100,   dijet_mass, weight);
-						noWmassDiJet = false;
-						break;
+					if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
+						{
+						// scope all jets
+						fill_1d(string("slep_vanila_selection_dijet_mass"), 40, 60, 100,   dijet_mass, weight);
+						fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
+						// and bin in N jets
+						if (n_jets == 3)
+							fill_1d(string("slep_vanila_selection_dijet_mass_nj3"), 40, 60, 100,   dijet_mass, weight);
+						else if (n_jets == 4)
+							fill_1d(string("slep_vanila_selection_dijet_mass_nj4"), 40, 60, 100,   dijet_mass, weight);
+						else if (n_jets == 5)
+							fill_1d(string("slep_vanila_selection_dijet_mass_nj5"), 40, 60, 100,   dijet_mass, weight);
+						else if (n_jets == 6)
+							fill_1d(string("slep_vanila_selection_dijet_mass_nj6"), 40, 60, 100,   dijet_mass, weight);
+						else //if (n_jets >  6)
+							fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 40, 60, 100,   dijet_mass, weight);
+						//noWmassDiJet = false;
+						//break;
 						}
 					}
 				}
 			// add it into tau selection
-			passTauSelection &= noWmassDiJet;
+			//passTauSelection &= noWmassDiJet;
 
 			// MULTISELECT
 			unsigned int multisel = 0;
