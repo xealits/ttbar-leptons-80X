@@ -390,11 +390,11 @@ double jetToTauFakeRate_vanila(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake
  * via extension of existing distributions
  * assuming pt, eta and radius distributions are independent.
  */
-typedef struct FakeRateProjections {
+typedef struct {
 	TH1D* x;
 	TH1D* y;
 	TH1D* z;
-}
+} FakeRateProjections;
 
 double jetToTauFakeRate_Projections(
 		FakeRateProjections & tau_fake_rate_jets_histo,
@@ -1174,13 +1174,13 @@ TH1D* tau_fake_rate_taus_histo_elmu_x = (TH1D*) tau_fake_rate_taus_histo_elmu->P
 TH1D* tau_fake_rate_taus_histo_elmu_y = (TH1D*) tau_fake_rate_taus_histo_elmu->Project3D("y");
 TH1D* tau_fake_rate_taus_histo_elmu_z = (TH1D*) tau_fake_rate_taus_histo_elmu->Project3D("z");
 FakeRateProjections frates_elmu_jets_proj;
-frates_elmu_jets_proj.x = tau_fake_rate2_jets_histo_elmu_x;
-frates_elmu_jets_proj.y = tau_fake_rate2_jets_histo_elmu_y;
-frates_elmu_jets_proj.z = tau_fake_rate2_jets_histo_elmu_z;
+frates_elmu_jets_proj.x = tau_fake_rate_jets_histo_elmu_x;
+frates_elmu_jets_proj.y = tau_fake_rate_jets_histo_elmu_y;
+frates_elmu_jets_proj.z = tau_fake_rate_jets_histo_elmu_z;
 FakeRateProjections frates_elmu_taus_proj;
-frates_elmu_taus_proj.x = tau_fake_rate2_taus_histo_elmu_x;
-frates_elmu_taus_proj.y = tau_fake_rate2_taus_histo_elmu_y;
-frates_elmu_taus_proj.z = tau_fake_rate2_taus_histo_elmu_z;
+frates_elmu_taus_proj.x = tau_fake_rate_taus_histo_elmu_x;
+frates_elmu_taus_proj.y = tau_fake_rate_taus_histo_elmu_y;
+frates_elmu_taus_proj.z = tau_fake_rate_taus_histo_elmu_z;
 
 // MUMU
 TH1D* tau_fake_rate_jets_histo_mumu_x = (TH1D*) tau_fake_rate_jets_histo_mumu->Project3D("x");
@@ -1190,13 +1190,13 @@ TH1D* tau_fake_rate_taus_histo_mumu_x = (TH1D*) tau_fake_rate_taus_histo_mumu->P
 TH1D* tau_fake_rate_taus_histo_mumu_y = (TH1D*) tau_fake_rate_taus_histo_mumu->Project3D("y");
 TH1D* tau_fake_rate_taus_histo_mumu_z = (TH1D*) tau_fake_rate_taus_histo_mumu->Project3D("z");
 FakeRateProjections frates_mumu_jets_proj;
-frates_mumu_jets_proj.x = tau_fake_rate2_jets_histo_mumu_x;
-frates_mumu_jets_proj.y = tau_fake_rate2_jets_histo_mumu_y;
-frates_mumu_jets_proj.z = tau_fake_rate2_jets_histo_mumu_z;
+frates_mumu_jets_proj.x = tau_fake_rate_jets_histo_mumu_x;
+frates_mumu_jets_proj.y = tau_fake_rate_jets_histo_mumu_y;
+frates_mumu_jets_proj.z = tau_fake_rate_jets_histo_mumu_z;
 FakeRateProjections frates_mumu_taus_proj;
-frates_mumu_taus_proj.x = tau_fake_rate2_taus_histo_mumu_x;
-frates_mumu_taus_proj.y = tau_fake_rate2_taus_histo_mumu_y;
-frates_mumu_taus_proj.z = tau_fake_rate2_taus_histo_mumu_z;
+frates_mumu_taus_proj.x = tau_fake_rate_taus_histo_mumu_x;
+frates_mumu_taus_proj.y = tau_fake_rate_taus_histo_mumu_y;
+frates_mumu_taus_proj.z = tau_fake_rate_taus_histo_mumu_z;
 
 //MC normalization (to 1/pb)
 if(debug) cout << "DEBUG: xsec: " << xsec << endl;
@@ -3637,9 +3637,9 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "FakeRates of NoLepNoTau jets:\n";
 						for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
 							{
-							cout << (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << " ";
-							cout << (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << "\n";
 							}
 						}
@@ -3933,9 +3933,9 @@ for(size_t f=0; f<urls.size();++f)
 						cout << "FakeRates of NoLepNoTau jets:\n";
 						for(size_t n=0; n<selJetsNoLepNoTau.size(); ++n)
 							{
-							cout << (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << " ";
-							cout << (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << "\n";
 							}
 						}
