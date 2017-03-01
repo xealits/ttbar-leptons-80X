@@ -3380,27 +3380,39 @@ for(size_t f=0; f<urls.size();++f)
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
 					// record jets around tau in dijet mass
-					dijetSystem = selJetsNoLep[i].p4() + selTausNoLep[0].p4();
+					// scope all jets
+					// record their dijet_mass VS inverse dR to tau
+					// inline double deltaR(double eta1, double phi1, double eta2, double phi2) {
+					//   return std::sqrt(deltaR2 (eta1, phi1, eta2, phi2));
+					// }
+					pat::Tau& tau = selTausNoLep[0];
+					pat::Jet& jet = selJetsNoLep[i];
+					dijetSystem = jet.p4() + tau.p4();
 					double dijet_mass = dijetSystem.mass();
-					if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
-						{
-						// scope all jets
-						fill_1d(string("slep_vanila_selection_dijet_mass"), 40, 60, 100,   dijet_mass, weight);
-						fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
-						// and bin in N jets
-						if (n_jets == 3)
-							fill_1d(string("slep_vanila_selection_dijet_mass_nj3"), 40, 60, 100,   dijet_mass, weight);
-						else if (n_jets == 4)
-							fill_1d(string("slep_vanila_selection_dijet_mass_nj4"), 40, 60, 100,   dijet_mass, weight);
-						else if (n_jets == 5)
-							fill_1d(string("slep_vanila_selection_dijet_mass_nj5"), 40, 60, 100,   dijet_mass, weight);
-						else if (n_jets == 6)
-							fill_1d(string("slep_vanila_selection_dijet_mass_nj6"), 40, 60, 100,   dijet_mass, weight);
-						else //if (n_jets >  6)
-							fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 40, 60, 100,   dijet_mass, weight);
-						//noWmassDiJet = false;
-						//break;
-						}
+					double inverse_dR = reco::deltaR(tau.eta(), tau.phi(), -jet.eta(), -jet.phi());
+					//if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
+					{
+					fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+					fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
+					// and bin in N jets
+					if (n_jets == 3)
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj3"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						//fill_1d(string("slep_vanila_selection_dijet_mass_nj3"), 100, 0, 100,   dijet_mass, weight);
+					else if (n_jets == 4)
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj4"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						//fill_1d(string("slep_vanila_selection_dijet_mass_nj4"), 100, 0, 100,   dijet_mass, weight);
+					else if (n_jets == 5)
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj5"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						//fill_1d(string("slep_vanila_selection_dijet_mass_nj5"), 100, 0, 100,   dijet_mass, weight);
+					else if (n_jets == 6)
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6"), 100, 0, 100,   dijet_mass, weight);
+					else //if (n_jets >  6)
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6p"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 100, 0, 100,   dijet_mass, weight);
+					//noWmassDiJet = false;
+					//break;
+					}
 					}
 				}
 			// add it into tau selection
