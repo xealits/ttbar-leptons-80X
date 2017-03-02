@@ -3599,17 +3599,14 @@ for(size_t f=0; f<urls.size();++f)
 					// (used for jet origins mainly, plus for control)
 					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
-					//
-					/*
-					increment(string("singlemu_pretauselection_nRawJets"),  weight * jets.size());
-					increment(string("singlemu_pretauselection_njets"),  weight * selJets.size());
-					increment(string("singlemu_pretauselection_njetsNoLep"),  weight * selJetsNoLep.size());
-					increment(string("singlemu_pretauselection_njetsNoLepNoTau"),  weight * selJetsNoLepNoTau.size());
-					increment(string("singlemu_pretauselection_nRawTaus"),  weight * taus.size());
-					increment(string("singlemu_pretauselection_ntaus"),  weight * selTaus.size());
-					increment(string("singlemu_pretauselection_ntausNoLep"),  weight * selTausNoLep.size());
-					increment(string("singlemu_pretauselection_ntausNoLepNoJet"),  weight * selTausNoLepNoJet.size());
-					*/
+					fill_2d(string("control_met_singlemu_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					for (int i=0; i<selJetsNoLep.size(); i++)
+						fill_2d(string("control_jet_singlemu_pretau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
+					for (int i=0; i<selTausNoLep.size(); i++)
+						fill_2d(string("control_tau_singlemu_pretau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
+					for (int i=0; i<selLeptons.size(); i++)
+						fill_2d(string("control_lep_singlemu_pretau_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
+					}
 
 					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
 					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
@@ -3904,6 +3901,15 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("singleel_"), string("control_pretau"), selJets_20GeV_NoLep, selTaus_20GeV_NoLep, visible_gen_taus, weight, isMC);
 					// and our selection fake rates (counting jet origins)
 					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+
+					fill_2d(string("control_met_singleel_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					for (int i=0; i<selJetsNoLep.size(); i++)
+						fill_2d(string("control_jet_singleel_pretau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[i].pt(), selJetsNoLep[i].eta(), weight);
+					for (int i=0; i<selTausNoLep.size(); i++)
+						fill_2d(string("control_tau_singleel_pretau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
+					for (int i=0; i<selLeptons.size(); i++)
+						fill_2d(string("control_lep_singleel_pretau_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
+					}
 
 					//
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
