@@ -3394,7 +3394,7 @@ for(size_t f=0; f<urls.size();++f)
 					pat::Jet& jet = selJetsNoLep[i];
 					dijetSystem = jet.p4() + tau.p4();
 					double dijet_mass = dijetSystem.mass();
-					double dijet_momentum = dijetSystem.p(); // square of spacial part, use M() for magnitude of spacial part
+					double dijet_momentum = dijetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
 					double inverse_dR = reco::deltaR(tau.eta(), tau.phi(), -jet.eta(), -jet.phi());
 					//if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
 					//fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
