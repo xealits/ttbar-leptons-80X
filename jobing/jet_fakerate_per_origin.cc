@@ -392,6 +392,7 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	// calculate fake rate
 	// the origin tau jets / all jets (of all origins)
 	distr->Divide(hs_mc_all_jets);
+	cout << mc_jet_origins[origin_n] << '\t' << distr->Integral() << endl; // average fake rate from this origin
 	//mc_jet_origin_ths[origin_n]->Divide(mc_jet_origin_ths[n_jet_origins + origin_n]);
 
 	// and add the histogram to the stack and record about it to the legend
