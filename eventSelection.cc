@@ -3392,23 +3392,23 @@ for(size_t f=0; f<urls.size();++f)
 					double inverse_dR = reco::deltaR(tau.eta(), tau.phi(), -jet.eta(), -jet.phi());
 					//if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
 					{
-					fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+					fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 					fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
 					// and bin in N jets
 					if (n_jets == 3)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj3"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj3"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj3"), 100, 0, 100,   dijet_mass, weight);
 					else if (n_jets == 4)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj4"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj4"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj4"), 100, 0, 100,   dijet_mass, weight);
 					else if (n_jets == 5)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj5"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj5"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj5"), 100, 0, 100,   dijet_mass, weight);
 					else if (n_jets == 6)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6"), 100, 0, 100,   dijet_mass, weight);
 					else //if (n_jets >  6)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6p"), 100, 0, 100, 50, 0, 2,  dijet_mass, inverse_dR, weight);
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR_nj6p"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 100, 0, 100,   dijet_mass, weight);
 					//noWmassDiJet = false;
 					//break;
