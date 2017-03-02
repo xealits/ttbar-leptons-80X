@@ -3391,7 +3391,6 @@ for(size_t f=0; f<urls.size();++f)
 					double dijet_mass = dijetSystem.mass();
 					double inverse_dR = reco::deltaR(tau.eta(), tau.phi(), -jet.eta(), -jet.phi());
 					//if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
-					{
 					fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
 					fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
 					// and bin in N jets
@@ -3412,7 +3411,6 @@ for(size_t f=0; f<urls.size();++f)
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 100, 0, 100,   dijet_mass, weight);
 					//noWmassDiJet = false;
 					//break;
-					}
 					}
 				}
 			// add it into tau selection
@@ -3606,7 +3604,6 @@ for(size_t f=0; f<urls.size();++f)
 						fill_2d(string("control_tau_singlemu_pretau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
 					for (int i=0; i<selLeptons.size(); i++)
 						fill_2d(string("control_lep_singlemu_pretau_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
-					}
 
 					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
 					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
@@ -3909,7 +3906,6 @@ for(size_t f=0; f<urls.size();++f)
 						fill_2d(string("control_tau_singleel_pretau_selTausNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selTausNoLep[i].pt(), selTausNoLep[i].eta(), weight);
 					for (int i=0; i<selLeptons.size(); i++)
 						fill_2d(string("control_lep_singleel_pretau_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
-					}
 
 					//
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
