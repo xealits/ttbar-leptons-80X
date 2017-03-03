@@ -924,6 +924,16 @@ cout << "Triggers:" << endl;
 cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
 cout << jetHLT << endl;
 
+// Kino cuts
+double jettaufr_jet_kino_cuts_pt          = runProcess.getParameter<double>("jettaufr_jet_kino_cuts_pt");
+double jettaufr_jet_kino_cuts_eta         = runProcess.getParameter<double>("jettaufr_jet_kino_cuts_eta");
+double jettaufr_tau_kino_cuts_pt          = runProcess.getParameter<double>("jettaufr_tau_kino_cuts_pt");
+double jettaufr_tau_kino_cuts_eta         = runProcess.getParameter<double>("jettaufr_tau_kino_cuts_eta");
+
+cout << "Kino cuts" << endl;
+cout << "jets: (pt)\t" << jet_kino_cuts_pt << "\t(eta)" << jet_kino_cuts_eta << endl;
+cout << "taus: (pt)\t" << tau_kino_cuts_pt << "\t(eta)" << tau_kino_cuts_eta << endl;
+
 // Tau IDs:
 /*
 string tau_decayMode("decayModeFinding"),
@@ -2223,7 +2233,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
 
-		processTaus_Kinematics(IDtaus, weight, 20, 2.3, selTaus,       false, debug);
+		processTaus_Kinematics(IDtaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus,       false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -2333,7 +2343,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::JetCollection selJets;
-		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, 20, 2.4, selJets, true, debug);
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jettaufr_jet_kino_cuts_pt, jettaufr_jet_kino_cuts_eta, selJets, true, debug);
 
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?

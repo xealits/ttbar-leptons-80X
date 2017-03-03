@@ -36,3 +36,7 @@ jet_kino_cuts_pt    : 25.
 jet_kino_cuts_eta   : 2.4
 tau_kino_cuts_pt    : 25.
 tau_kino_cuts_eta   : 2.3
+jettaufr_jet_kino_cuts_pt    : 20.
+jettaufr_jet_kino_cuts_eta   : 2.4
+jettaufr_tau_kino_cuts_pt    : 20.
+jettaufr_tau_kino_cuts_eta   : 2.3
