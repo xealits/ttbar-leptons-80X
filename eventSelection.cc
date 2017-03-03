@@ -3381,8 +3381,12 @@ for(size_t f=0; f<urls.size();++f)
 			//if (passTauSelection && passJetSelection && passBtagsSelection) // to compute less
 			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 				{
+				pat::Tau& tau = selTausNoLep[0];
+				fill_1d(string("slep_vanila_selection_tau_momentum"), 100, 0, 300,   tau.p4().P(), weight);
+				fill_1d(string("slep_vanila_selection_tau_energy"), 100, 0, 300,   tau.energy(), weight);
+				fill_1d(string("slep_vanila_selection_tau_mass"), 100, 0, 300,   tau.p4().mass(), weight);
 				LorentzVector dijetSystem (0, 0, 0, 0);
-				for (int i=0; i<selJetsNoLep.size(); i++)
+				for (int i=0; i<selJetsNoLepNoTau.size(); i++)
 					{
 					// record jets around tau in dijet mass
 					// scope all jets
@@ -3390,8 +3394,11 @@ for(size_t f=0; f<urls.size();++f)
 					// inline double deltaR(double eta1, double phi1, double eta2, double phi2) {
 					//   return std::sqrt(deltaR2 (eta1, phi1, eta2, phi2));
 					// }
-					pat::Tau& tau = selTausNoLep[0];
-					pat::Jet& jet = selJetsNoLep[i];
+					pat::Jet& jet = selJetsNoLepNoTau[i];
+					fill_1d(string("slep_vanila_selection_jet_momentum"), 100, 0, 300,   jet.p4().P(), weight);
+					fill_1d(string("slep_vanila_selection_jet_energy"), 100, 0, 300,   jet.energy(), weight);
+					fill_1d(string("slep_vanila_selection_jet_mass"), 100, 0, 300,   jet.p4().mass(), weight);
+
 					dijetSystem = jet.p4() + tau.p4();
 					double dijet_mass = dijetSystem.mass();
 					double dijet_momentum = dijetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
