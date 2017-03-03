@@ -3385,13 +3385,13 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("slep_vanila_selection_tau_momentum"), 100, 0, 300,   tau.p4().P(), weight);
 				fill_1d(string("slep_vanila_selection_tau_energy"), 100, 0, 300,   tau.energy(), weight);
 				fill_1d(string("slep_vanila_selection_tau_mass"), 100, 0, 300,   tau.p4().mass(), weight);
-				LorentzVector dijetSystem (0, 0, 0, 0);
-				LorentzVector trijetSystem (0, 0, 0, 0);
+				LorentzVector taujetSystem (0, 0, 0, 0);
+				LorentzVector tau2jetsSystem (0, 0, 0, 0);
 				for (int i=0; i<selJetsNoLepNoTau.size(); i++)
 					{
-					// record jets around tau in dijet mass
+					// record jets around tau in taujet mass
 					// scope all jets
-					// record their dijet_mass VS inverse dR to tau
+					// record their taujet_mass VS inverse dR to tau
 					// inline double deltaR(double eta1, double phi1, double eta2, double phi2) {
 					//   return std::sqrt(deltaR2 (eta1, phi1, eta2, phi2));
 					// }
@@ -3400,39 +3400,59 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d(string("slep_vanila_selection_jet_energy"), 100, 0, 300,   jet.energy(), weight);
 					fill_1d(string("slep_vanila_selection_jet_mass"), 100, 0, 300,   jet.p4().mass(), weight);
 
-					dijetSystem = jet.p4() + tau.p4();
-					double dijet_mass = dijetSystem.mass();
-					double dijet_momentum = dijetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
+					taujetSystem = jet.p4() + tau.p4();
+					double taujet_mass = taujetSystem.mass();
+					double taujet_momentum = taujetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
 					double inverse_dR = reco::deltaR(tau.eta(), tau.phi(), -jet.eta(), -jet.phi());
-					//if (dijet_mass > 60 && dijet_mass < 100) // or make the window narrower?
-					//fill_2d(string("slep_vanila_selection_dijet_mass_VS_dR"), 100, 0, 200, 50, 0, 4,  dijet_mass, inverse_dR, weight);
-					fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+					//if (taujet_mass > 60 && taujet_mass < 100) // or make the window narrower?
+					//fill_2d(string("slep_vanila_selection_taujet_mass_VS_dR"), 100, 0, 200, 50, 0, 4,  taujet_mass, inverse_dR, weight);
+					fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
 					fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
 					// and bin in N jets
 					if (n_jets == 3)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj3"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
-						//fill_1d(string("slep_vanila_selection_dijet_mass_nj3"), 100, 0, 100,   dijet_mass, weight);
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum_nj3"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
+						//fill_1d(string("slep_vanila_selection_taujet_mass_nj3"), 100, 0, 100,   taujet_mass, weight);
 					else if (n_jets == 4)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj4"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
-						//fill_1d(string("slep_vanila_selection_dijet_mass_nj4"), 100, 0, 100,   dijet_mass, weight);
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum_nj4"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
+						//fill_1d(string("slep_vanila_selection_taujet_mass_nj4"), 100, 0, 100,   taujet_mass, weight);
 					else if (n_jets == 5)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj5"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
-						//fill_1d(string("slep_vanila_selection_dijet_mass_nj5"), 100, 0, 100,   dijet_mass, weight);
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum_nj5"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
+						//fill_1d(string("slep_vanila_selection_taujet_mass_nj5"), 100, 0, 100,   taujet_mass, weight);
 					else if (n_jets == 6)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj6"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
-						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6"), 100, 0, 100,   dijet_mass, weight);
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum_nj6"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
+						//fill_1d(string("slep_vanila_selection_taujet_mass_nj6"), 100, 0, 100,   taujet_mass, weight);
 					else //if (n_jets >  6)
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj6p"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
-						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 100, 0, 100,   dijet_mass, weight);
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_momentum_nj6p"), 100, 0, 200, 100, 0, 300,  taujet_mass, taujet_momentum, weight);
+						//fill_1d(string("slep_vanila_selection_taujet_mass_nj6p"), 100, 0, 100,   taujet_mass, weight);
 					//noWmassDiJet = false;
 					//break;
 					// record 3-jet system with top mass, W mass and top momentum
 					for (int u=i+1; u<selJetsNoLepNoTau.size(); u++)
 						{
 						if (u==i) continue; // shouldn't happen
-						trijetSystem = dijetSystem + selJetsNoLepNoTau[u].p4();
-						fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijet_mass"), 100, 0, 200, 100, 0, 300,  dijet_mass, trijetSystem.mass(), weight);
-						fill_2d(string("slep_vanila_selection_trijet_mass_VS_trijet_momentum"), 100, 0, 300, 100, 0, 300,  trijetSystem.mass(), trijetSystem.P(), weight);
+						tau2jetsSystem = taujetSystem + selJetsNoLepNoTau[u].p4();
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_tau2jets_mass"), 100, 0, 200, 100, 0, 300,  taujet_mass, tau2jetsSystem.mass(), weight);
+						fill_2d(string("slep_vanila_selection_tau2jets_mass_VS_tau2jets_momentum"), 100, 0, 300, 100, 0, 300,  tau2jetsSystem.mass(), tau2jetsSystem.P(), weight);
+						}
+					}
+
+				LorentzVector dijetSystem (0, 0, 0, 0);
+				LorentzVector trijetSystem (0, 0, 0, 0);
+				for (int i=0; i<selJetsNoLep.size(); i++)
+					{
+					pat::Jet& jet1 = selJetsNoLep[i];
+					for (int u=i+1; u<selJetsNoLep.size(); u++)
+						{
+						pat::Jet& jet2 = selJetsNoLep[u];
+						dijetSystem = jet1.p4() + jet2.p4();
+						for (int j=u+1; j<selJetsNoLep.size(); j++)
+							{
+							pat::Jet& jet3 = selJetsNoLep[j];
+							trijetSystem = dijetSystem + jet3.p4();
+
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijets_mass"), 100, 0, 200, 100, 0, 300,  dijetSystem.mass(), trijetSystem.mass(), weight);
+							fill_2d(string("slep_vanila_selection_trijets_mass_VS_trijets_momentum"), 100, 0, 300, 100, 0, 300,  trijetSystem.mass(), trijetSystem.P(), weight);
+							}
 						}
 					}
 				}
