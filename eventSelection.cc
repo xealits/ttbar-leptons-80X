@@ -3436,6 +3436,18 @@ for(size_t f=0; f<urls.size();++f)
 						}
 					}
 
+				// check if tau matches a jet in the collection
+				bool taujet_is_in_collection = false;
+				for (int i=0; i<selJetsNoLep.size(); i++)
+					{
+					if (reco::deltaR(tau, selJetsNoLep[i]) < 0.4)
+						{
+						taujet_is_in_collection = true;
+						break;
+						}
+					}
+
+				string suffix(taujet_is_in_collection ? "_withtau" : "_notau");
 				LorentzVector dijetSystem (0, 0, 0, 0);
 				LorentzVector trijetSystem (0, 0, 0, 0);
 				for (int i=0; i<selJetsNoLep.size(); i++)
@@ -3450,8 +3462,8 @@ for(size_t f=0; f<urls.size();++f)
 							pat::Jet& jet3 = selJetsNoLep[j];
 							trijetSystem = dijetSystem + jet3.p4();
 
-							fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijets_mass"), 100, 0, 200, 100, 0, 300,  dijetSystem.mass(), trijetSystem.mass(), weight);
-							fill_2d(string("slep_vanila_selection_trijets_mass_VS_trijets_momentum"), 100, 0, 300, 100, 0, 300,  trijetSystem.mass(), trijetSystem.P(), weight);
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijets_mass") + suffix, 100, 0, 200, 100, 0, 300,  dijetSystem.mass(), trijetSystem.mass(), weight);
+							fill_2d(string("slep_vanila_selection_trijets_mass_VS_trijets_momentum") + suffix, 100, 0, 300, 100, 0, 300,  trijetSystem.mass(), trijetSystem.P(), weight);
 							}
 						}
 					}
