@@ -3386,6 +3386,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("slep_vanila_selection_tau_energy"), 100, 0, 300,   tau.energy(), weight);
 				fill_1d(string("slep_vanila_selection_tau_mass"), 100, 0, 300,   tau.p4().mass(), weight);
 				LorentzVector dijetSystem (0, 0, 0, 0);
+				LorentzVector trijetSystem (0, 0, 0, 0);
 				for (int i=0; i<selJetsNoLepNoTau.size(); i++)
 					{
 					// record jets around tau in dijet mass
@@ -3425,6 +3426,14 @@ for(size_t f=0; f<urls.size();++f)
 						//fill_1d(string("slep_vanila_selection_dijet_mass_nj6p"), 100, 0, 100,   dijet_mass, weight);
 					//noWmassDiJet = false;
 					//break;
+					// record 3-jet system with top mass, W mass and top momentum
+					for (int u=i+1; u<selJetsNoLepNoTau.size(); u++)
+						{
+						if (u==i) continue; // shouldn't happen
+						trijetSystem = dijetSystem + selJetsNoLepNoTau[u].p4();
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijet_mass"), 100, 0, 200, 100, 0, 300,  dijet_mass, trijetSystem.mass(), weight);
+						fill_2d(string("slep_vanila_selection_trijet_mass_VS_trijet_momentum"), 100, 0, 300, 100, 0, 300,  trijetSystem.mass(), trijetSystem.P(), weight);
+						}
 					}
 				}
 			// add it into tau selection
