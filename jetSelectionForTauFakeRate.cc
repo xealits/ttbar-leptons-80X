@@ -931,8 +931,8 @@ double jettaufr_tau_kino_cuts_pt          = runProcess.getParameter<double>("jet
 double jettaufr_tau_kino_cuts_eta         = runProcess.getParameter<double>("jettaufr_tau_kino_cuts_eta");
 
 cout << "Kino cuts" << endl;
-cout << "jets: (pt)\t" << jet_kino_cuts_pt << "\t(eta)" << jet_kino_cuts_eta << endl;
-cout << "taus: (pt)\t" << tau_kino_cuts_pt << "\t(eta)" << tau_kino_cuts_eta << endl;
+cout << "jets: (pt)\t" << jettaufr_jet_kino_cuts_pt << "\t(eta)" << jettaufr_jet_kino_cuts_eta << endl;
+cout << "taus: (pt)\t" << jettaufr_tau_kino_cuts_pt << "\t(eta)" << jettaufr_tau_kino_cuts_eta << endl;
 
 // Tau IDs:
 /*
