@@ -301,6 +301,7 @@ cout << "ratio = " << ratio << endl;
 if (normalize_MC)
 	{
 	cout << "normalizing MCs" << endl;
+	// to their integral = 1
 	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		{
 		double integral = mc_jet_origin_ths[origin_n]->Integral();
@@ -337,6 +338,20 @@ cout << "drawing" << endl;
 
 //hs_data->Draw("e"); // to draw it _over_ MC
 
+/*
+if (projection == TString("x"))
+	{
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRange(0, 0.3);
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRangeUser(0, 0.3);
+	}
+
+if (projection == TString("y"))
+	{
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRange(0, 0.3);
+	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRangeUser(0, 0.3);
+	}
+*/
+
 if (projection == TString("z"))
 	{
 	mc_jet_origin_ths[mc_jet_origins.size()-1]->GetXaxis()->SetRange(0, 0.3);
@@ -367,6 +382,24 @@ if (projection == string("x"))
 
 if (set_logy)
 	cst->SetLogy();
+
+if (normalize_MC)
+	if (set_logy)
+		{
+		mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRange(0.0001, 1);
+		mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRangeUser(0.0001, 1);
+		}
+	else
+		if (projection == string("y"))
+			{
+			mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRange(0, 0.04);
+			mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRangeUser(0, 0.04);
+			}
+		else
+			{
+			mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRange(0, 0.11);
+			mc_jet_origin_ths[mc_jet_origins.size()-1]->GetYaxis()->SetRangeUser(0, 0.11);
+			}
 
 leg->Draw();
 

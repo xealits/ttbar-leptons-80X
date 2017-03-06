@@ -933,13 +933,6 @@ cout << "jets: (pt)\t" << jet_kino_cuts_pt << "\t(eta)" << jet_kino_cuts_eta << 
 cout << "taus: (pt)\t" << tau_kino_cuts_pt << "\t(eta)" << tau_kino_cuts_eta << endl;
 
 // Tau IDs:
-/*
-string tau_decayMode("decayModeFinding"),
-	//tau_ID("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
-	tau_ID("byMediumIsolationMVArun2v1DBoldDMwLT"),
-	tau_againstMuon("againstMuonTight3"),
-	tau_againstElectron("againstElectronTightMVA6");
-*/
 string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_ID       = runProcess.getParameter<std::string>("tau_ID"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
@@ -949,7 +942,7 @@ cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon
 
 
 cout << "Output directory: " << outdir << endl;
-	
+
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
 const edm::ParameterSet& myVidElectronVetoIdWPConf = myVidElectronIdConf.getParameterSet("loose");

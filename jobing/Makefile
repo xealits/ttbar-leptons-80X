@@ -305,6 +305,14 @@ jet_origin_distrs_dilep:
 	jet_distrs_per_origin_overlayed --normalize 0.25 elmu_passjets y 1 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
 	jet_distrs_per_origin_overlayed --normalize 0.25 elmu_passjets z 1 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
 
+jet_origin_distrs_control:
+	jet_distrs_per_origin_overlayed --normalize 0.25 singleel_pretau x 1 singleel_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_distrs_per_origin_overlayed --normalize 0.25 singleel_pretau y 1 singleel_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_distrs_per_origin_overlayed --normalize 0.25 singleel_pretau z 1 singleel_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_distrs_per_origin_overlayed --normalize 0.25 singlemu_pretau x 1 singlemu_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_distrs_per_origin_overlayed --normalize 0.25 singlemu_pretau y 1 singlemu_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_distrs_per_origin_overlayed --normalize 0.25 singlemu_pretau z 1 singlemu_pretau test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+
 jet_mc_fakerates:
 	jet_fakerate_per_mc 0.25 HLTjet_qcd  z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
 	jet_fakerate_per_mc 0.25 HLTjet_qcd  y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`

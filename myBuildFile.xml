@@ -31,14 +31,16 @@
 -->
 
   <bin name="ttbarleps80_eventSelection"  file="ttbar-leptons-80X/eventSelection.cc"></bin>
-  <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
   <bin name="jetToTauFakeRate"  file="ttbar-leptons-80X/jetSelectionForTauFakeRate.cc"></bin>
+
+  <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
   <bin name="tauOrigins"  file="ttbar-leptons-80X/tauOrigins.cc"></bin>
   <bin name="triggerMatching"  file="ttbar-leptons-80X/triggerMatching.cc"></bin>
   <bin name="generationTree"  file="ttbar-leptons-80X/generationTree.cc"></bin>
   <bin name="printoutTriggers"  file="ttbar-leptons-80X/printoutTriggers.cc"></bin>
   <bin name="easyKinoTTbar"  file="ttbar-leptons-80X/easyKinoTTbar.cc"></bin>
   <bin name="demoKinoTTbar"  file="ttbar-leptons-80X/demoKinoTTbar.cc"></bin>
+  <bin name="scopeEvents"  file="ttbar-leptons-80X/scopeEvents.cc"></bin>
 
   <bin name="stacked_histo_project2toX_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2toX_distr.cc"></bin>
   <bin name="stacked_histo_project2toY_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2toY_distr.cc"></bin>
