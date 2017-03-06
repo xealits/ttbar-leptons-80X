@@ -1685,31 +1685,31 @@ for(size_t f=0; f<urls.size();++f)
 		 *
 		 */
 
-		cout << "scope_header:evN, eta,phi, pdgId, partonFlavour, b-tag, jet_radius, pt, momentum" << endl;
+		cout << "scope_header:evN, gen, eta,phi, pdgId, partonFlavour, b-tag, jet_radius, pt, momentum" << endl;
 
 		// the generated particles:
-		cout << "scope:" << iev << ',' << t_v.eta() << ',' << t_v.phi() << ',' << 6 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << t_v.pt() << ',' << t_v.P() << endl;
-		cout << "scope:" << iev << ',' << tbar_v.eta() << ',' << tbar_v.phi() << ',' << 6 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << tbar_v.pt() << ',' << tbar_v.P() << endl;
-		cout << "scope:" << iev << ',' << b_v.eta() << ',' << b_v.phi() << ',' << 5 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << b_v.pt() << ',' << b_v.P() << endl;
-		cout << "scope:" << iev << ',' << bbar_v.eta() << ',' << bbar_v.phi() << ',' << 5 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << bbar_v.pt() << ',' << bbar_v.P() << endl;
-		cout << "scope:" << iev << ',' << W_v.eta() << ',' << W_v.phi() << ',' << 24 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_v.pt() << ',' << W_v.P() << endl;
-		cout << "scope:" << iev << ',' << Wbar_v.eta() << ',' << Wbar_v.phi() << ',' << 24 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_v.pt() << ',' << Wbar_v.P() << endl;
+		cout << "scope:" << iev << ",TRUE," << t_v.eta() << ',' << t_v.phi() << ',' << 6 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << t_v.pt() << ',' << t_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << tbar_v.eta() << ',' << tbar_v.phi() << ',' << 6 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << tbar_v.pt() << ',' << tbar_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << b_v.eta() << ',' << b_v.phi() << ',' << 5 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << b_v.pt() << ',' << b_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << bbar_v.eta() << ',' << bbar_v.phi() << ',' << 5 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << bbar_v.pt() << ',' << bbar_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << W_v.eta() << ',' << W_v.phi() << ',' << 24 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_v.pt() << ',' << W_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << Wbar_v.eta() << ',' << Wbar_v.phi() << ',' << 24 << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_v.pt() << ',' << Wbar_v.P() << endl;
 
-		cout << "scope:" << iev << ',' << W_prod1_v.eta() << ',' << W_prod1_v.phi() << ',' << W_prod1_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_prod1_v.pt() << ',' << W_prod1_v.P() << endl;
-		cout << "scope:" << iev << ',' << W_prod2_v.eta() << ',' << W_prod2_v.phi() << ',' << W_prod2_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_prod1_v.pt() << ',' << W_prod1_v.P() << endl;
-		cout << "scope:" << iev << ',' << Wbar_prod1_v.eta() << ',' << Wbar_prod1_v.phi() << ',' << Wbar_prod1_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_prod1_v.pt() << ',' << Wbar_prod1_v.P() << endl;
-		cout << "scope:" << iev << ',' << Wbar_prod2_v.eta() << ',' << Wbar_prod2_v.phi() << ',' << Wbar_prod2_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_prod1_v.pt() << ',' << Wbar_prod1_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << W_prod1_v.eta() << ',' << W_prod1_v.phi() << ',' << W_prod1_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_prod1_v.pt() << ',' << W_prod1_v.P() << endl;
+		cout << "scope:" << iev <<  ",TRUE," << W_prod2_v.eta() << ',' << W_prod2_v.phi() << ',' << W_prod2_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << W_prod1_v.pt() << ',' << W_prod1_v.P() << endl;
+		cout << "scope:" << iev << ",TRUE," << Wbar_prod1_v.eta() << ',' << Wbar_prod1_v.phi() << ',' << Wbar_prod1_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_prod1_v.pt() << ',' << Wbar_prod1_v.P() << endl;
+		cout << "scope:" << iev << ",TRUE," << Wbar_prod2_v.eta() << ',' << Wbar_prod2_v.phi() << ',' << Wbar_prod2_id << ',' << -1 << ',' << -1 << ',' << -1 << ',' << Wbar_prod1_v.pt() << ',' << Wbar_prod1_v.P() << endl;
 
 		for (int i=0; i<selElectrons.size(); i++)
 			{
 			pat::Electron & part = selElectrons[i];
-			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1 << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
+			cout << "scope:" << iev << ",FALSE," << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1 << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
 
 		for (int i=0; i<selMuons.size(); i++)
 			{
 			pat::Muon & part = selMuons[i];
-			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1 << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
+			cout << "scope:" << iev << ",FALSE," << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1 << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
 
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
@@ -1723,14 +1723,14 @@ for(size_t f=0; f<urls.size();++f)
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 			b_tag = part.bDiscriminator(b_tagger_label);
 
-			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << part.partonFlavour();
+			cout << "scope:" << iev << ",FALSE," << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << part.partonFlavour();
 			cout << ',' << b_tag << ',' << jet_radius(part) << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
 
 		for (int i=0; i<selTausNoLep.size(); i++)
 			{
 			pat::Tau & part = selTausNoLep[i];
-			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1;
+			cout << "scope:" << iev << ",FALSE," << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1;
 			//cout << ',' << -1 << ',' << jet_radius(part) << ',' << part.pt() << ',' << part.p4().P() << endl;
 			cout << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
