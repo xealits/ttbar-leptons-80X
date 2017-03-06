@@ -3389,6 +3389,11 @@ for(size_t f=0; f<urls.size();++f)
 					//   return std::sqrt(deltaR2 (eta1, phi1, eta2, phi2));
 					// }
 					pat::Jet& jet = selJetsNoLepNoTau[i];
+
+					// this jet should be light jet (TODO: check assumption that W doesn't produce jets with high b-tag)
+					if (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.5)
+						continue;
+
 					fill_1d(string("slep_vanila_selection_jet_momentum"), 100, 0, 300,   jet.p4().P(), weight);
 					fill_1d(string("slep_vanila_selection_jet_energy"), 100, 0, 300,   jet.energy(), weight);
 					fill_1d(string("slep_vanila_selection_jet_mass"), 100, 0, 300,   jet.p4().mass(), weight);
@@ -3423,7 +3428,13 @@ for(size_t f=0; f<urls.size();++f)
 					for (int u=i+1; u<selJetsNoLepNoTau.size(); u++)
 						{
 						if (u==i) continue; // shouldn't happen
-						tau2jetsSystem = taujetSystem + selJetsNoLepNoTau[u].p4();
+						pat::Jet & jet = selJetsNoLepNoTau[u];
+
+						// this jet should be kind of b-jet
+						if (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") < 0.5)
+							continue;
+
+						tau2jetsSystem = taujetSystem + jet.p4();
 						fill_2d(string("slep_vanila_selection_taujet_mass_VS_tau2jets_mass"), 100, 0, 200, 100, 0, 300,  taujet_mass, tau2jetsSystem.mass(), weight);
 						fill_2d(string("slep_vanila_selection_tau2jets_mass_VS_tau2jets_momentum"), 100, 0, 300, 100, 0, 300,  tau2jetsSystem.mass(), tau2jetsSystem.P(), weight);
 						}
@@ -3446,9 +3457,15 @@ for(size_t f=0; f<urls.size();++f)
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
 					pat::Jet& jet1 = selJetsNoLep[i];
+					// this jet should be product of W -- light jet, (TODO: still checking the assumption on b-tag of W products)
+					if (jet1.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.5)
+						continue;
 					for (int u=i+1; u<selJetsNoLep.size(); u++)
 						{
 						pat::Jet& jet2 = selJetsNoLep[u];
+						// this jet should be kind of b-jet
+						if (jet2.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") < 0.5)
+							continue;
 						dijetSystem = jet1.p4() + jet2.p4();
 						for (int j=u+1; j<selJetsNoLep.size(); j++)
 							{
