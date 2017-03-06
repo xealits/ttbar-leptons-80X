@@ -1712,11 +1712,17 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << -1 << ',' << -1 << ',' << -1 << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
 
+		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+		float btag_WP = 0.8484; // medium
 		//cout << "scope_header:evN, eta,phi, pdgId, partonFlavour, b-tag, jet_radius, pt, momentum" << endl;
 		for (int i=0; i<selJetsNoLep.size(); i++)
 			{
 			pat::Jet & part = selJetsNoLep[i];
 			double b_tag = 0;
+
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+			b_tag = part.bDiscriminator(b_tagger_label);
+
 			cout << "scope:" << iev << ',' << part.eta() << ',' << part.phi() << ',' << part.pdgId() << ',' << part.partonFlavour();
 			cout << ',' << b_tag << ',' << jet_radius(part) << ',' << part.pt() << ',' << part.p4().P() << endl;
 			}
