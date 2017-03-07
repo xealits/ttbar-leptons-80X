@@ -3370,10 +3370,12 @@ for(size_t f=0; f<urls.size();++f)
 
 			// check no w-mass di-jet system for fake rates
 			// thus, the tau should not couple with another jet into W-mass system
-			bool noWmassDiJet = true;
+			bool passAntiLJRequirement = false;
 			//if (passTauSelection && passJetSelection && passBtagsSelection) // to compute less
 			if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS)
 				{
+				fill_1d(string("slep_vanila_selection_passedOurSelection"), 1, 0, 2,   1, weight);
+
 				pat::Tau& tau = selTausNoLep[0];
 				fill_1d(string("slep_vanila_selection_tau_momentum"), 100, 0, 300,   tau.p4().P(), weight);
 				fill_1d(string("slep_vanila_selection_tau_energy"), 100, 0, 300,   tau.energy(), weight);
@@ -3392,7 +3394,11 @@ for(size_t f=0; f<urls.size();++f)
 
 					// this jet should be light jet (TODO: check assumption that W doesn't produce jets with high b-tag)
 					if (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.5)
+						{
+						fill_1d(string("slep_vanila_selection_taujets_selJetsNoLepNoTau_passb"), 4, 0, 2,   2, weight);
 						continue;
+						}
+					fill_1d(string("slep_vanila_selection_taujets_selJetsNoLepNoTau_nob"), 4, 0, 2,   0.5, weight);
 
 					fill_1d(string("slep_vanila_selection_jet_momentum"), 100, 0, 300,   jet.p4().P(), weight);
 					fill_1d(string("slep_vanila_selection_jet_energy"), 100, 0, 300,   jet.energy(), weight);
@@ -3435,8 +3441,12 @@ for(size_t f=0; f<urls.size();++f)
 							continue;
 
 						tau2jetsSystem = taujetSystem + jet.p4();
-						fill_2d(string("slep_vanila_selection_taujet_mass_VS_tau2jets_mass"), 100, 0, 200, 100, 0, 300,  taujet_mass, tau2jetsSystem.mass(), weight);
-						fill_2d(string("slep_vanila_selection_tau2jets_mass_VS_tau2jets_momentum"), 100, 0, 300, 100, 0, 300,  tau2jetsSystem.mass(), tau2jetsSystem.P(), weight);
+						double tau2jets_mass = tau2jetsSystem.mass();
+						fill_2d(string("slep_vanila_selection_taujet_mass_VS_tau2jets_mass"), 100, 0, 200, 100, 0, 300,  taujet_mass, tau2jets_mass, weight);
+						fill_2d(string("slep_vanila_selection_tau2jets_mass_VS_tau2jets_momentum"), 100, 0, 300, 100, 0, 300,  tau2jets_mass, tau2jetsSystem.P(), weight);
+
+						if ((taujet_mass > 64 && taujet_mass < 81) && (tau2jets_mass > 150 && tau2jets_mass < 185))
+							passAntiLJRequirement = true;
 						}
 					}
 
@@ -3479,7 +3489,9 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				}
 			// add it into tau selection
-			//passTauSelection &= noWmassDiJet;
+			if (passAntiLJRequirement)
+				fill_1d(string("slep_vanila_selection_passedAntiLJRequirement"), 1, 0, 2,   1, weight);
+
 
 			// MULTISELECT
 			unsigned int multisel = 0;
