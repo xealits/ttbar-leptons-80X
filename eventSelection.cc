@@ -3751,6 +3751,11 @@ for(size_t f=0; f<urls.size();++f)
 
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
+					// pu distrs
+					fill_1d( string("pileup_smu_passos_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_smu_passos_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+					// nGoodPV = vtx.size() now
+
 					fill_1d(string("smu_passos_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
 					fill_1d(string("smu_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
 					fill_1d(string("smu_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
@@ -4083,6 +4088,11 @@ for(size_t f=0; f<urls.size();++f)
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection && passOS) {
+					// pu distrs
+					fill_1d( string("pileup_sel_passos_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_sel_passos_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+					// nGoodPV = vtx.size() now
+
 					fill_1d(string("sel_passos_selection_ntaus"), 20, 0, 20,   taus.size(), weight);
 					fill_1d(string("sel_passos_selection_nselTaus"), 20, 0, 20,   selTaus.size(), weight);
 					fill_1d(string("sel_passos_selection_nselTausNoLep"), 20, 0, 20,   selTausNoLep.size(), weight);
@@ -4195,6 +4205,11 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+					// pu distrs
+					fill_1d( string("pileup_elel_passos_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_elel_passos_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+					// nGoodPV = vtx.size() now
+
 					record_jets_fakerate_distrs(string("elel_"), string("passbtagfinal"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4303,6 +4318,11 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+					// pu distrs
+					fill_1d( string("pileup_mumu_passos_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_mumu_passos_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+					// nGoodPV = vtx.size() now
+
 					record_jets_fakerate_distrs(string("mumu_"), string("passbtagfinal"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 					//fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
@@ -4410,6 +4430,11 @@ for(size_t f=0; f<urls.size();++f)
 
 				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
 					{
+					// pu distrs
+					fill_1d( string("pileup_elmu_passos_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_elmu_passos_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+					// nGoodPV = vtx.size() now
+
 					record_jets_fakerate_distrs(string("elmu_"), string("passbtagfinal"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
