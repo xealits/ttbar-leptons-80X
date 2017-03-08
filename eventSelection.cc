@@ -1133,6 +1133,8 @@ TH3F * tau_fake_rate_jets_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Ge
 TH3F * tau_fake_rate_taus_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
 TH3F * tau_fake_rate_jets_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
 TH3F * tau_fake_rate_taus_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr");
+TH3F * tau_fake_rate_jets_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr");
+TH3F * tau_fake_rate_taus_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr");
 
 // Make fake rate projections for smooth procedure
 //TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
@@ -1210,6 +1212,24 @@ frates_mumu_taus_proj.x = tau_fake_rate_taus_histo_mumu_x;
 frates_mumu_taus_proj.y = tau_fake_rate_taus_histo_mumu_y;
 frates_mumu_taus_proj.z = tau_fake_rate_taus_histo_mumu_z;
 frates_mumu_taus_proj.integral = tau_fake_rate_taus_histo_mumu->Integal();
+
+// ELEL
+TH1D* tau_fake_rate_jets_histo_elel_x = (TH1D*) tau_fake_rate_jets_histo_elel->Project3D("x");
+TH1D* tau_fake_rate_jets_histo_elel_y = (TH1D*) tau_fake_rate_jets_histo_elel->Project3D("y");
+TH1D* tau_fake_rate_jets_histo_elel_z = (TH1D*) tau_fake_rate_jets_histo_elel->Project3D("z");
+TH1D* tau_fake_rate_taus_histo_elel_x = (TH1D*) tau_fake_rate_taus_histo_elel->Project3D("x");
+TH1D* tau_fake_rate_taus_histo_elel_y = (TH1D*) tau_fake_rate_taus_histo_elel->Project3D("y");
+TH1D* tau_fake_rate_taus_histo_elel_z = (TH1D*) tau_fake_rate_taus_histo_elel->Project3D("z");
+FakeRateProjections frates_elel_jets_proj;
+frates_elel_jets_proj.x = tau_fake_rate_jets_histo_elel_x;
+frates_elel_jets_proj.y = tau_fake_rate_jets_histo_elel_y;
+frates_elel_jets_proj.z = tau_fake_rate_jets_histo_elel_z;
+frates_elel_jets_proj.integral = tau_fake_rate_jets_histo_elel->Integal();
+FakeRateProjections frates_elel_taus_proj;
+frates_elel_taus_proj.x = tau_fake_rate_taus_histo_elel_x;
+frates_elel_taus_proj.y = tau_fake_rate_taus_histo_elel_y;
+frates_elel_taus_proj.z = tau_fake_rate_taus_histo_elel_z;
+frates_elel_taus_proj.integral = tau_fake_rate_taus_histo_elel->Integal();
 
 //MC normalization (to 1/pb)
 if(debug) cout << "DEBUG: xsec: " << xsec << endl;
@@ -3610,6 +3630,9 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_no_fake_rate_mumu = 1.0;
 					double jet_to_tau_fake_rate_mumu = 1.0;
 
+					double jet_to_tau_no_fake_rate_elel = 1.0;
+					double jet_to_tau_fake_rate_elel = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -3671,6 +3694,7 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 
@@ -3683,6 +3707,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
 					jet_to_tau_fake_rate_mumu = 1.0 - jet_to_tau_no_fake_rate_mumu;
+					jet_to_tau_fake_rate_elel = 1.0 - jet_to_tau_no_fake_rate_elel;
 
 					if (debug)
 						{
@@ -3698,6 +3723,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
 					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 7,  weight * (jet_to_tau_fake_rate_mumu  < 1. ? jet_to_tau_fake_rate_mumu  : 1.));
+					fill_1d(string("singlemu_pretauselection_jettotaufakerates"), 10, 0,10, 8,  weight * (jet_to_tau_fake_rate_elel  < 1. ? jet_to_tau_fake_rate_elel  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
@@ -3946,6 +3972,9 @@ for(size_t f=0; f<urls.size();++f)
 					double jet_to_tau_no_fake_rate_mumu = 1.0;
 					double jet_to_tau_fake_rate_mumu = 1.0;
 
+					double jet_to_tau_no_fake_rate_elel = 1.0;
+					double jet_to_tau_fake_rate_elel = 1.0;
+
 					// using selJetsNoLep jets
 					if (debug)
 						{
@@ -3992,6 +4021,7 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						}
 
 
@@ -4004,6 +4034,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					jet_to_tau_fake_rate_elmu = 1.0 - jet_to_tau_no_fake_rate_elmu;
 					jet_to_tau_fake_rate_mumu = 1.0 - jet_to_tau_no_fake_rate_mumu;
+					jet_to_tau_fake_rate_elel = 1.0 - jet_to_tau_no_fake_rate_elel;
 
 					if (debug)
 						{
@@ -4025,6 +4056,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 6,  weight * (jet_to_tau_fake_rate_elmu  < 1. ? jet_to_tau_fake_rate_elmu  : 1.));
 					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 7,  weight * (jet_to_tau_fake_rate_mumu  < 1. ? jet_to_tau_fake_rate_mumu  : 1.));
+					fill_1d(string("singleel_pretauselection_jettotaufakerates"), 10, 0,10, 8,  weight * (jet_to_tau_fake_rate_elel  < 1. ? jet_to_tau_fake_rate_elel  : 1.));
 					}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection && passTauSelection) {
