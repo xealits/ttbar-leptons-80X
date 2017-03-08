@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 9
+#define INPUT_DTAGS_START 10
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
-if (argc < 8)
+char usage_string[128] = "[--verbose] [--normalize] logy lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
+if (argc < 9)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -62,15 +62,16 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-double lumi = atof(argv[input_starts + 1]);
-TString distr_selection(argv[input_starts + 2]);
-TString projection(argv[input_starts + 3]);
-Int_t rebin_factor(atoi(argv[input_starts + 4]));
+TString set_logy(argv[input_starts + 1]);
+double lumi = atof(argv[input_starts + 2]);
+TString distr_selection(argv[input_starts + 3]);
+TString projection(argv[input_starts + 4]);
+Int_t rebin_factor(atoi(argv[input_starts + 5]));
 
-double x_axis_min_range = atof(argv[input_starts + 5]);
-double x_axis_max_range = atof(argv[input_starts + 6]);
-TString name_tag(argv[input_starts + 7]);
-TString dir(argv[input_starts + 8]);
+double x_axis_min_range = atof(argv[input_starts + 6]);
+double x_axis_max_range = atof(argv[input_starts + 7]);
+TString name_tag(argv[input_starts + 8]);
+TString dir(argv[input_starts + 9]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -432,15 +433,27 @@ for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
 	}
 */
 
-hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
-hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
 hs_data[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 hs_data[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 
-hs->GetYaxis()->SetRange(0.0001, 1);
-hs->GetYaxis()->SetRangeUser(0.0001, 1);
 hs->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 hs->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
+if (set_logy == TString("T") || set_logy == TString("Y"))
+	{
+	cst->SetLogy();
+	hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
+	hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
+	hs->GetYaxis()->SetRange(0.0001, 1);
+	hs->GetYaxis()->SetRangeUser(0.0001, 1);
+	}
+else
+	{
+	hs_data[0]->GetYaxis()->SetRange(0.0001, 0.01);
+	hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 0.01);
+	hs->GetYaxis()->SetRange(0.0001, 0.01);
+	hs->GetYaxis()->SetRangeUser(0.0001, 0.01);
+	}
 
 //mc_jet_origin_ths[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 //mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
@@ -452,13 +465,10 @@ hs->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 //h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
 //h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
 
-bool set_logy = true; // in case it becomes main argument
+//bool set_logy = true; // in case it becomes main argument
 
 //if (projection == string("x") || projection == string("z"))
 	//set_logy = true;
-
-if (set_logy)
-	cst->SetLogy();
 
 hs_data[0]->Draw("e p"); // to pass the title/axes settings to the canvas/plot/pad/etc root-shmuz
 hs->Draw("same"); // draw the stack
@@ -477,7 +487,7 @@ leg->Draw();
 
 //cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRates_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRates_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy == TString("T") || set_logy == TString("Y")? "_logy" : "") + ".png" );
 
 return 0;
 }

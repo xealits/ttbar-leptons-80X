@@ -297,6 +297,26 @@ jet_mc_distrs:
 	stacked_histo_project3to1_distr --normalize 1.7 HLTmu_wjets_jets_distr y 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
 	stacked_histo_project3to1_distr --normalize 1.7 HLTmu_wjets_jets_distr z 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
 
+jet_origin_distrs_stacked_qcd:
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd x 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd y 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd z 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+
+jet_origin_distrs_stacked_wjets:
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTmu_wjets x 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTmu_wjets y 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTmu_wjets z 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+
+jet_origin_fractions_stacked_qcd:
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTjet_qcd x 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTjet_qcd y 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTjet_qcd z 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+
+jet_origin_fractions_stacked_wjets:
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTmu_wjets x 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTmu_wjets y 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_origin_fractions_stacked --normalize 0.25 HLTmu_wjets z 1 WJets test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+
 jet_origin_distrs:
 	jet_distrs_per_origin_overlayed --normalize 0.25 HLTjet_qcd x 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
 	jet_distrs_per_origin_overlayed --normalize 0.25 HLTjet_qcd y 1 QCD test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
@@ -338,31 +358,35 @@ jet_mc_fakerates_dilep:
 	jet_fakerate_per_mc 0.25 elmu_passjets x 1  0 150    elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
 
 jet_origin_fakerates_qcd:
-	jet_fakerate_per_origin 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
-	jet_fakerate_per_origin 0.25 HLTjet_qcd y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
-	jet_fakerate_per_origin 0.25 HLTjet_qcd x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
 
 jet_origin_fakerates_wjets:
-	jet_fakerate_per_origin 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
-	jet_fakerate_per_origin 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
-	jet_fakerate_per_origin 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
 
+jet_origin_fakerates: set_logy=T
 jet_origin_fakerates: jet_origin_fakerates_qcd jet_origin_fakerates_wjets
 
 jet_origin_fakerates_elmu:
-	jet_fakerate_per_origin 0.25 elmu_passjets z 1  0   0.4 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 elmu_passjets y 1 -2.5 2.5 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 elmu_passjets x 1  0 150   elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elmu_passjets z 1  0   0.4 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elmu_passjets y 1 -2.5 2.5 elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elmu_passjets x 1  0 150   elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
 
 jet_origin_fakerates_mumu:
-	jet_fakerate_per_origin 0.25 mumu_passjets z 1  0   0.4 mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 mumu_passjets y 1 -2.5 2.5 mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 mumu_passjets x 1  0 150   mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 mumu_passjets z 1  0   0.4 mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 mumu_passjets y 1 -2.5 2.5 mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 mumu_passjets x 1  0 150   mumu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
 
 jet_origin_fakerates_elel:
-	jet_fakerate_per_origin 0.25 elel_passjets z 1  0   0.4 elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 elel_passjets y 1 -2.5 2.5 elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
-	jet_fakerate_per_origin 0.25 elel_passjets x 1  0 150   elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elel_passjets z 1  0   0.4 elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elel_passjets y 1 -2.5 2.5 elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_origin ${set_logy} 0.25 elel_passjets x 1  0 150   elel test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
+
+jet_origin_fakerates_dileptons: set_logy=T
+jet_origin_fakerates_dileptons: jet_origin_fakerates_elmu jet_origin_fakerates_mumu jet_origin_fakerates_elel
 
 jet_fakerate_separate_origins:
 	jet_fakerate_separate_origins 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`

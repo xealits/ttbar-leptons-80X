@@ -283,6 +283,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "processed dtag" << endl;
 	}
 
+// sum of all origins
+// for getting the fractions
+TH1D* mc_sum = (TH1D*) mc_jet_origin_ths[4]->Clone();
+mc_sum->Reset();
+
 double integral_data = hs_data->Integral();
 double integral_MC   = 0.;
 for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
@@ -297,6 +302,7 @@ for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		mc_jet_origin_ths[origin_n]->Reset();
 		}
 	integral_MC += mc_jet_origin_ths[origin_n]->Integral();
+	mc_sum->Add(mc_jet_origin_ths[origin_n]);
 	}
 cout << "data  integral = " << integral_data << endl;
 cout << "MC    integral = " << integral_MC   << endl;
@@ -327,6 +333,7 @@ for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 	}
 */
 
+/*
 if (normalize_MC_stack) // TODO: does it interfere with the bin-wise normalization?
 	{
 	cout << "normalizing MC" << endl;
@@ -337,7 +344,36 @@ if (normalize_MC_stack) // TODO: does it interfere with the bin-wise normalizati
 		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
 		}
 	}
+*/
 
+// normalized bins to the sum of all jets (to get the fraction of the origin in each bin)
+for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+	{
+	TH1D* histo = mc_jet_origin_ths[origin_n];
+	for (Int_t i=0; i<=histo->GetSize(); i++)
+		{
+		//yAxis->GetBinLowEdge(3)
+		double content = histo->GetBinContent(i);
+		double mc_sum_content = mc_sum->GetBinContent(i);
+		if (mc_sum_content < 0.0001) // zero case
+			histo->SetBinContent(i, origin_n/mc_jet_origins.size());
+		else
+			histo->SetBinContent(i, content/mc_sum_content);
+		}
+	}
+
+/* not needed then
+if (normalize_MC_stack) // TODO: does it interfere with the bin-wise normalization?
+	{
+	cout << "normalizing MC" << endl;
+	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+		{
+		double integral = mc_jet_origin_ths[origin_n]->Integral();
+		mc_jet_origin_ths[origin_n]->Scale(ratio);
+		cout << mc_jet_origins[origin_n] << " integral before = " << integral << " after = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+		}
+	}
+*/
 
 // first add the light-quarks and gluon-jets
 for (int origin_n=3; origin_n<mc_jet_origins.size(); origin_n++)
@@ -375,14 +411,14 @@ h->SetXTitle("x");
 
 cout << "drawing" << endl;
 
-hs_data->Draw("e p");
+//hs_data->Draw("e p");
 hs->Draw("same");
-hs_data->Draw("e p same"); // to draw it _over_ MC
+//hs_data->Draw("e p same"); // to draw it _over_ MC
 
 bool set_logy = false;
 
-if (projection == string("x") || projection == string("z"))
-	set_logy = true;
+//if (projection == string("x") || projection == string("z"))
+//	set_logy = true;
 
 if (set_logy)
 	cst->SetLogy();
@@ -398,35 +434,9 @@ hs_data->SetXTitle(distr_selection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFractionsStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
-/*
-TH1D *h = (TH1D*) file->Get(distr);
-
-Int_t size_x = h->GetNbinsX();
-
-if (!print_header)
-	{
-	cout << dtag;
-	for (int x=1; x<size_x; x++)
-		{
-		//double bin_center = h->GetXaxis()->GetBinCenter(x);
-		double global_bin = h->GetBin(x);
-		cout << "," << h->GetBinContent(global_bin);
-		}
-	cout << "\n";
-	}
-else
-	{
-	cout << "dtag";
-	for (int x=1; x<size_x; x++)
-		{
-		double bin_center = h->GetXaxis()->GetBinCenter(x);
-		cout << "," << bin_center;
-		}
-	cout << "\n";
-	}
-*/
 return 0;
 }
+
 
