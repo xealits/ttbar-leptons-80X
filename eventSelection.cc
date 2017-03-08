@@ -1136,6 +1136,31 @@ TH3F * tau_fake_rate_taus_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Ge
 TH3F * tau_fake_rate_jets_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr");
 TH3F * tau_fake_rate_taus_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr");
 
+cout << "averages of fake rate distrs" << endl << "X,Y,Z projections" << endl;
+
+cout << "qcd:\t";
+cout << tau_fake_rate1_taus_histo_q->ProjectionX()->Integral() / tau_fake_rate1_jets_histo_q->ProjectionX()->Integral() << ',';
+cout << tau_fake_rate1_taus_histo_q->ProjectionY()->Integral() / tau_fake_rate1_jets_histo_q->ProjectionY()->Integral() << ',';
+cout << tau_fake_rate1_taus_histo_q->ProjectionZ()->Integral() / tau_fake_rate1_jets_histo_q->ProjectionZ()->Integral() << endl;
+cout << "wjets:\t";
+cout << tau_fake_rate2_taus_histo_w->ProjectionX()->Integral() / tau_fake_rate2_jets_histo_w->ProjectionX()->Integral() << ',';
+cout << tau_fake_rate2_taus_histo_w->ProjectionY()->Integral() / tau_fake_rate2_jets_histo_w->ProjectionY()->Integral() << ',';
+cout << tau_fake_rate2_taus_histo_w->ProjectionZ()->Integral() / tau_fake_rate2_jets_histo_w->ProjectionZ()->Integral() << endl;
+cout << "mumu:\t";
+cout << tau_fake_rate_taus_histo_mumu->ProjectionX()->Integral() / tau_fake_rate_jets_histo_mumu->ProjectionX()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_mumu->ProjectionY()->Integral() / tau_fake_rate_jets_histo_mumu->ProjectionY()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_mumu->ProjectionZ()->Integral() / tau_fake_rate_jets_histo_mumu->ProjectionZ()->Integral() << endl;
+cout << "elmu:\t";
+cout << tau_fake_rate_taus_histo_elmu->ProjectionX()->Integral() / tau_fake_rate_jets_histo_elmu->ProjectionX()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_elmu->ProjectionY()->Integral() / tau_fake_rate_jets_histo_elmu->ProjectionY()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_elmu->ProjectionZ()->Integral() / tau_fake_rate_jets_histo_elmu->ProjectionZ()->Integral() << endl;
+cout << "elel:\t";
+cout << tau_fake_rate_taus_histo_elel->ProjectionX()->Integral() / tau_fake_rate_jets_histo_elel->ProjectionX()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_elel->ProjectionY()->Integral() / tau_fake_rate_jets_histo_elel->ProjectionY()->Integral() << ',';
+cout << tau_fake_rate_taus_histo_elel->ProjectionZ()->Integral() / tau_fake_rate_jets_histo_elel->ProjectionZ()->Integral() << endl;
+
+// and use? the Y integral -- all bins are in range
+
 // Make fake rate projections for smooth procedure
 //TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
 
@@ -1150,12 +1175,12 @@ FakeRateProjections frates_qcd_jets_proj;
 frates_qcd_jets_proj.x = tau_fake_rate1_jets_histo_q_x;
 frates_qcd_jets_proj.y = tau_fake_rate1_jets_histo_q_y;
 frates_qcd_jets_proj.z = tau_fake_rate1_jets_histo_q_z;
-frates_qcd_jets_proj.integral = tau_fake_rate1_jets_histo_q->Integal();
+frates_qcd_jets_proj.integral = tau_fake_rate1_jets_histo_q->Integral();
 FakeRateProjections frates_qcd_taus_proj;
 frates_qcd_taus_proj.x = tau_fake_rate1_taus_histo_q_x;
 frates_qcd_taus_proj.y = tau_fake_rate1_taus_histo_q_y;
 frates_qcd_taus_proj.z = tau_fake_rate1_taus_histo_q_z;
-frates_qcd_taus_proj.integral = tau_fake_rate1_taus_histo_q->Integal();
+frates_qcd_taus_proj.integral = tau_fake_rate1_taus_histo_q->Integral();
 
 
 // WJets
@@ -1169,12 +1194,12 @@ FakeRateProjections frates_wjets_jets_proj;
 frates_wjets_jets_proj.x = tau_fake_rate2_jets_histo_w_x;
 frates_wjets_jets_proj.y = tau_fake_rate2_jets_histo_w_y;
 frates_wjets_jets_proj.z = tau_fake_rate2_jets_histo_w_z;
-frates_wjets_jets_proj.integral = tau_fake_rate2_jets_histo_w->Integal();
+frates_wjets_jets_proj.integral = tau_fake_rate2_jets_histo_w->Integral();
 FakeRateProjections frates_wjets_taus_proj;
 frates_wjets_taus_proj.x = tau_fake_rate2_taus_histo_w_x;
 frates_wjets_taus_proj.y = tau_fake_rate2_taus_histo_w_y;
 frates_wjets_taus_proj.z = tau_fake_rate2_taus_histo_w_z;
-frates_wjets_taus_proj.integral = tau_fake_rate2_taus_histo_w->Integal();
+frates_wjets_taus_proj.integral = tau_fake_rate2_taus_histo_w->Integral();
 
 // ELMU
 TH1D* tau_fake_rate_jets_histo_elmu_x = (TH1D*) tau_fake_rate_jets_histo_elmu->Project3D("x");
@@ -1187,12 +1212,12 @@ FakeRateProjections frates_elmu_jets_proj;
 frates_elmu_jets_proj.x = tau_fake_rate_jets_histo_elmu_x;
 frates_elmu_jets_proj.y = tau_fake_rate_jets_histo_elmu_y;
 frates_elmu_jets_proj.z = tau_fake_rate_jets_histo_elmu_z;
-frates_elmu_jets_proj.integral = tau_fake_rate_jets_histo_elmu->Integal();
+frates_elmu_jets_proj.integral = tau_fake_rate_jets_histo_elmu->Integral();
 FakeRateProjections frates_elmu_taus_proj;
 frates_elmu_taus_proj.x = tau_fake_rate_taus_histo_elmu_x;
 frates_elmu_taus_proj.y = tau_fake_rate_taus_histo_elmu_y;
 frates_elmu_taus_proj.z = tau_fake_rate_taus_histo_elmu_z;
-frates_elmu_taus_proj.integral = tau_fake_rate_taus_histo_elmu->Integal();
+frates_elmu_taus_proj.integral = tau_fake_rate_taus_histo_elmu->Integral();
 
 
 // MUMU
@@ -1206,12 +1231,12 @@ FakeRateProjections frates_mumu_jets_proj;
 frates_mumu_jets_proj.x = tau_fake_rate_jets_histo_mumu_x;
 frates_mumu_jets_proj.y = tau_fake_rate_jets_histo_mumu_y;
 frates_mumu_jets_proj.z = tau_fake_rate_jets_histo_mumu_z;
-frates_mumu_jets_proj.integral = tau_fake_rate_jets_histo_mumu->Integal();
+frates_mumu_jets_proj.integral = tau_fake_rate_jets_histo_mumu->Integral();
 FakeRateProjections frates_mumu_taus_proj;
 frates_mumu_taus_proj.x = tau_fake_rate_taus_histo_mumu_x;
 frates_mumu_taus_proj.y = tau_fake_rate_taus_histo_mumu_y;
 frates_mumu_taus_proj.z = tau_fake_rate_taus_histo_mumu_z;
-frates_mumu_taus_proj.integral = tau_fake_rate_taus_histo_mumu->Integal();
+frates_mumu_taus_proj.integral = tau_fake_rate_taus_histo_mumu->Integral();
 
 // ELEL
 TH1D* tau_fake_rate_jets_histo_elel_x = (TH1D*) tau_fake_rate_jets_histo_elel->Project3D("x");
@@ -1224,12 +1249,12 @@ FakeRateProjections frates_elel_jets_proj;
 frates_elel_jets_proj.x = tau_fake_rate_jets_histo_elel_x;
 frates_elel_jets_proj.y = tau_fake_rate_jets_histo_elel_y;
 frates_elel_jets_proj.z = tau_fake_rate_jets_histo_elel_z;
-frates_elel_jets_proj.integral = tau_fake_rate_jets_histo_elel->Integal();
+frates_elel_jets_proj.integral = tau_fake_rate_jets_histo_elel->Integral();
 FakeRateProjections frates_elel_taus_proj;
 frates_elel_taus_proj.x = tau_fake_rate_taus_histo_elel_x;
 frates_elel_taus_proj.y = tau_fake_rate_taus_histo_elel_y;
 frates_elel_taus_proj.z = tau_fake_rate_taus_histo_elel_z;
-frates_elel_taus_proj.integral = tau_fake_rate_taus_histo_elel->Integal();
+frates_elel_taus_proj.integral = tau_fake_rate_taus_histo_elel->Integral();
 
 //MC normalization (to 1/pb)
 if(debug) cout << "DEBUG: xsec: " << xsec << endl;
