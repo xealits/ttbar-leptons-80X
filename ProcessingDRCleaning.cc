@@ -42,6 +42,92 @@ for (size_t itau = 0; itau < selTaus.size(); ++itau)
 return 0;
 }
 
+/* clean taus of electrons
+ */
+int crossClean_in_dR(pat::TauCollection& selTaus, pat::ElectronCollection leptons,
+	float min_dR,
+	pat::TauCollection& selTausNoLep, // output
+	double weight,
+	string control_name,
+	bool record, bool debug) // more output
+{
+
+//pat::TauCollection selTausNoLep;
+int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
+for (size_t itau = 0; itau < selTaus.size(); ++itau)
+	{
+	pat::Tau& tau = selTaus[itau];
+	if(debug) cout << "selecting NoLep taus " << itau << endl;
+
+	// cross-cleaning taus with leptons
+	bool overlapWithLepton(false);
+	for(int l=0; l<(int)leptons.size();++l)
+		{
+		if (reco::deltaR(tau, leptons[l])<min_dR)
+			{ overlapWithLepton=true; break; }
+		}
+	if (overlapWithLepton) continue;
+
+	selTausNoLep.push_back(tau);
+	// so these are the final taus we use in the selection
+	if (record)
+		{
+		fill_2d(control_name + string("_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+		fill_1d(control_name + string("_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+		}
+
+	// for the fake-rate counts (in MC)
+	// let's save how many taus we find:
+	//increment(string("number_of_tausnolep_found"), 1);
+	}
+
+return 0;
+}
+
+
+/* clean taus of muons
+ */
+int crossClean_in_dR(pat::TauCollection& selTaus, pat::MuonCollection leptons,
+	float min_dR,
+	pat::TauCollection& selTausNoLep, // output
+	double weight,
+	string control_name,
+	bool record, bool debug) // more output
+{
+
+//pat::TauCollection selTausNoLep;
+int closest_totaunolep_particle_id = 0; // wonder what is 0 particle
+for (size_t itau = 0; itau < selTaus.size(); ++itau)
+	{
+	pat::Tau& tau = selTaus[itau];
+	if(debug) cout << "selecting NoLep taus " << itau << endl;
+
+	// cross-cleaning taus with leptons
+	bool overlapWithLepton(false);
+	for(int l=0; l<(int)leptons.size();++l)
+		{
+		if (reco::deltaR(tau, leptons[l])<min_dR)
+			{ overlapWithLepton=true; break; }
+		}
+	if (overlapWithLepton) continue;
+
+	selTausNoLep.push_back(tau);
+	// so these are the final taus we use in the selection
+	if (record)
+		{
+		fill_2d(control_name + string("_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+		fill_1d(control_name + string("_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+		}
+
+	// for the fake-rate counts (in MC)
+	// let's save how many taus we find:
+	//increment(string("number_of_tausnolep_found"), 1);
+	}
+
+return 0;
+}
+
+
 
 
 /* clean jets of leptons

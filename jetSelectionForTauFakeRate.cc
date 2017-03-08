@@ -2265,10 +2265,14 @@ for(size_t f=0; f<urls.size();++f)
 		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"), false, debug);
 
 		// check the cleaning of taus from leptons per eta (the problem with high fake rate in endcups):
-		fill_1d(string("control_selTaus_eta"), 128, -3.0, 3.0, selTaus.eta(), weight);
-		fill_1d(string("control_selTausNoElectrons_eta"), 128, -3.0, 3.0, selTausNoElectrons.eta(), weight);
-		fill_1d(string("control_selTausNoMuons_eta"),     128, -3.0, 3.0, selTausNoMuons.eta(), weight);
-		fill_1d(string("control_selTausNoLep_eta"),       128, -3.0, 3.0, selTausNoLep.eta(), weight);
+		for (size_t i = 0; i < selTaus.size(); ++i)
+			fill_1d(string("control_selTaus_eta"), 128, -3.0, 3.0, selTaus[i].eta(), weight);
+		for (size_t i = 0; i < selTausNoElectrons.size(); ++i)
+			fill_1d(string("control_selTausNoElectrons_eta"), 128, -3.0, 3.0, selTausNoElectrons[i].eta(), weight);
+		for (size_t i = 0; i < selTausNoMuons.size(); ++i)
+			fill_1d(string("control_selTausNoMuons_eta"),     128, -3.0, 3.0, selTausNoMuons[i].eta(), weight);
+		for (size_t i = 0; i < selTausNoLep.size(); ++i)
+			fill_1d(string("control_selTausNoLep_eta"),       128, -3.0, 3.0, selTausNoLep[i].eta(), weight);
 
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
 		// Medium MVA (no dR03) is 0.97 +- 0.05

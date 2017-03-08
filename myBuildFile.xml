@@ -54,6 +54,7 @@
   <bin name="jet_fakerate_separate_origins_overlayed"  file="ttbar-leptons-80X/jobing/jet_fakerate_separate_origins_overlayed.cc"></bin>
   <bin name="jet_2D_distrs_per_origin_separate"  file="ttbar-leptons-80X/jobing/jet_2D_distrs_per_origin_separate.cc"></bin>
   <bin name="jet_distrs_origin_fractions_stacked"  file="ttbar-leptons-80X/jobing/jet_distrs_origin_fractions_stacked.cc"></bin>
+  <bin name="jet_fakerate_fractions_per_origin"  file="ttbar-leptons-80X/jobing/jet_fakerate_fractions_per_origin.cc"></bin>
 
   <bin name="jet_fakerate_separate_origins_csv"  file="ttbar-leptons-80X/jobing/jet_fakerate_separate_origins_csv.cc"></bin>
   <bin name="jet_proportions_per_origins_csv"    file="ttbar-leptons-80X/jobing/jet_proportions_per_origins_csv.cc"></bin>
