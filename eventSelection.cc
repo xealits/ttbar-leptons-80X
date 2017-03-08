@@ -3331,6 +3331,11 @@ for(size_t f=0; f<urls.size();++f)
 
 			//singlelep_ttbar_preselectedevents->Fill(1);
 
+			// pu distrs
+			fill_1d( string("pileup_singlelepton_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+			fill_1d( string("pileup_singlelepton_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+			// nGoodPV = vtx.size() now
+
 
 			// lepton+tau mass > 12 GeV, as in dilepton case
 			LorentzVector dileptonSystem (0, 0, 0, 0);
@@ -4079,6 +4084,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (isDoubleE || isDoubleMu || isEMu)
 			{
+			// pu distrs
+			fill_1d( string("pileup_dilepton_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+			fill_1d( string("pileup_dilepton_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+			// nGoodPV = vtx.size() now
+
 			int dilId (1);
 			// slepId(0);
 			LorentzVector dileptonSystem (0, 0, 0, 0);
