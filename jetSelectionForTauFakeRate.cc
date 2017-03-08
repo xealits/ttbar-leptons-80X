@@ -916,6 +916,17 @@ string job_num       = runProcess.getParameter<std::string>("job_num");
 
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
+bool conf_record_electrons =  runProcess.getParameter<bool> ("conf_record_electrons");
+bool conf_record_muons     =  runProcess.getParameter<bool> ("conf_record_muons");
+bool conf_record_taus_ID   =  runProcess.getParameter<bool> ("conf_record_taus_ID");
+bool conf_record_taus_kino =  runProcess.getParameter<bool> ("conf_record_taus_kino");
+
+cout << "recording stuff:" << endl;
+cout << "(el-s) " << conf_record_electrons << '\t';
+cout << "(mu-s) " << conf_record_muons << '\t';
+cout << "(tau-ID-s) " << conf_record_taus_ID << '\t';
+cout << "(tau-kino-s) " << conf_record_taus_kino << '\t' << endl;
+
 string jetHLT = runProcess.getParameter<std::string>("jetHLT"),
 	muHLT_MC1   = runProcess.getParameter<std::string>("muHLT_MC1"), muHLT_MC2   = runProcess.getParameter<std::string>("muHLT_MC2"),
 	muHLT_Data1 = runProcess.getParameter<std::string>("muHLT_Data1"), muHLT_Data2 = runProcess.getParameter<std::string>("muHLT_Data2");
@@ -2164,12 +2175,11 @@ for(size_t f=0; f<urls.size();++f)
 		 */
 
 		LorentzVector elDiff(0., 0., 0., 0.);
-		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
-			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
+			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, conf_record_electrons, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
@@ -2177,7 +2187,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
-		// std::vector<patUtils::GenericLepton> selLeptons;
 		pat::MuonCollection selMuons;
 		unsigned int nVetoMu(0);
 		// unsigned int count_idiso_muons = 0;
@@ -2190,7 +2199,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *         bool record, bool debug) // more output
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
-			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
+			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, conf_record_muons, debug);
 
 		if(debug){
 			cout << "processed muons" << endl;
@@ -2225,7 +2234,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::TauCollection IDtaus, selTaus;
 
-		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug); 
+		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, conf_record_taus_ID, debug); 
 
 		//int processTaus_Kinematics(pat::TauCollection& taus,          // input
 		//	double weight,
@@ -2233,7 +2242,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
 
-		processTaus_Kinematics(IDtaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus,       false, debug);
+		processTaus_Kinematics(IDtaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus, conf_record_taus_kino, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -2250,8 +2259,16 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection selTausNoLep;
-		crossClean_in_dR(selTaus, selLeptons, 0.4, selTausNoLep, weight, string("selTausNoLep"), false, debug);
+		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep;
+		crossClean_in_dR(selTaus, selElectrons, 0.4, selTausNoElectrons, weight, string("selTausNoElectrons"), false, debug);
+		crossClean_in_dR(selTaus, selMuons,     0.4, selTausNoMuons,     weight, string("selTausNoMuons"), false, debug);
+		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"), false, debug);
+
+		// check the cleaning of taus from leptons per eta (the problem with high fake rate in endcups):
+		fill_1d(string("control_selTaus_eta"), 128, -3.0, 3.0, selTaus.eta(), weight);
+		fill_1d(string("control_selTausNoElectrons_eta"), 128, -3.0, 3.0, selTausNoElectrons.eta(), weight);
+		fill_1d(string("control_selTausNoMuons_eta"),     128, -3.0, 3.0, selTausNoMuons.eta(), weight);
+		fill_1d(string("control_selTausNoLep_eta"),       128, -3.0, 3.0, selTausNoLep.eta(), weight);
 
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
 		// Medium MVA (no dR03) is 0.97 +- 0.05
