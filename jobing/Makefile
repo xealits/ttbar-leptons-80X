@@ -77,6 +77,8 @@ extract_pileup:
 	extract_long_csv pileup_passtrig_num_inters_weight    pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_passtrig_num_inters_weight.long.csv
 	extract_long_csv pileup_beforetrig_nGoodPV_rawWeight pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_beforetrig_nGoodPV_rawWeight.long.csv
 	extract_long_csv pileup_beforetrig_nGoodPV_weight    pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_beforetrig_nGoodPV_weight.long.csv
+	extract_long_csv pileup_passtrig_nGoodPV_rawWeight pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_passtrig_nGoodPV_rawWeight.long.csv
+	extract_long_csv pileup_passtrig_nGoodPV_weight    pileup test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"` > test/tests/outdir_"${job}"/merged-sets/jobsums/pileup_passtrig_nGoodPV_weight.long.csv
 	#./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} pileup_beforetrig_num_inters_rawWeight pileup_beforetrig_num_inters_weight pileup_beforetrig_nGoodPV_rawWeight pileup_beforetrig_nGoodPV_weight pileup_passtrig_num_inters_rawWeight pileup_passtrig_num_inters_weight pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight
 
 
@@ -100,6 +102,12 @@ selection_control_histos_eta:
 	for h in `cat cur_th1d_histos_eta`;     \
 	do                                                \
 	stacked_histo_distr_with_ratio ${lumi} $$h 5 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+
+selection_control_histos_pileup:
+	for h in pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight;     \
+	do                                                \
+	stacked_histo_distr_with_ratio ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:
