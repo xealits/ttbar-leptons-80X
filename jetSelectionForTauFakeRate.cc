@@ -2564,6 +2564,7 @@ for(size_t f=0; f<urls.size();++f)
 			// checking closeness to taus along the way
 
 			record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs_large_bins(hlt_channel, selection, selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
 
 			/*
 			// loop through all jets,
@@ -2881,6 +2882,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			//record_jets_fakerate_distrs(hlt_channel, selection, selJetsNoLep, selTausNoLep, weight, isMC);
 			record_jets_fakerate_distrs(hlt_channel, selection, probeJets, selTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs_large_bins(hlt_channel, selection, probeJets, selTausNoLep, visible_gen_taus, weight, isMC);
 			//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus)
 			}
 
