@@ -198,7 +198,18 @@ std::map<TString, double> xsecs = {
 
 
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo", 18610},
-{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 6025.2}, // FIXME: the DY x-section was updated by about 5%
+{"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 5765.4}, // but McM shows 4970
+{"MC2016_Summer16_DYJetsToTauTau_50toInf_amcatnlo", 1867}, // from McM TODO: check
+
+{ "MC2016_Summer16_ZZTo2L2Q_amcatnlo_madspin"      , 3.22   },
+{ "MC2016_Summer16_ZZTo2L2Nu_powheg"               , 0.564  },
+{ "MC2016_Summer16_ZZTo2L2Nu_powheg"               , 1.256  },
+{ "MC2016_Summer16_WZTo2L2Q_amcatnlo_madspin"      , 5.595  },
+{ "MC2016_Summer16_WZTo1L3Nu_amcatnlo_madspin"     , 3.033  },
+{ "MC2016_Summer16_WZTo1L1Nu2Q_amcatnlo_madspin"   , 10.71  },
+{ "MC2016_Summer16_WZTo3LNu_powheg"                , 4.42965  },
+{ "MC2016_Summer16_WWToLNuQQ_powheg"               ,  49.997  },
+{ "MC2016_Summer16_WWTo2L2Nu_powheg"               ,  12.178  },
 
 {"MC2016_Summer16_QCD_HT-2000-Inf",  25.25},
 {"MC2016_Summer16_QCD_HT-1500-2000",  120.4},

@@ -38,7 +38,7 @@
         { "dtag":"MC2016_Summer16_DYJetsToLL_50toInf_madgraph"               , "split_NoUse_TestingAutomaticOne":59, "xsec":6025.2  , "br":[ 1.0 ] ,
           "dset":"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"    },
 
-        { "dtag":"MC2016_Summer16_DYJetsToTauTau_50toInf_amcatnlo"               , "split_NoUse_TestingAutomaticOne":59, "xsec":6025.2  , "br":[ 1.0 ] ,
+        { "dtag":"MC2016_Summer16_DYJetsToTauTau_50toInf_amcatnlo"               , "split_NoUse_TestingAutomaticOne":59, "xsec":1867  , "br":[ 1.0 ] ,
           "dset":"/DYJetsToTauTau_ForcedMuEleDecay_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM" }
 
       ]
