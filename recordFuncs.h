@@ -396,8 +396,8 @@ int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Doub
 
 // btag-efficiency bins
 // 0.1 pt bins
-static Float_t beff_bins_pt[29] = { 0, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 75, 80, 100, 150, 500 }; // 28 bins, 29 edges
-static int beff_n_bins_pt = 28;
+static Float_t beff_bins_pt[19] = { 0, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 65, 70, 75, 80, 100, 150, 500 }; // 18 bins 19 edges
+static int beff_n_bins_pt = 18;
 
 // 0.1 eta bins
 static Float_t beff_bins_eta[51] = { -2.5, -2.4, -2.3, -2.2, -2.1, -2., -1.9, -1.8, -1.7, -1.6, -1.5, -1.4, -1.3, -1.2, -1.1, -1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.1, 2.2, 2.3, 2.4, 2.5 }; // 50 bins 51 edges
