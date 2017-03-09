@@ -2315,7 +2315,8 @@ for(size_t f=0; f<urls.size();++f)
 						TLorentzVector cand2_v(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
 						// got all products of tbar decay
 						cout << "t_decay," << quartic_decay << ',' << cand1->pdgId() << ',' << cand2->pdgId();
-						cout << "," << b->p4().Dot(cand1->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << cand1->p4().Dot(z_unit_vector);
+						cout << "," << b->p4().Dot(cand1->p4()) << "," << b->p4().Dot(cand2->p4());
+						cout << ',' << b->p4().Dot(z_unit_vector) << ',' << cand1->p4().Dot(z_unit_vector);
 						cout << ',' << cand1_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
 						cout << ',' << cand1->energy() << "," << cand1->p() << ',' << cand1->pt() << ',' << cand1->eta();
 						cout << ',' << cand2->energy() << "," << cand2->p() << ',' << cand2->pt() << ',' << cand2->eta();
@@ -2329,7 +2330,8 @@ for(size_t f=0; f<urls.size();++f)
 						cand1_v.Boost(-W_frame);
 						// boost check: Done
 						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
-						cout << ',' << b_v.E()  << ',' << cand1_v.E()  << ',' << b_v.Angle(cand1_v.Vect()) << ',' << cand1_v.Angle(b_v.Vect());// and spacial angle between them
+						cout << ',' << b_v.E() << ',' << cand1_v.E() << ',' << cand2_v.E();
+						cout << ',' << b_v.Angle(cand1_v.Vect()) << ',' << cand1_v.Angle(b_v.Vect()) << ',' << b_v.Angle(cand2_v.Vect());// and spacial angle between them
 						cout << endl;
 						if (cand1->numberOfDaughters()>0)
 							{
@@ -2374,7 +2376,7 @@ for(size_t f=0; f<urls.size();++f)
 						TLorentzVector cand2_v(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
 						// got all products of tbar decay
 						//cout << "tbar_decay," << cand1->pdgId() << "," << b->p4().Dot(cand1->p4()) << endl;
-						// which_branch, quartic_or_not, Wp1_ID, Wp2_ID,
+						// branch, quartic_or_not, Wp1_ID, Wp2_ID,
 						// bDotp1,bDotp2, bDotZ, p1DorZ,
 						// p1DotRandom, bDotRndom,
 						// p1E,p1P,p1Pt,p1Eta,
