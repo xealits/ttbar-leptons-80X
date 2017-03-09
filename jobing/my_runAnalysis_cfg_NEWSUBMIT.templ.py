@@ -8,8 +8,23 @@ import PhysicsTools.PythonAnalysis.LumiList as LumiList
 LumiList.LumiList().getVLuminosityBlockRange()
 
 process.source = cms.Source("PoolSource", fileNames =  cms.untracked.vstring('') )
-from RecoJets.JetProducers.PileupJetIDParams_cfi import cutbased as pu_jetid
 
+# the PUJetID
+from RecoJets.JetProducers.PileupJetIDParams_cfi import cutbased as pu_jetid # this is probably outdated
+
+from RecoJets.JetProducers.PileupJetIDParams_cfi import *
+
+#_stdalgos_4x = cms.VPSet(full,   cutbased,PhilV1)
+_stdalgos_5x = cms.VPSet(full_5x,cutbased,PhilV1)
+
+#_chsalgos_4x = cms.VPSet(full,   cutbased) 
+_chsalgos_5x = cms.VPSet(full_5x_chs,cutbased)
+_chsalgos_74x = cms.VPSet(full_74x_chs,cutbased)
+_chsalgos_76x = cms.VPSet(full_76x_chs,cutbased)
+_chsalgos_80x = cms.VPSet(full_80x_chs,cutbased)
+_chsalgos_81x = cms.VPSet(full_81x_chs,cutbased)
+
+_std_PUJetID_algos = _chsalgos_81x
 
 ###### Electron VID
 from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff import *
@@ -87,6 +102,7 @@ runProcess = cms.PSet(
     conf_record_taus_ID    = cms.bool({conf_record_taus_ID}),
     conf_record_taus_kino  = cms.bool({conf_record_taus_kino}),
     withTauIDSFs = cms.bool({withTauIDSFs}),
+    PUJetID_algos = cms.VPSet(_std_PUJetID_algos),
     #triggerstudy = cms.bool(@trig),
     triggerstudy = cms.bool(False),
     #xsec = cms.double(@xsec),

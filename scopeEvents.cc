@@ -65,6 +65,8 @@
 #include "UserCode/llvv_fwk/interface/PatUtils.h"
 #include "UserCode/llvv_fwk/interface/rochcor2015.h"
 
+#include "RecoJets/JetProducers/plugins/PileupJetIdProducer.h"
+
 #include "TSystem.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -204,95 +206,6 @@ namespace utils
 			toReturn[2]=TMath::Max(0., (genPt+(ptSF-ptSF_err)*(pt-genPt))/pt );
 			return toReturn;
 			}
-
-
-		/* Using new stuff above
-		std::vector<double> smearJER(double pt, double eta, double genPt)
-			{
-			std::vector<double> toReturn(3,pt);
-			if(genPt<=0) return toReturn;
-			
-			// FIXME: These are the 8 TeV values.
-			//
-			eta=fabs(eta);
-			double ptSF(1.0), ptSF_err(0.06);
-			if(eta<0.5)                  { ptSF=1.052; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.062+0.061),2)); }
-			else if(eta>=0.5 && eta<1.1) { ptSF=1.057; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.056+0.055),2)); }
-			else if(eta>=1.1 && eta<1.7) { ptSF=1.096; ptSF_err=sqrt(pow(0.017,2)+pow(0.5*(0.063+0.062),2)); }
-			else if(eta>=1.7 && eta<2.3) { ptSF=1.134; ptSF_err=sqrt(pow(0.035,2)+pow(0.5*(0.087+0.085),2)); }
-			else if(eta>=2.3 && eta<5.0) { ptSF=1.288; ptSF_err=sqrt(pow(0.127,2)+pow(0.5*(0.155+0.153),2)); }
-			
-			toReturn[0]=TMath::Max(0.,(genPt+ptSF*(pt-genPt)));
-			toReturn[1]=TMath::Max(0.,(genPt+(ptSF+ptSF_err)*(pt-genPt)));
-			toReturn[2]=TMath::Max(0.,(genPt+(ptSF-ptSF_err)*(pt-genPt)));
-			return toReturn;
-			}
-
-		//
-		//std::vector<double> smearJES(double pt, double eta, JetCorrectionUncertainty *jecUnc)
-		std::vector<float> smearJES(double pt, double eta, JetCorrectionUncertainty *jecUnc)
-			{
-			jecUnc->setJetEta(eta);
-			jecUnc->setJetPt(pt);
-			double relShift=fabs(jecUnc->getUncertainty(true));
-			//std::vector<double> toRet;
-			std::vector<float> toRet;
-			toRet.push_back((1.0+relShift)*pt);
-			toRet.push_back((1.0-relShift)*pt);
-			return toRet;
-			}
-		*/
-
-		/* using the one in src/MacroUtils.cc
-		void updateJEC(pat::JetCollection &jets, FactorizedJetCorrector *jesCor, JetCorrectionUncertainty *totalJESUnc, float rho, int nvtx,bool isMC)
-			{
-			for(size_t ijet=0; ijet<jets.size(); ijet++)
-				{
-				pat::Jet jet = jets[ijet];
-				//correct JES
-				LorentzVector rawJet = jet.correctedP4("Uncorrected");
-				//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
-				//LorentzVector rawJet(jet*toRawSF);
-				jesCor->setJetEta(rawJet.eta());
-				jesCor->setJetPt(rawJet.pt());
-				jesCor->setJetA(jet.jetArea());
-				jesCor->setRho(rho);
-				jesCor->setNPV(nvtx);
-				double newJECSF=jesCor->getCorrection();
-				rawJet *= newJECSF;
-				//jet.SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
-				jet.setP4(rawJet);
-
-				//smear JER
-				double newJERSF(1.0);
-				if(isMC)
-					{
-					const reco::GenJet* genJet=jet.genJet();
-					double genjetpt( genJet ? genJet->pt(): 0.);
-					std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
-					newJERSF=smearJER[0]/jet.pt();
-					rawJet *= newJERSF;
-					//jet.SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
-					jet.setP4(rawJet);
-					// FIXME: change the way this is stored (to not storing it)
-					// //set the JER up/down alternatives 
-					// jets[ijet].setVal("jerup",   smearJER[1] );
-					// jets[ijet].setVal("jerdown", smearJER[2] );
-					}
-
-				// FIXME: change the way this is stored (to not storing it)
-				////set the JES up/down pT alternatives
-				//std::vector<float> ptUnc=utils::cmssw::smearJES(jet.pt(),jet.eta(), totalJESUnc);
-				//jets[ijet].setVal("jesup",    ptUnc[0] );
-				//jets[ijet].setVal("jesdown",  ptUnc[1] );
-
-				// FIXME: this is not to be re-set. Check that this is a desired non-feature.
-				// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine. 
-				//to get the raw jet again
-				//jets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));  
-				}
-			}
-		*/
 
 		enum METvariations { NOMINAL, JERUP, JERDOWN, JESUP, JESDOWN, UMETUP, UMETDOWN, LESUP, LESDOWN };
 
@@ -650,6 +563,7 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
 
+std::vector<edm::ParameterSet> PUJetID_algos = runProcess.getParameter<std::vector<edm::ParameterSet> >("PUJetID_algos");
 
 cout << "Output directory: " << outdir << endl;
 
@@ -1315,6 +1229,21 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<reco::VertexCollection> vtxHandle;
 		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
+
+        	const VertexCollection & vertexes = *(vertexHandle.product());
+
+		VertexCollection::const_iterator vtx_good; // the iterator is probably just reco::Vertex
+		//if( produceJetIds_ ) {
+		// require basic quality cuts on the vertexes
+		vtx_good = vertexes.begin();
+		while( vtx_good != vertexes.end() && ( vtx_good->isFake() || vtx_good->ndof() < 4 ) ) {
+			++vtx_good;
+			}
+		if( vtx_good == vertexes.end() ) { vtx_good = vertexes.begin(); }
+		//}
+		// so we basicaly look for the first vertes which is not Fake and has ndof (number of degrees of freedom) > 4
+                
+
 		// Clean up vertex collection
 		// it seems utils::isGoodVertex is outdated
 		nGoodPV = vtx.size();
@@ -1634,6 +1563,58 @@ for(size_t f=0; f<urls.size();++f)
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
 			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, r3, full_jet_corr, IDjets, false, false);
 
+		// ------------ TESTING PUJetID
+		cout << "the PUJetID-s:" << endl;
+
+		// get the algorithms of PU jet IDs
+		/* this is the input from cfg.py file
+		std::vector<edm::ParameterSet> algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("algos");
+		in example they pass standard from RecoJets/JetProducers/python/PileupJetID_cfi.py:
+
+		_chsalgos_81x = cms.VPSet(full_81x_chs,cutbased)
+		
+		_stdalgos    = _chsalgos_81x
+		...
+		algos = cms.VPSet(_stdalgos),
+
+		so I'll pass the same (hopefuly the import will work)
+		and call it PUJetID_algos
+		std::vector<edm::ParameterSet> PUJetID_algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("PUJetID_algos");
+		*/
+		std::vector<std::pair<std::string, PileupJetIdAlgo *> > algos_;
+		for(std::vector<edm::ParameterSet>::iterator it=PUJetID_algos.begin(); it!=PUJetID_algos.end(); ++it)
+			{
+			std::string label = it->getParameter<std::string>("label");
+			algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it, true)) );
+			//algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it, runMvas_)) );
+			/* this registers the output in cmssw with ValueMap
+			if( runMvas_ )
+				{
+				produces<edm::ValueMap<float> > (label+"Discriminant");
+				produces<edm::ValueMap<int> > (label+"Id");
+				}
+			*/
+			}
+
+		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin(); // [(name, algo)]
+		PileupJetIdAlgo * ialgo = algoi->second;
+		// loop through jets and get the PileupJetId for one of the algorithms
+		for (int i=0; i<IDjets.size(); i++)
+			{
+			pat::Jet & = IDjets[i];
+			// the jets are already corrected
+			PileupJetIdentifier puIdentifier;
+			// here they actually use const reco::Jet * theJet = reco::Jet *;
+			// let's try with pat:: and will see later
+			puIdentifier = ialgo->computeIdVariables(jet, jec,  &(*vtx_good), vertexes, rho);
+			// it fills ialgo with jet parameters
+			// and returns the prepared jet Identifier
+			// which has the ID (gloat):
+			cout << '\t' << i << ' ' << puIdentifier.mva();
+			// and IdFlag (int)
+			cout << ',' << puIdentifier.idFlag();
+			}
+		cout << endl;
 
 		//int processJets_Kinematics(pat::JetCollection& jets, // input
 		//	//bool isMC,
