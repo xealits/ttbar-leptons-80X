@@ -560,6 +560,47 @@ const reco::Candidate* find_W_decay_l(const reco::Candidate * W) {
 }
 
 
+
+
+
+
+/*
+ * const reco::Candidate* find_W_decay_point(const reco::Candidate * W)
+ *
+ * returns the pointer to the lepton (first in the generation tree, not final product or anything)
+ *
+ * Usage:
+ * const reco::Candidate * W = p.daughter( W_num );
+ * const reco::Candidate * W_decaying = find_W_decay_point(W);
+*/
+
+const reco::Candidate* find_W_decay_point(const reco::Candidate * W) {
+	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
+	int d0_id, d1_id; // ids of decay daughters
+	//bool found_decay=false;
+	// follow W, whatever happens to it (who knows! defensive programming here)
+	// until leptonic/quarkonic decay is found
+	// 
+	// assume there can be only W->W transitions inbetween (TODO: to check actually)
+	//while (!found_decay) {
+	while (true) {
+		int n = p->numberOfDaughters();
+		switch(n) {
+		case 0: return NULL;
+		case 1: // it should be another W->W transition
+			p = p->daughter(0);
+			break; // there should not be no infinite loop here!
+		case 2: // so, it should be the decay
+			//found_decay = true;
+			//return the pointer to this W
+			return p;
+		default: // and this is just crazy
+			cout << "crazy" << endl;
+			return NULL;
+		}
+	}
+}
+
 /*
  * const reco::Candidate* find_W_decay_nu(const reco::Candidate * W)
  *
@@ -2241,11 +2282,10 @@ for(size_t f=0; f<urls.size();++f)
 				int st = p.status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
 
 				if (id == 6) { // if it is a t quark
-					// looking for W+ and its' leptonic decay
-					// without checks, just checking 2 daughters
-					//t = gen[i];
-					t_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
+					// looking for W- and its' leptonic decay
 					int n = p.numberOfDaughters();
+					//tbar = gen[i];
+					tbar_v = TLorentzVector(p.p4().X(), p.p4().Y(), p.p4().Z(), p.p4().T());
 					if (n == 2) { // it is a decay vertes of t to something
 						int d0_id = p.daughter(0)->pdgId();
 						int d1_id = p.daughter(1)->pdgId();
@@ -2253,40 +2293,48 @@ for(size_t f=0; f<urls.size();++f)
 						if (W_num < 0) continue;
 						const reco::Candidate * b = p.daughter( 1 - W_num );
 						const reco::Candidate * W = p.daughter( W_num );
-						const reco::Candidate * l = find_W_decay_l(W);
-						const reco::Candidate * nu = find_W_decay_nu(W);
-						if (!b || !l)
+						const reco::Candidate * cand1 = find_W_decay_l(W);
+						const reco::Candidate * cand2 = find_W_decay_nu(W);
+						bool quartic_decay = false;
+						if (!b)
 							{
 							cout << "broken decay in t" << endl;
 							continue;
 							}
-						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
+						if (!cand1)
+							{
+							quartic_decay = true;
+							const reco::Candidate * decay_point = find_W_decay_point(W);
+							cand1 = decay_point->daughter(0);
+							cand2 = decay_point->daughter(1);
+							}
+						ttbar_neutrinos += TLorentzVector(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
 						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
 						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
-						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
-						// got all products of t decay
-						//cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << "," << l->energy() << "," << l->p() << "," << b->energy() << "," << b->p() << endl;
-						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, boost_wX,boost_wY,boost_wZ,boost_wT, bWe,lWe,bAl,lAb
-						// ch,lep,dot,dot_bz,dot_lz, dot_lr,dot_br, le,lp,lpT,leta, be,bp,bpT,beta, Wm,tm, wX,wY,wZ,wE, tX,tY,tZ,tE, bWe,lWe,bAl,lAb
-						cout << "t_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
-						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
-						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
+						TLorentzVector cand1_v(cand1->p4().X(), cand1->p4().Y(), cand1->p4().Z(), cand1->p4().T());
+						TLorentzVector cand2_v(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
+						// got all products of tbar decay
+						cout << "t_decay," << quartic_decay << ',' << cand1->pdgId() << ',' << cand2->pdgId();
+						cout << "," << b->p4().Dot(cand1->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << cand1->p4().Dot(z_unit_vector);
+						cout << ',' << cand1_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
+						cout << ',' << cand1->energy() << "," << cand1->p() << ',' << cand1->pt() << ',' << cand1->eta();
+						cout << ',' << cand2->energy() << "," << cand2->p() << ',' << cand2->pt() << ',' << cand2->eta();
 						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
 						cout << "," << W->mass() << "," << p.mass();
 						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
-						cout << ',' << t_v.X() << ',' << t_v.Y() << ',' << t_v.Z() << ',' << t_v.T();
+						cout << ',' << tbar_v.X() << ',' << tbar_v.Y() << ',' << tbar_v.Z() << ',' << tbar_v.T();
 						TVector3 W_frame = W_v.BoostVector();
 						b_v.Boost(-W_frame);
 						W_v.Boost(-W_frame);
-						l_v.Boost(-W_frame);
+						cand1_v.Boost(-W_frame);
 						// boost check: Done
 						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
-						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
+						cout << ',' << b_v.E()  << ',' << cand1_v.E()  << ',' << b_v.Angle(cand1_v.Vect()) << ',' << cand1_v.Angle(b_v.Vect());// and spacial angle between them
 						cout << endl;
-						if (l->numberOfDaughters()>0)
+						if (cand1->numberOfDaughters()>0)
 							{
-							cout << "lepton has " << l->numberOfDaughters() << " daughters";
-							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
+							cout << "cand1 has " << cand1->numberOfDaughters() << " daughters";
+							for (int i=0; i<cand1->numberOfDaughters(); i++) cout << "\t" << cand1->daughter(i)->pdgId();
 							cout << endl;
 							}
 					}
@@ -2304,22 +2352,45 @@ for(size_t f=0; f<urls.size();++f)
 						if (W_num < 0) continue;
 						const reco::Candidate * b = p.daughter( 1 - W_num );
 						const reco::Candidate * W = p.daughter( W_num );
-						const reco::Candidate * l = find_W_decay_l(W);
-						const reco::Candidate * nu = find_W_decay_nu(W);
-						if (!b || !l)
+						const reco::Candidate * cand1 = find_W_decay_l(W);
+						const reco::Candidate * cand2 = find_W_decay_nu(W);
+						bool quartic_decay = false;
+						if (!b)
 							{
 							cout << "broken decay in t" << endl;
 							continue;
 							}
-						ttbar_neutrinos += TLorentzVector(nu->p4().X(), nu->p4().Y(), nu->p4().Z(), nu->p4().T());
+						if (!cand1)
+							{
+							quartic_decay = true;
+							const reco::Candidate * decay_point = find_W_decay_point(W);
+							cand1 = decay_point->daughter(0);
+							cand2 = decay_point->daughter(1);
+							}
+						ttbar_neutrinos += TLorentzVector(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
 						TLorentzVector b_v(b->p4().X(), b->p4().Y(), b->p4().Z(), b->p4().T());
 						TLorentzVector W_v(W->p4().X(), W->p4().Y(), W->p4().Z(), W->p4().T());
-						TLorentzVector l_v(l->p4().X(), l->p4().Y(), l->p4().Z(), l->p4().T());
+						TLorentzVector cand1_v(cand1->p4().X(), cand1->p4().Y(), cand1->p4().Z(), cand1->p4().T());
+						TLorentzVector cand2_v(cand2->p4().X(), cand2->p4().Y(), cand2->p4().Z(), cand2->p4().T());
 						// got all products of tbar decay
-						//cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << endl;
-						cout << "tbar_decay," << l->pdgId() << "," << b->p4().Dot(l->p4()) << ',' << b->p4().Dot(z_unit_vector) << ',' << l->p4().Dot(z_unit_vector);
-						cout << ',' << l_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
-						cout << ',' << l->energy() << "," << l->p() << ',' << l->pt() << ',' << l->eta();
+						//cout << "tbar_decay," << cand1->pdgId() << "," << b->p4().Dot(cand1->p4()) << endl;
+						// which_branch, quartic_or_not, Wp1_ID, Wp2_ID,
+						// bDotp1,bDotp2, bDotZ, p1DorZ,
+						// p1DotRandom, bDotRndom,
+						// p1E,p1P,p1Pt,p1Eta,
+						// p2E,p2P,p2Pt,p2Eta,
+						// bE,bP,bPt,bEta,
+						// Wmass, tmass,
+						// Wx,Wy,Wz,Wt,
+						// tx,ty,tz,tt,
+						// bWe,p1We,p2We,bAp1,p1Ab,bAp2
+						// 
+						cout << "tbar_decay," << quartic_decay << ',' << cand1->pdgId() << ',' << cand2->pdgId();
+						cout << "," << b->p4().Dot(cand1->p4()) << "," << b->p4().Dot(cand2->p4());
+						cout << ',' << b->p4().Dot(z_unit_vector) << ',' << cand1->p4().Dot(z_unit_vector);
+						cout << ',' << cand1_v.Dot(random_particle) << ',' << b_v.Dot(random_particle);
+						cout << ',' << cand1->energy() << "," << cand1->p() << ',' << cand1->pt() << ',' << cand1->eta();
+						cout << ',' << cand2->energy() << "," << cand2->p() << ',' << cand2->pt() << ',' << cand2->eta();
 						cout << "," << b->energy() << "," << b->p() << ',' << b->pt() << ',' << b->eta();
 						cout << "," << W->mass() << "," << p.mass();
 						cout << ',' << W_v.X() << ',' << W_v.Y() << ',' << W_v.Z() << ',' << W_v.T();
@@ -2327,15 +2398,16 @@ for(size_t f=0; f<urls.size();++f)
 						TVector3 W_frame = W_v.BoostVector();
 						b_v.Boost(-W_frame);
 						W_v.Boost(-W_frame);
-						l_v.Boost(-W_frame);
+						cand1_v.Boost(-W_frame);
 						// boost check: Done
 						//cout << ',' << W_v.Px() << ',' << W_v.Py() << ',' << W_v.Pz() << ',' << W_v.E();
-						cout << ',' << b_v.E()  << ',' << l_v.E()  << ',' << b_v.Angle(l_v.Vect()) << ',' << l_v.Angle(b_v.Vect());// and spacial angle between them
+						cout << ',' << b_v.E()  << ',' << cand1_v.E() << ',' << cand2_v.E();
+						cout << ',' << b_v.Angle(cand1_v.Vect()) << ',' << cand1_v.Angle(b_v.Vect()) << ',' << b_v.Angle(cand2_v.Vect());// and spacial angle between them
 						cout << endl;
-						if (l->numberOfDaughters()>0)
+						if (cand1->numberOfDaughters()>0)
 							{
-							cout << "lepton has " << l->numberOfDaughters() << " daughters";
-							for (int i=0; i<l->numberOfDaughters(); i++) cout << "\t" << l->daughter(i)->pdgId();
+							cout << "cand1 has " << cand1->numberOfDaughters() << " daughters";
+							for (int i=0; i<cand1->numberOfDaughters(); i++) cout << "\t" << cand1->daughter(i)->pdgId();
 							cout << endl;
 							}
 					}
