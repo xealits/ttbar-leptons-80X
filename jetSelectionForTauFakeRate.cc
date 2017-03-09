@@ -2260,10 +2260,11 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep;
-		crossClean_in_dR(selTaus, selElectrons, 0.4, selTausNoElectrons, weight, string("selTausNoElectrons"), false, debug);
-		crossClean_in_dR(selTaus, selMuons,     0.4, selTausNoMuons,     weight, string("selTausNoMuons"), false, debug);
-		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"), false, debug);
+		crossClean_in_dR(selTaus, selElectrons, 0.4, selTausNoElectrons, weight, string("selTausNoElectrons"), true, debug);
+		crossClean_in_dR(selTaus, selMuons,     0.4, selTausNoMuons,     weight, string("selTausNoMuons"),     true, debug);
+		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"),       true, debug);
 
+		// actually these will be recorded in 2d pt-eta distr-s of crossClean-ing
 		// check the cleaning of taus from leptons per eta (the problem with high fake rate in endcups):
 		for (size_t i = 0; i < selTaus.size(); ++i)
 			fill_1d(string("control_selTaus_eta"), 128, -3.0, 3.0, selTaus[i].eta(), weight);
@@ -2366,6 +2367,33 @@ for(size_t f=0; f<urls.size();++f)
 		pat::JetCollection selJets;
 		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jettaufr_jet_kino_cuts_pt, jettaufr_jet_kino_cuts_eta, selJets, true, debug);
 
+		// check distances between jets:
+		for (int i=0; i<selJetsNoLep.size(); i++)
+			{
+			for (int j=i+1; j<selJetsNoLep.size(); j++)
+				{
+				double delta_R = reco::deltaR(selJetsNoLep[i], selJetsNoLep[j]);
+				fill_1d(string("control_selJetsNoLep_deltaR"), 100, 0., 10., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_deltaR_eta1"), 100, 0., 10., 200, -3., 3., delta_R, selJetsNoLep[i].eta(), weight);
+				}
+			}
+
+		// check distances between jets and taus:
+		for (int j=0; j<selTausNoLep.size(); j++)
+			{
+			unsigned int number_of_matches = 0;
+			for (int i=0; i<selJetsNoLep.size(); i++)
+				{
+				double delta_R = reco::deltaR(selJetsNoLep[i], selTausNoLep[j]);
+				fill_1d(string("control_selJetsNoLep_selTausNoLep_deltaR"), 100, 0., 10., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_selTausNoLep_deltaR_tau_eta"), 100, 0., 10., 200, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
+				if (delta_R < tau_fake_distance)
+					number_of_matches += 1;
+				}
+			fill_1d(string("control_selTausNoLep_selJetsNoLep_number_of_deltaR_matches"), 10, 0., 10., number_of_matches, weight);
+			fill_2d(string("control_selTausNoLep_selJetsNoLep_number_of_deltaR_matches_eta"), 10, 0., 10., 200, -3., 3., number_of_matches, selTausNoLep[j].eta(), weight);
+			}
+
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?
 
@@ -2376,7 +2404,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::JetCollection selJetsNoLep;
-		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), false, debug);
+		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), true, debug);
 
 
 
@@ -2388,7 +2416,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 		pat::JetCollection selJetsNoLepNoTau;
-		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weight, string("selJetsNoLepNoTau"), false, debug);
+		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weight, string("selJetsNoLepNoTau"), true, debug);
 
 		if(debug){
 			cout << "processed jets" << endl;
