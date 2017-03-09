@@ -1230,9 +1230,9 @@ for(size_t f=0; f<urls.size();++f)
 		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
 
-        	const VertexCollection & vertexes = *(vertexHandle.product());
+        	const reco::VertexCollection & vertexes = *(vtxHandle.product());
 
-		VertexCollection::const_iterator vtx_good; // the iterator is probably just reco::Vertex
+		reco::VertexCollection::const_iterator vtx_good; // the iterator is probably just reco::Vertex
 		//if( produceJetIds_ ) {
 		// require basic quality cuts on the vertexes
 		vtx_good = vertexes.begin();
@@ -1601,12 +1601,21 @@ for(size_t f=0; f<urls.size();++f)
 		// loop through jets and get the PileupJetId for one of the algorithms
 		for (int i=0; i<IDjets.size(); i++)
 			{
-			pat::Jet & = IDjets[i];
+			pat::Jet & jet = IDjets[i];
+
 			// the jets are already corrected
 			PileupJetIdentifier puIdentifier;
 			// here they actually use const reco::Jet * theJet = reco::Jet *;
 			// let's try with pat:: and will see later
-			puIdentifier = ialgo->computeIdVariables(jet, jec,  &(*vtx_good), vertexes, rho);
+			// jec is needed here
+			// even if the jets are already corrected -- one will have to recompute jec then specifically for the PU ID
+			// for the test just take 1.
+			float jec = 1.0;
+			// also it runs only on reco::Jet s
+			// and it seems (in the example) you can get such a jet this way:
+			reco::Jet * corrJet = new pat::Jet(jet.correctedJet(0)); // uncorrected pat Jet
+			corrJet->scaleEnergy(jec); // correct it (what about MC and smearing stuff?)
+			puIdentifier = ialgo->computeIdVariables(corrJet, jec,  &(*vtx_good), vertexes, rho);
 			// it fills ialgo with jet parameters
 			// and returns the prepared jet Identifier
 			// which has the ID (gloat):
