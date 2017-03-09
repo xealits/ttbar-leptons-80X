@@ -494,6 +494,13 @@ int fill_btag_efficiency(string control_point_name, Double_t pt, Double_t eta, D
 int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC)
 	{
 
+	// for control record distr of given taus (not the matching jets -- just taus)
+	for (size_t i = 0; i < selTaus.size(); ++i)
+		{
+		pat::Tau & tau = selTaus[i];
+		fill_jet_distr(channel + selection + ("_taus_distr"), event_weight, tau.pt(), tau.eta(), jet_radius(tau));
+		}
+
 	for (size_t ijet = 0; ijet < selJets.size(); ++ijet)
 		{
 		pat::Jet& jet = selJets[ijet];
