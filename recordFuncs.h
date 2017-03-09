@@ -498,7 +498,9 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 	for (size_t i = 0; i < selTaus.size(); ++i)
 		{
 		pat::Tau & tau = selTaus[i];
-		fill_jet_distr(channel + selection + ("_taus_distr"), event_weight, tau.pt(), tau.eta(), jet_radius(tau));
+		// Calo Taus don't have radius?
+		//fill_jet_distr(channel + selection + ("_taus_distr"), event_weight, tau.pt(), tau.eta(), jet_radius(tau));
+		fill_2d(channel + selection + ("_taus_distr"), 100, 0., 300., 50, -2.5, 2.5, tau.pt(), tau.eta(), event_weight);
 		}
 
 	for (size_t ijet = 0; ijet < selJets.size(); ++ijet)

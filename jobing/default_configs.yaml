@@ -40,7 +40,7 @@ jettaufr_jet_kino_cuts_pt    : 20.
 jettaufr_jet_kino_cuts_eta   : 2.4
 jettaufr_tau_kino_cuts_pt    : 20.
 jettaufr_tau_kino_cuts_eta   : 2.3
-conf_record_electrons:  false
-conf_record_muons:      false
-conf_record_taus_ID:    false
-conf_record_taus_kino:  false
+conf_record_electrons:  False
+conf_record_muons:      False
+conf_record_taus_ID:    False
+conf_record_taus_kino:  False
