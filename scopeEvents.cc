@@ -1566,6 +1566,16 @@ for(size_t f=0; f<urls.size();++f)
 		// ------------ TESTING PUJetID
 		cout << "the PUJetID-s:" << endl;
 
+		// Trying to access the embedded PU Jet ID:
+		cout << "MINIAODv2 embedded" << endl;
+		for (int i=0; i<IDjets.size(); i++)
+			{
+			pat::Jet & jet = IDjets[i];
+			cout << '\t' << i << ' ' << jet.userFloat("pileupJetId:fullDiscriminant");
+			}
+		cout << endl;
+
+		cout << "recompute with the corrections" << endl;
 		// get the algorithms of PU jet IDs
 		/* this is the input from cfg.py file
 		std::vector<edm::ParameterSet> algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("algos");
@@ -1599,9 +1609,11 @@ for(size_t f=0; f<urls.size();++f)
 		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin(); // [(name, algo)]
 		PileupJetIdAlgo * ialgo = algoi->second;
 		// loop through jets and get the PileupJetId for one of the algorithms
+		// Recomputing the Pileup Jet ID:
 		for (int i=0; i<IDjets.size(); i++)
 			{
 			pat::Jet & jet = IDjets[i];
+
 
 			// the jets are already corrected
 			PileupJetIdentifier puIdentifier;
