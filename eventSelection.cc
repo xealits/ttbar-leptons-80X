@@ -404,7 +404,7 @@ double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_t
 	if (debug)
 		{
 		cout << jet_pt << " " << jet_eta << " " << jet_radius << " : " << global_bin_id << " : ";
-		cout << taus_rate1 << "/" << jets_rate1 << ", " << taus_rate2 << "/" << jets_rate2 << "; "<< fakerate << "\n";
+		cout << taus_rate1 << "/" << jets_rate1 << endl;
 		}
 
 	return fakerate;
@@ -1141,19 +1141,22 @@ TTree* summaryTree = NULL; //ev->;
 // Data-driven tau fakerate background FAKERATES
 
 TFile * tau_fake_rate1_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1") .c_str() );
+TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
+TFile * tau_fake_rate_file_dileptons = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons") .c_str() );
+
+Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
 
 // LARGE BINS for normal/vanila rates
 // TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
 // rate1 = file1 = JetHT data file
-TH3F * tau_fake_rate_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
+TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
+TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
 
 // rate2 = file2 = SingleMuon data file
-TH3F * tau_fake_rate_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
+TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
+TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
 
 // dilepton fake rates
-TFile * tau_fake_rate_file_dileptons = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons") .c_str() );
 TH3F * tau_fake_rate_jets_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr_large_bins");
 TH3F * tau_fake_rate_taus_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr_large_bins");
 TH3F * tau_fake_rate_jets_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr_large_bins");
@@ -1174,7 +1177,6 @@ TH3F * tau_fake_rate1_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Ge
 TH3F * tau_fake_rate1_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_tau_jets_distr");
 
 
-TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
 // rate2 = file2 = SingleMuon data file
 TH3F * tau_fake_rate2_jets_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_jets_distr");
 TH3F * tau_fake_rate2_taus_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_tau_jets_distr");
@@ -1182,11 +1184,9 @@ TH3F * tau_fake_rate2_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Ge
 TH3F * tau_fake_rate2_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr");
 
 
-Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
 
 
 // dilepton fake rates
-TFile * tau_fake_rate_file_dileptons = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons") .c_str() );
 TH3F * tau_fake_rate_jets_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr");
 TH3F * tau_fake_rate_taus_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
 TH3F * tau_fake_rate_jets_histoPROJECTIONS_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
@@ -3766,7 +3766,7 @@ for(size_t f=0; f<urls.size();++f)
 							{
 							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << " ";
-							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << "\n";
 							}
 						}
@@ -3841,8 +3841,8 @@ for(size_t f=0; f<urls.size();++f)
 
 					if (debug)
 						{
-						cout << "no-fake probs: " << jet_to_tau_no_fake_prob1_q << " " << jet_to_tau_no_fake_prob << " " << jet_to_tau_no_fake_prob2_q << "\n";
-						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2_q << "\n";
+						cout << "no-fake probs: " << jet_to_tau_no_fake_prob1_q << " " << jet_to_tau_no_fake_prob2_w << "\n";
+						cout << "fakerates: "     << jet_to_tau_fake_rate1_q    << " " << jet_to_tau_fake_rate2_w << "\n";
 						}
 
 
@@ -4130,7 +4130,7 @@ for(size_t f=0; f<urls.size();++f)
 							{
 							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << " ";
-							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate2_jets_histo_q, tau_fake_rate2_taus_histo_q, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
+							cout << (1. - jetToTauFakeRate_vanila(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]), debug));
 							cout << "\n";
 							}
 						}
@@ -4179,7 +4179,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					if (debug)
 						{
-						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate << " " << jet_to_tau_fake_rate2_q << "\n";
+						cout << "fakerates: " << jet_to_tau_fake_rate1_q << " " << jet_to_tau_fake_rate2_w << "\n";
 						}
 
 					/*
