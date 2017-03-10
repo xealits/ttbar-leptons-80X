@@ -305,11 +305,20 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 	// -- apparently, the parameters that are used in PF ID calculation use the uncorrected values stored in the jets
 	// so, everything is fine anyway
 	pat::Jet& jet = jets[ijet];
+	if (record)
+		{
+		fill_1d(string("control_jet_jets_forID_per_eta"), 100, -3., 3., jet.eta(), weight);
+		fill_1d(string("control_jet_jets_forID_per_pt"),  100,  0., 400., jet.pt(), weight);
+		}
 
 	bool passID = passPFJetID(jetID, jet);
 
 	// PUJet ID
 	float PUJetID_descriminant = jet.userFloat("pileupJetId:fullDiscriminant");
+	if (record)
+		{
+		fill_2d(string("control_jet_PUJetID_discriminant_vs_eta"), 100, -1.5, 1.5, 100, -3., 3., PUJetID_descriminant, jet.eta(), weight);
+		}
 	bool passPUJetID_Loose  = false;
 	bool passPUJetID_Medium = false;
 	bool passPUJetID_Tight  = false;
@@ -337,6 +346,24 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
 		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
 		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+	if (record)
+		{
+		if (passPUJetID_Loose)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Loose_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Loose_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
+		if (passPUJetID_Medium)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Medium_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Medium_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
+		if (passPUJetID_Tight)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Tight_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Tight_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
 		}
 
 	if (passID && (! passPUJetID_Loose))
