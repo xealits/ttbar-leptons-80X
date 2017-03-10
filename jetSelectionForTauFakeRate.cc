@@ -2403,8 +2403,19 @@ for(size_t f=0; f<urls.size();++f)
 			for (int j=i+1; j<selJetsNoLep.size(); j++)
 				{
 				double delta_R = reco::deltaR(selJetsNoLep[i], selJetsNoLep[j]);
-				fill_1d(string("control_selJetsNoLep_deltaR"), 100, 0., 10., delta_R, weight);
-				fill_2d(string("control_selJetsNoLep_deltaR_eta1"), 100, 0., 10., 200, -3., 3., delta_R, selJetsNoLep[i].eta(), weight);
+				fill_1d(string("control_selJetsNoLep_deltaR"), 30, 0., 6., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_deltaR_eta1"), 30, 0., 6., 20, -3., 3., delta_R, selJetsNoLep[i].eta(), weight);
+				}
+			}
+
+		// check distances between taus:
+		for (int j=0; j<selTausNoLep.size(); j++)
+			{
+			for (int i=j+1; i<selTausNoLep.size(); i++)
+				{
+				double delta_R = reco::deltaR(selTausNoLep[i], selTausNoLep[j]);
+				fill_1d(string("control_selTausNoLep_deltaR"), 30, 0., 6., delta_R, weight);
+				fill_2d(string("control_selTausNoLep_deltaR_eta1"), 30, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
 				}
 			}
 
@@ -2415,13 +2426,13 @@ for(size_t f=0; f<urls.size();++f)
 			for (int i=0; i<selJetsNoLep.size(); i++)
 				{
 				double delta_R = reco::deltaR(selJetsNoLep[i], selTausNoLep[j]);
-				fill_1d(string("control_selJetsNoLep_selTausNoLep_deltaR"), 100, 0., 10., delta_R, weight);
-				fill_2d(string("control_selJetsNoLep_selTausNoLep_deltaR_tau_eta"), 100, 0., 10., 200, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
+				fill_1d(string("control_selJetsNoLep_selTausNoLep_deltaR"), 30, 0., 6., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_selTausNoLep_deltaR_tau_eta"), 30, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
 				if (delta_R < tau_fake_distance)
 					number_of_matches += 1;
 				}
 			fill_1d(string("control_selTausNoLep_selJetsNoLep_number_of_deltaR_matches"), 10, 0., 10., number_of_matches, weight);
-			fill_2d(string("control_selTausNoLep_selJetsNoLep_number_of_deltaR_matches_eta"), 10, 0., 10., 200, -3., 3., number_of_matches, selTausNoLep[j].eta(), weight);
+			fill_2d(string("control_selTausNoLep_selJetsNoLep_number_of_deltaR_matches_eta"), 10, 0., 10., 20, -3., 3., number_of_matches, selTausNoLep[j].eta(), weight);
 			}
 
 		/*
