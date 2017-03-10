@@ -308,7 +308,38 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 
 	bool passID = passPFJetID(jetID, jet);
 
-	if (passID)
+	// PUJet ID
+	float PUJetID_descriminant = jet.userFloat("pileupJetId:fullDiscriminant");
+	bool passPUJetID_Loose  = false;
+	bool passPUJetID_Medium = false;
+	bool passPUJetID_Tight  = false;
+	// assume eta < 2.5 always
+	if (jet.pt() > 30.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.86;
+		passPUJetID_Medium = PUJetID_descriminant >  0.61;
+		passPUJetID_Loose  = PUJetID_descriminant > -0.89;
+		}
+	else if (jet.pt() > 20.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+	else if (jet.pt() > 10.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+	else
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+
+	if (passID && (! passPUJetID_Loose))
 		{
 		selJets.push_back(jet);
 		if (record)
