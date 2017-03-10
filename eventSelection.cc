@@ -1347,18 +1347,48 @@ LeptonEfficiencySF lepEff;
 TString bTaggingEfficiencies_filename   = runProcess.getParameter<std::string>("bTaggingEfficiencies");
 gSystem->ExpandPathName(bTaggingEfficiencies_filename);
 TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Data());
-TH2F* bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get("btag_b_hadronFlavour_candidates");
-TH2F* bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get("btag_b_hadronFlavour_candidates_tagged");
-TH2F* bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get("btag_c_hadronFlavour_candidates");
-TH2F* bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get("btag_c_hadronFlavour_candidates_tagged");
-TH2F* bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get("btag_udsg_hadronFlavour_candidates");
-TH2F* bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get("btag_udsg_hadronFlavour_candidates_tagged");
 
+TH2F* bTaggingEfficiencies_b_alljet   ;
+TH2F* bTaggingEfficiencies_b_tagged   ;
+TH2F* bTaggingEfficiencies_c_alljet   ;
+TH2F* bTaggingEfficiencies_c_tagged   ;
+TH2F* bTaggingEfficiencies_udsg_alljet;
+TH2F* bTaggingEfficiencies_udsg_tagged;
 
-//struct bTaggingEfficiencyHistograms {
-//	TH2F* b_alljet   ;
-//	TH2F* b_tagged   ;
-//	TH2F* c_alljet   ;
+TString backup_b_eff_distr("MC2016_Summer16_DYJetsToLL_50toInf_madgraph");
+
+// ( ? : ) would look too much here
+if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_b_hadronFlavour_candidates_tagged"))
+	{
+	bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates");
+	bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates_tagged");
+	}
+else
+	{
+	bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
+	bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
+	}
+if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_c_hadronFlavour_candidates_tagged"))
+	{
+	bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates");
+	bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates_tagged");
+	}
+else
+	{
+	bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
+	bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
+	}
+if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"))
+	{
+	bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates");
+	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged");
+	}
+else
+	{
+	bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
+	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
+	}
+
 //	TH2F* c_tagged   ;
 //	TH2F* udsg_alljet;
 //	TH2F* udsg_tagged;
