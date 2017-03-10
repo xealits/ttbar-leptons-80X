@@ -254,6 +254,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::ve
 	double dR_max, // for jet matching in jet corrections smearing for MC
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
+	string& jetPUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -287,6 +288,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 		{
 		fill_2d(string("control_jet_PUJetID_discriminant_vs_eta"), 100, -1.5, 1.5, 100, -3., 3., PUJetID_descriminant, jet.eta(), weight);
 		}
+
 	bool passPUJetID_Loose  = false;
 	bool passPUJetID_Medium = false;
 	bool passPUJetID_Tight  = false;
@@ -334,7 +336,15 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 			}
 		}
 
-	if (passID && (! passPUJetID_Loose))
+	bool passPUJetID        = false;
+	if (jetPUID == string("LoosePU"))
+		passPUJetID = passPUJetID_Loose;
+	else if (jetPUID == string("MediumPU"))
+		passPUJetID = passPUJetID_Medium;
+	else if (jetPUID == string("TightPU"))
+		passPUJetID = passPUJetID_Tight;
+
+	if (passID && (! passPUJetID))
 		{
 		selJets.push_back(jet);
 		if (record)

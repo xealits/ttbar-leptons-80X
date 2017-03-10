@@ -960,6 +960,9 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
 
+string jetID = runProcess.getParameter<std::string>("jetID"),
+	jetPUID = runProcess.getParameter<std::string>("jetPUID");
+
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
 const edm::ParameterSet& myVidElectronVetoIdWPConf = myVidElectronIdConf.getParameterSet("loose");
@@ -2333,6 +2336,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	double dR_max, // for jet matching in jet corrections smearing for MC
 		//	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 		//	string& jetID,
+		//	string& jetPUID,
 		//	double pt_cut, double eta_cut,
 		//	TRandom *r3,   // the randomizer for the smearing
 		//	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -2340,10 +2344,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
 		pat::JetCollection IDjets;
-		string jetID("Loose");
+		//string jetID("Loose");
+		//string jetPUID("MediumPU");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, r3, full_jet_corr, IDjets, true, debug);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, r3, full_jet_corr, IDjets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);

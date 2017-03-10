@@ -1559,9 +1559,10 @@ for(size_t f=0; f<urls.size();++f)
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
 		pat::JetCollection IDjets;
 		string jetID("Loose");
+		string jetPUID("MediumPU");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, r3, full_jet_corr, IDjets, false, false);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, r3, full_jet_corr, IDjets, false, false);
 
 		// ------------ TESTING PUJetID
 		cout << "the PUJetID-s:" << endl;

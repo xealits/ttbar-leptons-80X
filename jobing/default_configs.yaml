@@ -32,6 +32,8 @@ tau_decayMode       : "decayModeFinding"
 tau_ID              : "byMediumCombinedIsolationDeltaBetaCorr3Hits"
 tau_againstMuon     : "againstMuonTight3"
 tau_againstElectron : "againstElectronTightMVA6"
+jetID   : "Loose"
+jetPUID : "MediumPU"
 jet_kino_cuts_pt    : 25.
 jet_kino_cuts_eta   : 2.4
 tau_kino_cuts_pt    : 25.
