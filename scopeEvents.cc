@@ -564,6 +564,10 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
 
 std::vector<edm::ParameterSet> PUJetID_algos = runProcess.getParameter<std::vector<edm::ParameterSet> >("PUJetID_algos");
+string jetID("Loose");
+string jetPUID("TightPU");
+bool with_antiPU            = runProcess.getParameter<bool>  ("with_antiPU");
+cout << "Jet IDs: (main) " << jetID << '\t' << "(PU)" << jetPUID << "\t(with antiPUT)" << with_antiPU << endl;
 
 cout << "Output directory: " << outdir << endl;
 
@@ -1558,11 +1562,9 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector full_jet_corr(0., 0., 0., 0.);
 		pat::JetCollection IDjets;
-		string jetID("Loose");
-		string jetPUID("MediumPU");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, r3, full_jet_corr, IDjets, false, false);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_antiPU, r3, full_jet_corr, IDjets, false, false);
 
 		// ------------ TESTING PUJetID
 		cout << "the PUJetID-s:" << endl;

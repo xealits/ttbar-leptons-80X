@@ -255,6 +255,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::ve
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
 	string& jetID,
 	string& jetPUID,
+	bool with_antiPUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
 	LorentzVector& full_jet_corr, pat::JetCollection& selJets,                          // output
@@ -293,12 +294,13 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 	bool passPUJetID_Medium = false;
 	bool passPUJetID_Tight  = false;
 	// assume eta < 2.5 always
-	if (jet.pt() > 30.)
+	//if (jet.pt() > 30.)
 		{
 		passPUJetID_Tight  = PUJetID_descriminant >  0.86;
 		passPUJetID_Medium = PUJetID_descriminant >  0.61;
 		passPUJetID_Loose  = PUJetID_descriminant > -0.89;
 		}
+	/*
 	else if (jet.pt() > 20.)
 		{
 		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
@@ -317,6 +319,8 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
 		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
 		}
+	*/
+
 	if (record)
 		{
 		if (passPUJetID_Loose)
@@ -344,7 +348,10 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 	else if (jetPUID == string("TightPU"))
 		passPUJetID = passPUJetID_Tight;
 
-	if (passID && (! passPUJetID))
+	if (with_antiPUID)
+		passID &= (! passPUJetID);
+
+	if (passID)
 		{
 		selJets.push_back(jet);
 		if (record)

@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 10
+#define INPUT_DTAGS_START 11
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] logy lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
-if (argc < 9)
+char usage_string[128] = "[--verbose] [--normalize] large logy lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
+if (argc < 10)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -62,16 +62,17 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-TString set_logy(argv[input_starts + 1]);
-double lumi = atof(argv[input_starts + 2]);
-TString distr_selection(argv[input_starts + 3]);
-TString projection(argv[input_starts + 4]);
-Int_t rebin_factor(atoi(argv[input_starts + 5]));
+TString large(argv[input_starts + 1]);
+TString set_logy(argv[input_starts + 2]);
+double lumi = atof(argv[input_starts + 3]);
+TString distr_selection(argv[input_starts + 4]);
+TString projection(argv[input_starts + 5]);
+Int_t rebin_factor(atoi(argv[input_starts + 6]));
 
-double x_axis_min_range = atof(argv[input_starts + 6]);
-double x_axis_max_range = atof(argv[input_starts + 7]);
-TString name_tag(argv[input_starts + 8]);
-TString dir(argv[input_starts + 9]);
+double x_axis_min_range = atof(argv[input_starts + 7]);
+double x_axis_max_range = atof(argv[input_starts + 8]);
+TString name_tag(argv[input_starts + 9]);
+TString dir(argv[input_starts + 10]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -112,8 +113,15 @@ TH1D* hs_data[2] = {NULL, NULL};
 
 // different jet origin histos:
 unsigned int n_jet_origins = 5;
-vector<string> mc_jet_origins = {"_tau_jets_distr_o", "_tau_jets_distr_t", "_tau_jets_distr_b", "_tau_jets_distr_q", "_tau_jets_distr_g",
+vector<string> mc_jet_origins_fine = {"_tau_jets_distr_o", "_tau_jets_distr_t", "_tau_jets_distr_b", "_tau_jets_distr_q", "_tau_jets_distr_g",
 	"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
+vector<string> mc_jet_origins_large = {"_tau_jets_distr_large_bins_o", "_tau_jets_distr_large_bins_t", "_tau_jets_distr_large_bins_b", "_tau_jets_distr_large_bins_q", "_tau_jets_distr_large_bins_g",
+	"_jets_distr_large_bins_o", "_jets_distr_large_bins_t", "_jets_distr_large_bins_b", "_jets_distr_large_bins_q", "_jets_distr_large_bins_g"};
+vector<string> mc_jet_origins;
+if (large == TString("T"))
+	mc_jet_origins = mc_jet_origins_large;
+else
+	mc_jet_origins = mc_jet_origins_fine;
 //HLTjetmu_qcd_tau_jets_distr_q
 vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL};
@@ -170,8 +178,16 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		{
 		if (be_verbose) cout << "summing data-stack" << endl;
 		vector<TString> distro_names;
-		distro_names.push_back(distr_selection + string("_tau_jets_distr"));
-		distro_names.push_back(distr_selection + string("_jets_distr"));
+		if (large == TString("T"))
+			{
+			distro_names.push_back(distr_selection + string("_tau_jets_distr_large_bins"));
+			distro_names.push_back(distr_selection + string("_jets_distr_large_bins"));
+			}
+		else
+			{
+			distro_names.push_back(distr_selection + string("_tau_jets_distr"));
+			distro_names.push_back(distr_selection + string("_jets_distr"));
+			}
 
 		for (int i=0; i<distro_names.size(); i++)
 			{
@@ -488,7 +504,7 @@ leg->Draw();
 
 //cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRates_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy == TString("T") || set_logy == TString("Y")? "_logy" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr_selection + (large == TString("T")? "_large" : "") + "_OriginFakeRates_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy == TString("T") || set_logy == TString("Y")? "_logy" : "") + ".png" );
 
 return 0;
 }

@@ -962,11 +962,14 @@ cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon
 
 string jetID = runProcess.getParameter<std::string>("jetID"),
 	jetPUID = runProcess.getParameter<std::string>("jetPUID");
+bool with_antiPU            = runProcess.getParameter<bool>  ("with_antiPU");
+
+cout << "Jet IDs: (main) " << jetID << '\t' << "(PU)" << jetPUID << "\t(with antiPUT)" << with_antiPU << endl;
 
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
 const edm::ParameterSet& myVidElectronVetoIdWPConf = myVidElectronIdConf.getParameterSet("loose");
-	
+
 VersionedPatElectronSelector electronVidMainId(myVidElectronMainIdWPConf);
 VersionedPatElectronSelector electronVidVetoId(myVidElectronVetoIdWPConf);
 	
@@ -2348,7 +2351,7 @@ for(size_t f=0; f<urls.size();++f)
 		//string jetPUID("MediumPU");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, r3, full_jet_corr, IDjets, true, debug);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_antiPU, r3, full_jet_corr, IDjets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);

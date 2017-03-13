@@ -178,17 +178,17 @@ proxy:
 	make-x509-proxy
 
 calculate_luminosity:
-	cat test/tests/outdir_"${job}"/*json > "${job}"_prejson
-	sed -i 's/}{/,/g'     "${job}"_prejson
-	sed -i 's/,,,*/,/g'   "${job}"_prejson
-	sed -i 's/ ,"/,\n"/g' "${job}"_prejson
-	sed -i -e 's/"[0-9]/[&/' -e 's/]]/]]]/' -e 's/{/[/' -e 's/}/]/' -e 's/:/,/' "${job}"_prejson
+	cat test/tests/outdir_"${job}"/*${runs}*json > "${job}"_${runs}_prejson
+	sed -i 's/}{/,/g'     "${job}"_${runs}_prejson
+	sed -i 's/,,,*/,/g'   "${job}"_${runs}_prejson
+	sed -i 's/ ,"/,\n"/g' "${job}"_${runs}_prejson
+	sed -i -e 's/"[0-9]/[&/' -e 's/]]/]]]/' -e 's/{/[/' -e 's/}/]/' -e 's/:/,/' "${job}"_${runs}_prejson
 	#cd analysis/job-lumis
-	./merge_json.py "${job}"_prejson "${job}".json
-	brilcalc lumi -u /pb --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json -i "${job}".json | tee "${job}".brilcalc.out
-	mv "${job}"_prejson analysis/job-lumis
-	mv "${job}".json analysis/job-lumis
-	mv "${job}".brilcalc.out analysis/job-lumis
+	./merge_json.py "${job}"_${runs}_prejson "${job}"_${runs}.json
+	brilcalc lumi -u /pb --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json -i "${job}"_${runs}.json | tee "${job}"_${runs}.brilcalc.out
+	mv "${job}"_${runs}_prejson analysis/job-lumis
+	mv "${job}"_${runs}.json analysis/job-lumis
+	mv "${job}"_${runs}.brilcalc.out analysis/job-lumis
 
 
 calculate_prejson:
@@ -394,14 +394,14 @@ jet_mc_fakerates_dilep:
 	jet_fakerate_per_mc 0.25 elmu_passjets x 1  0 150    elmu test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}`
 
 jet_origin_fakerates_qcd:
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTjet_qcd x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTjet_qcd z 1  0   0.4 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTjet_qcd y 1 -2.5 2.5 JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTjet_qcd x 1  0 150   JetHT test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_JetHT`
 
 jet_origin_fakerates_wjets:
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
-	jet_fakerate_per_origin ${set_logy} 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTmu_wjets z 1  0   0.4 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTmu_wjets y 1 -2.5 2.5 SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
+	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTmu_wjets x 1  0 150   SingleMuon test/tests/outdir_"${job}"/merged-sets/ `cat dtags_${job}_SingleMuon`
 
 jet_origin_fakerates: set_logy=T
 jet_origin_fakerates: jet_origin_fakerates_qcd jet_origin_fakerates_wjets
