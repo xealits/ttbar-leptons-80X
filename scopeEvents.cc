@@ -1595,10 +1595,12 @@ for(size_t f=0; f<urls.size();++f)
 		std::vector<edm::ParameterSet> PUJetID_algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("PUJetID_algos");
 		*/
 		std::vector<std::pair<std::string, PileupJetIdAlgo *> > algos_;
+		cout << "PUJetID algos labels:";
 		for(std::vector<edm::ParameterSet>::iterator it=PUJetID_algos.begin(); it!=PUJetID_algos.end(); ++it)
 			{
 			std::string label = it->getParameter<std::string>("label");
 			algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it, true)) );
+			cout << " " << label;
 			//algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it, runMvas_)) );
 			/* this registers the output in cmssw with ValueMap
 			if( runMvas_ )
@@ -1608,6 +1610,7 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			*/
 			}
+		cout << endl;
 
 		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin(); // [(name, algo)]
 		PileupJetIdAlgo * ialgo = algoi->second;

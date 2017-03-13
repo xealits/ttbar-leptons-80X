@@ -24,7 +24,7 @@ _chsalgos_76x = cms.VPSet(full_76x_chs,cutbased)
 _chsalgos_80x = cms.VPSet(full_80x_chs,cutbased)
 _chsalgos_81x = cms.VPSet(full_81x_chs,cutbased)
 
-_std_PUJetID_algos = _chsalgos_81x
+_std_PUJetID_algos = _chsalgos_80x
 
 ###### Electron VID
 from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff import *
