@@ -34,7 +34,7 @@ tau_againstMuon     : "againstMuonTight3"
 tau_againstElectron : "againstElectronTightMVA6"
 jetID   : "Loose"
 jetPUID : "TightPU"
-with_antiPU: False
+with_PU: False
 jet_kino_cuts_pt    : 25.
 jet_kino_cuts_eta   : 2.4
 tau_kino_cuts_pt    : 25.

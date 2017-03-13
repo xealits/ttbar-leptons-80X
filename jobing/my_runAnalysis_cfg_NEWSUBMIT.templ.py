@@ -91,7 +91,7 @@ runProcess = cms.PSet(
     tau_againstElectron = cms.string("{tau_againstElectron}"),
     jetID   = cms.string("{jetID}"),
     jetPUID = cms.string("{jetPUID}"),
-    with_antiPU  = cms.bool({with_antiPU}),
+    with_PU  = cms.bool({with_PU}),
 
     jet_kino_cuts_pt    = cms.double({jet_kino_cuts_pt}),
     jet_kino_cuts_eta   = cms.double({jet_kino_cuts_eta}),
