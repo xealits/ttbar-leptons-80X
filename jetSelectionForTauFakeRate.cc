@@ -914,7 +914,7 @@ TString dtag         = runProcess.getParameter<std::string>("dtag");
 string dtag_s        = runProcess.getParameter<std::string>("dtag");
 string job_num       = runProcess.getParameter<std::string>("job_num");
 
-cout << "Job:" << endl << dtag_s << job_num << endl;
+cout << "Job:" << endl << dtag_s << '_' << job_num << endl;
 JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 
 bool conf_record_electrons =  runProcess.getParameter<bool> ("conf_record_electrons");
