@@ -2412,8 +2412,8 @@ for(size_t f=0; f<urls.size();++f)
 			for (int j=i+1; j<selJetsNoLep.size(); j++)
 				{
 				double delta_R = reco::deltaR(selJetsNoLep[i], selJetsNoLep[j]);
-				fill_1d(string("control_selJetsNoLep_deltaR"), 30, 0., 6., delta_R, weight);
-				fill_2d(string("control_selJetsNoLep_deltaR_eta1"), 30, 0., 6., 20, -3., 3., delta_R, selJetsNoLep[i].eta(), weight);
+				fill_1d(string("control_selJetsNoLep_deltaR"), 60, 0., 6., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_deltaR_eta1"), 60, 0., 6., 20, -3., 3., delta_R, selJetsNoLep[i].eta(), weight);
 				}
 			}
 
@@ -2423,8 +2423,8 @@ for(size_t f=0; f<urls.size();++f)
 			for (int i=j+1; i<selTausNoLep.size(); i++)
 				{
 				double delta_R = reco::deltaR(selTausNoLep[i], selTausNoLep[j]);
-				fill_1d(string("control_selTausNoLep_deltaR"), 30, 0., 6., delta_R, weight);
-				fill_2d(string("control_selTausNoLep_deltaR_eta1"), 30, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
+				fill_1d(string("control_selTausNoLep_deltaR"), 60, 0., 6., delta_R, weight);
+				fill_2d(string("control_selTausNoLep_deltaR_eta1"), 60, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
 				}
 			}
 
@@ -2435,8 +2435,8 @@ for(size_t f=0; f<urls.size();++f)
 			for (int i=0; i<selJetsNoLep.size(); i++)
 				{
 				double delta_R = reco::deltaR(selJetsNoLep[i], selTausNoLep[j]);
-				fill_1d(string("control_selJetsNoLep_selTausNoLep_deltaR"), 30, 0., 6., delta_R, weight);
-				fill_2d(string("control_selJetsNoLep_selTausNoLep_deltaR_tau_eta"), 30, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
+				fill_1d(string("control_selJetsNoLep_selTausNoLep_deltaR"), 60, 0., 6., delta_R, weight);
+				fill_2d(string("control_selJetsNoLep_selTausNoLep_deltaR_tau_eta"), 60, 0., 6., 20, -3., 3., delta_R, selTausNoLep[j].eta(), weight);
 				if (delta_R < tau_fake_distance)
 					number_of_matches += 1;
 				}
