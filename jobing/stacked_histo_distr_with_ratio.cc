@@ -121,7 +121,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		}
 	else
 		{
-		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(5);
+		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
 		histos.back()->Scale(ratio);
 		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 		histos.back()->Print();
@@ -225,7 +225,8 @@ hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_data->GetYaxis()->SetLabelFont(63);
 hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 
-hs->Draw(); // the stack
+hs_data->Draw(); // drawing data-MC-data to have them both in the range of the plot
+hs->Draw("same"); // the stack
 // also draw the sum of the stack and its' errors:
 //((TObjArray*) hs->GetStack())->Last()->Draw("e4 same"); // then, how to set styles with the hatched error bars?
 
@@ -310,10 +311,10 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRange(0.75, 1.25);
+hs_sum_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
+hs_data_relative->GetYaxis()->SetRange(0.75, 1.25);
+hs_data_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
 
 hs_sum_relative->Draw("e2");
 hs_data_relative->Draw("e p same");

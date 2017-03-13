@@ -9,3 +9,7 @@ minbias 66.0 works better in 2016 (they say the theory is 66 is for B-F, G-H is 
 
 pileupCalc.py -i LSForForPath_HLT_Ele32_eta2p1_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG22er_OR_L1_SingleIsoEG24er_OR_L1_SingleIsoEG26er_OR_L1_SingleIsoEG28er_OR_L1_SingleIsoEG30er_just-cert.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 66000 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_7-3-2017.root
 
+
+apparently minbias 63 is the best
+
+pileupCalc.py -i LSForForPath_HLT_Ele32_eta2p1_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG22er_OR_L1_SingleIsoEG24er_OR_L1_SingleIsoEG26er_OR_L1_SingleIsoEG28er_OR_L1_SingleIsoEG30er_just-cert.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 63000 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-63-0_13-3-2017.root

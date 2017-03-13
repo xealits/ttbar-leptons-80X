@@ -105,7 +105,7 @@ selection_control_histos_eta:
 	done
 
 selection_control_histos_pileup:
-	for h in pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight;     \
+	for h in pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight pileup_singlelepton_nGoodPV_rawWeight pileup_singlelepton_nGoodPV_weight pileup_dilepton_nGoodPV_rawWeight pileup_dilepton_nGoodPV_weight pileup_sel_passos_nGoodPV_rawWeight pileup_sel_passos_nGoodPV_weight pileup_smu_passos_nGoodPV_rawWeight pileup_smu_passos_nGoodPV_weight ;     \
 	do                                                \
 	stacked_histo_distr_with_ratio ${lumi} $$h 1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
