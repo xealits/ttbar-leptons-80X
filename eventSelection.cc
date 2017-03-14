@@ -1979,11 +1979,13 @@ for(size_t f=0; f<urls.size();++f)
 		//singlelep_ttbar_initialevents->Fill(1);
 		iev++;
 		totalEntries++;
+		/*
 		if (iev % treeStep == 0)
 			{
 			printf (".");
 			if(!debug) fflush (stdout); // Otherwise debug messages are flushed
 			}
+		*/
 
 		edm::EventBase const & myEvent = ev;
 

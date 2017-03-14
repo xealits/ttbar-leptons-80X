@@ -15,6 +15,6 @@ echo hadd-ing jobs of $dtags_file dtags in $job_dir to merged-sets/
 for d in `cat $dtags_file`                                                          
 do
   echo $d
-  hadd $job_dir/merged-sets/$d.root $job_dir/"$d"_*root
+  hadd $job_dir/merged-sets/$d.root $job_dir/"$d"*root
 done
 

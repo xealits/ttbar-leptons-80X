@@ -335,7 +335,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 TH1D* hs_mc_all_jets = (TH1D*) mc_jet_origin_ths[0 + n_jet_origins]->Clone();
 hs_mc_all_jets->Reset();
 
-double integral_data = hs_data[1]->Integral();
+double integral_data = (hs_data[1]? hs_data[1]->Integral() : 0);
 double integral_MC_taus  = 0.;
 double integral_MC_jets  = 0.;
 for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
@@ -361,7 +361,7 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	hs_mc_all_jets->Add(mc_jet_origin_ths[n_jet_origins + origin_n]);
 	if (be_verbose) cout << mc_jet_origins[origin_n] << "\t" << mc_jet_origins[n_jet_origins + origin_n] << endl;
 	}
-cout << "data    integral = " << "(" << hs_data[0]->Integral() << ")" << integral_data << endl;
+cout << "data    integral = " << "(" << (hs_data[0]? hs_data[0]->Integral() : 0) << ")" << integral_data << endl;
 cout << "MC taus integral = " << integral_MC_taus   << endl;
 cout << "MC jets integral = " << integral_MC_jets << "(" << hs_mc_all_jets->Integral() << ")" << endl;
 //double ratio = integral_data / integral_MC;
@@ -380,9 +380,12 @@ for (int origin_n=n_jet_origins; origin_n<mc_jet_origin_ths.size(); origin_n++)
 cout << endl;
 
 // find the fake rate in data:
-hs_data[0]->Sumw2();
-hs_data[0]->SetStats(0);      // No statistics on lower plot
-hs_data[0]->Divide(hs_data[1]);
+if (hs_data[0])
+	{
+	hs_data[0]->Sumw2();
+	hs_data[0]->SetStats(0);      // No statistics on lower plot
+	hs_data[0]->Divide(hs_data[1]);
+	}
 
 /*
 if (normalize_MC)
@@ -411,6 +414,21 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	distr->Divide(hs_mc_all_jets);
 	cout << mc_jet_origins[origin_n] << '\t' << distr->Integral() << endl; // average fake rate from this origin
 	//mc_jet_origin_ths[origin_n]->Divide(mc_jet_origin_ths[n_jet_origins + origin_n]);
+
+	distr->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+	distr->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
+	if (set_logy == TString("T") || set_logy == TString("Y"))
+		{
+		distr->GetYaxis()->SetRange(0.0001, 1);
+		distr->GetYaxis()->SetRangeUser(0.0001, 1);
+		}
+	else
+		{
+		double top_limit = (projection == TString("z")? 0.1 : 0.01);
+		distr->GetYaxis()->SetRange(0.0001, top_limit);
+		distr->GetYaxis()->SetRangeUser(0.0001, top_limit);
+		}
 
 	// and add the histogram to the stack and record about it to the legend
 	hs->Add(distr, "HIST");
@@ -449,25 +467,34 @@ for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
 	}
 */
 
-hs_data[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-hs_data[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+if (hs_data[0])
+	{
+	hs_data[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+	hs_data[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+	}
 
 hs->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
 hs->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 
 if (set_logy == TString("T") || set_logy == TString("Y"))
 	{
-	cst->SetLogy();
-	hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
-	hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
+	if (hs_data[0])
+		{
+		hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
+		hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
+		}
 	hs->GetYaxis()->SetRange(0.0001, 1);
 	hs->GetYaxis()->SetRangeUser(0.0001, 1);
+	cst->SetLogy();
 	}
 else
 	{
 	double top_limit = (projection == TString("z")? 0.1 : 0.01);
-	hs_data[0]->GetYaxis()->SetRange(0.0001, top_limit);
-	hs_data[0]->GetYaxis()->SetRangeUser(0.0001, top_limit);
+	if (hs_data[0])
+		{
+		hs_data[0]->GetYaxis()->SetRange(0.0001, top_limit);
+		hs_data[0]->GetYaxis()->SetRangeUser(0.0001, top_limit);
+		}
 	hs->GetYaxis()->SetRange(0.0001, top_limit);
 	hs->GetYaxis()->SetRangeUser(0.0001, top_limit);
 	}
@@ -487,9 +514,14 @@ else
 //if (projection == string("x") || projection == string("z"))
 	//set_logy = true;
 
-hs_data[0]->Draw("e p"); // to pass the title/axes settings to the canvas/plot/pad/etc root-shmuz
-hs->Draw("same"); // draw the stack
-hs_data[0]->Draw("e same p"); // to overlay MC
+if (hs_data[0])
+	{
+	hs_data[0]->Draw("e p"); // to pass the title/axes settings to the canvas/plot/pad/etc root-shmuz
+	hs->Draw("same"); // draw the stack
+	hs_data[0]->Draw("e same p"); // to overlay MC
+	}
+else
+	hs->Draw(); // draw the stack
 
 leg->Draw();
 
