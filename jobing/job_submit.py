@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("template",      help="the filename (relational path) of the cfg.py template for the jobs")
     parser.add_argument("-n", "--number-of-files", type=int, default=10, help="amount of files per job")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+    parser.add_argument("-l", "--lumi-mask",    help="filename for the lumi-mask file to use for all jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
     parser.add_argument("--no-submit",  help="don't submit the generated jobs",
         action = "store_true")
@@ -153,7 +154,10 @@ if __name__ == "__main__":
             print("Submitting dtag " + dtag)
             print(dset)
 
-            lumiMask = d.get('lumiMask', '')
+            if args.lumi_mask:
+                lumiMask = args.lumi_mask
+            else:
+                lumiMask = d.get('lumiMask', '')
             # TODO: other parameters as well?
 
             # get files of the dset
