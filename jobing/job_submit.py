@@ -16,6 +16,7 @@ if __name__ == "__main__":
     parser.add_argument("defaults", help="the filename (relational path) of the YAML file with default configs")
     parser.add_argument("-c", "--configs", help="the filename (relational path) of the YAML file with additional configs")
     parser.add_argument("template",      help="the filename (relational path) of the cfg.py template for the jobs")
+    parser.add_argument("-n", "--number-of-files", type=int, default=10, help="amount of files per job")
     parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
     parser.add_argument("outdir",   help="the directory (relational path) for the jobs (FARM, cfg.py-s, input, output)")
     parser.add_argument("--no-submit",  help="don't submit the generated jobs",
@@ -140,7 +141,7 @@ if __name__ == "__main__":
     #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
     local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
 
-    n_files_per_job = 10
+    n_files_per_job = args.number_of_files
 
     for dset_group in dsets['proc']:
         isdata = dset_group.get('isdata', False)
