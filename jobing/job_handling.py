@@ -90,6 +90,14 @@ import shutil
 
 
 # Job templates
+hostname = commands.getstatusoutput("hostname -f")[1]
+print("hostname = %s" % hostname)
+hostname = '.'.join(hostname.split('.')[1:])
+print("hostname = %s" % hostname)
+
+site_cfgs = { 'cern.ch': {'proxy_filename': '/afs/cern.ch/user/o/otoldaie/x509_proxy', 'VO_CMS_SW_DIR': '/nfs/soft/cms'},
+        'ncg.ingrid.pt': {'proxy_filename': '/home/t3cms/olek/x509_proxy', 'VO_CMS_SW_DIR': '/cvmfs/cms.cern.ch'},
+        }
 
 # TODO: add SCRAM_ARCH and other parameters
 # TODO: make it LSF_job_template -- for other job-systems in future (GRID, LIP's NCG)
@@ -98,13 +106,13 @@ pwd
 export X509_USER_PROXY={x509_proxy}
 export SCRAM_ARCH={SCRAM_ARCH}
 export BUILD_ARCH={SCRAM_ARCH}
-export VO_CMS_SW_DIR=/nfs/soft/cms
+export VO_CMS_SW_DIR={VO_CMS_SW_DIR}
 cd {{project_dir}}
 eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
 {{exec_name}} {{job_cfg}}
-""".format(x509_proxy="/afs/cern.ch/user/o/otoldaie/x509_proxy", **os.environ)
+""".format(x509_proxy=site_cfgs[hostname]['proxy_filename'], VO_CMS_SW_DIR=site_cfgs[hostname]['VO_CMS_SW_DIR'], **os.environ)
 
 
 job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
