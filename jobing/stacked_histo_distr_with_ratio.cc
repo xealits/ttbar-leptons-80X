@@ -24,15 +24,15 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 5
+#define DTAG_ARGS_START 7
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 5)
+if (argc < 7)
 	{
-	std::cout << "Usage : " << argv[0] << " lumi distr rebin_factor dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " lumi distr rebin_factor xmin xmax dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -41,8 +41,15 @@ gROOT->Reset();
 double lumi = atof(argv[1]);
 TString distr(argv[2]);
 Int_t rebin_factor(atoi(argv[3]));
-TString dir(argv[4]);
-TString dtag1(argv[5]);
+
+double xmin = atof(argv[4]);
+double xmax = atof(argv[5]);
+bool xlims_set = true;
+if (xmin < 0 || xmax < 0)
+	xlims_set = false;
+
+TString dir(argv[6]);
+TString dtag1(argv[7]);
 
 cout << lumi  << endl;
 cout << distr << endl;
@@ -209,7 +216,6 @@ while ((obj=next())) {
 //cst->Update();
 //cst->Modified();
 
-cout << "drawing" << endl;
 
 TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
 TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
@@ -224,6 +230,17 @@ hs_data->GetXaxis()->SetLabelFont(63);
 hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_data->GetYaxis()->SetLabelFont(63);
 hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
+
+if (xlims_set)
+	{
+	cout << "setting X limits " << xmin << ' ' << xmax << endl;
+	hs_data->GetXaxis()->SetRange(xmin, xmax);
+	hs_data->GetXaxis()->SetRangeUser(xmin, xmax);
+	hs->GetXaxis()->SetRange(xmin, xmax);
+	hs->GetXaxis()->SetRangeUser(xmin, xmax);
+	}
+
+cout << "drawing" << endl;
 
 hs_data->Draw(); // drawing data-MC-data to have them both in the range of the plot
 hs->Draw("same"); // the stack
@@ -315,6 +332,14 @@ hs_sum_relative->GetYaxis()->SetRange(0.75, 1.25);
 hs_sum_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
 hs_data_relative->GetYaxis()->SetRange(0.75, 1.25);
 hs_data_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
+
+if (xlims_set)
+	{
+	hs_sum_relative->GetXaxis()->SetRange(xmin, xmax);
+	hs_sum_relative->GetXaxis()->SetRangeUser(xmin, xmax);
+	hs_data_relative->GetXaxis()->SetRange(xmin, xmax);
+	hs_data_relative->GetXaxis()->SetRangeUser(xmin, xmax);
+	}
 
 hs_sum_relative->Draw("e2");
 hs_data_relative->Draw("e p same");
