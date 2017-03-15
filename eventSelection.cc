@@ -1142,9 +1142,26 @@ TTree* summaryTree = NULL; //ev->;
 
 // Data-driven tau fakerate background FAKERATES
 
-TFile * tau_fake_rate1_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1") .c_str() );
-TFile * tau_fake_rate2_file = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2") .c_str() );
-TFile * tau_fake_rate_file_dileptons = TFile::Open(runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons") .c_str() );
+//TString bTaggingEfficiencies_filename   = runProcess.getParameter<std::string>("bTaggingEfficiencies");
+//gSystem->ExpandPathName(bTaggingEfficiencies_filename);
+//TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Data());
+
+TString fakerate1_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1");
+TString fakerate2_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2");
+TString fakerate_dileptons_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons");
+gSystem->ExpandPathName(fakerate1_filename);
+gSystem->ExpandPathName(fakerate2_filename);
+gSystem->ExpandPathName(fakerate_dileptons_filename);
+
+cout << "files with fake rates:" << endl;
+cout << fakerate1_filename << endl;
+cout << fakerate2_filename << endl;
+cout << fakerate_dileptons_filename << endl;
+
+TFile * tau_fake_rate1_file = TFile::Open(fakerate1_filename.Data() );
+TFile * tau_fake_rate2_file = TFile::Open(fakerate2_filename.Data() );
+TFile * tau_fake_rate_file_dileptons = TFile::Open(fakerate_dileptons_filename.Data());
+cout << "fake rate QCD file: " << tau_fake_rate1_file << endl;
 
 Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
 
@@ -1153,6 +1170,9 @@ Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("
 // rate1 = file1 = JetHT data file
 TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
 TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
+
+cout << "fake rate QCD histogram: " << tau_fake_rate1_jets_histo_q << endl;
+tau_fake_rate1_jets_histo_q->Print();
 
 // rate2 = file2 = SingleMuon data file
 TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
@@ -1402,6 +1422,8 @@ LeptonEfficiencySF lepEff;
 TString bTaggingEfficiencies_filename   = runProcess.getParameter<std::string>("bTaggingEfficiencies");
 gSystem->ExpandPathName(bTaggingEfficiencies_filename);
 TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Data());
+
+cout << "b-tagging eff-s, filename: " << bTaggingEfficiencies_filename << endl;
 
 TH2F* bTaggingEfficiencies_b_alljet   ;
 TH2F* bTaggingEfficiencies_b_tagged   ;
