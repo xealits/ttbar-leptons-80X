@@ -271,7 +271,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			else if (file->GetListOfKeys()->Contains("weightflow"))
 				{
 				weightflow = (TH1D*) file->Get("weightflow");
-				normal_initial_weight = weightflow->GetBinContent(11);
+				//normal_initial_weight = weightflow->GetBinContent(11); // not yet...
+				normal_initial_weight = weightflow->GetBinContent(4);
 				}
 			else
 				{
@@ -332,7 +333,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 // for that cloning a histogram, which supposedly always exists
 // (big amount of jets of this type)
 // --- chose fisrt all_jets histogram
-TH1D* hs_mc_all_jets = (TH1D*) mc_jet_origin_ths[0 + n_jet_origins]->Clone();
+TH1D* hs_mc_all_jets = (TH1D*) mc_jet_origin_ths[n_jet_origins + n_jet_origins - 1]->Clone();
 hs_mc_all_jets->Reset();
 
 double integral_data = (hs_data[1]? hs_data[1]->Integral() : 0);
