@@ -398,7 +398,7 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	jesCor->setJetPt(rawJet.pt());
 	jesCor->setJetA(jet.jetArea());
 	jesCor->setRho(rho);
-	jesCor->setNPV(nGoodPV);
+	//jesCor->setNPV(nGoodPV); // not used in PU Jet ID example, shouldn't matter
 	float jes_correction = jesCor->getCorrection();
 	jet.setP4(rawJet*jes_correction);
 

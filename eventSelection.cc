@@ -2047,6 +2047,12 @@ for(size_t f=0; f<urls.size();++f)
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
 
+		// --------------------------------------------------- RHO variable
+		double rho = 0;
+		fwlite::Handle<double> rhoHandle;
+		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
+		if(rhoHandle.isValid() ) rho = *rhoHandle;
+
 
 
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHTS, [1, 10]
@@ -2259,9 +2265,8 @@ for(size_t f=0; f<urls.size();++f)
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
 		// Clean up vertex collection
 		// it seems utils::isGoodVertex is outdated
-		nGoodPV = vtx.size();
-		goodPV = vtx[0];
-		/*
+		//nGoodPV = vtx.size();
+		//goodPV = vtx[0];
 		for(size_t ivtx=0; ivtx<vtx.size(); ++ivtx)
 			{
 			if(utils::isGoodVertex(vtx[ivtx]))
@@ -2270,7 +2275,6 @@ for(size_t f=0; f<urls.size();++f)
 				nGoodPV++;
 				}
 			}
-		*/
 
 		// ----------------------------------------- Apply pileup reweighting
 		// why don't use nGoodPV for Pile-Up?
@@ -2358,17 +2362,18 @@ for(size_t f=0; f<urls.size();++f)
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
 		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
-		// nGoodPV = vtx.size() now
 
 		// vtx.size
-		// now nGoodPV = vtx.size()
-		//fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
-		//fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+		fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
 
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
 		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
-		// nGoodPV = vtx.size() now
+
+		// RHO distrs
+		fill_1d( string("rho_beforetrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+		fill_1d( string("rho_beforetrig_weight"),    100, 0, 100, rho, weight);
 
 		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
 		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
@@ -2681,13 +2686,18 @@ for(size_t f=0; f<urls.size();++f)
 		// pu distrs
 		fill_1d( string("pileup_passtrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
 		fill_1d( string("pileup_passtrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
-		// nGoodPV = vtx.size() now
+
+		// vtx.size
+		fill_1d( string("pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+		fill_1d( string("pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
 
 		// pu distrs
 		fill_1d( string("pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
 		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
-		// nGoodPV = vtx.size() now
 
+		// RHO distributions
+		fill_1d( string("rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+		fill_1d( string("rho_passtrig_weight"),    100, 0, 100, rho, weight);
 
 		// fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
 		// fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
@@ -2773,11 +2783,6 @@ for(size_t f=0; f<urls.size();++f)
 
 		//------------------------- PROCESS OBJECTS
 		// -------------------------------------------------- possible THIRD SECTION of MC WEIGHTS and corrections (with efficiency SFs used as event probability correction)
-
-		double rho = 0;
-		fwlite::Handle<double> rhoHandle;
-		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
-		if(rhoHandle.isValid() ) rho = *rhoHandle;
 
 
 
@@ -3505,12 +3510,17 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// in-channel selection/multiselect for leptons
 
-			//singlelep_ttbar_preselectedevents->Fill(1);
+			// vtx.size
+			fill_1d( string("pileup_singlelepton_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+			fill_1d( string("pileup_singlelepton_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
 
 			// pu distrs
 			fill_1d( string("pileup_singlelepton_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
 			fill_1d( string("pileup_singlelepton_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
-			// nGoodPV = vtx.size() now
+
+			// RHO distributions
+			fill_1d( string("rho_singlelepton_rawWeight"), 100, 0, 100, rho, rawWeight);
+			fill_1d( string("rho_singlelepton_weight"),    100, 0, 100, rho, weight);
 
 
 			// lepton+tau mass > 12 GeV, as in dilepton case
@@ -4309,10 +4319,17 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (isDoubleE || isDoubleMu || isEMu)
 			{
+			// vtx.size
+			fill_1d( string("pileup_dilepton_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+			fill_1d( string("pileup_dilepton_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+
 			// pu distrs
 			fill_1d( string("pileup_dilepton_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
 			fill_1d( string("pileup_dilepton_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
-			// nGoodPV = vtx.size() now
+
+			// RHO distributions
+			fill_1d( string("rho_dilepton_rawWeight"), 100, 0, 100, rho, rawWeight);
+			fill_1d( string("rho_dilepton_weight"),    100, 0, 100, rho, weight);
 
 			int dilId (1);
 			// slepId(0);

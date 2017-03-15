@@ -1742,8 +1742,19 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("weightflow"), 300, 0, 300,   3, weight);
 
 		// pu distrs
-		fill_1d( string("pileup_passtrig_rawWeight_pergoodpv"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_weight_pergoodpv"),    100, 0, 100, nGoodPV, weight);
+		fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+		// nGoodPV = vtx.size() now
+
+		// pu distrs
+		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		// nGoodPV = vtx.size() now
+
+		// RHO distrs
+		fill_1d( string("rho_beforetrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+		fill_1d( string("rho_beforetrig_weight"),    100, 0, 100, rho, weight);
+
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -1927,27 +1938,19 @@ for(size_t f=0; f<urls.size();++f)
 		if (JetHLTTrigger)  hlt_channels.push_back("HLTjet_");
 		if (MuonHLTTrigger) hlt_channels.push_back("HLTmu_");
 
-		/*
-		bool eTrigger    ( isMC ?
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
-			utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") );
-		bool muTrigger   ( isMC ?
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v3", "HLT_IsoTkMu22_v3") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*")
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
-			);
+		// pu distrs
+		fill_1d( string("pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+		fill_1d( string("pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+		// nGoodPV = vtx.size() now
 
-		// if data and SingleElectron dataset and both triggers -- skip event
-		if (!debug) {
-			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
-		
-			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
-		}
-		*/
+		// pu distrs
+		fill_1d( string("pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		// nGoodPV = vtx.size() now
+
+		// RHO distrs
+		fill_1d( string("rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+		fill_1d( string("rho_passtrig_weight"),    100, 0, 100, rho, weight);
 
 		// TODO: ----------------------------- HLT efficiency scale factors
 		// one should run it on the fired trigger objects,
@@ -2568,6 +2571,18 @@ for(size_t f=0; f<urls.size();++f)
 			string hlt_channel = hlt_channels[i];
 			string selection("wjets");
 
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+
+			// RHO distrs
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_weight"),    100, 0, 100, rho, weight);
+
 			// WJets, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
 				{
@@ -2601,6 +2616,18 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			string hlt_channel = hlt_channels[i];
 			string selection("w1jet");
+
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+
+			// RHO distrs
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_weight"),    100, 0, 100, rho, weight);
 
 			// WJets, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
@@ -2636,6 +2663,18 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			string hlt_channel = hlt_channels[i];
 			string selection("qcd");
+
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+
+			// pu distrs
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+			fill_1d(hlt_channel + selection + string("_pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+
+			// RHO distrs
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
+			fill_1d(hlt_channel + selection + string("_rho_passtrig_weight"),    100, 0, 100, rho, weight);
 
 			// In QCD selection we need to skip the biasing triggered jet
 			/*
