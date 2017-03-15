@@ -284,7 +284,7 @@ int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 // but probably TH3F depends on it and pulls it in anyway
 
 // good bins 1, 2
-Float_t largebins_pt[12] = { 0, 29, 33, 37, 40, 43, 45, 48, 56, 63, 150, 500 }; // 10 bins, 11 edges
+Float_t largebins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 55, 75, 100, 150, 500 }; // 11 bins 12 edges
 //Float_t bins_pt[11] = { 0, 30, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
 //static Float_t bins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 50, 60, 80, 150, 500 }; // 11 bins, 12 edges
 static int n_largebins_pt = 11;
