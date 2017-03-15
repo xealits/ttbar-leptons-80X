@@ -122,7 +122,7 @@ cd {{project_dir}}
 eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
-ttbarleps80_eventSelection /lstore/cms/olek/outdirs/v9.41/Data13TeV_SingleElectron2016B_23Sep2016_v3_102_cfg.py
+{{exec_name}} {{job_cfg}}
 """,
                           'job_bsub_template': """qsub -l h_vmem=3G '{jobsh}'"""},
         }
