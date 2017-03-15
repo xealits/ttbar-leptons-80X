@@ -3783,6 +3783,8 @@ for(size_t f=0; f<urls.size();++f)
 						// TODO: selJetsNoLepNoTau ???
 						{
 						pat::Jet& jet = selJetsNoLep[n];
+						Double_t jet_rad = jet_radius(jet);
+
 						if (isMC)
 							{
 							int partID = jet.partonFlavour();
@@ -3808,11 +3810,11 @@ for(size_t f=0; f<urls.size();++f)
 						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, 1.0, jet.pt(), jet.eta(), jet_radius(jet), debug));
 						*/
 
-						jet_to_tau_Large_no_fake_prob1_q   *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_prob2_w   *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_elel *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elel, tau_fake_rate_taus_histo_elel, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_Large_no_fake_prob1_q   *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_prob2_w   *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_elel *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elel, tau_fake_rate_taus_histo_elel, jet.pt(), jet.eta(), jet_rad, debug));
 
 						//double jetToTauFakeRate_Projections(
 						//		FakeRateProjections & tau_fake_rate_jets_histo,
@@ -3821,11 +3823,11 @@ for(size_t f=0; f<urls.size();++f)
 						//		Double_t jet_pt, Double_t jet_eta, Double_t jet_radius,
 						//		bool debug)
 
-						jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate_Projections(frates_qcd_jets_proj, frates_qcd_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate_Projections(frates_qcd_jets_proj, frates_qcd_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
 						}
 
 
@@ -4143,6 +4145,8 @@ for(size_t f=0; f<urls.size();++f)
 					for(size_t n=0; n<selJetsNoLep.size(); ++n)
 						{
 						pat::Jet& jet = selJetsNoLep[n];
+						Double_t jet_rad = jet_radius(jet);
+
 						if (debug) cout << n << ":\n";
 						// jet_to_tau_fake_rate += jetToTauFakeRate(tau_fake_rate_jets_histo, tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
 						if (isMC)
@@ -4153,17 +4157,17 @@ for(size_t f=0; f<urls.size();++f)
 							fill_1d(string("sel_pretau_jet_origin_ids"), 100, 0, 100,  partID, weight);
 							}
 
-						jet_to_tau_Large_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_Large_no_fake_rate_elel *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elel, tau_fake_rate_taus_histo_elel, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_Large_no_fake_prob1_q *= (1. - jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_prob2_w *= (1. - jetToTauFakeRate(tau_fake_rate2_jets_histo_w, tau_fake_rate2_taus_histo_w, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_elmu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elmu, tau_fake_rate_taus_histo_elmu, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_mumu *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_mumu, tau_fake_rate_taus_histo_mumu, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_Large_no_fake_rate_elel *= (1. - jetToTauFakeRate(tau_fake_rate_jets_histo_elel, tau_fake_rate_taus_histo_elel, jet.pt(), jet.eta(), jet_rad, debug));
 
-						jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate_Projections(frates_qcd_jets_proj, frates_qcd_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
-						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_radius(jet), debug));
+						jet_to_tau_no_fake_prob1_q *= (1. - jetToTauFakeRate_Projections(frates_qcd_jets_proj, frates_qcd_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_prob2_w *= (1. - jetToTauFakeRate_Projections(frates_wjets_jets_proj, frates_wjets_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_elmu *= (1. - jetToTauFakeRate_Projections(frates_elmu_jets_proj, frates_elmu_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_mumu *= (1. - jetToTauFakeRate_Projections(frates_mumu_jets_proj, frates_mumu_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
+						jet_to_tau_no_fake_rate_elel *= (1. - jetToTauFakeRate_Projections(frates_elel_jets_proj, frates_elel_taus_proj, 1, jet.pt(), jet.eta(), jet_rad, debug));
 						}
 
 
