@@ -53,6 +53,8 @@ TString dtag1(argv[7]);
 
 cout << lumi  << endl;
 cout << distr << endl;
+cout << rebin_factor << endl;
+cout << xmin << ' ' << xmax << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
 
@@ -216,6 +218,15 @@ while ((obj=next())) {
 //cst->Update();
 //cst->Modified();
 
+if (xlims_set)
+	{
+	cout << "setting X limits " << xmin << ' ' << xmax << endl;
+	hs_data->GetXaxis()->SetRange(xmin, xmax);
+	hs_data->GetXaxis()->SetRangeUser(xmin, xmax);
+	//hs->GetXaxis()->SetRange(xmin, xmax);
+	//hs->GetXaxis()->SetRangeUser(xmin, xmax);
+	}
+
 
 TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
 TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
@@ -230,15 +241,6 @@ hs_data->GetXaxis()->SetLabelFont(63);
 hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_data->GetYaxis()->SetLabelFont(63);
 hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
-
-if (xlims_set)
-	{
-	cout << "setting X limits " << xmin << ' ' << xmax << endl;
-	hs_data->GetXaxis()->SetRange(xmin, xmax);
-	hs_data->GetXaxis()->SetRangeUser(xmin, xmax);
-	hs->GetXaxis()->SetRange(xmin, xmax);
-	hs->GetXaxis()->SetRangeUser(xmin, xmax);
-	}
 
 cout << "drawing" << endl;
 
@@ -337,8 +339,8 @@ if (xlims_set)
 	{
 	hs_sum_relative->GetXaxis()->SetRange(xmin, xmax);
 	hs_sum_relative->GetXaxis()->SetRangeUser(xmin, xmax);
-	hs_data_relative->GetXaxis()->SetRange(xmin, xmax);
-	hs_data_relative->GetXaxis()->SetRangeUser(xmin, xmax);
+	//hs_data_relative->GetXaxis()->SetRange(xmin, xmax);
+	//hs_data_relative->GetXaxis()->SetRangeUser(xmin, xmax);
 	}
 
 hs_sum_relative->Draw("e2");
