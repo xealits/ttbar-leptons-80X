@@ -124,13 +124,12 @@ cd -
 ulimit -c 0;
 ttbarleps80_eventSelection /lstore/cms/olek/outdirs/v9.41/Data13TeV_SingleElectron2016B_23Sep2016_v3_102_cfg.py
 """,
-                          'job_bsub_template': """qsub -l h_vmem=1G '{jobsh}'"""},
+                          'job_bsub_template': """qsub -l h_vmem=3G '{jobsh}'"""},
         }
 
-# TODO: add SCRAM_ARCH and other parameters
-# TODO: make it LSF_job_template -- for other job-systems in future (GRID, LIP's NCG)
-job_template = site_cfgs[hostname]['job_template'].format(x509_proxy=site_cfgs[hostname]['proxy_filename'], VO_CMS_SW_DIR=site_cfgs[hostname]['VO_CMS_SW_DIR'], **os.environ)
-
+vars_for_the_job = dict(os.environ)
+vars_for_the_job.update({'x509_proxy':site_cfgs[hostname]['proxy_filename'], 'VO_CMS_SW_DIR':site_cfgs[hostname]['VO_CMS_SW_DIR']})
+job_template = site_cfgs[hostname]['job_template'].format(**vars_for_the_job)
 
 job_command_template = site_cfgs[hostname]['job_bsub_template']
 
