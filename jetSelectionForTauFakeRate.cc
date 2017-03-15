@@ -1610,6 +1610,19 @@ for(size_t f=0; f<urls.size();++f)
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
 
+		// ---------------------------------- RHO variable for PU control
+		// rho = sum of energy flow per dR angle
+		// there are 4 of them in 80X MINIAODs:
+		// fixedGridRhoFastjetAll
+		// fixedGridRhoFastjetCentral
+		// fixedGridRhoFastjetCentralNeutral
+		// fixedGridRhoFastjetCentralChargedPileUp
+		// people in PU Jet ID example use fixedGridRhoFastjetAll
+		double rho = 0;
+		fwlite::Handle<double> rhoHandle;
+		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
+		if(rhoHandle.isValid() ) rho = *rhoHandle;
+
 		//
 		// DERIVE WEIGHTS TO APPLY TO SAMPLE
 		//
@@ -2023,11 +2036,6 @@ for(size_t f=0; f<urls.size();++f)
 		// ------------------------- event physics and the corresponding selection
 
 		//------------------------- load all the objects we will need to access
-
-		double rho = 0;
-		fwlite::Handle<double> rhoHandle;
-		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
-		if(rhoHandle.isValid() ) rho = *rhoHandle;
 
 		// ------------------------------------ actual particles?
 

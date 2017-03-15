@@ -2047,11 +2047,26 @@ for(size_t f=0; f<urls.size();++f)
 		// and systematic corrections? TODO: check how TotalWeight_plus is used?
 
 
-		// --------------------------------------------------- RHO variable
+		// --------------------------------------------------- RHO variables
 		double rho = 0;
 		fwlite::Handle<double> rhoHandle;
 		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
 		if(rhoHandle.isValid() ) rho = *rhoHandle;
+
+		double rhoCentral = 0;
+		fwlite::Handle<double> rhoCentralHandle;
+		rhoCentralHandle.getByLabel(ev, "fixedGridRhoFastjetCentral");
+		if(rhoCentralHandle.isValid() ) rhoCentral = *rhoCentralHandle;
+
+		double rhoCentralNeutral = 0;
+		fwlite::Handle<double> rhoCentralNeutralHandle;
+		rhoCentralNeutralHandle.getByLabel(ev, "fixedGridRhoFastjetCentralNeutral");
+		if(rhoCentralNeutralHandle.isValid() ) rhoCentralNeutral = *rhoCentralNeutralHandle;
+
+		double rhoCentralChargedPileUp = 0;
+		fwlite::Handle<double> rhoCentralChargedPileUpHandle;
+		rhoCentralChargedPileUpHandle.getByLabel(ev, "fixedGridRhoFastjetCentralChargedPileUp");
+		if(rhoCentralChargedPileUpHandle.isValid() ) rhoCentralChargedPileUp = *rhoCentralChargedPileUpHandle;
 
 
 
@@ -2374,6 +2389,15 @@ for(size_t f=0; f<urls.size();++f)
 		// RHO distrs
 		fill_1d( string("rho_beforetrig_rawWeight"), 100, 0, 100, rho, rawWeight);
 		fill_1d( string("rho_beforetrig_weight"),    100, 0, 100, rho, weight);
+
+		fill_1d( string("rhoCentral_beforetrig_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
+		fill_1d( string("rhoCentral_beforetrig_weight"),    100, 0, 100, rhoCentral, weight);
+
+		fill_1d( string("rhoCentralNeutral_beforetrig_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
+		fill_1d( string("rhoCentralNeutral_beforetrig_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+
+		fill_1d( string("rhoCentralChargedPileUp_beforetrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
+		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
 
 		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
 		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
@@ -2698,6 +2722,15 @@ for(size_t f=0; f<urls.size();++f)
 		// RHO distributions
 		fill_1d( string("rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
 		fill_1d( string("rho_passtrig_weight"),    100, 0, 100, rho, weight);
+
+		fill_1d( string("rhoCentral_passtrig_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
+		fill_1d( string("rhoCentral_passtrig_weight"),    100, 0, 100, rhoCentral, weight);
+
+		fill_1d( string("rhoCentralNeutral_passtrig_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
+		fill_1d( string("rhoCentralNeutral_passtrig_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+
+		fill_1d( string("rhoCentralChargedPileUp_passtrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
+		fill_1d( string("rhoCentralChargedPileUp_passtrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
 
 		// fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
 		// fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
@@ -3522,6 +3555,15 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d( string("rho_singlelepton_rawWeight"), 100, 0, 100, rho, rawWeight);
 			fill_1d( string("rho_singlelepton_weight"),    100, 0, 100, rho, weight);
 
+			fill_1d( string("rhoCentral_singlelepton_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
+			fill_1d( string("rhoCentral_singlelepton_weight"),    100, 0, 100, rhoCentral, weight);
+
+			fill_1d( string("rhoCentralNeutral_singlelepton_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
+			fill_1d( string("rhoCentralNeutral_singlelepton_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+
+			fill_1d( string("rhoCentralChargedPileUp_singlelepton_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
+			fill_1d( string("rhoCentralChargedPileUp_singlelepton_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
+
 
 			// lepton+tau mass > 12 GeV, as in dilepton case
 			LorentzVector dileptonSystem (0, 0, 0, 0);
@@ -4330,6 +4372,15 @@ for(size_t f=0; f<urls.size();++f)
 			// RHO distributions
 			fill_1d( string("rho_dilepton_rawWeight"), 100, 0, 100, rho, rawWeight);
 			fill_1d( string("rho_dilepton_weight"),    100, 0, 100, rho, weight);
+
+			fill_1d( string("rhoCentral_dilepton_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
+			fill_1d( string("rhoCentral_dilepton_weight"),    100, 0, 100, rhoCentral, weight);
+
+			fill_1d( string("rhoCentralNeutral_dilepton_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
+			fill_1d( string("rhoCentralNeutral_dilepton_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+
+			fill_1d( string("rhoCentralChargedPileUp_dilepton_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
+			fill_1d( string("rhoCentralChargedPileUp_dilepton_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
 
 			int dilId (1);
 			// slepId(0);
