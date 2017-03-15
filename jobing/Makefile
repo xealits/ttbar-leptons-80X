@@ -123,6 +123,9 @@ done_ck:
 	ls test/tests/outdir_"${job}"/*job_done | wc -l
 	ls test/tests/outdir_"${job}"/*root     | wc -l
 	ls test/tests/outdir_"${job}"/*cfg.py   | wc -l
+	ls test/tests/outdir_"${job}"/Data*job_done | wc -l
+	ls test/tests/outdir_"${job}"/Data*root     | wc -l
+	ls test/tests/outdir_"${job}"/Data*cfg.py   | wc -l
 	ls test/tests/outdir_"${job}"/MC*job_done | wc -l
 	ls test/tests/outdir_"${job}"/MC*root     | wc -l
 	ls test/tests/outdir_"${job}"/MC*cfg.py   | wc -l
