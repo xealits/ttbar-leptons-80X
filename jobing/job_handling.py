@@ -107,7 +107,8 @@ eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
 {{exec_name}} {{job_cfg}}
-"""},
+""",
+                          'job_bsub_template': """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""},
         'ncg.ingrid.pt': {'proxy_filename': '/exper-sw/cmst3/cmssw/users/olek/x509_proxy', 'VO_CMS_SW_DIR': '/cvmfs/cms.cern.ch',
                           'job_template': """#!/bin/sh
 pwd
@@ -122,7 +123,8 @@ eval `scramv1 runtime -sh`
 cd -
 ulimit -c 0;
 ttbarleps80_eventSelection /lstore/cms/olek/outdirs/v9.41/Data13TeV_SingleElectron2016B_23Sep2016_v3_102_cfg.py
-"""},
+""",
+                          'job_bsub_template': """qsub -l h_vmem=1G '{jobsh}'"""},
         }
 
 # TODO: add SCRAM_ARCH and other parameters
@@ -130,7 +132,7 @@ ttbarleps80_eventSelection /lstore/cms/olek/outdirs/v9.41/Data13TeV_SingleElectr
 job_template = site_cfgs[hostname]['job_template'].format(x509_proxy=site_cfgs[hostname]['proxy_filename'], VO_CMS_SW_DIR=site_cfgs[hostname]['VO_CMS_SW_DIR'], **os.environ)
 
 
-job_command_template = """bsub -q 8nh -R "pool>30000" -J {job_name} -oo {job_stdout} '{jobsh}'"""
+job_command_template = site_cfgs[hostname]['job_bsub_template']
 
 
 def restore_dset_files_info(dsets_dir, dset):
