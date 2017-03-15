@@ -257,7 +257,7 @@ else
 
 
 double xsec = xsecs[dtag];
-Double_t ratio = xsec / weightflow->GetBinContent(4);
+Double_t ratio = xsec / weightflow->GetBinContent(11);
 
 //cout << "dtag " << dtag << " ratio = " << ratio << endl;
 

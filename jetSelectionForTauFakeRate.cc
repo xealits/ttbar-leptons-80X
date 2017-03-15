@@ -1767,21 +1767,11 @@ for(size_t f=0; f<urls.size();++f)
 		//num_inters = 1;
 		if (num_inters>99) num_inters = 99;
 		if (nGoodPV>100) nGoodPV = 99;
-		//if (num_inters<0)  num_inters = 0;
-		/* jobs seem to crash here, and pu is saved with general fill1d function now
-		if (weight_Gen<0)
-			{
-			increment( string("negative_events"), 1 );
-			fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
-			fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
-			}
-		else
-			{
-			increment( string("positive_events"), 1 );
-			fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
-			fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
-			}
-		*/
+
+
+		// -------------------------------------   END of SECTION1, MC weights
+
+		fill_1d(string("weightflow"), 300, 0, 300,   10, weight);
 
 		// -------------------------------------   Basic event selection
 
@@ -1810,7 +1800,7 @@ for(size_t f=0; f<urls.size();++f)
 		//increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
 		// passlumi 5
-		fill_1d(string("weightflow"), 300, 0, 300,   5, weight);
+		fill_1d(string("weightflow"), 300, 0, 300,   11, weight);
 		/*
 		fill_1d(string("weightflow_mu"), 300, 0, 300,   5, weight);
 		fill_1d(string("weightflow_el"), 300, 0, 300,   5, weight);
@@ -1970,8 +1960,8 @@ for(size_t f=0; f<urls.size();++f)
 		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
 		//   increment( "control_point_name", weight )
 
-		// passtrig 6
-		fill_1d(string("weightflow"), 300, 0, 300,   6, weight);
+		// passtrig 12
+		fill_1d(string("weightflow"), 300, 0, 300,   12, weight);
 
 		//increment( string("weightflow_weight_passed_trig"), weight ); // should not matter
 		//increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
@@ -2018,14 +2008,17 @@ for(size_t f=0; f<urls.size();++f)
 		}
 		
 
-		// passmetfilters 7
-		fill_1d(string("weightflow"), 300, 0, 300,   7, weight);
+		// passmetfilters 13
+		fill_1d(string("weightflow"), 300, 0, 300,   13, weight);
 
 		if(debug)
 			{
 			cout << "met filters applied here" << endl;
 			}
 
+		// ------------------------- END of SECTION 2, event cuts
+
+		fill_1d(string("weightflow"), 300, 0, 300,   20, weight);
 
 		// ------------------------- event physics and the corresponding selection
 
@@ -2479,6 +2472,12 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
+		// ------------------------- END of SECTION 3, selection of particles, SF weights
+		fill_1d(string("weightflow"), 300, 0, 300,   30, weight);
+
+
+
+
 		// -------------------------------------------------- All particles are selected
 		// now the channel/selection can be done
 
@@ -2586,15 +2585,15 @@ for(size_t f=0; f<urls.size();++f)
 			// WJets, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   10, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   40, weight);
 				}
 			else if (JetHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   11, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   41, weight);
 				}
 			else if (MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   12, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   42, weight);
 				}
 			else continue;
 
@@ -2632,15 +2631,15 @@ for(size_t f=0; f<urls.size();++f)
 			// WJets, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   30, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   50, weight);
 				}
 			else if (JetHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   31, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   51, weight);
 				}
 			else if (MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   32, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   52, weight);
 				}
 			else continue;
 
@@ -2879,15 +2878,15 @@ for(size_t f=0; f<urls.size();++f)
 			// QCD, HLT channels
 			if (JetHLTTrigger && MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   20, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   60, weight);
 				}
 			else if (JetHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   21, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   61, weight);
 				}
 			else if (MuonHLTTrigger)
 				{
-				fill_1d(string("weightflow"), 300, 0, 300,   22, weight);
+				fill_1d(string("weightflow"), 300, 0, 300,   62, weight);
 				}
 			else continue;
 

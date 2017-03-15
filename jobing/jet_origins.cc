@@ -99,7 +99,7 @@ for (int i=3; i<argc; i++)
 
 // Find the MC ratio
 double xsec = xsecs[dtag];
-Double_t ratio = 0; // xsec / weightflow->GetBinContent(4);
+Double_t ratio = 0; // xsec / weightflow->GetBinContent(11);
 
 TFile * file = TFile::Open(job_dir + "/" + dtag + ".root");
 //TH1D * weightflow = (TH1D*) file->Get("weightflow");
@@ -109,12 +109,12 @@ TH1D * weightflow;
 if (file->GetListOfKeys()->Contains("weightflow_elel"))
 	{
 	weightflow = (TH1D*) file->Get("weightflow_elel");
-	ratio = xsec / weightflow->GetBinContent(5);
+	ratio = xsec / weightflow->GetBinContent(11);
 	}
 else if (file->GetListOfKeys()->Contains("weightflow"))
 	{
 	weightflow = (TH1D*) file->Get("weightflow");
-	ratio = xsec / weightflow->GetBinContent(4);
+	ratio = xsec / weightflow->GetBinContent(11);
 	}
 else
 	{
