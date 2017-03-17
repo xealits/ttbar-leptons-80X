@@ -24,33 +24,45 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 7
+#define DTAG_ARGS_START 8
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 7)
+if (argc < 8)
 	{
-	std::cout << "Usage : " << argv[0] << " lumi distr rebin_factor xmin xmax dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " normalize lumi distr rebin_factor xmin xmax dir dtags" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-double lumi = atof(argv[1]);
-TString distr(argv[2]);
-Int_t rebin_factor(atoi(argv[3]));
+TString normalize_s(argv[1]);
+bool normalize_to_data = false;
+if (normalize_s == TString("T") || normalize_s == TString("Y"))
+	normalize_to_data = true;
 
-double xmin = atof(argv[4]);
-double xmax = atof(argv[5]);
+double lumi = atof(argv[2]);
+TString distr(argv[3]);
+Int_t rebin_factor(atoi(argv[4]));
+
+double xmin = atof(argv[5]);
+double xmax = atof(argv[6]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[6]);
-TString dtag1(argv[7]);
+TString dir(argv[7]);
+TString dtag1(argv[8]);
 
+bool eltau = false, mutau = false;
+if (distr.Contains("singleel"))
+	eltau = true;
+if (distr.Contains("singlemu"))
+	mutau = true;
+
+cout << "channel: " << eltau << ' ' << mutau << endl;
 cout << lumi  << endl;
 cout << distr << endl;
 cout << rebin_factor << endl;
@@ -139,6 +151,22 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
 		TString nick = nick_colour.first;
 		Color_t col = nick_colour.second;
+
+		//cout << dtag.Contains("aeltu") << endl;
+
+		if (dtag.Contains("aeltu") && eltau)
+			{
+			cout << "setting signal" << endl;
+			col = kOrange;
+			nick = TString("tt_eltau");
+			}
+		if (dtag.Contains("amtuu") && mutau)
+			{
+			cout << "setting signal" << endl;
+			col = kGreen - 3;
+			nick = TString("tt_mutau");
+			}
+
 		histos.back()->SetFillColor( col );
 
 		histos.back()->SetMarkerStyle(20);
@@ -156,22 +184,12 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		}
 	}
 
+// build the sum of MC
 TH1D    *hs_sum  = NULL;
-// build the stack of MC histos
-//std::map<TString, TH1D *> nicknamed_mc_histos;
 for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
 	{
 	TString nick = it->first;
 	TH1D * distr = it->second;
-	cout << "adding to mc stack: " << nick << endl;
-	distr->Print();
-
-	hs->Add(distr, "HIST");
-
-	//TLegendEntry *entry=leg->AddEntry("NULL","","h");
-	//entry=leg->AddEntry("singlemu_altstep4rho3","Single top","F");
-	leg->AddEntry(distr, nick, "F");
-
 	if (hs_sum == NULL)
 		{
 		hs_sum = (TH1D*) (distr->Clone("brand_new_hs_sum"));
@@ -180,11 +198,35 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 		}
 	else
 		hs_sum->Add(distr);
+	}
 
-	//distr->SetName(controlpoint_name.c_str());
-	//distr->Write();
-	//out_f->Write(controlpoint_name.c_str());
-	//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
+// scale MC to Data
+double scale = 1.0;
+// normalize MC integral if requested
+if (normalize_to_data)
+	{
+	scale = hs_sum->Integral() / hs_data->Integral();
+	}
+
+// build the stack of MC histos
+//std::map<TString, TH1D *> nicknamed_mc_histos;
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+	{
+	TString nick = it->first;
+	TH1D * distr = it->second;
+
+	// normalize MC sum to Data
+	if (normalize_to_data)
+		distr->Scale(scale);
+
+	cout << "adding to mc stack: " << nick << endl;
+	distr->Print();
+
+	hs->Add(distr, "HIST");
+
+	//TLegendEntry *entry=leg->AddEntry("NULL","","h");
+	//entry=leg->AddEntry("singlemu_altstep4rho3","Single top","F");
+	leg->AddEntry(distr, nick, "F");
 	}
 
 //cst->SetFillColor(41);
@@ -227,6 +269,7 @@ if (xlims_set)
 	//hs->GetXaxis()->SetRangeUser(xmin, xmax);
 	}
 
+gStyle->SetOptStat(0); // removes the stats legend-box from all pads
 
 TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
 TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
@@ -244,7 +287,7 @@ hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 
 cout << "drawing" << endl;
 
-hs_data->Draw(); // drawing data-MC-data to have them both in the range of the plot
+hs_data->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
 hs->Draw("same"); // the stack
 // also draw the sum of the stack and its' errors:
 //((TObjArray*) hs->GetStack())->Last()->Draw("e4 same"); // then, how to set styles with the hatched error bars?
@@ -348,7 +391,7 @@ hs_data_relative->Draw("e p same");
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr + ".png" );
+cst->SaveAs( dir + "/jobsums/" + distr + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
 /*
 TH1D *h = (TH1D*) file->Get(distr);

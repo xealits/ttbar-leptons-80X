@@ -406,14 +406,15 @@ cout << "setting title" << endl;
 
 
 TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
-h->SetXTitle("x");
+h->SetXTitle(projection);
 //cst->Update();
 //cst->Modified();
 
 cout << "drawing" << endl;
 
 //hs_data->Draw("e p");
-hs->Draw("same");
+//hs->Draw("same");
+hs->Draw();
 //hs_data->Draw("e p same"); // to draw it _over_ MC
 
 bool set_logy = false;
