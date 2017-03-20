@@ -42,8 +42,7 @@
   <bin name="demoKinoTTbar"  file="ttbar-leptons-80X/demoKinoTTbar.cc"></bin>
   <bin name="scopeEvents"  file="ttbar-leptons-80X/scopeEvents.cc"></bin>
 
-  <bin name="stacked_histo_project2toX_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2toX_distr.cc"></bin>
-  <bin name="stacked_histo_project2toY_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2toY_distr.cc"></bin>
+  <bin name="stacked_histo_project2to1_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2to1_distr.cc"></bin>
   <bin name="stacked_histo_project3to1_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project3to1_distr.cc"></bin>
   <bin name="stacked_histo_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_distr.cc"></bin>
   <bin name="jet_distrs_stacked_per_origin"  file="ttbar-leptons-80X/jobing/jet_distrs_stacked_per_origin.cc"></bin>

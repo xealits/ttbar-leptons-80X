@@ -170,6 +170,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 	if (be_verbose) cout << "got weightflow init" << endl;
 
+	if (be_verbose) cout << "getting " << distr  << " projection to " << projection << endl;
 	// get the histogram's projection
 	histos.push_back((TH1D*) ((TH3D*) file->Get(distr))->Project3D(projection));
 	histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
