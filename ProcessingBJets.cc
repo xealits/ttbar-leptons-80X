@@ -68,7 +68,10 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 	double eta=jet.eta();
 	double pt=jet.pt();
 
-	bool hasCSVtag(jet.bDiscriminator(b_tagger_label) > b_tag_WP);
+	float b_discriminator = jet.bDiscriminator(b_tagger_label);
+	fill_1d(string("btag_discriminator"), 200, -1.0, 1.0, b_discriminator, weight);
+
+	bool hasCSVtag(b_discriminator > b_tag_WP);
 	bool raw_CSV_tag = hasCSVtag;
 	//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
 	bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
@@ -106,6 +109,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 				 * NOTICE: the recorded jets are weighted with the current genWeight, pile-up etc
 				 */
 				//fill_2d(string("btag_b_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_1d(string("btag_discriminator_b_hadronFlavour"), 200, -1.0, 1.0, b_discriminator, weight);
 				fill_btag_efficiency(string("btag_b_hadronFlavour_candidates"), pt, eta, weight); // shouldn't weight be = 1?
 				if (hasCSVtag)
 					fill_btag_efficiency(string("btag_b_hadronFlavour_candidates_tagged"), pt, eta, weight); // shouldn't weight be = 1?
@@ -125,6 +129,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record)
 				{ 
 				//fill_2d(string("btag_c_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_1d(string("btag_discriminator_c_hadronFlavour"), 200, -1.0, 1.0, b_discriminator, weight);
 				fill_btag_efficiency(string("btag_c_hadronFlavour_candidates"), pt, eta, weight);
 				if (hasCSVtag)
 					fill_btag_efficiency(string("btag_c_hadronFlavour_candidates_tagged"), pt, eta, weight);
@@ -142,6 +147,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			if (record)
 				{ 
 				//fill_2d(string("btag_udsg_hadronFlavour_candidates"), 250, 0., 500., 200, -4., 4., pt, eta, weight);
+				fill_1d(string("btag_discriminator_udsg_hadronFlavour"), 200, -1.0, 1.0, b_discriminator, weight);
 				fill_btag_efficiency(string("btag_udsg_hadronFlavour_candidates"), pt, eta, weight);
 				if (hasCSVtag)
 					fill_btag_efficiency(string("btag_udsg_hadronFlavour_candidates_tagged"), pt, eta, weight);
@@ -180,6 +186,19 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 			}
 
 		bTaggingSF_eventWeight *= jet_weight_factor;
+		}
+
+	// now record the btagging discriminators with the reweighted weight
+	double full_weight = weight * bTaggingSF_eventWeight;
+	fill_1d(string("btag_discriminator_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
+	if (isMC)
+		{
+		if (abs(flavId)==5)
+			fill_1d(string("btag_discriminator_b_hadronFlavour_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
+		else if (abs(flavId)==4)
+			fill_1d(string("btag_discriminator_c_hadronFlavour_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
+		else
+			fill_1d(string("btag_discriminator_udsg_hadronFlavour_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
 		}
 
 	if(hasCSVtag || hasCSVtag_BTagUp || hasCSVtag_BTagDown)
