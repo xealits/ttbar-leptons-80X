@@ -332,6 +332,18 @@ jet_fakerate_plots_SingleMuon: fakerate_ratio_plots
 
 jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
 
+.PHONY:jet_fakerate_plots_control_el
+jet_fakerate_plots_control_el: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
+jet_fakerate_plots_control_el: selection=singleel_pretau
+jet_fakerate_plots_control_el: fakerate_ratio_plots
+
+.PHONY:jet_fakerate_plots_control_mu
+jet_fakerate_plots_control_mu: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
+jet_fakerate_plots_control_mu: selection=singlemu_pretau
+jet_fakerate_plots_control_mu: fakerate_ratio_plots
+
+jet_fakerate_plots_control: jet_fakerate_plots_control_el jet_fakerate_plots_control_mu
+
 mumu_fakerate_ratio_plots: file=test/tests/outdir_${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 mumu_fakerate_ratio_plots: selection=mumu_passjets
 mumu_fakerate_ratio_plots: fakerate_ratio_plots
