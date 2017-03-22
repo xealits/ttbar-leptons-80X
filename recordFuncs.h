@@ -513,6 +513,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 
 		// study jet_R ~ jet_eta -- does calculation of R depend on eta of jet?
 		// (maybe it would be nice to use bins of the 3d jet distr?)
+		fill_2d(channel + selection + ("_jet_pt_vs_eta"), 100, 0., 400., 50, -2.5, 2.5, jet.pt(), jet.eta(), event_weight);
 		fill_2d(channel + selection + ("_jet_radius_vs_eta"), 100, 0., 2., 120, -3., 3., jet_radius(jet), jet.eta(), event_weight);
 
 		int jet_origin = -1; // for MC only
