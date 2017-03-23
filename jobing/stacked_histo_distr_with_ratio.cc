@@ -24,15 +24,15 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 8
+#define DTAG_ARGS_START 9
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 8)
+if (argc < 9)
 	{
-	std::cout << "Usage : " << argv[0] << " normalize lumi distr rebin_factor xmin xmax dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " normalize lumi distr distr_name rebin_factor xmin xmax dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -45,16 +45,17 @@ if (normalize_s == TString("T") || normalize_s == TString("Y"))
 
 double lumi = atof(argv[2]);
 TString distr(argv[3]);
-Int_t rebin_factor(atoi(argv[4]));
+TString distr(argv[4]);
+Int_t rebin_factor(atoi(argv[5]));
 
-double xmin = atof(argv[5]);
-double xmax = atof(argv[6]);
+double xmin = atof(argv[6]);
+double xmax = atof(argv[7]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[7]);
-TString dtag1(argv[8]);
+TString dir(argv[8]);
+TString dtag1(argv[9]);
 
 bool eltau = false, mutau = false;
 if (distr.Contains("singleel"))
@@ -69,15 +70,6 @@ cout << rebin_factor << endl;
 cout << xmin << ' ' << xmax << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
-
-/*
-for(std::map<TString, double>::iterator it = xsecs.begin(); it != xsecs.end(); ++it)
-	{
-	TString dtag = it->first;
-	double xsec  = it->second;
-	cout << "For dtag " << dtag << " xsec " << xsec << "\n";
-	}
-*/
 
 
 std::vector < TString > dtags;
@@ -243,17 +235,6 @@ cout << "setting title" << endl;
 //cst->SetXaxisTile(distr);
 //hs_data->GetXaxis()->SetTitle(distr);
 
-/*
-TIter next(gDirectory->GetList());
-TObject *obj;
-while ((obj=next())) {
-	if (obj->InheritsFrom("TH1")) {
-		TH1 *h = (TH1*)obj;
-		h->GetXaxis()->SetTitle(distr);
-		}
-	}
-*/
-
 
 //TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
 //h->SetXTitle("x");
@@ -309,10 +290,10 @@ hs_data->Draw("e p same"); // the data with the errors
 
 // histo->SetTitle("boxtitle;x axis title [unit];y axis title [unit]")
 cout << "setting the stack title" << endl;
-hs->GetXaxis()->SetTitle(distr);
+hs->GetXaxis()->SetTitle(distr_name);
 cout << "done setting the stack title" << endl;
-hs_data->SetXTitle(distr);
-hs_sum->SetXTitle(distr);
+hs_data->SetXTitle(distr_name);
+hs_sum->SetXTitle(distr_name);
 
 leg->SetBorderSize(0);
 leg->Draw();
@@ -393,33 +374,6 @@ cst->Modified();
 
 cst->SaveAs( dir + "/jobsums/" + distr + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
-/*
-TH1D *h = (TH1D*) file->Get(distr);
-
-Int_t size_x = h->GetNbinsX();
-
-if (!print_header)
-	{
-	cout << dtag;
-	for (int x=1; x<size_x; x++)
-		{
-		//double bin_center = h->GetXaxis()->GetBinCenter(x);
-		double global_bin = h->GetBin(x);
-		cout << "," << h->GetBinContent(global_bin);
-		}
-	cout << "\n";
-	}
-else
-	{
-	cout << "dtag";
-	for (int x=1; x<size_x; x++)
-		{
-		double bin_center = h->GetXaxis()->GetBinCenter(x);
-		cout << "," << bin_center;
-		}
-	cout << "\n";
-	}
-*/
 return 0;
 }
 
