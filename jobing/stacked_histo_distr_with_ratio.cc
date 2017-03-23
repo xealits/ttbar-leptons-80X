@@ -24,15 +24,15 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 9
+#define DTAG_ARGS_START 10
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 9)
+if (argc < 10)
 	{
-	std::cout << "Usage : " << argv[0] << " normalize lumi distr distr_name rebin_factor xmin xmax dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " normalize logy lumi distr distr_name rebin_factor xmin xmax dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -43,19 +43,24 @@ bool normalize_to_data = false;
 if (normalize_s == TString("T") || normalize_s == TString("Y"))
 	normalize_to_data = true;
 
-double lumi = atof(argv[2]);
-TString distr(argv[3]);
-TString distr(argv[4]);
-Int_t rebin_factor(atoi(argv[5]));
+TString logy(argv[2]);
+bool set_logy = false;
+if (logy == TString("T") || logy == TString("Y"))
+	set_logy = true;
 
-double xmin = atof(argv[6]);
-double xmax = atof(argv[7]);
+double lumi = atof(argv[3]);
+TString distr(argv[4]);
+TString distr_name(argv[5]);
+Int_t rebin_factor(atoi(argv[6]));
+
+double xmin = atof(argv[7]);
+double xmax = atof(argv[8]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[8]);
-TString dtag1(argv[9]);
+TString dir(argv[9]);
+TString dtag1(argv[10]);
 
 bool eltau = false, mutau = false;
 if (distr.Contains("singleel"))
@@ -64,6 +69,7 @@ if (distr.Contains("singlemu"))
 	mutau = true;
 
 cout << "channel: " << eltau << ' ' << mutau << endl;
+cout << "logy: " << set_logy << endl;
 cout << lumi  << endl;
 cout << distr << endl;
 cout << rebin_factor << endl;
@@ -93,7 +99,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
+TLegend* leg = new TLegend(0.6, 0.7, 0.89, 0.89);
 
 for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
@@ -146,6 +152,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 
 		//cout << dtag.Contains("aeltu") << endl;
 
+		/*
 		if (dtag.Contains("aeltu") && eltau)
 			{
 			cout << "setting signal" << endl;
@@ -158,6 +165,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 			col = kGreen - 3;
 			nick = TString("tt_mutau");
 			}
+		*/
 
 		histos.back()->SetFillColor( col );
 
@@ -256,9 +264,25 @@ TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
 TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
 //pad1->SetFillColor(11);
 //pad2->SetFillColor(11);
+
+if (set_logy)
+	{
+	cout << "setting logy" << endl;
+	pad1->SetLogy();
+	//gPad->SetLogy();
+	}
+
 pad1->Draw();
 pad2->Draw();
 
+//cst->Divide(1, 2);
+
+/*
+TPad *pad1 = (TPad *)(cst->cd(1)); 
+TPad *pad2 = (TPad *)(cst->cd(2)); 
+*/
+
+//cst->cd(1);
 pad1->cd();
 
 hs_data->GetXaxis()->SetLabelFont(63);
@@ -307,6 +331,7 @@ leg->Draw();
 //cst->Modified();
 
 pad2->cd();
+//cst->cd(2);
 
 TH1D * hs_data_relative = (TH1D*) hs_data->Clone();
 TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
@@ -372,7 +397,7 @@ hs_data_relative->Draw("e p same");
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr + (normalize_to_data? "_normalizedToData.png" : ".png") );
+cst->SaveAs( dir + "/jobsums/" + distr + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
 return 0;
 }

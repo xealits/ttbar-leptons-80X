@@ -193,6 +193,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 	fill_1d(string("btag_discriminator_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
 	if (isMC)
 		{
+		int flavId=jet.hadronFlavour();
 		if (abs(flavId)==5)
 			fill_1d(string("btag_discriminator_b_hadronFlavour_weighted"), 200, -1.0, 1.0, b_discriminator, full_weight);
 		else if (abs(flavId)==4)

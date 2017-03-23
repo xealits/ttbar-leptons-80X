@@ -266,7 +266,7 @@ std::map<TString, double> xsecs = {
 };
 
 // nick and colour for dtags
-std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
+std::pair<TString, Color_t> dtag_nick_colour_old(TString dtag)
 	{
 	if (dtag.Contains("Data")) return std::make_pair("data", kWhite);
 	else if(dtag.Contains("DYJets")) return std::make_pair("dyjets", kGray);
@@ -290,13 +290,13 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	}
 
 // nick and colour for dtags
-std::pair<TString, Color_t> dtag_nick_colour_eltau(TString dtag)
+std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	{
 	if (dtag.Contains("Data")) return std::make_pair("data", kWhite);
 	else if(dtag.Contains("DYJets")) return std::make_pair("dyjets", kGray);
-	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("wjets", kRed+1);
+	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return std::make_pair("w-jets", kRed+1);
 	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return std::make_pair("dibosons", kCyan);
-	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return std::make_pair("singletop", kAzure);
+	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return std::make_pair("single top", kAzure);
 	else if(dtag.Contains("TT"))
 		{
 		if (dtag.Contains("qqbar")) return std::make_pair("tt_jj", kGreen+4);
@@ -304,9 +304,17 @@ std::pair<TString, Color_t> dtag_nick_colour_eltau(TString dtag)
 		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
 		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
 		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
-		else if (dtag.Contains("eltaubar") || dtag.Contains("tauelbar")) return std::make_pair("tt_et", kOrange+4);
-		else if (dtag.Contains("mutaubar") || dtag.Contains("taumubar")) return std::make_pair("tt_mt", kOrange+1);
-		else return std::make_pair("tt_other", kYellow+1);
+		else if (dtag.Contains("aeltu"))
+			{
+			cout << "setting el-tau nickname" << endl;
+			return std::make_pair("tt_{e\\tau}", kOrange+2);
+			}
+		else if (dtag.Contains("amtuu"))
+			{
+			cout << "setting mu-tau nickname" << endl;
+			return std::make_pair("tt_{\\mu\\tau}", kOrange+1);
+			}
+		else return std::make_pair("tt_{other}", kCyan-5);
 		}
 	else if(dtag.Contains("QCD")) return std::make_pair("qcd", kViolet);
 	else return std::make_pair("other", kBlack);
