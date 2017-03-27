@@ -252,6 +252,12 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg_", 80.95}, //70.69/2},
 {"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg_", 136.02}, //70.69/2},
 
+{"MC2016_Summer16_SingleT_tW_5FS_powheg",    35.6},
+{"MC2016_Summer16_SingleTbar_tW_5FS_powheg", 35.6},
+{"MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo", 10.11}, //3.36},
+{"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg", 80.95}, //70.69/2},
+{"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg", 136.02}, //70.69/2},
+
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
 { "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },

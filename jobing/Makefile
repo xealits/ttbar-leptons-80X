@@ -89,88 +89,98 @@ get_job_dtags:
 	ls test/tests/outdir_"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*.root//' | sort | uniq > dtags_job_${job}
 
 selection_control_histos: normalize=f
+selection_control_histos: logy=f
 selection_control_histos:
 	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singleel: normalize=f
+selection_control_histos_singleel: logy=f
 selection_control_histos_singleel:
 	for h in `cat cur_th1d_histos_pt_eta_energy_singleel`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_singleel`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singleel_other: normalize=f
+selection_control_histos_singleel_other: logy=f
 selection_control_histos_singleel_other:
 	for h in `cat cur_th1d_histos_other_singleel`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singlemu: normalize=f
+selection_control_histos_singlemu: logy=f
 selection_control_histos_singlemu:
 	for h in `cat cur_th1d_histos_pt_eta_energy_singlemu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_singlemu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singlemu_other: normalize=f
+selection_control_histos_singlemu_other: logy=f
 selection_control_histos_singlemu_other:
 	for h in `cat cur_th1d_histos_other_singlemu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta: normalize=f
+selection_control_histos_eta: logy=f
 selection_control_histos_eta:
 	for h in `cat cur_th1d_histos_eta`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta_singleel: normalize=f
+selection_control_histos_eta_singleel: logy=f
 selection_control_histos_eta_singleel:
 	for h in `cat cur_th1d_histos_eta_singleel`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta_singlemu: normalize=f
+selection_control_histos_eta_singlemu: logy=f
 selection_control_histos_eta_singlemu:
 	for h in `cat cur_th1d_histos_eta_singlemu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_pileup: normalize=f
+selection_control_histos_pileup: logy=f
 selection_control_histos_pileup:
 	for h in pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight pileup_singlelepton_nGoodPV_rawWeight pileup_singlelepton_nGoodPV_weight pileup_dilepton_nGoodPV_rawWeight pileup_dilepton_nGoodPV_weight pileup_sel_passos_nGoodPV_rawWeight pileup_sel_passos_nGoodPV_weight pileup_smu_passos_nGoodPV_rawWeight pileup_smu_passos_nGoodPV_weight ;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 0 50 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 0 50 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_rho: normalize=f
+selection_control_histos_rho: logy=f
 selection_control_histos_rho:
 	for h in rho_beforetrig_rawWeight rho_beforetrig_weight rho_passtrig_rawWeight rho_passtrig_weight rho_singlelepton_rawWeight rho_singlelepton_weight  rho_dilepton_rawWeight rho_dilepton_weight \
 		 rhoCentral_beforetrig_rawWeight rhoCentral_beforetrig_weight rhoCentral_passtrig_rawWeight rhoCentral_passtrig_weight rhoCentral_singlelepton_rawWeight rhoCentral_singlelepton_weight  rhoCentral_dilepton_rawWeight rhoCentral_dilepton_weight \
 		 rhoCentralNeutral_beforetrig_rawWeight rhoCentralNeutral_beforetrig_weight rhoCentralNeutral_passtrig_rawWeight rhoCentralNeutral_passtrig_weight rhoCentralNeutral_singlelepton_rawWeight rhoCentralNeutral_singlelepton_weight  rhoCentralNeutral_dilepton_rawWeight rhoCentralNeutral_dilepton_weight \
 		 rhoCentralChargedPileUp_beforetrig_rawWeight rhoCentralChargedPileUp_beforetrig_weight rhoCentralChargedPileUp_passtrig_rawWeight rhoCentralChargedPileUp_passtrig_weight rhoCentralChargedPileUp_singlelepton_rawWeight rhoCentralChargedPileUp_singlelepton_weight  rhoCentralChargedPileUp_dilepton_rawWeight rhoCentralChargedPileUp_dilepton_weight ;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 test/tests/outdir_"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:

@@ -99,7 +99,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.6, 0.7, 0.89, 0.89);
+TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 
 for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
