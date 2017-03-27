@@ -564,7 +564,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 				fill_jet_distr(channel + selection + ("_jets_distr_g"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			else if (jet_origin == 5) // b-quarks
 				fill_jet_distr(channel + selection + ("_jets_distr_b"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
-			else if (jet_origin == 0) // other stuff (taus probably)
+			else if (jet_origin == 0) // other stuff (taus and PU jets probably)
 				fill_jet_distr(channel + selection + ("_jets_distr_o"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			else if (jet_origin == 15) // the matched to gen_taus (dR < 1) jets
 				fill_jet_distr(channel + selection + ("_jets_distr_t"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
@@ -699,6 +699,16 @@ int record_jets_fakerate_distrs_large_bins(string channel, string selection, pat
 				fill_jet_distr_large_bins(channel + selection + ("_jets_distr_large_bins_t"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			else // other (light) quarks
 				fill_jet_distr_large_bins(channel + selection + ("_jets_distr_large_bins_q"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+
+			// also for tests among light quarks:
+			if (jet_origin == 1)
+				fill_jet_distr(channel + selection + ("_jets_distr_large_bins_u"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 2)
+				fill_jet_distr(channel + selection + ("_jets_distr_large_bins_d"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 3)
+				fill_jet_distr(channel + selection + ("_jets_distr_large_bins_s"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+			else if (jet_origin == 4)
+				fill_jet_distr(channel + selection + ("_jets_distr_large_bins_c"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 			}
 
 		for(size_t itau=0; itau < selTaus.size(); ++itau)
@@ -747,6 +757,17 @@ int record_jets_fakerate_distrs_large_bins(string channel, string selection, pat
 						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_t"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
 					else // other (light) quarks
 						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_q"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+
+					// for tests among light quarks
+					if (jet_origin == 1)
+						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_u"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else if (jet_origin == 2)
+						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_d"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else if (jet_origin == 3)
+						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_s"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+					else if (jet_origin == 4)
+						fill_jet_distr_large_bins(channel + selection + ("_tau_jets_distr_large_bins_c"), event_weight, jet.pt(), jet.eta(), jet_radius(jet));
+
 					}
 				continue;
 				}
