@@ -556,8 +556,8 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 			// 3) TODO: can also try light tau & other + light quarks (partonFlavour < 5)
 			//if (jet_origin < 5 && (minDRtj < tau_fake_distance)) jet_origin = 15;
 
-			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
-			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
+			fill_1d(channel + selection + ("_jet_partonFlavour"), 30, 0, 30,   jet_origin, event_weight);
+			fill_1d(channel + selection + ("_jet_hadronFlavour"), 30, 0, 30,   abs(jet.hadronFlavour()), event_weight);
 
 			// per-jet-origin distrs
 			if (jet_origin == 21) // gluons
@@ -603,7 +603,7 @@ int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollec
 					// the ID should be in:
 					// jet_origin->pdgId();
 					//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(channel + selection + ("_taujet_origins"), 100, 0, 100,   jet_origin, event_weight);
+					fill_1d(channel + selection + ("_taujet_origins"), 30, 0, 30,   jet_origin, event_weight);
 					//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_jet_origin
 
@@ -685,8 +685,8 @@ int record_jets_fakerate_distrs_large_bins(string channel, string selection, pat
 			// 3) TODO: can also try light tau & other + light quarks (partonFlavour < 5)
 			//if (jet_origin < 5 && (minDRtj < tau_fake_distance)) jet_origin = 15;
 
-			fill_1d(channel + selection + ("_jet_partonFlavour"), 100, 0, 100,   jet_origin, event_weight);
-			fill_1d(channel + selection + ("_jet_hadronFlavour"), 100, 0, 100,   abs(jet.hadronFlavour()), event_weight);
+			fill_1d(channel + selection + ("_jet_partonFlavour"), 30, 0, 30,   jet_origin, event_weight);
+			fill_1d(channel + selection + ("_jet_hadronFlavour"), 30, 0, 30,   abs(jet.hadronFlavour()), event_weight);
 
 			// per-jet-origin distrs
 			if (jet_origin == 21) // gluons
@@ -732,7 +732,7 @@ int record_jets_fakerate_distrs_large_bins(string channel, string selection, pat
 					// the ID should be in:
 					// jet_origin->pdgId();
 					//qcd_taujet_origin->Fill(abs( jet.partonFlavour() ));
-					fill_1d(channel + selection + ("_taujet_origins"), 100, 0, 100,   jet_origin, event_weight);
+					fill_1d(channel + selection + ("_taujet_origins"), 30, 0, 30,   jet_origin, event_weight);
 					//qcd_taujet_origin->Fill(abs( jet_origin->pdgId() ));
 					// qcd_jet_origin
 

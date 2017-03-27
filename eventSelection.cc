@@ -3798,6 +3798,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					fill_1d(string("singlemu_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
 					fill_1d(string("singlemu_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					// n-jets control:
 					fill_1d(string("singlemu_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
 					fill_1d(string("singlemu_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
 					fill_1d(string("singlemu_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
@@ -4165,6 +4166,7 @@ for(size_t f=0; f<urls.size();++f)
 					//fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets.size(), weight);
 					fill_1d(string("singleel_pretauselection_nRawJets"),        10, 0,10,  jets.size(),              weight);
 					fill_1d(string("singleel_pretauselection_njets"),           10, 0,10,  selJets.size(),           weight);
+					// n-jets control:
 					fill_1d(string("singleel_pretauselection_njetsNoLep"),      10, 0,10,  selJetsNoLep.size(),      weight);
 					fill_1d(string("singleel_pretauselection_njetsNoLepNoTau"), 10, 0,10,  selJetsNoLepNoTau.size(), weight);
 					fill_1d(string("singleel_pretauselection_nRawTaus"),        10, 0,10,  taus.size(),              weight);
