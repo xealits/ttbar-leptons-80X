@@ -52,7 +52,7 @@ nfiles   : 2712
 nevents  : 246175191
 nblocks  : 122
 nlumis   : 64160
-file_size: 5887198215922
+file_size: 5 887 198 215 922
 
 [otoldaie@lxplus072 analysis]$ das_client.py --query=" summary dataset=/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"
 
@@ -1485,7 +1485,7 @@ nfiles   : 2124
 nevents  : 92925926
 nblocks  : 73
 nlumis   : 466566
-file_size: 3755243950424
+file_size: 3 755 243 950 424
 
 
 

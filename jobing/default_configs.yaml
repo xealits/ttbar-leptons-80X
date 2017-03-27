@@ -11,8 +11,8 @@ pileup_reweight_direct : &central_pu "
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 "
 pileup_reweight_direct_down : *central_pu
 pileup_reweight_direct_up   : *central_pu
-elHLT_MC     : "HLT_Ele32_eta2p1_WPTight_Gsf_v8"
-elHLT_Data   : "HLT_Ele32_eta2p1_WPTight_Gsf_v*"
+elHLT_MC     : "HLT_Ele27_WPTight_Gsf_v7"
+elHLT_Data   : "HLT_Ele27_WPTight_Gsf_v*"
 muHLT_MC1    : "HLT_IsoMu24_v4"
 muHLT_MC2    : "HLT_IsoTkMu24_v4"
 muHLT_Data1  : "HLT_IsoMu24_v*"
