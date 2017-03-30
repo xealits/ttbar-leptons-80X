@@ -1,4 +1,4 @@
-#include "UserCode/ttbar-leptons-80X/src/recordFuncs.cc"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
 #include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
 #include <JetMETCorrections/Modules/interface/JetResolution.h>

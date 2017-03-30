@@ -48,7 +48,7 @@
 #include "UserCode/llvv_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/llvv_fwk/interface/PDFInfo.h"
 #include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
-#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
+//#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 
 //#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
 
@@ -89,11 +89,12 @@
 //#include "jetDistrs.h"
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
-#include "UserCode/ttbar-leptons-80X/src/ProcessingMuons.cc"
-#include "UserCode/ttbar-leptons-80X/src/ProcessingElectrons.cc"
-#include "UserCode/ttbar-leptons-80X/src/ProcessingTaus.cc"
-#include "UserCode/ttbar-leptons-80X/src/ProcessingJets.cc"
-#include "UserCode/ttbar-leptons-80X/src/ProcessingDRCleaning.cc"
+
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.cc"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingElectrons.cc"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.cc"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.cc"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.cc"
 
 using namespace std;
 
@@ -1496,7 +1497,7 @@ double
 //beff and leff must be derived from the MC sample using the discriminator vs flavor
 //the scale factors are taken as average numbers from the pT dependent curves see:
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
-BTagSFUtil btsfutil;
+//BTagSFUtil btsfutil;
 double beff(0.68), sfb(0.99), sfbunc(0.015);
 double leff(0.13), sfl(1.05), sflunc(0.12);
 
@@ -3281,7 +3282,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::JetCollection selBJets;
 
 		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
-		//	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+		//	BTagCalibrationReader& btagCal,
 		//	struct bTaggingEfficiencyHistograms& bEffs,
 		//	string& b_tagger_label, float b_tag_WP,
 		//	pat::JetCollection& selBJets,                          // output
@@ -3290,7 +3291,7 @@ for(size_t f=0; f<urls.size();++f)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 		float btag_WP = 0.8484; // medium
-		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, weight_bTaggingSF, btagCal, btsfutil, bEffs, btagger_label, btag_WP, selBJets, true, debug);
+		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, weight_bTaggingSF, btagCal, bEffs, btagger_label, btag_WP, selBJets, true, debug);
 
 		weight *= weight_bTaggingSF;
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);

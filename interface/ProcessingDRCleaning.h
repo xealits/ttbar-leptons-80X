@@ -1,4 +1,4 @@
-#include "UserCode/ttbar-leptons-80X/src/recordFuncs.cc"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
 
 /* clean taus of leptons

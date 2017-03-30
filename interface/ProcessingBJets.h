@@ -1,9 +1,15 @@
 #ifndef PROCESSINGBJETS_H
 #define PROCESSINGBJETS_H
 
-#include "DataFormats/PatCandidates/interface/Jet.h"
+#include <string>
+
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
 #include "CondTools/BTau/interface/BTagCalibrationReader.h"
+
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "TH2F.h"
+
+using namespace std;
 
 struct bTaggingEfficiencyHistograms {
 	TH2F* b_alljet   ;
@@ -22,7 +28,7 @@ double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, 
 
 
 int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
-	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+	BTagCalibrationReader& btagCal,
 	struct bTaggingEfficiencyHistograms& bEffs,
 	string& b_tagger_label, float b_tag_WP,
 	pat::JetCollection& selBJets,                          // output

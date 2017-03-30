@@ -1,6 +1,7 @@
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
+
 /* defined in header
 struct bTaggingEfficiencyHistograms {
 	TH2F* b_alljet   ;
@@ -56,7 +57,7 @@ double bTagging_udsg_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, 
 
 
 int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
-	BTagCalibrationReader& btagCal, BTagSFUtil& btsfutil,
+	BTagCalibrationReader& btagCal, // BTagSFUtil& btsfutil, old b-tag SF weighting, done with bEffs now
 	struct bTaggingEfficiencyHistograms& bEffs,
 	string& b_tagger_label, float b_tag_WP,
 	pat::JetCollection& selBJets,                          // output
@@ -76,7 +77,7 @@ for (size_t ijet = 0; ijet < jets.size(); ++ijet)
 	fill_1d(string("btag_discriminator"), 200, -1.0, 1.0, b_discriminator, weight);
 
 	bool hasCSVtag(b_discriminator > b_tag_WP);
-	bool raw_CSV_tag = hasCSVtag;
+	//bool raw_CSV_tag = hasCSVtag;
 	//bool hasCSVtag(jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.935);
 	bool hasCSVtag_BTagUp(false), hasCSVtag_BTagDown(false);
 

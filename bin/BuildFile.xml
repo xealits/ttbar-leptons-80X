@@ -4,6 +4,7 @@
 <use name="roostats"/>
 <use name="PhysicsTools/FWLite"/>
 <use name="UserCode/llvv_fwk"/>
+<use name="UserCode/ttbar-leptons-80X"/>
 <use name="TauAnalysis/SVfitStandalone"/>
 <use name="RecoJets/JetProducers"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
@@ -30,7 +31,9 @@
   <bin name="fitTTbarCrossSection"        file="chhiggs/fitTTbarCrossSection.cc"></bin>
 -->
 
-  <bin name="ttbarleps80_eventSelection"  file="ttbar-leptons-80X/eventSelection.cc"></bin>
+  <bin name="eventSelection"  file="eventSelection.cc"></bin>
+
+<!--
   <bin name="jetToTauFakeRate"  file="ttbar-leptons-80X/jetSelectionForTauFakeRate.cc"></bin>
 
   <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
@@ -79,6 +82,8 @@
   <bin name="histo_1D_annotated"          file="ttbar-leptons-80X/jobing/histo_1D_annotated.cc"></bin>
 
   <bin name="syncExercise_Dileptons"  file="ttbar-leptons-80X/syncExercise_Dileptons.cc"></bin>
+
+-->
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->
 

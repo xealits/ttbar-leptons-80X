@@ -1,7 +1,4 @@
-#ifndef RECORDFUNCS_H
-#define RECORDFUNCS_H
-
-
+/*
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -66,9 +63,6 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TCanvas.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
 #include "TEventList.h"
@@ -79,15 +73,25 @@
 #include <map>
 #include <string>
 
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+
+*/
+
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
+
 using namespace std;
 
 
+/*
 int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight);
 
 int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
 
 //int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
 int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight);
+*/
 
 
 
@@ -784,4 +788,3 @@ int record_jets_fakerate_distrs_large_bins(string channel, string selection, pat
 
 
 
-#endif /* RECORDFUNCS_H */

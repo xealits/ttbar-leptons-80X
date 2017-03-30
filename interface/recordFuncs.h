@@ -2,7 +2,6 @@
 #define RECORDFUNCS_H
 
 
-#include <iostream>
 #include <boost/shared_ptr.hpp>
 
 #include "DataFormats/FWLite/interface/Handle.h"
@@ -18,10 +17,8 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 
@@ -40,8 +37,8 @@
 #include "UserCode/llvv_fwk/interface/TMVAUtils.h"
 #include "UserCode/llvv_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/llvv_fwk/interface/PDFInfo.h"
-#include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
-#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
+//#include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
+//#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 
 //#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
 
@@ -60,7 +57,7 @@
 //#include "EgammaAnalysis/ElectronTools/interface/PhotonEnergyCalibrator.h" 
 
 #include "UserCode/llvv_fwk/interface/PatUtils.h"
-#include "UserCode/llvv_fwk/interface/rochcor2015.h"
+//#include "UserCode/llvv_fwk/interface/rochcor2015.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -72,58 +69,66 @@
 #include "TProfile.h"
 #include "TProfile2D.h"
 #include "TEventList.h"
-#include "TROOT.h"
 #include "TNtuple.h"
-#include <Math/VectorUtil.h>
 
 #include <map>
 #include <string>
 
+/*
+ * could not find where LorentzVector is defined properly (to make vector<of it>)
+ * it is somewhere in the headers above
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+#include "TROOT.h"
+#include <Math/VectorUtil.h> // LorentzVector
+
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+//#include "ROOT/Math/LorentzVector.h"
+*/
+
+
 using namespace std;
-
-
-int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight);
-
-int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
-
-//int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
-int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight);
+//using namespace ROOT::Math;
 
 
 
-/* Don't expose these
-string mc_decay;
+// Exposing these for access in main process
+// the mc_decay is set in main process (if MC set has to be splitted in different decay modes)
+// the hist maps are printed out directly in main process
+// TODO: make a separate printing-out procedure
+extern string mc_decay;
 
 // channel -> {control_point, TH}
 // 1 job = 1 dtag,
 // 1 dtag may have several channels
-std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
-std::map<string, TH1D> th1d_distr_maps_control_headers;
+extern std::map<string, std::map<string, TH1D>> th1d_distr_maps_control;
+extern std::map<string, TH1D> th1d_distr_maps_control_headers;
 
-std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
-std::map<string, TH1I> th1i_distr_maps_control_headers;
+extern std::map<string, std::map<string, TH1I>> th1i_distr_maps_control;
+extern std::map<string, TH1I> th1i_distr_maps_control_headers;
 
-std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
-std::map<string, TH2D> th2d_distr_maps_control_headers;
+extern std::map<string, std::map<string, TH2D>> th2d_distr_maps_control;
+extern std::map<string, TH2D> th2d_distr_maps_control_headers;
 
-std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
-std::map<string, TH3D> th3d_distr_maps_control_headers;
-*/
+extern std::map<string, std::map<string, TH3D>> th3d_distr_maps_control;
+extern std::map<string, TH3D> th3d_distr_maps_control_headers;
 
 //extern int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight);
 //extern int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight);
 
 
+
 int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight);
-
-
 int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
-
-
 //int fill_1d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, double value, double weight)
 int fill_2d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, double x, double y, double weight);
-
-
 int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, Int_t nbinsy, Double_t ylow, Double_t yup, Int_t nbinsz, Double_t zlow, Double_t zup, double x, double y, double z, double weight);
 
 
@@ -172,7 +177,7 @@ double jet_radius(pat::Tau& jet);
 
 int fill_jet_distr(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius);
 
-int fill_jet_distr_large_bins(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius)
+int fill_jet_distr_large_bins(string control_point_name, Double_t weight, Double_t pt, Double_t eta, Double_t radius);
 
 
 /* Also don't expose
