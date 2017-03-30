@@ -87,14 +87,13 @@
 #include <string>
 
 //#include "jetDistrs.h"
-#include "recordFuncs.h"
-
-#include "ProcessingMuons.cc"
-#include "ProcessingElectrons.cc"
-#include "ProcessingTaus.cc"
-#include "ProcessingJets.cc"
-#include "ProcessingBJets.cc"
-#include "ProcessingDRCleaning.cc"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
+#include "UserCode/ttbar-leptons-80X/src/ProcessingMuons.cc"
+#include "UserCode/ttbar-leptons-80X/src/ProcessingElectrons.cc"
+#include "UserCode/ttbar-leptons-80X/src/ProcessingTaus.cc"
+#include "UserCode/ttbar-leptons-80X/src/ProcessingJets.cc"
+#include "UserCode/ttbar-leptons-80X/src/ProcessingDRCleaning.cc"
 
 using namespace std;
 

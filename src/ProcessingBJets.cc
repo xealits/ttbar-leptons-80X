@@ -1,4 +1,7 @@
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
+/* defined in header
 struct bTaggingEfficiencyHistograms {
 	TH2F* b_alljet   ;
 	TH2F* b_tagged   ;
@@ -7,6 +10,7 @@ struct bTaggingEfficiencyHistograms {
 	TH2F* udsg_alljet;
 	TH2F* udsg_tagged;
 	};
+*/
 
 double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
 	{
