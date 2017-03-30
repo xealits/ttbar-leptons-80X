@@ -1,398 +1,347 @@
-
-
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
-<head id="ctl00_ctl00_NICEMasterPageHead"><meta name="viewport" content="width=device-width, target-densityDpi=160dpi, initial-scale=1" /><meta name="MobileOptimized" content="width" /><meta name="HandheldFriendly" content="true" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta http-equiv="cleartype" content="on" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><link href="https://framework.web.cern.ch/framework/2.0/fonts/PTMonoWeb/PTM55Fstylesheet.css" rel="Stylesheet" type="text/css" /><link href="https://framework.web.cern.ch/framework/2.0/fonts/PTSansWeb/PTSansWeb.css" rel="Stylesheet" type="text/css" /><link href="https://framework.web.cern.ch/framework/2.0/fonts/PTSerifWeb/PTSerifWeb.css" rel="Stylesheet" type="text/css" />
-
-    
-    <link href="/adfs/ls/MasterPages/toolbar/css/toolbar.css" rel="stylesheet" type="text/css" />
-    <!--[if lt IE 8]>
-        <link href="/adfs/ls/MasterPages/toolbar/css/toolbar-ie.css" rel="stylesheet" type="text/css" />
-    <![endif]-->
-
-    
-    <title>Cern Authentication</title>
-    <link href="/adfs/ls/favicon.ico" rel="ICON" type="image/x-icon" />
-    <link href="/adfs/ls/favicon.ico" rel="SHORTCUT ICON" type="image/x-icon" />
-    <meta name="application-name" content="sso-management" />
-    
-  <script language="javascript" type="text/javascript">
-    function showhide2fa() {
-      if (document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_div2FAAuthSystems').style.display == 'inline') {
-        document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_div2FAAuthSystems').style.display = 'none';
-        document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_href2FAAuthSystems').textContent = '[show]';
-      } else {
-        document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_div2FAAuthSystems').style.display = 'inline';
-        document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_href2FAAuthSystems').textContent = '[hide]';
-      }
-    }
-    function showhidedebug() {
-      document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_divDebug').style.display = 'block';
-      document.getElementById('ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hrefShowDebug').style.display = 'none';
-    }
-  </script>
-
-  <script type="text/javascript" src="js/jquery.min.js"></script>
-  
-
-  <script type="text/javascript" src="js/improvedDropDown.js"></script>
-
-
-<link href="App_Themes/Default/01-CernWeb-General.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Default/02-CernWeb-Header.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Default/03-CernWeb-OISStyle.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Default/06-CustomStyle.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Default/07-default-ImprovedDropDown.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Default/10-CernWeb-SmallDevices.css" type="text/css" rel="stylesheet" /><meta name="robots" content="noindex, nofollow, noarchive" /><title>
-
-</title></head>
-
-   
-
-
-<body id="ctl00_ctl00_NICEMasterPageBody">
-  <form name="aspnetForm" method="post" action="/adfs/ls/?wa=wsignin1.0&amp;wreply=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wct=2017-03-27T16%3A47%3A14Z&amp;wtrealm=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wctx=cookie%3A1490633234_8304" id="aspnetForm">
-<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTcwMDIwMTIzOA8WAh4TVmFsaWRhdGVSZXF1ZXN0TW9kZQIBZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WAQVNY3RsMDAkY3RsMDAkTklDRU1hc3RlclBhZ2VCb2R5Q29udGVudCRTaXRlQ29udGVudFBsYWNlaG9sZGVyJGNoa1JlbWVtYmVyTG9naW55zGggmjUO9MyY8SuFAsq3+JmijA==" />
-
-<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="0EE29E36" /><input type="hidden" name="__db" value="14" />
-
-    
-    <div id="ctl00_ctl00_pnlToolbar">
-	
-
-	 <div id="cern-toolbar">
-		    <h1><a href="http://cern.ch" title="CERN">CERN <span>Accelerating science</span></a></h1>
-		    <ul class="cern-signedin">
-                <li class="cern-accountlinks active"><a class="cern-account" title="Sign in to your CERN account">Sign in</a></li>
-			    <li><a class="cern-directory" href="http://cern.ch/directory" title="Search CERN resources and browse the directory">Directory</a></li>
-		    </ul>
-	    </div>
-
-	
-</div>
-      
-    
-    <div id="ctl00_ctl00_pnlHeader">
-	
-        <div id="header" >
-            <div id="ctl00_ctl00_HeaderTitle" class="bgHeaderImage page">
-                <h2 id="site-name">
-    <a href="/" title="Home" rel="home">CERN Single Sign-On</a>
-</h2>
-                <h3 id="site-slogan">
-    Sign in with a CERN account, a Federation account or a public service account
-</h3>
-	        </div>
-
-            <div id="main-navigation" class="page">
-                
-
-            </div>
-        </div>
-    
-</div>
-
-    
-    <div id="page">
-        
-    
-    
-
-  
-  
-
-  
-  
-
-  
-  <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlCernAuthentication">
-	
-    <div class="box_auth">
-      <div class="signinwith fullWidth">Sign in with your CERN account</div>
-      <div class="smaller note important">Reminder: you have agreed to comply with the <a href="http://cern.ch/ComputingRules">CERN computing rules</a></div>
-
-      <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlForm">
-		
-        <div class="oneAuthType">Use credentials</div>
-        <div class="oneAuth">
-          <table>
-            <tr>
-              <td class="box_login smaller" style="color: gray;">Username or Email address</td>
-              <td class="box_password smaller" style="color: gray;">Password</td>
-              <td class="box_signinbutton"></td>
-            </tr>
-            <tr>
-              <td class="box_login">
-                <input name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$txtFormsLogin" type="text" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_txtFormsLogin" title="Enter your Username or Email Address" /></td>
-              <td class="box_password">
-                <input name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$txtFormsPassword" type="password" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_txtFormsPassword" /></td>
-              <td class="box_signinbutton">
-                <input type="submit" name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$btnFormsLogin" value="Sign in" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$btnFormsLogin&quot;, &quot;&quot;, true, &quot;credentials&quot;, &quot;&quot;, false, false))" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_btnFormsLogin" class="button_signin" /></td>
-            </tr>
-
-            <tr>
-              <td class="box_login smaller">
-                <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlForm1">
-			
-                  <span class="subtle"><input id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_chkRememberLogin" type="checkbox" name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$chkRememberLogin" /><label for="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_chkRememberLogin">Remember Username or Email Address</label></span>
-                
-		</div>
-              </td>
-              <td class="box_password smaller" style="vertical-align: bottom;"><a href="https://account.cern.ch/account/Help/?kbid=053010" target="_blank">Need password help ?</a></td>
-              <td class="box_signinbutton"></td>
-            </tr>
-
-            <tr>
-              <td colspan="3" class="message error">
-                <span id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_lblFormsError"></span>
-                &nbsp;
-                &nbsp;
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-	</div>
-
-      <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlOneClickAuthentication">
-		
-        <div class="oneAuthType">Use one-click authentication</div>
-
-        <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlNTLM">
-			
-
-          <div class="oneAuth">
-            <table>
-              <tr>
-                <td rowspan="2" class="fedicon">
-                  <img src="/adfs/ls/images/federation/ieff2.png" alt="Kerberos based authentication" /></td>
-                <td class="fedtitle">
-                  <a id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hlNTLM2" href="auth/integrated/?wa=wsignin1.0&amp;wreply=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wct=2017-03-27T16%3A47%3A14Z&amp;wtrealm=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wctx=cookie%3A1490633234_8304">Sign in using your current Windows/Kerberos credentials</a>
-                  <a id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hlNTLMAutologon" title="Enables Autologon with current Windows/Kerberos Credentials. Click Logout in the Application to disable." href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$hlNTLMAutologon&#39;,&#39;&#39;)">[autologon]</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="fedtext">Use your current authentication token. You need Internet Explorer on CERN Windows or Firefox on SLC (<a href="http://linux.web.cern.ch/linux/scientific5/docs/rhel/Deployment_Guide/sso-config-firefox.html" target="_blank" style="color: #777777;">Firefox help here</a>).</td>
-              </tr>
-            </table>
-          </div>
-
-        
-		</div>
-
-        <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlCertificates">
-			
-          <div class="oneAuth">
-            <table>
-              <tr>
-                <td rowspan="2" class="fedicon">
-                  <img src="/adfs/ls/images/federation/eugridpma.png" border="0" alt="Certificate authentication" /></td>
-                <td class="fedtitle">
-                  <a id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hlCertificateAuth" title="Don&#39;t forget to first map your Certificate to your CERN Account on http://ca.cern.ch ." href="auth/sslclient/?wa=wsignin1.0&amp;wreply=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wct=2017-03-27T16%3A47%3A14Z&amp;wtrealm=https%3A%2F%2Ftwiki.cern.ch%2FShibboleth.sso%2FADFS&amp;wctx=cookie%3A1490633234_8304">Sign in using your Certificate</a>
-                  <a onclick="javascript:return confirm(&#39;Warning: please ensure you successfully authenticated with your Certificate by clicking on \&#39;Sign in using your Certificate\&#39; before enabling autologon.\r\nIf autologon is enabled with a bad Certificate your will have to Clear your Browser\&#39;s cookies to disable the feature.\r\nClick Ok to proceed with autologon enabling or Cancel if you are unsure or don\&#39;t understand this message.&#39;);" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hlCertificateAutologon" title="Enables Autologon with Certificate. Click Logout in the Application to disable. Don&#39;t forget to first map your Certificate to your CERN Account on http://ca.cern.ch ." href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$hlCertificateAutologon&#39;,&#39;&#39;)">[autologon]</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="fedtext">Use a EuGridPMA trusted certificate. Don't forget to first <a href="http://cern.ch/accountmap" target="_blank" style="color: #777777;">map your Certificate to your CERN Account</a>.</td>
-              </tr>
-            </table>
-          </div>
-        
-		</div>
-      
-	</div>
-
-      
-
-      <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnl2FAsystems">
-		
-        <div class="oneAuthType">
-          Use strong two factor authentication 
-                <a href="javascript:showhide2fa();" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_href2FAAuthSystems" style="font-weight:normal;color:#777777;display:inline;">[show]</a>
-        </div>
-        <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_div2FAAuthSystems" class="oneAuth" style="display:none;">
-          <table id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_tbl2FAsystems" border="0" width="100%">
-			<tr>
-				<td class="fedrow"><table class="fedtable" border="0">
-					<tr>
-						<td class="fedicon" rowspan="2"><a href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$ctl02&#39;,&#39;&#39;)"><img src="/adfs/ls/images/federation/fingerprint.png" border="0" ></a></td><td class="fedtitle"><a href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$ctl03&#39;,&#39;&#39;)">Two Factor Authentication</a></td>
-					</tr><tr>
-						<td class="fedtext">Two factor authentication using your CERN credentials and a verification code like SMS code or Google Authenticator, a device like Yubikeys or Smartcards or biometry.</td>
-					</tr>
-				</table></td>
-			</tr>
-		</table>
-        </div>
-      
-	</div>
-    </div>
-  
-</div>
-
-  
-  <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlPublicService">
-	
-    <div class="box_auth">
-      <div class="signinwith fullWidth">Sign in with a public service account</div>
-      <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlPublicServiceList">
-		
-        <div class="oneAuth">
-          <table id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_tblPublicServices" border="0" width="100%">
-			<tr>
-				<td class="fedrow"><table class="fedtable" border="0">
-					<tr>
-						<td class="fedicon" rowspan="2"><a href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$ctl05&#39;,&#39;&#39;)"><img src="/adfs/ls/images/federation/fbgl.png" border="0" ></a></td><td class="fedtitle"><a href="javascript:__doPostBack(&#39;ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$ctl06&#39;,&#39;&#39;)">Facebook, Google, Live, etc.</a></td>
-					</tr><tr>
-						<td class="fedtext">Authenticate using an external account provider such as Facebook, Google, Live, Yahoo, Orange.</td>
-					</tr>
-				</table></td>
-			</tr>
-		</table>
-        </div>
-      
-	</div>
-    </div>
-  
-</div>
-
-  
-  <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_pnlFederation">
-	
-    <div class="box_auth">
-      <div class="signinwith fullWidth">Sign in with your organization or institution account</div>
-
-      <div class="oneAuth" style="margin-top: 2px;">
-        <table>
-          <tr>
-            <td class="fedicon">
-              <img src="/adfs/ls/images/federation/eduGAIN50.png" border="0" alt="Federation authentication" /></td>
-
-            <td>
-              <select name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$drpFederation" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_drpFederation" class="improvedDropDown-dropdownlist">
-		<option value="-">Enter the name of the organisation you are affiliated with...</option>
-		<option value="http://adfs.fom.nl/adfs/services/trust" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADzSURBVDhP5ZKvjgIxEIfnQIFAYHH3GggMknfAodnFktvwDEiCaDsDKQkGxQLJuTt16p7g3DkeoXTKZNmQTRZIUHym32+yf35tCk9B42Ii+pIoRV3RQrTGibW2xe6f7YRhHmXoVzRDKdMXLUcjHUUfQyF9h1XTTxgwq1VVLCNJkoroBcRlTxvchzDY1CH6qkGcOnDuLaxMvHOI2M7yNTNrm6JnovRTDOZqMfQvTiWWwH+I039WbWgdZqPdKHzAtwi5DOdcBeLtn0Qe8FaKGxDRu6g/s9yhRb5JdGhxI2NMA4a3bqEAf4nGovfB7fwF+5CYA+AE1exgvh7A5awAAAAASUVORK5CYII=" data-category="EduGain">FOM-bureau</option>
-		<option value="https://aai-logon.psi.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFASURBVDhP7ZFvS8JQFMb3zfpkIr0pA7EV5B800F60DWPT0XR/TN/km0p97bbcwJdDEIwMNnu655qDMvoC9cDhwjn3d+65zxH+tVXuKJcVC4VsIZ9P41wU2flTLs/vEvOJC4LZ6UK+luDYDu56PdiWhXKxBE1V0XO2OYpKqYyu0YEsSSCGw3q7PTBuDfiej5fVCvP5HKRBv4/FYoEoijCbzRCwaNTrvOZ7HoghVliv31CpVOG5LoefHh6RJAmG90Msl0tMxhO0NA03zSbOTkVsNhu40ylniE0bPPs+pqxA4ymygpPjHK7qDbS1FjqGwS6/8jOO468Ndl8IwxCKJDMvZJhdE7VqDePRCGEQ8BrwzkbW979AIkPo1UsG6brO3SXTNFVLDbQtG6WL4r6JpN0aaU2HmcwB5b6v9dc1/mkJwgf9h2MwTsVbYwAAAABJRU5ErkJggg==" data-category="Switch AAI">PSI - Paul Scherrer Institut</option>
-		<option value="https://aai-logon.switch.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH/SURBVDhPYwCBj7u6zvx4cNobzCEHvF2R9/FJrer/D7u6Nv/7/kEZKkw8eLeq4OPjMsn/j8ul/r/odfjx9dz6lv///3NBpQmDd2uKnz8qFvn/pFrp/+NKOTB+vSDu0c8n50OhSvCDf68eSL5bWzb/cY3q38cVMv+f1AANAtJP6zX+f9jcuPfn5+faUKX4wa87J01ez4048rhSFuyKJ9WKYG8967b+/eXk0n6gt/ihSnEDoCLGb+dWR77oc3wE0vwUaMjTKqBhFdL/38wKffHz/vFEkBqoctzg//+nXD8PTm541GL09V61xv97NZr/71Uo/79fp/3/4aqa419fPzOBKsUOQLYs2Xo23Ma/+LaRU/J7Y5fU97p2Se91bBLeF5W1XH3y8KEvVCkmOHj6tpFHcs8hVu3k/yw6aWDMoJr4X8W96ue8dcc7//37xwtVigru338pkVa3YC6vUcZfZs2k/1z6af+ZgLSIee7/yt7VO16//qgOVYoKgCayd83eWiZtX/SRUSMRrBFkO7tuyv/A7Cn3zl99FABVih3ktyy9zKAc+59DN/U/h17qf5Ahhv7139bsOlMHNJwTqgw3SKiY/ZFRPeE/E1CjhHXB/5bpm9a+e/dNHipNGCSUz/7IDNQcXTLz2rW7L1yhwsSD9Nr5j+euOVAMjDpWqBCRgIEBAIjPD+8t9JPeAAAAAElFTkSuQmCC" data-category="Switch AAI">SWITCH</option>
-		<option value="https://aai-logon.unibas.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABpSURBVDhPtYwLCoAwDEN7wd7/OEplkXRLVwb6YETzqf2Cu1/j80V5CS50B8pjCFiVF1rCI6byHxCevjFfmQvtAKDEqrxQiSorL3QLD4P5fwGF0zfmmSrcjgAKrMoLXeBAlbo80R34ELMbQayX4aIc6d4AAAAASUVORK5CYII=" data-category="Switch AAI">Universit&#228;t Basel</option>
-		<option value="https://aai-logon.vho-switchaai.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH/SURBVDhPYwCBj7u6zvx4cNobzCEHvF2R9/FJrer/D7u6Nv/7/kEZKkw8eLeq4OPjMsn/j8ul/r/odfjx9dz6lv///3NBpQmDd2uKnz8qFvn/pFrp/+NKOTB+vSDu0c8n50OhSvCDf68eSL5bWzb/cY3q38cVMv+f1AANAtJP6zX+f9jcuPfn5+faUKX4wa87J01ez4048rhSFuyKJ9WKYG8967b+/eXk0n6gt/ihSnEDoCLGb+dWR77oc3wE0vwUaMjTKqBhFdL/38wKffHz/vFEkBqoctzg//+nXD8PTm541GL09V61xv97NZr/71Uo/79fp/3/4aqa419fPzOBKsUOQLYs2Xo23Ma/+LaRU/J7Y5fU97p2Se91bBLeF5W1XH3y8KEvVCkmOHj6tpFHcs8hVu3k/yw6aWDMoJr4X8W96ue8dcc7//37xwtVigru338pkVa3YC6vUcZfZs2k/1z6af+ZgLSIee7/yt7VO16//qgOVYoKgCayd83eWiZtX/SRUSMRrBFkO7tuyv/A7Cn3zl99FABVih3ktyy9zKAc+59DN/U/h17qf5Ahhv7139bsOlMHNJwTqgw3SKiY/ZFRPeE/E1CjhHXB/5bpm9a+e/dNHipNGCSUz/7IDNQcXTLz2rW7L1yhwsSD9Nr5j+euOVAMjDpWqBCRgIEBAIjPD+8t9JPeAAAAAElFTkSuQmCC" data-category="Switch AAI">VHO - Virtual Home Organization</option>
-		<option value="https://clueless.restena.lu/simplesamlphp/saml2/idp/metadata.php" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFmSURBVDhPpZI/SwMxGMYPFAo6OKgogt9AcBFcFBxcxFF0E6E66NxRsFsXp0MFk9y1vomX5NJB6NDBpV9DP0Q3JxXrm2vOttc7i/jAjwtvnufe/PP+IgCYZ0oAleLIlUZFFf9gWvTGUOKdSnghEj6NMVPOPpAt5gYdoYEt66t2qtNEw26g+Vo6l/xg2Gy5l2L/mvNZ7NjJzhHNX/se2EjCoebrWVMRfrtdspnDoRWPdU+hWrxRJbZ93y/hGVwi/boSz0yyJTyvL6xdeWFTbmbDkyDGzCXLT5VnSsFOPaIe9qwPuz8lgTzlhbM4a7GwWzcviJ27zjJZTPELqrlBNI5jph8rbup3MQkVGkMNuyFQC2L8WiJbQyScO+u4WCxOMFC24DZOkzE+FHt4gYJj3MYZkaJMIn7gIqPC+9wppvEzvjWNZRcZKGpFC3eqvlpXKsHeMWmRGT8OF9PaMDcyWLH+9FX+U573Db5on5mjyRmqAAAAAElFTkSuQmCC" data-category="EduGain">RESTENA Staff</option>
-		<option value="https://coreen-idp.kreonet.net/idp/simplesamlphp" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIjSURBVDhPpZNNTBNBFMdXb1wMHsAYITGetIAEjhgO6kE8eKLEk4kxEj3ogQuEi9wg8Ug8dLffpZ/UpppWxYIgi6YFt91sK2J6MHrRIGxLy4eQSNb3nzCbcmviSyb//7yZ9+ub2anw33Fvpdx1+2MlAj+mlhuvzut/2EK9cWux/KPtzaYB/2ilcpP7YrF4CqppWgu0UCi0QlVVPYeRy+WaoELnzKbBiya+bA9xH41GHxqGcSIQCLzAnPQl1Ov1xo/GOFRAAS+yJteecU8FUiwWa45EItOYi6LI8lCbzYbxHmoCJr/uXWkTlw6sH0qz2BgMBkUCjBCgAXOXy8UAKEokEr0AQE1A99sNvd2l/MImBABut3sfPpVKjfh8PnYUAEKhUCsAUBOA0fXq5wI2IQCg+AvvcDhkj8czSndyEgC/368DAD0G6H69fgwgSdIhvN1uXwuHww+SyeQF3AFdXhUAqAnonNmotE+p31g1BQDU9nd46mCXhhaPx4fRAd1LHwBQE/A4V7VaxKXDO5ktdw2gn751I36VulilY7wDAOsAyLJsMQFI3niel7gHgD7laYJ8pqOwHHWxXgtgvqPmIT1drQ5zTzf8BEpFeXpUaXin06lQJ/mjvAdrwvWF0m9eNJQt93OPpwrNZrOX0un0GXhFUS5mMhkLPOXOY024u7w10LeozyM5+GnnbM+cfgBfd4zRt72v7bI/DN7+Nbl0mS3UFYLwD1jIoM+DPQqGAAAAAElFTkSuQmCC" data-category="EduGain">COREEN set.ID by KAFE</option>
-		<option value="https://edugain-proxy.igtf.net/simplesaml/saml2/idp/metadata.php" logo="/adfs/ls/images/federation/blank.gif" data-category="Other">EduGain_https://edugain-proxy.igtf.net/simplesaml/saml2/idp/metadata.php</option>
-		<option value="https://eduid.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADkSURBVDhPYxh48OD5e0VR3Yb/IJxcvOo/SEzZqgPMR8ZSRs3/jT0m/E+vWLv09qMPKmDNIECsAchY16Xvycv//3kIGqBp3/1/yeozqSA8cc6hcku/KXBDFq89l0LQADOvSWA+DGzYcQVuQEv/nnawICkG7D92F25AYcPG2WBBcg0oqN80ByxIigE7D9yEG1DUsGkmWJAUA7qnH4Ab0DppbwtYEJ8BKtYd/1sm7m0F4ayKtYtBaQGmdtm6C0kEDcCFVW063v7794+bJAPE9Br/6zr3/o/IXLL1xv3XGmDNwwEwMAAA9PkdtSDlRCgAAAAASUVORK5CYII=" data-category="Switch AAI">SWITCH edu-ID</option>
-		<option value="https://fim.temple.edu/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF5SURBVDhPlZLLSkJRFIZ9kKDALvQAzRpEk6BhWA2CKJoUvUI16DI2X8AaSARmhhpdLbNmhk2CLNSIcKaDBC066ur8vy7ZaQ764Gfts9biO4fNcXi7hkQDnN09bVFazwgFmeApYw7M5PP55kzRGQWBkUkGbK5vyK53RxKJBKOLIBIOswL0MKfgZT8k6eAJBw/JJKtiCky0R0FofFaszy82VDDtcsm9/QaP291RgJ3mJVqlMgcqwMLl+QUFC3Pz7K2trLICzJGmAAEquI3HpWBfHgSK+SU4Y6ejQDEFW/YFKyrrKNjz+RhToHjc2xRg3lGABeQvgc6QNsFrNsu6vLjEHEcifDbRGUJBJngm79G7xvh/UHA0NiMHwxNsZNJp1ptYjBUE/P7GSeQqGpVSqcTPH3D21gVvp9cMaBVY39YvQa1WowA/UcWy6oLD0SkGFD+KrCrAm0zBYF9/UwAchcdn0ZiU7SWQekpJsViXgkqlItVqVXK5nP0k8gN0Cw+cGj94dAAAAABJRU5ErkJggg==" data-category="EduGain">Temple University</option>
-		<option value="https://idem.ced.inaf.it/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGHSURBVDhPhZLLSsNQEIZ9A0EUxa07wZVP4FIE8Rl8gT6BWxeCBXeiLQrqRlC8IBQUave2Si82bYVeUmqbJtYmrUlvGc8knmPGtjjwcS7/zH9mQiZs24Zx8BilcYYMMPx7ESjJn6DrFrxXmwwdkq/VH53mEwOl3oKnqEwSvGzfZWHKFyImwiCTVaCmGEIYx9aV5KxWzz07BhhpqUYS/2PAynB1DOKJylACtsnjr4bEFNPRHANv6xgzB2mYPXSZC0hwXxo92nm2CRP4UrvdEZeT+7/FXpgkcjhnUgMNqGB0BlBu9cD/rII/prIO0qCafdiJ1kke4otU3BE0rS0uT5nr2k0RNh/KsHKRh43bIiwcZyCY+iDFyFGKdYCb8OObuJwPSmNGoMU4eq5huQaX1wkiLp7kROE0+6ANq090JCy3nNUx4KyuB8Seh1f3auQ/4Cwt70K+oInzKDDiqinOxAAD11Z3IPZeQgUDZKNL7ogBp6h34aVuQrT2BSnVgqRmQYK9ih+O5trwDcBbvXeQJB2CAAAAAElFTkSuQmCC" data-category="EduGain">National Institute for Astrophysics - INAF</option>
-		<option value="https://idp.admin.grnet.gr/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKaSURBVDhPjZNbSFRBGMe/Pees19J1o5SSLmIPaVL5Er3kk2UhgQ/hg2ARXSBCg7JMHybKarOdc1xXkK1Ez5praRd6iaJEJLJyd73QQxCEtaFu6Z7LrpcuutPMcekpyx8MA/N9/4//980MMAiAiXRBXGW5rCs2SA1gSCQIOCO4HKiYV2xpqafKZKKJkDXugNWsYCz8f6JPIH6mOXPd2fK2oGZPLgw74nKmHNaUZbkgBEzM9tPqylIFWysUnH4h6Cws6b3lziaoQIilLQ2zH2mA9I7Tl1s0kZdvnqj6rGPhzBxan+UZ0m7H0paG2hTmGuM3KeKaGg1zI0cOSPMa5lv0emGX7J2KxtL+CiHEBMQF5n7xWL6KrU26aA49rij7pYvcC62eL6IF6AUB7L8f2G3s3V92tr79msGE7kFlG+rtFZgD7lyjd75K7CONdc6oardEqRN/GK8ouTOkLzBhUVfgJNv3dH8qdvuVec9IRJa932oRIhxUNw28DzsyclRxpWdWgh+49gb5LoF3+hJffK8/mEd9mqhZuhZp96tXO9/N+Nq8k7Oe18F0qHYOvAxhc56OeZcu8mENJ/6cFDe/au6bWJhC2SlUYwKE/lznYoFZn3s4mozYucvlS9IwZOvYdFETuQ+6JIyr0sbOZz1vbM/7PpYxUdHDcWMWDLcvVNcxHPa2+xUVEdoCQUiYvA5rdTt3mA7vEe2/Rx5USaTBvHXMdTyJDkwofjCWH9Mbk2e9G2LjgA5RuwZpYSwUhEWuRsepV0L23NIZG2SyK2Y5e7sCR43kpYjSz2O0IfH77g4pE9OSebsqgWVZT5nho2+BFrCOOs7viDRtySWHwDKKICEW/j/sP5DWDQmqhCy6E1ZFcWYiOQh8LPwPAH4Dw51Gc85GIiYAAAAASUVORK5CYII=" data-category="EduGain">Greek Research and Technology Network - GRNET</option>
-		<option value="https://idp.dfn.de/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABPSURBVDhPpZAxDgAwCAJ9Zl/Yb1LcTHQoEnqE3GQaAJ8Bu0sFdpcK7C4V2F0qxGE5RB5hpcxdytylzF3i8isceEKeYTBKhVEqjFJhlL8ADyZVUz8lly0AAAAAAElFTkSuQmCC" data-category="EduGain">DFN Office</option>
-		<option value="https://idp.dit.ie/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGOSURBVDhPY8AHGjZc+W9Qt/P//usv/0OFiAMJc05i1QAU3w9lYgfz999XgDJxgvuvPzd0bL2OacHpu28boEyiwM7LzxGG1K+/guAkrPwPAzA2iN529PH/w+dfgNkgZcBwQVgYMOkIhgFghVC2Y+VOOB+MoaB507X/QNsvN8w/fB9hGrJCJMycvBrBh4L2zdcdoEwkMA0YQEjYdfae//s2BP9/stnx/+1N7v/bl05GuBYrQNKcvu0JxEYkMTBGBu+//kIVQFLoOO/a/6DGfWB29szT2A0AgfVnHyPCAKpINHfjf7XCzWAX6HYc/a9fshXDgPffv0PSzbuvvxApDKRg+g2wQsHpwFAGGuAy4+J/vbJtGAbAwf3XX/6///oT4gqggunHX0NsLgbaCgoDIFYEuihg7YP/bivvgw3IX3oeT8IDGmK29O7/Q1chBoH4uZsfoth+/M5bTJccu/NmPyxN3Hz5vUFq3i2wJuUFt0HpCW4jSipEB/defdkfM/PE//7tqIkElGhO3XuLlhsZGADIfUu/9RzlCAAAAABJRU5ErkJggg==" data-category="EduGain">Dublin Institute of Technology</option>
-		<option value="https://idp.fnal.gov/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIaSURBVDhPpZPvS1NRGMfPHxBBSdC7/oH+g6AowYgozKKChNELR/mqHwiVCr0wSi3Uhbq5UPFHsJxrrc2c0zm3lT9itTlzeic5TZ0rzJZWrsxvz7n3DO7aK/EDl+ece+7zPd/nOecy7BD2K7UJb3hRTLcPiyW+4+K9XvzZ/IvE6k/8pqjm69oG+CacdFTDdNYgdp1uxGw8id35egSkhFhS6PJGYfZF5XE6qmH1thD2FjQhtpzEQW0nInMrYknBR+VxEU46qmHdvhmcuWvHJCVa/DN4/WEJoY9f0BeYR8fAFEYicXRStI/O4nqjF1tbIlPA8m5ZScABXgoXKH7sgbbWjcM3zdh/4Qk01X0obRnGyTIb9p0zYv7zmkhVYMW6QXAXbf0RHChsQXnrME6UvoCmyoUbeh/yyd2VOjcqTQGcKn+Jt9OZPWLcHrfPj3JPgQElRr+827OhKD0Szle8QrNzEhVPx/DI/A6e0IJIVZBL0Na45RJMlHC0xIIjZN9MrnjTuMCd5jfIpfcGRxju4CeRqsDKqL7jt63oGYvJPWjvn0I7uVILaKpd0NvDqLW8x9D4fw66KYkfX3xlXRYw9kyg8IEzQ+DS/V402MYpOrN7oL5IXOBq3SAuP3RlCBTVDOAYlZBztin7FPwTSzh0rQvJ9RSii9/kJo1EliHRWFpYhYPOn39j8kgwUBlZ9yD5IwXd86CYbp8d/s7APwm4d4pzKOL+AAAAAElFTkSuQmCC" data-category="EduGain">Fermi National Accelerator Laboratory</option>
-		<option value="https://idp.gla.ac.uk/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHDSURBVDhPlZHNS1RRGIevuWhh6iZdFuKqhWl6U9RJB5qZjEKhUSdpmlshM0bi90cLISZlmLJgUFIUdZIgSjICN34sgmgRoonOmAR3YFT8SOxfmKfj9eIiGub2wMvhHN7z8HvPkf7F5t4h8Upvic+3NRWpwKXVm5kvLK9HOJXrPDnT2+JzLFCYflZGKLLDz+gu6SX1/yfwd1iR5RrSTR6ybE0kCWFa0V3jguwbdSgzV0m67OLx8wDnrjjJOK+nSMSRwPu1HPmtjQt2B+9fmOl/WUFstZDkPMWowIzlo5WChmpuurtZmjVpgrPFYoxEaCPUOpA9dpJlF0PBVoLjFqrv2TldaPQXxMVsh0OsCpWtQ9peq3wDCULqtvZYFytuIV1yMf/JjpRTx+SPfVJM7sQCjbw7LKxvMbVxwMjcCiVKH8Vd42RYHhkTZFobKXs6xZnBMNemI9g+bIo0TqK7B5/1FgOIMVKLFOoDoxwlKn3QazC+oDPwju1fv8Uv3MfTUkm520csFuN7WE2cYDGkcrvrFS3+SZr7Jmh+Mkqb7zXtviBV4lxvi89iWMUs4maZG6hqC1DTMYDSM8z1h3483rG/BJL0B33YIWOlT4dXAAAAAElFTkSuQmCC" data-category="EduGain">University of Glasgow</option>
-		<option value="https://idp.gmit.ie/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFOSURBVDhPY6AaiOk78B/KJA8Edeyl1ICDA+4CCgwI6tr7H2RAUCeZhoAMCGjb8xzZgMVmfv8nMKqC+T0M8vgN9u/frzB9582G5ElH4QrnqNjsn8hMpAEgkDfz+HMok+H2xv0qIHoSjy7xBgR37sNQNF3QECzWzSBH2IDQ9v0NUCZl4FzLnP0gOmnKkQSwABC0rDpvAOJnzTnav/bYvf2+HXv3Fy04t79k1nkDsIL6/ftZPOp3/A9q2/v/XM8csHMX771bkdB7+H1Q9573vZtvvM+afbSic9Wl91vPPn/fvfbqZpB8z7orNmADAoFpoHb5BbgB+7PqJXZGlRhcmb9K4kzLnITz/YsSVnmlGKz1Sva4MmdNwvaYErjr4ACckNr2gQ2Yzm/ucH3x5obZ8laXN7in/T9W0bd/Mrduwwr7mID9+a3/Z6rYXIboYmAAALpesJcfhXQoAAAAAElFTkSuQmCC" data-category="EduGain">Galway-Mayo Institute of Technology</option>
-		<option value="https://idp.heanet.ie/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFoSURBVDhPYxgQMH/9fgEokzwg41p0H8okHXjn9P+fv/5IAogtYp/7HyxICggpnvJ/xqID+xm0YtA06yf8B2MYGxfQS/iv4V7y/9CxW/OhIlAA1DR77cEGGBtMYwPq0f8Xrjr6f9aSg/uhIlAA1DRz9X7cBkDFAoum/W+euOl/57RtaGqACpIb5oEFw8umgWkp1wKIIpBmqAHr957975828b9fSj/CABajpPsgBROX7noP4u84drEALAEE3JbpEM1QA0BAw6f6v7p3OcIAMAAqmLkW4gUJ53yEJFBczr0YxQA+45T/U5bswRIGQANsE9pQTFb3r4TwoQYUdi9HkUcAkAIYRgPspiko4kBDIIFNdeCY3Nmw9+Q1sN/Ci6c7LNkCSbIg0DlvK1i8bc6W/9sPXwS7YPuRi3B5MJgNDIO56w/933jwfENh97L/vQu3w506fdW+/8u3H2/oX75fAcRvnLHhf37/fAEA59OvJqhO+mkAAAAASUVORK5CYII=" data-category="EduGain">HEAnet Staff</option>
-		<option value="https://idp.infn.it/saml2/idp/metadata.php" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHBSURBVDhPYyAF1NfXM/3//58jNKr7v39w6z+oMGFQX/+fycy25PCWLecNgFxGe/t6ltDQeh51nez/EBV4ANBG5tDQKTxQLgqwdarCb0BpxcI1QCMYoVwMkJw+5TiUiQk27zylA2XiBGraWYS9gA+YWBY9hDIZGLwDWvOhocwI9DjY2cERHXkg2ursm1zrM6/yQeyWjjXuIPrhw9dSi1ce0gKxQQHFqKGb8wvELi6d16JlkPvv06dPIqVVC9pXAQORYe/T3//+/eMGyYOcnVM0q83Zs+4jiA8DjKpaEP9o6Gb/N7UqeQcM4btgGSBg2f/sv/jhZ89BbJBFyhoZf5Q1M//X1+9nASs4fPiSUkHpnIVgBXrZP0NXrWLW0Mn+B1LQdv9TRsO9j/EgOZAXldTTQRYxAg35CxIDg4sXHxiBvAHCly8/sAaJ3br1TBREn/z4yxJEw8CJEzcUQTRMHUNo6CpmZfUM4pMlOrh16xbfvCUHoqBcHOA/4+nTdyA2ooOg8A5w6OMCq1ZdYcOXGhn8Q9p+N3etKoNy4QDktdDo7neggIMK4QZq2tn/6xuXFQBzGNuBAxd1NfVyfkOlCAAGBgATc7hX5YZ+WgAAAABJRU5ErkJggg==" data-category="EduGain">INFN - National Institute for Nuclear Physics</option>
-		<option value="https://idp.lboro.ac.uk/simplesaml/saml2/idp/metadata.php" logo="/adfs/ls/images/blank16.gif" data-category="EduGain">Loughborough University</option>
-		<option value="https://idp.lrz.de/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAElSURBVDhPY8hde/8/DGevuf+fgVQwagCNDPj//z8LWJIYgM0AZLBo0SxFKBM7wGWAqKjwh9zc3BAQe9GiRYqKinL3FRUVjoL4+/fv59HR0VwAdCkj2IAcoEaQZnQXqKurT5ORkbmmqqpyFsj97+bmHAWRAVqcm10JYQANuPb8G9Cw/xgGdHR0yIBoc3PTNiD1PzMzLRzEB4GMjIwUMANmQNqqe1jDgCCAGZCBxQD02EhKSjKBMsFg9uzZQli9AAwkGU1N9ZN2djZzQPxHjx5xenl5LHR0tF8XFBQ0NS8vU+/+/fsClpZmlzAMOHPmDOucOXNMzMzMjh48eFDywoUL3B4ervEggwwN9XuWLVtmIiUlVePq6jotPj5+NtiAHCgmPQwYGAAq0hBn+inASQAAAABJRU5ErkJggg==" data-category="EduGain">Leibniz Supercomputing Centre (LRZ)</option>
-		<option value="https://idp.rcpi.ie/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAG9SURBVDhPpVG9S0JRFL+FEPaeTypCioaGlkLS914fJoFTTUE0FURIi0N0r0iYtGQUQg0tETSYNrYI0SQUtRQ0VH9AiIPQEC1BQxjku51zvc8+CIz6weH8ztfv3Hce+S1UnfGfTJbr461SqbjNKC+WHnn+KMuNqRS3LOv3Ar7J9XIuf8vvH5547jDNJyK7HCHL9eEyGLdNM2mNy3J92AMKfPf5wfRfBGgFB3A4vRn+EIBLXkHxWQShpEMZYF7gZREDVJONCgUA5lYT8/wkMyMF6FZVQKcvYPv2kED/klJt+vpM6F/+nvsfVIMV0NuqmsnG0Lt90W6oXbsGoyMYk0DMiduRKjpd03yLQ7WXIGnvW1DRawYdR48GAjfSF1Q9mkAu+v1sQzXosYg7zEgzJtuCcReKYOyB77fzCC0Qa8W6DAlJJhurMW+Qf4G9ohqYpXiZp8WMuGvbPnn8lbA569LZmeznRPHTPdGg00toOEWOgGffSQpLaAnqF85gvBMEVmBwR/WzbejJiAYopoQ3WBh9FxwMcnN2zs4LHwo5kCPgXrOYtDCAI/UCF89VhpkHthaRY87Okx7ahLepxYSQd5Pg0oL7EEdcAAAAAElFTkSuQmCC" data-category="EduGain">Royal College of Physicians of Ireland</option>
-		<option value="https://idp.scc.kit.edu/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHOSURBVDhPlZI/SBxBFMafgmIhqUKOA5n9FzCF4UhpLalSWCkhFqlSCArKFaKFVxhs1JtZYxQFFaK5mzm8pA2GpBE7IaCgIFxjCkOKKEFJE1y/2Z09bz0RffBx+7733u/mzS7dNzzLGnOZ9cVl9r5r2WfGviXKfhupmacmIwzNeZYdxDL2DZHLNZISAyTFX5J807j0mDk9dwMo8RUKqir4z7TtOE7qboCi341/vqgCpJCmQh6zD24GLC42macoFB+/AvD/tJF3tQ3AQj1A7yz5FjRkHKIgaED+qeYU89p2LetlPUDx/prGZSrlmkO/NNeK2l5U4/+oPPWIMZZOAsr5NIZOq4CoeZsKIhXWi76H/I+Bv9UWvofDK0CR2yiuh3smIOIovn08P4/qAOFUWGMpuYIONeug4X141Bgi+TkpvzesS5E1/rDDWF89IA59dCUmr601YS51DfppZTJ2BNCvSt+09Acx0BE2xbHmP0B9BPplIJ/p4/RD9O/g+TU+6wqOVfOatCT/jd8ShvppY/ZJCFpdbQlzKSrQLql3nci/e7a9ovf6kQBcl+TH6Clg4A3UDu8V8m8k84OpF11TGnBSN3SbsD/0ARc73TKZHb0EsUQ3g8jlBHkAAAAASUVORK5CYII=" data-category="EduGain">Karlsruhe Institute of Technology (KIT)</option>
-		<option value="https://idp.smu.edu/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEESURBVDhPY6AauGEdsBrKJA9cENT+/+X4uf9QLmngXkTWnHerNv8HGQIVIg08rewAa74kaQQ24N+/fz1gCSAAsvuBeD+UXQIWRAcgzT9u3fv/Zt5KmAGnwRJAAGQ/hDJxA5jtn/YchhnwGUpPAOIaEBsvABnwYeteMD4npKX1HwhA4jCaIAAZAAKPsqv/n+fXdoAKk2cAVAjk/K1AnAHl4gc4DHgPZRIGF0V0/98w9/l/2z0a5ncXsAQaABoaBmWigs8Hjv+/45sAxiA+UKEPiAYaxAHE4DAB0g1ArABiY4Azglpy4KiUMiYu0LCBJ2Ut/x/EFcyHckkHJ4RU+KBMEgADAwDq27XOy01CyQAAAABJRU5ErkJggg==" data-category="EduGain">Southern Methodist University</option>
-		<option value="https://idp.unige.ch/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIsSURBVDhPfVPpS+pRFPz9534IBPOD4NKiqGVqZor7hmmWqSW54J5+CASRRKMQMbKcmFP56PF6Fy7qvXfmzMw5Kv9aLy8vGAwG8Pv9SKVSuL+/B89WqxW+nvy++LDdbsNms8Fut8t2uVzo9Xp4fX39neD9/R3NZhPpdFqqm81mxGIx+Hw+WK1WOQsGg0K0Xq9/EpH54uIC0WgUDodDvhN4fHyMk5MTZDIZFItFHBwc4OzsDOfn5z/tfFcOBAIIhUKwWCyigGej0QjX19fIZrOyt7e3EYlE0Ol0PglmsxnK5bL45gOdTieVDw8PYTKZsFwupfrR0REKhQJOT09Rq9WE9OHhAQqBvCQrP/V6/eb3/v4+FouFAHd2dsQi7V1eXmJ3d1eIFEqmz0QiIexMXKPRQK1Ww2AwiIKrqytRRf8E3dzcCGEul4PCdjGUSqUifWfbeMm9tbWFp6cn6QbB38Hx7d7enpwr8Xhc/LZaLUynU2FlmF6vFyqVSiQzOKPRiG63KwRUQEWlUgkKgfRDNoZFAo/HI13QarWbIeIdFb69vSEcDks+7J7y+PgoCghi6iRiNxgk7VEhM+Bm6re3t3LHzCaTyWcrmTK91+t1DIdD9Pv9zSyMx2MZKmbQaDSkEIuQUMBcTJpV+ZDs1WpVZHIqOSPsOaeQalg5n8+LlS/4n/WdAUMkwOl0yhizrW63W6wyyP/+qebzuYwpJSaTSek5v9/d3eH5+fkvoKJ8ACMMp7oVBDT3AAAAAElFTkSuQmCC" data-category="Switch AAI">Universit&#233; de Gen&#232;ve</option>
-		<option value="https://idp.xsede.org/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFISURBVDhPvZNhS8JQFIb7qVE/pB8SQVof60uGIPWhiEQITDFyzdwQHbklm7kpc8693XPavdM2+iL0wOGe+3Luu3vuvdvDjrDBfqnLE8ePEK3WSJKERwqC8/hnLjWJMjiqmCwcX71vRZEm/BVs4AYrtQvC85dqsaRv+TmNUGcQRjGPJ9d9lGsmF1MukQabGsEGB+Wu2sFXEOG0anAx5RJpsKkRbHB4pimD9TpBKTWgXGr6cLalSVQLuj3nkYo2o0jLHeIu/K/BxyRIs4ycwbM2Rr1tYbaIcF59QafnoFY3cHmr4ULEp7dA5b6Hu6cB1+YMhrYP05risTXiceT4aL/ZaIloigV0gPrAxasxQSA+8mcLv++8iJzBTcPEWPRKOzBGHh6aQ8Ti7qd+iEbHSqsycgaOO4c3C3nRSvyB9MQt0QbNl+lzzwC+AQpwylD/ZCBvAAAAAElFTkSuQmCC" data-category="EduGain">XSEDE</option>
-		<option value="https://idp.zid.tuwien.ac.at/saml2" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADlSURBVDhPY/hPIaCeAQxpM0nGYH1gEghgAuigYfMZMI2s6c/ff9gNCJ6xGwOTZACyIhh74A3IWnoYhQ8Cn77/QqgDk0AAUwCXQOMjA4b4KQh1YBII4BpSZ6DyoWI/fv8Fi4vmz4eLgwBWFxCLwfrAJBCABPJWHPu/4NjN/23bzoP5dl2bwPS2y4/+pyw6BGZbtK//v+XiQ+wGfP/15/+dV5/+f4YGUigwHYBokPOZ02eB2UtO3MEdC069m/8zpEz/r1i+BMWAZx++/q/ecBrMVqpajsOAVOz+xImB6sH6wCTZ4P9/ANEICqrlI+fsAAAAAElFTkSuQmCC" data-category="EduGain">Vienna University of Technology</option>
-		<option value="https://idp2.bth.se/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFmSURBVDhPrVI9SwNBED2/Sqs0t7uze+WBjcq1QgrBykp/hq2kEWwCoj/CVittRBuxthJBKxFR0cZGRWwMYnwzN5cscsYUPpjMzJvPnVwyCHnemGTtvWsLMQyI7EYIdhFFHUiXyLTAnbKt8Y4k/kSW2VnWRO5YiF+ABqtqjqnugyhtqinA1LtYRxgF96W2JHS9t9fqqi8ihdjqtuIkAYC9jZotcZxzS2IAVSILCnUDexnzkgiIXUO+Q95Q9Agt1yeiJpqd4f3PkBdJBBC/5+4XLExYa2ciyUGNM88wxgRsOl3FmYsH9y7qPe0hsM+CaTe6yXmft4eaysOP1HC7cB7EiYAGH4jxE5+U6iGEdAp8+U8URTHBGk3WhPgDuMdrCG5Z3RJZlqXoeMUTlaoF4p/emwV164FPeZ4b8YqqRYhoXVOGwgj/hECb3vvBE/8VWHWHNdZdwVFPcLCD8glmjt+Ob4EkUZAk3+dRaCAbaP7hAAAAAElFTkSuQmCC" data-category="EduGain">Blekinge Institute of Technology</option>
-		<option value="https://idp2.dcu.ie/idp/profile/Metadata/SAML" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE9SURBVDhPYyAV/L/Q8P/7Abv//94t2w8VIgxO75g2H8pEAX8PTcYqjgEebMrcf399vgOUy/D4cLXDo5Mz+6Fc3ODdzpz//+/N+f99i+3/V1sy7j9cG3j//1qf/yC594cRBmKA7zuzGz5frWz4ebayASqEAp7uqvn//Xy/ApSLCp7sS+3/vmcm2BZc4P//epb7e/P/f91qhlcdVvBiownpmtDB/lX1PN+3upNv0P2NZGi+cXS+Boh+v7/KACxAdSCm6AhPmiwadmAnsmnHgOmC7g0h/++vkmBUy8XtdC4ZB7gBbLoZYIVcmmFg+uaWfIizdbNxG8Am64LIHFoJYIX8On4oGlg0IAZjBcgGMGunghVyQr0AA0w6cbgN4JW1BRvgkzl5fu3MEyUgNocWqgEMStFgPpOS5Wcwn4GBAQBk8YDJUeh+JwAAAABJRU5ErkJggg==" data-category="EduGain">Dublin City University</option>
-		<option value="https://idp3.it.gu.se/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFMSURBVDhPnZOxSsRAEIY3B2IrtsrOXHa1sBKCaG1x9cGutidiZ2PhQxzCqWgShQPPVmzExicQFUEFiyssLA70IQR1ZrLXWJn9IMz8k5nJ7CRRTOKLH3FioQYXwY0jccWD8v3pICPwvZnE57dBReBPFpQrWkHVpDOYUi5fTlx5xjLVelXi/4XOP6DxP8hepoBfBvAx1fhkEVspwJEFuOI8io8M4jrlvFUa2qmGe3mFdL0on3ezLJvgJKPxgAq+zayxnMxQwV6w5/PN5lLw29Kg4cpN2sEuB+cAFrmBBexzA5pgJSR3xWr8ZMvQQ175CBIge2qtnRxPQKOO/kxQNaAJJEDIBGot32CR+LLHO7Aab6jBHTXa5x1Q0qEka3yXHWh8Jn/IxUbDNd+j4nxIx9gWEYP8C/54K8j6NHy5M/4O4nBlJ3hx0AKrZdRGqV8PPF0gLq3yVgAAAABJRU5ErkJggg==" data-category="EduGain">University of Gothenburg</option>
-		<option value="https://idpv3.lu.se/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAI9SURBVDhPbVPPaxNREN6DV/0PPFQQcvfk2YOgN/HHURFv1YMieOilXkU86MFDBFGMiBGrlRLbg21VNC1SixoRrMGq2KabNCS7ye7bfbuf37x9u4TiwGRe5vd8M+sgDRGGQyBKAcSACEN8CxX/k4xFZD+0xXAyR586kTRIgAmyTkJFEtKIGmkCZxgH+Lr0Eq+eVZAkOxIYOdoVacfbSemYuA00389YbU6jpf5HYmcHSBTqL+6j83kOQRBAa4001dYhhsCjlCIHhW4w8KCigU2gPWC4gdbqNGHQiKLIsLQnyfpduslolvIJtI7Mmwm28HH+ETYbNVqtI4Xfo2Qj585MZFFiImuy4L3dDtBnbSb4hfL1cdRrZTpmq1t+t46DB05gYa6JmecfsmA2Jfz2dQv9DnDzRgV//zCB6jVx7dJJ9H6u0lGZYpsbCqeOTWCXM4bH1Xm4bSAgFmtfOG0IM9bT6jICJR2kXXxffEhs6KUVNDO0tjSuXL6HfWOHMHn1LkI6esSstP84uhyN0GB2tgGVpLIFD2tvHsD7UTez7tm9F3fKVRw9fB5DzlgqHUEsmPgpZDmnz140UF0Yn2TSPhOEHlZqt7G+NJWBRfakHJ27275pObZ62Q7VBaApQWEHBK6zgsYCL9FYBcj8+mRVieEcSQkyNmt3fO7iW30Ki9NlflQjRsv506zA/je5zIMfk9Rr//6EJ5VbRlEUyzknWXEemEuyIweqBy7P2OWJutYgHhzeSDkAkujNiKQiEfAPj9HBhax0S/EAAAAASUVORK5CYII=" data-category="EduGain">Lund University</option>
-		<option value="https://lmuidp.lrz.de/idp/shibboleth" logo="/adfs/ls/images/blank16.gif" data-category="EduGain">University of Munich (LMU)</option>
-		<option value="https://login.auth.gr/saml2/idp/metadata.php" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADrSURBVDhP1Y/LDsFQEIY9mx1ewoKHaLpnb+ES0kQTiQVh2Z1osbOtYOOuF6EpG2lk5EzTaUuIy0Is/vxn/pnznTMRx3HgG/0xQJIkdAIUZtHQwCP1+gN0QRDQEVCZJ14CrLdaqJblrgtgl8+XY6gZVDwWu8tEsQq2bd8DTucD1souR8MMUMjnQTdMypSeAtPpxAd4K3h+C2DSdAN4nqd8uVy8B+jIfcra7RaYpuED6uskNoIrpFMpzDiOc3+g6QTIZjPQbDRcwHBfo5efabXaQLFUxrOqqugIYHoFwDQaT9Aty0InwKf6NcCBK/vttrlLbSl7AAAAAElFTkSuQmCC" data-category="EduGain">Aristotle University of Thessaloniki</option>
-		<option value="https://login.ktu.lt/simplesaml/saml2/idp/metadata.php" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABwSURBVDhPYxhU4D+JeCMQowCQIClgOBugDqVhQB9KowOcBqhBaRB/PRC/B/Mg4CyUBgG8BvwBYh4wj4EhCEqDANEGgACMj0z/hDDBgHaBaAzE1kCsA+bhBjgNmATES4C4F8zDDbAaQArGMIAMwMAAAPWZOIdZhq0rAAAAAElFTkSuQmCC" data-category="EduGain">Kaunas University of Technology</option>
-		<option value="https://nerckwshibba.nerc.ac.uk/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHcSURBVDhPYwj25f+PDx8/wfF/335OnJi6BgR680LZfHA+0QYE+fD9f/rk9v8AT67/u3bMB/NfvnxInAGVpe5gDbdvnvkf6MX9//u3z//Pndn1f+/uJXADjhxV+793HzuYvXcfx//DR5SBbG6IAf/+/QUbsGRhA9g1Gcn6/0EAxAYZ8PLV2v/7Dsj+f/FyJdiA8+eD/3/4cOj/yVMmEAMePboONaARYkCS3v8zp3fCDbh4Kfz/gwed/5+/WAa0nfX/w4e9/9+92/P/xEkDiAG+blxgA04e3wzW9Pv3r/9+HpxwAx49mvT/46fT/0+fsf9/6LD4/917WIEuOIwwAIRBBvz69QPM/vr14393Rwa4ASBbIRgWBuz/9+xlBGJmhAG+7uz/Fy+oB7P//v37PyfdCG7Ahw9HwRpfvdoApl+/3vL//AWP/9euZyIMePTwOjwMSgvs4a4BB+LLtf+3bWf4f+9e0/+duxiAmgP+X7kSA3QBK8IAEFiyABILQT68YD7IWyADXr/eBOaDXAJy9qnT1kCaC9WA5rogsCJ3B4jfYyOUgNH7D2zAiZOGQKz3/+AhUbAXQPTp05ZANgfCgBA/gf/5WWZIyZn/f3WZB9gAkCZcGG4ALkxjAzj/AwBqZmZWFwoVqwAAAABJRU5ErkJggg==" data-category="EduGain">NERC</option>
-		<option value="https://shib.unl.edu/idp/shibboleth" logo="data:image/png;base64," data-category="EduGain">University of Nebraska-Lincoln</option>
-		<option value="https://sso.ucd.ie/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGFSURBVDhPvY9NKMNhHMf/e/4v9qZwsBahsMNII6mVw7KVWORsB25yEStx28hFyEurkY3FwiyWk3AYO7LSEBYRisJykB3+mi9mBwflcfG5/J7n6ff99H2Yf8G8dWWv27yBaSOG1NPv1IbuQZYTUPseoQw8YE4UIQnF6QT8RgLdodvR5p3rk579O3vrLpLBTL9IJyhcek4uWvy7gc9ZMx1J3tnNL9GvKBQT4AUHCO9Bd8sBDLp16HLckEr76AQccYAVFqBReSGw46jU90LBDX+EXXSCNN4JXtkOkjYIQWpFmd6DaoN/VMINUDYQ+uFwnF1amsKYdR4hTzWOigo3JMwcnYDhRsDIu0CyPqtHIJA1cJwNLDtEJ6gOtsFw3gjfajo6fQKsMzIYD40wrXTQCdiYHCwIvOEMuF6mENhWo+ieoOHCRNkgUoJckcFeVIvocT0aT7OhfCaU/09R9ajC/Fg+5icVKH+TQ3Ol/Ztg/2mxwBxnEAwWo1SU/S38nalXmz11/AGGeQchybpM4lku+QAAAABJRU5ErkJggg==" data-category="EduGain">University College Dublin</option>
-		<option value="https://tumidp.lrz.de/idp/shibboleth" logo="/adfs/ls/images/blank16.gif" data-category="EduGain">Technical University of Munich (TUM)</option>
-		<option value="https://weblogin.kau.se/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFFSURBVDhPhZO/SgNBEMb3SW433jNIukBAONLYSNQqTQJiF8EHsBIROxW08g20E0QkXQgpxT+12ht9gnG/uZnN3iYXfzDZZPJ9X+Z2N2YVa5kb5daRX++k9T955mbkeXh8wkL9wR6vSm7tkUgX+fj8opPTMy9y1N3eFUtJc70Z+iixzIEZBeF4MmUxQC8G333Pflgn1nJsNIAa6dlUVvTf7tv866q11joOUAHSYyN6F8c7VGy0aLi/VfYTQoDCEyBkRWGC88sr1vNR8TtP5TFqjDHQGbxUjsoLMXZqRoVgoSg6PiBzNy+v79IqqZug39sUBZF6wh7gmeqMqNvrLv1OGrzRw4NDNoMQkJ43TAjU4iAPQhTcBw7A9ZQenzNG1V1WIyYAMClsVtKri/9CvLk8RQQ+i3VOekx1LDUruJ6iWyA8c8CYP4wTZ1zwxbUuAAAAAElFTkSuQmCC" data-category="EduGain">Karlstad University</option>
-		<option value="https://weblogin.uu.se/idp/shibboleth" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFzSURBVDhPtZJBSwJRFEb7VW0KoghcBlEmpShKhBSEixRyrCSrXahhJTpJii5bGIYtQyJzNk0xEmrZOBGUsxpGCUG/Bnlk5QhFeDYP7vvuuZfHG8A/6a+g1WigzgtoNZuk0k1PAbeyiqcgjcsxDZjpOcilR3LzHVVBORAEozWgEonhxmIF56DAWpeVlVok0UFVkFcaePoYmaFRXGkmkJucaW8h5e9JooOqgHM4UVbWLx+G8bDrx53NDnZhCe+vbyTRQVXwcpIEu2gDZ3cq03XKdH37VKPnIwqxBDLD48hNzeJicIRUu+kp+C1dgv1AALFoFHQoBJPBiArPt2titQqdVktSHboEhUIBpWIRsiyjXqvhLJXCLcvC7/VCFEU0f3yqT0FRabrOZhGhaWx7PGAYBmaTCUa9Ae71DRwoW+x4tuCiKLicFOn6IpAkCXQ4jGdBwJ7P1548b7YowiOsUS6cJpM4T6ex6XYjEY+Trn484t8APgDSC6jIOnp2RAAAAABJRU5ErkJggg==" data-category="EduGain">Uppsala University</option>
-		<option value="urn:mace:incommon:northwestern.edu" logo="/adfs/ls/images/blank16.gif" data-category="EduGain">Northwestern University</option>
-		<option value="urn:mace:incommon:osu.edu" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHHSURBVDhPY9jo7fp/Bj8H2RhswAJl2f8nm+sxJOfJif+fKy2CIQ7Cx2rKwTTcBStM9VAUEMIwg+EGzBTi/n+2q+3/TEGu/4vUFf4fLikAi4PotQ5WcP46J5v/hwpzwGy4AYu1lMEaQQJLtFX/L1SR/X977Sowf39mKpgGgT8/fsA1fnn2FEyDDQABmAQIg8Df37////ryGa4JBB7t3omibpmBFsSAry+eo0j8+vIFqwv+//uHom6WCC8iDP78/Pl/k7fb/7fXroL5L04eB9Nnu9vBNAjMEub5/+PD+/8b3J3+X54xFSwON+BQUd7/G0sXoWCQOAiji8Mw3ABQoMEUg/C2sEAw/fLsmf9fX75AkUPHcBeA/Hdr5TIwG2bAejeH/3fWrYErhuGfHz78//nxI5gNNwCGV5jogQ2ARRMIHyrOQ1GDjMEGzJUS/j9fQfL/hSkT/i8z1P5/f+um/+d6O+GKQACkbo29JRgfrSgBYxQDQJxNUNdsCw34v8nH7f+OqND/u+IiwRgkvtbR+v9qazMwH5TwZovyoXphmaHW/5enT/4/0VD9/0BeJlgMlIQvz5oOjvPv797C1d5ZuxpMY4QBaZjjPwCZkjC8/O8C6gAAAABJRU5ErkJggg==" data-category="EduGain">Ohio State University</option>
-		<option value="urn:mace:incommon:uchicago.edu" logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAENSURBVDhPzZKtTgNBFIUnaYIkKFLRnTM/tw2swpBU8ABoFIJHQDSpB1FXgQKDQyIwGFBITAWPwQMgUATOHS7NkrRNFtHwJZt7zpnZ2dk74/4HyYeHjPBp1iXgOgP3zD7qut5g1IkxDphNy7gPZ1qzj6daHQfGP6HSB/bon7IP71JV2WLHRfZNFgQYFpE8bvjCSzFEF8iIk+wxs2gh/MBrEQnhrfkLrZEQzlk63+4PcPsXgnBpVpt4zOco93pikWYjk6pvtYqPJyXQDjcntIY7eGYjH822h928Siltm50DYMvkalJVHfDods0uhQt2Tf6GO7gzuRI96gGwY3Y5vJmHJuc0MxHZ1Lpo3rpx7gsN5iyUc+RjbgAAAABJRU5ErkJggg==" data-category="EduGain">University of Chicago</option>
-		<option value="https://www.egi.eu/idp/shibboleth" logo="/adfs/ls/images/federation/egi.png" data-category="Other">EGI</option>
-
-	</select>
-            </td>
-            <td>
-              <input type="submit" name="ctl00$ctl00$NICEMasterPageBodyContent$SiteContentPlaceholder$btnSelectFederation" value="Go" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_btnSelectFederation" class="improvedDropDown-button" /></td>
-          </tr>
-        </table>
-
-        <script language="javascript" type="text/javascript">
-          // Handle optgroups 
-          var groups = {};
-          $("select option[data-category]").each(function () {
-            groups[$.trim($(this).attr("data-category"))] = true;
-          });
-          $.each(groups, function (c) {
-            $("select option[data-category='" + c + "']").wrapAll('<optgroup label="' + c + '">');
-          });
-
-          // Apply the improvedDropDown styling
-          $('#ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_drpFederation').improveDropDown({
-            iconPath: '/adfs/ls/images/drop_icon.png',
-            noMatchesText: 'No organisation found for this search text',
-            noItemsText: 'No organisation available'
-          });
-
-        </script>
-      </div>
-      <div>
-        <a href="http://sirtfi.cern.ch?sp=cern" target="_blank">Why is my organisation not listed?</a>
-      </div>
-    </div>
-  
-</div>
-
-  <a href="javascript:showhidedebug();" id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_hrefShowDebug" style="font-weight: normal; color: white; font-size: smaller;">[show debug information]</a>
-  <div id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_divDebug" class="box_auth" style="display: none; border-color: #ffd800; background-color: white;">
-    <div class="signinwith fullWidth">Debug</div>
-    <div style="font-size: x-small;">
-      Server: ADFS12
-      <br />
-      User Agent: Wget/1.12 (linux-gnu)
-    </div>
-  </div>
-  <span id="ctl00_ctl00_NICEMasterPageBodyContent_SiteContentPlaceholder_lblInfo"></span>
-
-
-
-    </div>
-
-    
-    <div id="ctl00_ctl00_pnlFooter">
-	
-        <div id="footer">
-            <div class="page">
-                <div class="region-footer-first">
-                        <h2>Related sites</h2>
-                        
-    <ul>
-        <li class="leaf"><a href="https://account.cern.ch/account/Help/?kbid=053010" target="_blank">Need password help ?</a></li>
-        <li class="leaf"><a href="http://cern.ch/account" target="_blank">Create/Check your account</a></li>
-        <li class="leaf"><a href="https://www.cern.ch/ssoutils/Disclaimer/UserSettings.aspx" target="_blank">EduGain disclaimer settings</a></li>
-        <li class="leaf"><a href="http://www.cern.ch/service-portal" target="_blank">Service Desk</a> <span class='subtle'>+41 22 76 77777</span></li>
-        <li class="leaf"><a href="https://cern.service-now.com/service-portal/ssb.do?area=IT" target="_blank">Computing Status Board</a></li>
-        
-    </ul>
-    
-    <div style="visibility: hidden">
-        <img src="//piwik-login.web.cern.ch/piwik.php?idsite=2536&rec=1" style="border: 0" alt="" />
-    </div>
-
-                </div>
-
-                <div class="cern-logo">
-                    <a href="http://cern.ch" title="CERN" rel="CERN" ><img class="footer_logo_img" border="0" src="Images/cern-logo-large.png" alt="CERN" border="0" /></a>
-                </div>
-            </div>
-        </div>
-    
-</div>
-    
-  </form>
-
-</body>
-</html>
+{"273158": [[1, 1279]],
+ "273302": [[1, 459]],
+ "273402": [[100, 292]],
+ "273403": [[1, 53]],
+ "273404": [[1, 18]],
+ "273405": [[2, 25]],
+ "273406": [[1, 112]],
+ "273408": [[1, 6]],
+ "273409": [[1, 309]],
+ "273410": [[1, 90]],
+ "273411": [[1, 29]],
+ "273425": [[62, 352], [354, 733]],
+ "273446": [[1, 33]],
+ "273447": [[1, 113], [115, 412]],
+ "273448": [[1, 391]],
+ "273449": [[7, 214]],
+ "273450": [[1, 214], [219, 647]],
+ "273492": [[71, 71], [73, 282], [284, 325], [327, 338]],
+ "273493": [[4, 233]],
+ "273494": [[1, 192]],
+ "273502": [[73, 256], [258, 318], [320, 813], [815, 1064]],
+ "273503": [[1, 598]],
+ "273554": [[77, 437]],
+ "273555": [[1, 173]],
+ "273725": [[83, 252], [254, 2545]],
+ "273728": [[1, 100]],
+ "273730": [[1, 1814], [1820, 2126]],
+ "274094": [[108, 332]],
+ "274146": [[4, 67]],
+ "274157": [[105, 354], [359, 534]],
+ "274159": [[1, 43]],
+ "274160": [[1, 207]],
+ "274161": [[1, 516]],
+ "274172": [[31, 95]],
+ "274198": [[81, 191]],
+ "274199": [[1, 623]],
+ "274200": [[5, 678]],
+ "274240": [[1, 40], [42, 82]],
+ "274241": [[1, 1152], [1161, 1176]],
+ "274244": [[15, 607]],
+ "274250": [[1, 701]],
+ "274251": [[1, 546]],
+ "274283": [[2, 19]],
+ "274284": [[1, 210]],
+ "274286": [[1, 154]],
+ "274314": [[97, 97], [99, 158]],
+ "274315": [[1, 424]],
+ "274316": [[1, 959]],
+ "274317": [[1, 3]],
+ "274319": [[1, 225]],
+ "274335": [[60, 1003]],
+ "274336": [[1, 14]],
+ "274337": [[3, 17]],
+ "274338": [[1, 698]],
+ "274339": [[1, 29], [31, 31], [33, 33], [35, 93]],
+ "274344": [[6, 632]],
+ "274345": [[1, 170]],
+ "274382": [[94, 144]],
+ "274387": [[88, 439]],
+ "274388": [[1, 1820]],
+ "274420": [[94, 268]],
+ "274421": [[1, 342]],
+ "274422": [[1, 2207]],
+ "274440": [[92, 493]],
+ "274441": [[1, 431]],
+ "274442": [[1, 752]],
+ "274954": [[37, 37], [39, 57]],
+ "274955": [[1, 91]],
+ "274968": [[1, 1192]],
+ "274969": [[1, 1003]],
+ "274970": [[1, 47]],
+ "274971": [[1, 905]],
+ "274998": [[64, 782]],
+ "274999": [[1, 1241]],
+ "275000": [[1, 136]],
+ "275001": [[1, 1781], [1786, 2061]],
+ "275059": [[78, 81], [105, 137]],
+ "275066": [[1, 96]],
+ "275067": [[1, 392]],
+ "275068": [[1, 915]],
+ "275073": [[1, 517]],
+ "275074": [[1, 442], [444, 647]],
+ "275124": [[106, 106], [108, 431]],
+ "275125": [[1, 989]],
+ "275282": [[91, 180]],
+ "275283": [[1, 132]],
+ "275284": [[1, 74]],
+ "275290": [[96, 143]],
+ "275291": [[1, 347]],
+ "275292": [[1, 121]],
+ "275293": [[1, 142], [144, 201]],
+ "275309": [[55, 617]],
+ "275310": [[1, 1929]],
+ "275311": [[1, 1253]],
+ "275319": [[141, 282]],
+ "275337": [[1, 427]],
+ "275338": [[1, 520]],
+ "275344": [[76, 356]],
+ "275345": [[1, 353]],
+ "275370": [[81, 365]],
+ "275371": [[1, 22], [28, 569]],
+ "275375": [[127, 1449]],
+ "275376": [[1, 2667], [2669, 3096]],
+ "275657": [[1, 105]],
+ "275658": [[1, 337]],
+ "275659": [[1, 17]],
+ "275761": [[1, 9]],
+ "275767": [[1, 4]],
+ "275772": [[1, 56]],
+ "275773": [[1, 7]],
+ "275774": [[1, 311], [315, 315]],
+ "275776": [[1, 140]],
+ "275777": [[1, 300]],
+ "275778": [[1, 305]],
+ "275782": [[1, 131], [133, 762]],
+ "275832": [[1, 367]],
+ "275833": [[1, 53], [56, 115], [117, 251]],
+ "275834": [[1, 297]],
+ "275835": [[1, 13]],
+ "275836": [[1, 429], [431, 1163], [1166, 1170], [1184, 1293]],
+ "275837": [[1, 186], [198, 726]],
+ "275847": [[1, 2263]],
+ "275886": [[73, 109]],
+ "275890": [[1, 1393]],
+ "275911": [[62, 298], [300, 354], [356, 440]],
+ "275912": [[1, 289]],
+ "275913": [[1, 475]],
+ "275918": [[1, 318], [348, 361]],
+ "275920": [[5, 463]],
+ "275921": [[1, 2], [4, 5], [17, 20]],
+ "275923": [[3, 53], [63, 64], [66, 126]],
+ "275931": [[1, 14], [19, 89]],
+ "275963": [[82, 139], [141, 172]],
+ "276092": [[74, 149]],
+ "276097": [[1, 507]],
+ "276242": [[1, 7], [18, 61], [72, 1664]],
+ "276243": [[1, 15], [18, 480], [482, 611]],
+ "276244": [[3, 1202]],
+ "276282": [[75, 534], [537, 1142]],
+ "276283": [[3, 1087]],
+ "276315": [[40, 175], [178, 217]],
+ "276317": [[3, 138]],
+ "276318": [[3, 103], [106, 570]],
+ "276355": [[1, 33]],
+ "276361": [[1, 161], [169, 208], [210, 800], [802, 833]],
+ "276363": [[1, 140], [142, 238], [242, 1482]],
+ "276384": [[2, 1117]],
+ "276437": [[63, 224], [227, 1074], [1076, 2190]],
+ "276454": [[1, 527]],
+ "276458": [[1, 341]],
+ "276495": [[87, 268]],
+ "276501": [[4, 221], [223, 2547]],
+ "276502": [[2, 741]],
+ "276525": [[88, 469], [471, 1606], [1626, 2893]],
+ "276527": [[1, 214]],
+ "276528": [[4, 394]],
+ "276542": [[74, 857]],
+ "276543": [[1, 638], [643, 952]],
+ "276544": [[2, 161]],
+ "276545": [[2, 110], [117, 213]],
+ "276581": [[79, 444]],
+ "276582": [[1, 871]],
+ "276583": [[1, 52]],
+ "276584": [[1, 2]],
+ "276585": [[1, 238], [241, 242], [245, 246]],
+ "276586": [[2, 658], [680, 773]],
+ "276587": [[1, 1006]],
+ "276653": [[72, 550]],
+ "276655": [[1, 593], [595, 1106]],
+ "276659": [[1, 127], [129, 252]],
+ "276775": [[96, 1260]],
+ "276776": [[1, 1823]],
+ "276794": [[1, 885]],
+ "276807": [[66, 220]],
+ "276808": [[1, 875]],
+ "276810": [[1, 287]],
+ "276811": [[1, 1270], [1272, 2563]],
+ "276831": [[64, 755], [761, 2702]],
+ "276834": [[1, 720]],
+ "276870": [[137, 1354], [1356, 3108], [3111, 3258], [3260, 3484]],
+ "276935": [[265, 838], [842, 906]],
+ "276940": [[123, 213]],
+ "276946": [[9, 27]],
+ "276947": [[1, 89], [91, 126], [135, 141]],
+ "276948": [[1, 474]],
+ "276950": [[1, 2353]],
+ "277070": [[11, 38], [67, 309], [311, 1059]],
+ "277071": [[1, 82], [90, 178]],
+ "277072": [[1, 253], [256, 466]],
+ "277073": [[21, 90]],
+ "277076": [[1, 3], [5, 7], [9, 35], [38, 1037]],
+ "277087": [[204, 1191]],
+ "277094": [[253, 584]],
+ "277096": [[1, 1309], [1311, 2086]],
+ "277112": [[38, 155]],
+ "277127": [[13, 438], [440, 902]],
+ "277148": [[84, 190], [193, 700]],
+ "277166": [[102, 186], [188, 431]],
+ "277168": [[9, 1708], [1711, 1822], [1824, 2223]],
+ "277180": [[147, 228]],
+ "277194": [[336, 497], [500, 1115], [1117, 1312], [1320, 1749], [1754, 2067], [2070, 2070]],
+ "277305": [[319, 744]],
+ "277420": [[237, 291], [293, 346]],
+ "277981": [[82, 83], [85, 163]],
+ "277991": [[7, 98]],
+ "277992": [[1, 260], [262, 312]],
+ "278017": [[455, 512], [514, 589]],
+ "278018": [[1, 263], [265, 422], [424, 615], [617, 627], [642, 1011], [1020, 1181]],
+ "278167": [[87, 394], [397, 1153], [1155, 1660], [1662, 1707], [1709, 2258]],
+ "278175": [[4, 88]],
+ "278193": [[122, 231]],
+ "278239": [[79, 339], [341, 558], [560, 740]],
+ "278240": [[1, 64], [70, 113], [115, 1121], [1123, 1296], [1299, 1309]],
+ "278273": [[75, 110]],
+ "278274": [[1, 18], [20, 85]],
+ "278288": [[74, 81]],
+ "278289": [[1, 42], [44, 52]],
+ "278290": [[1, 11]],
+ "278308": [[87, 216], [219, 587], [589, 680], [683, 1200], [1217, 1410], [1413, 1848], [1880, 1880]],
+ "278310": [[1, 32], [34, 709]],
+ "278315": [[73, 254], [256, 661], [663, 767]],
+ "278345": [[84, 500], [503, 831]],
+ "278346": [[1, 117]],
+ "278349": [[1, 401], [403, 612], [632, 633]],
+ "278366": [[1, 453]],
+ "278406": [[183, 360], [362, 1682]],
+ "278509": [[91, 99], [191, 1557]],
+ "278770": [[42, 767]],
+ "278803": [[107, 133], [135, 297], [299, 323]],
+ "278804": [[1, 4]],
+ "278805": [[3, 26], [30, 167], [170, 193], [196, 280], [283, 284], [288, 288]],
+ "278808": [[1, 445], [447, 462], [464, 1793]],
+ "278820": [[22, 24], [106, 1533]],
+ "278822": [[1, 1627]],
+ "278873": [[76, 129]],
+ "278874": [[1, 273], [275, 478]],
+ "278875": [[1, 210], [212, 834]],
+ "278923": [[348, 467]],
+ "278962": [[195, 408]],
+ "278963": [[1, 23], [25, 175]],
+ "278969": [[373, 511], [514, 1051], [1053, 1291], [1293, 1397], [1399, 1460]],
+ "278975": [[1, 475], [477, 745], [747, 850]],
+ "278976": [[1, 20]],
+ "279024": [[86, 382]],
+ "279029": [[1, 260]],
+ "279071": [[71, 244]],
+ "279080": [[80, 224]],
+ "279115": [[123, 350]],
+ "279116": [[38, 485]],
+ "279479": [[86, 190]],
+ "279588": [[206, 207], [281, 1259]],
+ "279654": [[14, 108], [110, 1231], [1285, 1299]],
+ "279656": [[1, 43]],
+ "279658": [[1, 689], [691, 713]],
+ "279667": [[310, 1033]],
+ "279685": [[7, 9], [43, 93], [95, 209]],
+ "279694": [[248, 2235]],
+ "279715": [[197, 474], [476, 477], [480, 480], [511, 511], [523, 691]],
+ "279716": [[1, 860], [875, 1528], [1530, 1653]],
+ "279760": [[373, 578], [585, 728]],
+ "279766": [[1, 1689]],
+ "279767": [[1, 776]],
+ "279794": [[341, 1100]],
+ "279823": [[366, 395]],
+ "279841": [[75, 398], [407, 2122]],
+ "279887": [[298, 397]],
+ "279931": [[262, 628], [630, 743], [746, 801], [803, 1043], [1045, 3022]],
+ "279966": [[402, 441]],
+ "279975": [[489, 709], [734, 1121]],
+ "280015": [[7, 39], [41, 56], [59, 554], [560, 580]],
+ "280016": [[6, 149]],
+ "280017": [[1, 608]],
+ "280018": [[1, 1281]],
+ "280020": [[1, 45]],
+ "280024": [[1, 427]],
+ "280188": [[219, 245]],
+ "280191": [[1, 781], [783, 866], [869, 900]],
+ "280194": [[14, 238]],
+ "280242": [[242, 411], [414, 627]],
+ "280249": [[1, 486], [488, 1433]],
+ "280251": [[1, 165], [167, 372]],
+ "280330": [[187, 857]],
+ "280349": [[1, 247], [252, 623], [626, 626]],
+ "280363": [[3, 359]],
+ "280364": [[1, 370], [372, 617], [619, 619], [621, 1090], [1102, 1363]],
+ "280385": [[178, 519], [523, 569], [574, 1187], [1189, 1533], [1536, 2022]],
+ "281613": [[108, 128], [130, 130], [133, 133], [135, 139], [170, 256], [258, 903]],
+ "281639": [[23, 31], [111, 132]],
+ "281641": [[3, 319]],
+ "281693": [[194, 2191]],
+ "281707": [[475, 982], [1000, 1065]],
+ "281726": [[1, 288]],
+ "281727": [[1, 1605]],
+ "281797": [[564, 2176]],
+ "281976": [[203, 2166]],
+ "282035": [[12, 40]],
+ "282037": [[15, 66], [203, 457], [459, 1862]],
+ "282092": [[624, 2276]],
+ "282733": [[172, 177]],
+ "282734": [[1, 327]],
+ "282735": [[1, 642], [645, 1232], [1235, 1823]],
+ "282800": [[235, 241], [256, 311]],
+ "282807": [[35, 326]],
+ "282814": [[1, 1843]],
+ "282919": [[101, 105], [140, 243]],
+ "282922": [[1, 131]],
+ "282923": [[1, 17], [19, 30], [32, 36], [38, 39], [41, 86], [88, 224]],
+ "283042": [[4, 6]],
+ "283043": [[193, 519]],
+ "283059": [[69, 125], [127, 451]],
+ "283270": [[663, 1502], [1504, 1888], [1890, 1912]],
+ "283283": [[4, 1668], [1670, 1748]],
+ "283307": [[158, 456]],
+ "283308": [[1, 547], [549, 571], [573, 895], [897, 948]],
+ "283353": [[656, 822]],
+ "283358": [[1, 243], [245, 981]],
+ "283359": [[1, 428]],
+ "283408": [[609, 2088], [2098, 2125], [2203, 2416], [2528, 2542]],
+ "283416": [[49, 151], [154, 245]],
+ "283478": [[589, 969]],
+ "283548": [[149, 288]],
+ "283681": [[10, 17]],
+ "283682": [[1, 384]],
+ "283685": [[1, 314]],
+ "283820": [[67, 1548]],
+ "283830": [[1, 722]],
+ "283834": [[1, 67], [69, 82]],
+ "283835": [[1, 14], [16, 112]],
+ "283865": [[484, 1177]],
+ "283876": [[554, 724]],
+ "283877": [[1, 1496]],
+ "283885": [[24, 1723]],
+ "283934": [[410, 784], [793, 870], [875, 1245], [1267, 1291]],
+ "283946": [[583, 1448], [1450, 1462]],
+ "283964": [[3, 388]],
+ "284006": [[105, 390]],
+ "284014": [[1, 266]],
+ "284035": [[278, 360]],
+ "284036": [[1, 140], [143, 348]],
+ "284037": [[1, 340]],
+ "284038": [[1, 55]],
+ "284039": [[1, 30]],
+ "284040": [[1, 33]],
+ "284041": [[1, 44]],
+ "284042": [[1, 129]],
+ "284043": [[1, 205], [210, 224]],
+ "284044": [[1, 30]]}
