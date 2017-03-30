@@ -36,6 +36,8 @@
   <bin name="NEWeventSelection"    file="eventSelection.cc"></bin>
   <bin name="NEWjetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
 
+  <bin name="NEWsyncExercise_Dileptons"  file="syncExercise_Dileptons.cc"></bin>
+
   <bin name="NEWscopeEvents"  file="scopeEvents.cc"></bin>
 <!--
   <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
