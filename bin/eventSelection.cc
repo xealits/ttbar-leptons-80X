@@ -90,11 +90,11 @@
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
 
-#include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.cc"
-#include "UserCode/ttbar-leptons-80X/interface/ProcessingElectrons.cc"
-#include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.cc"
-#include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.cc"
-#include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.cc"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingElectrons.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.h"
 
 using namespace std;
 

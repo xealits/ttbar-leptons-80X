@@ -1,3 +1,5 @@
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.h"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
 
 /* clean taus of leptons

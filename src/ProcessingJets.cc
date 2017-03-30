@@ -1,6 +1,5 @@
-
-#include <CondFormats/JetMETObjects/interface/JetResolutionObject.h>
-#include <JetMETCorrections/Modules/interface/JetResolution.h>
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
 
 std::vector<double> smearJER(double pt, double eta, double genPt)
@@ -442,7 +441,7 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 		const reco::GenJet* matched_genJet = nullptr;
 		//double dR_max = 0.4/2; // 0.4 is the jet cone parameter of AK4 jets, which I use
 		// moved it to parameters of the procedure
-		for (int i=0; i<genJets.size(); i++)
+		for (unsigned int i=0; i<genJets.size(); i++)
 			{
 			reco::GenJet& genJet = genJets[i];
 			double dR = reco::deltaR(jet, genJet);

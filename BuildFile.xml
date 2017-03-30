@@ -28,6 +28,7 @@
 <use name="CondFormats/BTauObjects"/>
 <use name="CondTools/BTau"/>
 <use name="RecoJet/JetProducers"/>
+<use name="UserCode/llvv_fwk"/>
 <export>
   <lib name="1"/>
 </export>
