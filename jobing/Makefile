@@ -230,9 +230,9 @@ resubmit: missing_jobs
 	for j in `cat missing_jobs`;                                    \
 	do                                                              \
 	  grep -h $$j test/tests/outdir_"${job}"//FARM/inputs/*bsub.sh; \
-	done > missing_jobs_bsubs
-	wc -l missing_jobs*
-	source missing_jobs_bsubs
+	done > ${job}_missing_jobs_bsubs
+	wc -l ${job}_missing_jobs*
+	source ${job}_missing_jobs_bsubs
 
 .PHONY:completeness
 completeness:
