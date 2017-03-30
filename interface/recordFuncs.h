@@ -99,6 +99,9 @@ using namespace std;
 
 
 
+//float tau_fake_distance = 0.1; // first-try distance
+extern float tau_fake_distance; // = 0.3; // the distance to tau for a jet to be considered tau's origin
+
 // Exposing these for access in main process
 // the mc_decay is set in main process (if MC set has to be splitted in different decay modes)
 // the hist maps are printed out directly in main process
@@ -162,11 +165,8 @@ int n_largebins_rad = 13;
 // 0.1 radius bins:
 static Float_t bins_rad[36] = { 0, 0.012,   0.025, 0.032, 0.04,   0.05, 0.06,   0.075, 0.082, 0.09,   0.1, 0.112,   0.125, 0.132, 0.14,   0.15, 0.16,   0.175, 0.182, 0.19,   0.2, 0.21, 0.22, 0.23, 0.24,    0.25, 0.26, 0.27, 0.28, 0.29,    0.3, 0.31, 0.32,    0.4, 1, 2 }; // 35 bins 36 edges
 static int n_bins_rad = 35;
-
-
-//float tau_fake_distance = 0.1; // first-try distance
-static float tau_fake_distance = 0.3; // the distance to tau for a jet to be considered tau's origin
 */
+
 
 
 double jet_radius(pat::Jet& jet);

@@ -86,10 +86,8 @@
 #include <map>
 #include <string>
 
-//#include "jetDistrs.h"
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
-
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingElectrons.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.h"

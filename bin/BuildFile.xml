@@ -31,11 +31,10 @@
   <bin name="fitTTbarCrossSection"        file="chhiggs/fitTTbarCrossSection.cc"></bin>
 -->
 
-  <bin name="eventSelection"  file="eventSelection.cc"></bin>
+  <bin name="NEWeventSelection"  file="eventSelection.cc"></bin>
+  <bin name="NEWjetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
 
 <!--
-  <bin name="jetToTauFakeRate"  file="ttbar-leptons-80X/jetSelectionForTauFakeRate.cc"></bin>
-
   <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
   <bin name="tauOrigins"  file="ttbar-leptons-80X/tauOrigins.cc"></bin>
   <bin name="triggerMatching"  file="ttbar-leptons-80X/triggerMatching.cc"></bin>
