@@ -86,7 +86,7 @@
 #include <map>
 #include <string>
 
-#include "recordFuncs.h"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
 
 using namespace std;
 
