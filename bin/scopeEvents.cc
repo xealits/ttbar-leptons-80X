@@ -84,14 +84,13 @@
 #include <map>
 #include <string>
 
-#include "recordFuncs.h"
-
-#include "ProcessingMuons.cc"
-#include "ProcessingElectrons.cc"
-#include "ProcessingTaus.cc"
-#include "ProcessingJets.cc"
-#include "ProcessingBJets.cc"
-#include "ProcessingDRCleaning.cc"
+#include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingBJets.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingElectrons.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.h"
 
 using namespace std;
 

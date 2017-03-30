@@ -29,6 +29,9 @@
 <use name="CondTools/BTau"/>
 <use name="RecoJet/JetProducers"/>
 <use name="UserCode/llvv_fwk"/>
+
 <export>
   <lib name="1"/>
 </export>
+
+<flags CXXFLAGS="-g -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Os"/>

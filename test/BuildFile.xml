@@ -1,17 +1,19 @@
+<use name="PhysicsTools/FWLite"/>
+
+<!--
 <use name="lhapdf"/>
 <use name="roottmva"/>
 <use name="roofit"/>
 <use name="roostats"/>
 <use name="PhysicsTools/FWLite"/>
-
 <use name="UserCode/llvv_fwk"/>
-<use name="UserCode/ttbar-leptons-80X"/>
-
 <use name="TauAnalysis/SVfitStandalone"/>
 <use name="RecoJets/JetProducers"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
 <use name="RecoEgamma/ElectronIdentification"/>
 <use name="EgammaAnalysis/ElectronTools"/>
+-->
+<!-- <use name="UserCode/ttbar-leptons-80X"/> -->
 
 <environment>
 <!-- Common tools and examples -->
@@ -25,30 +27,10 @@
   <bin name="runEfficencyMiniAODExample"  file="common/runEfficencyMiniAODExample.cc"></bin>
 -->
 
-<!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
-<!--  <bin name="runLeptonEffStudy"           file="chhiggs/runLeptonEffStudy.cc"></bin> temporarily deactivated-->
+  <bin name="NEWstacked_histo_project2to1_distr"  file="stacked_histo_project2to1_distr.cc"></bin>
+  <bin name="NEWstacked_histo_project3to1_distr"  file="stacked_histo_project3to1_distr.cc"></bin>
+  <bin name="NEWstacked_histo_distr"              file="stacked_histo_distr.cc"></bin>
 <!--
-  <bin name="runChHiggsAnalysis"          file="chhiggs/runAnalysis.cc"></bin>
-  <bin name="runFixedPlotter"             file="chhiggs/runFixedPlotter.cc"></bin> 
-  <bin name="fitTTbarCrossSection"        file="chhiggs/fitTTbarCrossSection.cc"></bin>
--->
-
-  <bin name="NEWeventSelection"    file="eventSelection.cc"></bin>
-  <bin name="NEWjetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
-
-  <bin name="NEWscopeEvents"  file="scopeEvents.cc"></bin>
-<!--
-  <bin name="pilupDistr"  file="ttbar-leptons-80X/pilupDistr.cc"></bin>
-  <bin name="tauOrigins"  file="ttbar-leptons-80X/tauOrigins.cc"></bin>
-  <bin name="triggerMatching"  file="ttbar-leptons-80X/triggerMatching.cc"></bin>
-  <bin name="generationTree"  file="ttbar-leptons-80X/generationTree.cc"></bin>
-  <bin name="printoutTriggers"  file="ttbar-leptons-80X/printoutTriggers.cc"></bin>
-  <bin name="easyKinoTTbar"  file="ttbar-leptons-80X/easyKinoTTbar.cc"></bin>
-  <bin name="demoKinoTTbar"  file="ttbar-leptons-80X/demoKinoTTbar.cc"></bin>
-
-  <bin name="stacked_histo_project2to1_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project2to1_distr.cc"></bin>
-  <bin name="stacked_histo_project3to1_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_project3to1_distr.cc"></bin>
-  <bin name="stacked_histo_distr"  file="ttbar-leptons-80X/jobing/stacked_histo_distr.cc"></bin>
   <bin name="jet_distrs_stacked_per_origin"  file="ttbar-leptons-80X/jobing/jet_distrs_stacked_per_origin.cc"></bin>
   <bin name="jet_distrs_per_origin_overlayed"  file="ttbar-leptons-80X/jobing/jet_distrs_per_origin_overlayed.cc"></bin>
   <bin name="jet_fakerate_per_origin"  file="ttbar-leptons-80X/jobing/jet_fakerate_per_origin.cc"></bin>
@@ -83,7 +65,6 @@
   <bin name="histo_1D_annotated"          file="ttbar-leptons-80X/jobing/histo_1D_annotated.cc"></bin>
 
   <bin name="syncExercise_Dileptons"  file="ttbar-leptons-80X/syncExercise_Dileptons.cc"></bin>
-
 -->
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->
