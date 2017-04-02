@@ -78,6 +78,7 @@ The dsets.json file structured as:
 """
 
 import argparse
+import logging
 
 from sys import argv, exit
 import json
@@ -89,11 +90,13 @@ import subprocess # trying it again
 import shutil
 
 
+logging.basicConfig(level=logging.DEBUG)
+
 # Job templates
 hostname = commands.getstatusoutput("hostname -f")[1]
-print("hostname = %s" % hostname)
+logging.debug("hostname = %s" % hostname)
 hostname = '.'.join(hostname.split('.')[1:])
-print("hostname = %s" % hostname)
+logging.debug("hostname = %s" % hostname)
 
 site_cfgs = { 'cern.ch': {'proxy_filename': '/afs/cern.ch/user/o/otoldaie/x509_proxy', 'VO_CMS_SW_DIR': '/nfs/soft/cms',
                           'job_template': """#!/bin/sh
@@ -138,10 +141,10 @@ def restore_dset_files_info(dsets_dir, dset):
     """restore_dset_files_info(dsets_dir, dset)
 
     format:
-    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/15-11-2016/{files,file_servers}
+    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/{files,presence/{date}/[file_servers,block_servers]}
 
     returns [files], [file_servers]
-        --- [file_servers] contains names of tiers (T2_CH_CERN etc) with 100\% of the dataset
+        --- [file_servers] contains names of tiers (T2_CH_CERN etc) with 100\% of the files (blocks?)
 
     EXAMPLE:
     restore_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
@@ -149,40 +152,60 @@ def restore_dset_files_info(dsets_dir, dset):
     # t.strftime("%d-%m-%Y")
 
     dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',')
-    print(dset_dir)
-    print(os.listdir(dset_dir))
-    all_subdirs = [dset_dir + '/' + d for d in os.listdir(dset_dir) if os.path.isdir(dset_dir + '/' + d) and d[0] != '.']
-    print(all_subdirs)
+    logging.info(dset_dir)
+
+    # get files of the dataset
+    with open(dset_dir + '/files', 'r') as fs:
+        files = [f.strip() for f in fs.readlines()]
+
+    # get the newest directory on presence of files in tiers
+    # (tiers with of 100% files -- try 100% of blocks)
+    all_subdirs = [dset_dir + '/presence/' + d for d in os.listdir(dset_dir + '/presence') if os.path.isdir(dset_dir + '/presence/' + d) and d[0] != '.']
+    logging.debug(all_subdirs)
     newest_dir = max(all_subdirs, key=os.path.getmtime)
-    print(newest_dir)
+    logging.info(newest_dir)
 
     stored_dset_time = datetime.strptime(os.path.basename(newest_dir), "%d-%m-%Y")
     #datetime.datetime.now() - datetime.timedelta(days=7) < datetime.datetime.strptime("15-11-2016", "%d-%m-%Y")
     if datetime.now() - timedelta(days=7) > stored_dset_time:
-        print("restoring a more than a week old dset")
+        logging.info("restoring a more than a week old dset")
         # TODO: spawn a process to update the record
 
     #file_server = "root://cms-xrd-global.cern.ch/" # default
     #if os.path.isfile(newest_dir + '/T2_CH_CERN'):
         #file_server = "root://eoscms//eos/cms/"
     file_servers = [d for d in os.listdir(newest_dir + '/file_servers') if os.path.isfile(newest_dir + '/file_servers/' + d) and d[0] != '.']
-    print("100p file_servers: %s" % str(file_servers))
-
-    with open(newest_dir + '/files', 'r') as fs:
-        files = [f.strip() for f in fs.readlines()]
+    logging.debug("100p file_servers: %s" % str(file_servers))
 
     return files, file_servers
 
 def check_if_stored_dset_info_today(dsets_dir, dset):
     today = datetime.strftime(datetime.now(), "%d-%m-%Y")
 
-    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/' + today
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/presence/' + today
 
     if os.path.isdir(dset_dir):
-        print("Already have stored this dataset info today")
+        logging.debug("Already have stored this dataset info today")
         return True
 
     return False
+
+def fetch_dset_presence(dsets_dir, dset):
+    """fetch_n_store_dset(dsets_dir, dset)
+    fetch_n_store_dset("./dsets/", "/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD")
+    """
+    if check_if_stored_dset_info_today(dsets_dir, dset):
+        return True
+
+    # fetch info from DAS
+    dset_file_servers = get_dset_presence(dset)
+
+    #if not (dset_files and dset_file_servers):
+        #print("Failed to fetch dset files info from DAS")
+        #return False
+
+    return store_dset_presence(dsets_dir, dset, dset_file_servers)
+
 
 def fetch_n_store_dset(dsets_dir, dset):
     """fetch_n_store_dset(dsets_dir, dset)
@@ -192,13 +215,61 @@ def fetch_n_store_dset(dsets_dir, dset):
         return True
 
     # fetch info from DAS
-    dset_files, dset_file_servers = get_dset(dset)
+    dset_files, dset_file_servers = get_dset_files(dset), get_dset_presence(dset)
 
-    #if not (dset_files and dset_file_servers):
-        #print("Failed to fetch dset files info from DAS")
-        #return False
+    return store_dset_files(dsets_dir, dset, dset_files) and store_dset_presence(dsets_dir, dset, dset_file_servers)
 
-    return store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers)
+
+def store_dset_files(dsets_dir, dset, dset_files):
+    """store_dset_presence(dsets_dir, dset, dset_files)
+
+    format:
+    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/files
+
+    returns True # on success
+
+    EXAMPLE:
+    store_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD", ["file1", "file2"])
+    """
+
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',')
+    os.makedirs(dset_dir)
+
+    with open(dset_dir + '/files', 'w') as f:
+            f.write('\n'.join(dset_files))
+
+    return True
+
+
+def store_dset_presence(dsets_dir, dset, dset_file_servers):
+    """store_dset_presence(dsets_dir, dset, dset_file_servers)
+
+    format:
+    dsets_dir/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8,RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1,MINIAODSIM/presence/15-11-2016/file_servers/T2_CH_CERN
+
+    returns True # on success
+
+    EXAMPLE:
+    store_dset_files_info("./dsets/", "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD", ["T2_CH_CERN", "T2_DE_DESY"])
+    """
+
+    today = datetime.strftime(datetime.now(), "%d-%m-%Y")
+
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/presence/' + today
+
+    # let's leave it fail here, the check is done by hand or in a script above
+    #if os.path.isdir(dset_dir):
+        #print("Already have stored this dataset info today")
+        #return True
+    os.makedirs(dset_dir + '/file_servers/')
+
+    # if any 100% full servers are found -- touch the file with server name
+    for s in dset_file_servers:
+        s_file = open(dset_dir + '/file_servers/' + s, 'a')
+        s_file.close()
+
+    return True
+
 
 def store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers):
     """store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers)
@@ -214,7 +285,7 @@ def store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers):
 
     today = datetime.strftime(datetime.now(), "%d-%m-%Y")
 
-    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/' + today
+    dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',') + '/presence/' + today
 
     # let's leave it fail here, the check is done by hand or in a script above
     #if os.path.isdir(dset_dir):
@@ -237,6 +308,91 @@ def store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers):
             f.write('\n'.join(dset_files))
 
     return True
+
+
+def get_dset_presence(dset):
+    """get_dset_presence(dset)
+
+    EXAMPLE:
+    get_dset_presence("/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
+    """
+    # Get fileserver info (100% of files)
+
+    # Finding full local sample
+    logging.debug("Command:")
+    logging.debug('./das_client --query="site dataset={}" --format=JSON '.format(dset))
+    status, out = commands.getstatusoutput('./das_client --query="site dataset={}" --format=JSON '.format(dset))
+    #sites = out.split('\n')
+    if status != 0 or len(out) < 1:
+        logging.error("Failed to fetch _sites_ of {} dataset".format(dset))
+        logging.error("das_client status = " + str(status))
+        logging.error("           output = " + out)
+        logging.error("Continue to other dsets")
+        return None, None
+    sites_info = json.loads(out)
+    sites = []
+
+    for i in sites_info['data']:
+        logging.debug(i['site'])
+        #x = i['site'][0]
+        #x.update(i['site'][1])
+        x = {}
+        for s in i['site']:
+            x.update(s)
+        sites.append((x['name'], x.get('dataset_fraction')))
+
+    logging.info("Found sites and completeness:")
+    for s in sites:
+        logging.info(s)
+
+    '''
+    if any(local_tier in s and "100.00%" in s for s in sites):
+        print("The full dataset is found on local tier " + local_tier)
+        file_server = "root://eoscms//eos/cms/"
+        print("using " + file_server + " fileserver")
+    else:
+        file_server = "root://cms-xrd-global.cern.ch/"
+        print("using default " + file_server + " fileserver")
+    '''
+    # return all tier names, which have 100% of the dataset
+    return [s[0] for s in sites if "100.00%" in s]
+
+
+
+def get_dset_files(dset):
+    """get_dset_files(dset)
+
+    EXAMPLE:
+    get_dset_files("/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD")
+    """
+    #status, out = commands.getstatusoutput('das_client --limit=0 --query="file dataset={}"'.format(dset))
+    # trying os.system to get the environment variable of X509_USER_PROXY propagate to das call:
+    #status, out = os.system('das_client --limit=0 --query="file dataset={}"'.format(dset)), '<output is at stdout>'
+    # -- no! the output of the command is the list of files
+    #status, out = 0, subprocess.check_output( 'export X509_USER_PROXY=' + proxy_file + ' && das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+    logging.debug("Command:")
+    logging.debug('./das_client --limit=0 --query="file dataset={}"'.format(dset))
+    status, out = 0, subprocess.check_output( './das_client --limit=0 --query="file dataset={}"'.format(dset), shell=True)
+
+    # the correct approach
+    #p = subprocess.Popen(['das_client', '--limit=0', '--query="file dataset={}"'.format(dset)], env=my_env)
+    #out, err = p.communicate()
+    #status = 0 # TODO: extract exit status
+
+    # TODO: add the status of the commend exit, check_output raises an Error if the status code is bad
+    out_rows = out.split('\n')
+    dset_files = out.strip().split('\n')
+    
+    if status != 0 or dset_files < 1:
+        logging.error("Failed fetch _files_ of {} dataset".format(dset))
+        logging.error("das_client status = " + str(status))
+        logging.error("           output = " + out)
+        logging.error("Continue to other dsets")
+        return None, None
+
+    return dset_files
+
+
 
 
 #def get_dset_files(dset):

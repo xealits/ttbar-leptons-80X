@@ -1,8 +1,9 @@
 #from job_handling import *
-from job_handling import fetch_n_store_dset
+from job_handling import fetch_n_store_dset, fetch_dset_presence
 import os
 import argparse
 import json
+import logging
 
 
 
@@ -12,8 +13,11 @@ parser = argparse.ArgumentParser(
     epilog = "Example:\n$ python store_dsets_info.py ./dsets/ bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json"
     )
 
-parser.add_argument("dsets_dir",  help="the local directory for dsets files info")
-parser.add_argument("dsets",    help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+parser.add_argument("dsets_dir",   help="the local directory for dsets files info")
+parser.add_argument("dsets",       help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+parser.add_argument("--presence",  help="just update the presence of the dataset on the tiers",
+        action = "store_true")
+
 
 args = parser.parse_args()
 
@@ -21,7 +25,7 @@ args = parser.parse_args()
 # Prepare proxy file for DAS
 
 proxy_file = "./x509_proxy"
-print("Initializing proxy in " + proxy_file)
+logging.info("Initializing proxy in " + proxy_file)
 #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
 # os.system handles the hidden input well
 # subprocess.check_output(shell=True) and .Popen(shell=True)
@@ -29,9 +33,9 @@ print("Initializing proxy in " + proxy_file)
 status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
 if status !=0:
-    print("Proxy initialization failed:")
-    print("    status = " + str(status))
-    print("    output =\n" + output)
+    logging.error("Proxy initialization failed:")
+    logging.error("    status = " + str(status))
+    logging.error("    output =\n" + output)
     exit(2)
 
 #os.system('export X509_USER_PROXY=' + proxy_file)
@@ -39,19 +43,16 @@ if status !=0:
 #my_env["X509_USER_PROXY"] = proxy_file
 os.environ["X509_USER_PROXY"] = os.path.abspath(proxy_file)
 
-print("Proxy is ready.")
+logging.info("Proxy is ready.")
 
-'''
-for dset_group in args.dsets['proc']:
-    for d in dset_group['data']:
-        dset = d['dset']
-'''
-
+# load the dsets from the json file
 with open(args.dsets) as d_f:
     dsets = json.load(d_f)
 
-print("To local directory %s" % args.dsets_dir)
+storing_action = fetch_dset_presence if args.presence else fetch_n_store_dset
+
+logging.info("To local directory %s" % args.dsets_dir)
 for dset in [d['dset'] for dset_group in dsets['proc'] for d in dset_group['data']]:
-    print("Storing dset %s" % dset)
-    fetch_n_store_dset(args.dsets_dir, dset)
+    logging.info("Storing dset %s" % dset)
+    storing_action(args.dsets_dir, dset)
 

@@ -4,7 +4,7 @@
 job=$1
 dtags_file=$2
 
-job_dir=test/tests/outdir_"$job"/
+job_dir=outdir/$job/
 
 
 mkdir $job_dir/merged-sets

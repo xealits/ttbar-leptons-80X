@@ -33,7 +33,7 @@
   <bin name="fitTTbarCrossSection"        file="chhiggs/fitTTbarCrossSection.cc"></bin>
 -->
 
-  <bin name="NEWeventSelection"    file="eventSelection.cc"></bin>
+  <bin name="eventSelection"    file="eventSelection.cc"></bin>
   <bin name="NEWjetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
 
   <bin name="NEWsyncExercise_Dileptons"  file="syncExercise_Dileptons.cc"></bin>
