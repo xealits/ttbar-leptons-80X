@@ -129,7 +129,6 @@ namespace utils
 			//init the parameters for correction
 			std::vector<JetCorrectorParameters> corSteps;
 			for(size_t i=0; i<jetCorFiles.size(); i++) corSteps.push_back(JetCorrectorParameters(jetCorFiles[i]));
-			"
 			//return the corrector
 			return new FactorizedJetCorrector(corSteps);
 			}
@@ -2346,7 +2345,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ----------------------------------------- Apply pileup reweighting
 		// why don't use nGoodPV for Pile-Up?
 		unsigned int num_inters = 0, num_inters_raw = 0;
-		double weight_pu_test = weight;
+		double weight_pu_test = weights_FULL[SYS_NOMINAL];
 		// tests v7-10+ pileup is back
 		if(isMC)
 			{
@@ -2433,32 +2432,32 @@ for(size_t f=0; f<urls.size();++f)
 
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
-		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weights_FULL[NOMINAL]);
+		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weights_FULL[SYS_NOMINAL]);
 
 		// vtx.size
 		fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
-		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100,      vtx.size(), weights_FULL[NOMINAL]);
-		fill_1d( string("pileup_beforetrig_nvtx_weight_up"),    100, 0, 100,   vtx.size(), weights_FULL[PU_UP]);
-		fill_1d( string("pileup_beforetrig_nvtx_weight_down"),    100, 0, 100, vtx.size(), weights_FULL[PU_DOWN]);
+		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100,      vtx.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d( string("pileup_beforetrig_nvtx_weight_up"),    100, 0, 100,   vtx.size(), weights_FULL[SYS_PU_UP]);
+		fill_1d( string("pileup_beforetrig_nvtx_weight_down"),    100, 0, 100, vtx.size(), weights_FULL[SYS_PU_DOWN]);
 
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weights_FULL[NOMINAL]);
+		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weights_FULL[SYS_NOMINAL]);
 
 		// RHO distrs
 		fill_1d( string("rho_beforetrig_rawWeight"), 100, 0, 100, rho, rawWeight);
-		fill_1d( string("rho_beforetrig_weight"),         100, 0, 100, rho, weights_FULL[NOMINAL]);
-		fill_1d( string("rho_beforetrig_weight_up"),      100, 0, 100, rho, weights_FULL[PU_UP]);
-		fill_1d( string("rho_beforetrig_weight_down"),    100, 0, 100, rho, weights_FULL[PU_DOWN]);
+		fill_1d( string("rho_beforetrig_weight"),         100, 0, 100, rho, weights_FULL[SYS_NOMINAL]);
+		fill_1d( string("rho_beforetrig_weight_up"),      100, 0, 100, rho, weights_FULL[SYS_PU_UP]);
+		fill_1d( string("rho_beforetrig_weight_down"),    100, 0, 100, rho, weights_FULL[SYS_PU_DOWN]);
 
 		fill_1d( string("rhoCentral_beforetrig_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
-		fill_1d( string("rhoCentral_beforetrig_weight"),    100, 0, 100, rhoCentral, weights_FULL[NOMINAL]);
+		fill_1d( string("rhoCentral_beforetrig_weight"),    100, 0, 100, rhoCentral, weights_FULL[SYS_NOMINAL]);
 
 		fill_1d( string("rhoCentralNeutral_beforetrig_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
-		fill_1d( string("rhoCentralNeutral_beforetrig_weight"),    100, 0, 100, rhoCentralNeutral, weights_FULL[NOMINAL]);
+		fill_1d( string("rhoCentralNeutral_beforetrig_weight"),    100, 0, 100, rhoCentralNeutral, weights_FULL[SYS_NOMINAL]);
 
 		fill_1d( string("rhoCentralChargedPileUp_beforetrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
-		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weights_FULL[NOMINAL]);
+		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weights_FULL[SYS_NOMINAL]);
 
 		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
 		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
