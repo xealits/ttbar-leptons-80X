@@ -3813,16 +3813,6 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("slep_vanila_selection_passedAntiLJRequirement"), 1, 0, 2,   1, weight);
 
 
-			// MULTISELECT
-			unsigned int multisel = 0;
-			// multisel += (isSingleMu ? 1 : 0); //! should be 1
-			// multisel += (isSingleE ? 2 : 0);
-			multisel += (passJetSelection ? 1 : 0);
-			multisel += (passMetSelection ? 2 : 0);
-			multisel += (passBtagsSelection ? 4 : 0);
-			multisel += (passTauSelection ? 8 : 0);
-			multisel += (passOS ? 16 : 0);
-
 
 			{
 				fill_2d(string("control_met_singlelep_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
@@ -4098,66 +4088,89 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("weightflow_control_mu_selection"),  300, -3, 3, weight, weight);
 					}
 
-				// the 5 geometrical for loops...
-				// TODO: it's awekward
+				// MULTISELECT MU
+				/*
+				 * multiselect is done for all sys shifts
+				 * weight and passXxSelection bool-s depend on particle distrs in different sys_shifts
+				 * thus do the loop on sys shifts
+				 * set the bool-s and weight, store multiselect
+				 */
+				for ( const auto s : allSystematics )
+					{
+					double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+					const char* name = systematic_shift_names[s];
 
-				bool s1 = false;
-				bool s2 = false;
-				bool s3 = false;
-				bool s4 = false;
-				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
-					{
-					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i2++)
-					{
-					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i3++)
-					{
-					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i4++)
-					{
-					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i5++)
+					bool passJetSelection(n_jets>2); // >= 3 jets
+					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
+					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
+					bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
+
+					// the 5 geometrical for loops...
+					// TODO: it's awekward
+					unsigned int multisel = 0;
+					// multisel += (isSingleMu ? 1 : 0); //! should be 1
+					// multisel += (isSingleE ? 2 : 0);
+					multisel += (passJetSelection ? 1 : 0);
+					multisel += (passMetSelection ? 2 : 0);
+					multisel += (passBtagsSelection ? 4 : 0);
+					multisel += (passTauSelection ? 8 : 0);
+					multisel += (passOS ? 16 : 0);
+
+					bool s1 = false;
+					bool s2 = false;
+					bool s3 = false;
+					bool s4 = false;
+					bool s5 = false;
+					for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 						{
-						s5 = !s5;
-						// if a selection is not considered
-						// it is passed
-						bool pass = (s1 ? passJetSelection : true);
-						pass &= (s2 ? passMetSelection : true);
-						pass &= (s3 ? passBtagsSelection : true);
-						pass &= (s4 ? passTauSelection : true);
-						pass &= (s5 ? passOS : true);
-
-						if (!pass) continue;
-
-						unsigned int multi = 0;
-						multi += (s1 ? 1 : 0);
-						multi += (s2 ? 2 : 0);
-						multi += (s3 ? 4 : 0);
-						multi += (s4 ? 8 : 0);
-						multi += (s5 ? 16 : 0);
-
-						//fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
-						// + to_string(multi)
-						//fill_1d(string("weightflow_mu"), 300, 0, 300,   31 + multi, weight );
-						for ( const auto s : allSystematics )
+						s1 = !s1;
+						for (int i2 = 0; i2 < 2; i2++)
+						{
+						s2 = !s2;
+						for (int i3 = 0; i3 < 2; i3++)
+						{
+						s3 = !s3;
+						for (int i4 = 0; i4 < 2; i4++)
+						{
+						s4 = !s4;
+						for (int i5 = 0; i5 < 2; i5++)
 							{
-							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-							const char* name = systematic_shift_names[s];
-							fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   31 + multi, weight);
-							}
-						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
-						fill_1d(string("eventflow_mu"), 300, 0, 300,   31 + multi, 1);
+							s5 = !s5;
+							// if a selection is not considered
+							// it is passed
+							bool pass = (s1 ? passJetSelection : true);
+							pass &= (s2 ? passMetSelection : true);
+							pass &= (s3 ? passBtagsSelection : true);
+							pass &= (s4 ? passTauSelection : true);
+							pass &= (s5 ? passOS : true);
 
-						fill_1i(string("weightflow_mu_I"), 300, 0, 300,   31 + multi, weight );
-						fill_1i(string("weightflow_mu_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
-						fill_1i(string("eventflow_mu_I"), 300, 0, 300,   31 + multi, 1);
+							if (!pass) continue;
+
+							unsigned int multi = 0;
+							multi += (s1 ? 1 : 0);
+							multi += (s2 ? 2 : 0);
+							multi += (s3 ? 4 : 0);
+							multi += (s4 ? 8 : 0);
+							multi += (s5 ? 16 : 0);
+
+							//fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
+							// + to_string(multi)
+							//fill_1d(string("weightflow_mu"), 300, 0, 300,   31 + multi, weight );
+							fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   31 + multi, weight);
+
+							//fill_1d(string("weightflow_mu_without_tauIDSFs_") + name, 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+							fill_1d(string("eventflow_mu_") + name, 300, 0, 300,   31 + multi, 1);
+
+							//fill_1i(string("weightflow_mu_I"), 300, 0, 300,   31 + multi, weight );
+							//fill_1i(string("weightflow_mu_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+							//fill_1i(string("eventflow_mu_I"), 300, 0, 300,   31 + multi, 1);
+							}
 						}
-					}
-					}
-					}
-					}
+						}
+						}
+						}
+						}
 				}
 
 			if (isSingleE)
@@ -4183,66 +4196,86 @@ for(size_t f=0; f<urls.size();++f)
 						fill_2d(string("control_lep_singleel_passjet_selLeptons_pt_eta"), 250, 0., 500., 200, -4., 4., selLeptons[i].pt(), selLeptons[i].eta(), weight);
 					}
 
-				//
-				// the 5 geometrical for loops...
 
-				bool s1 = false;
-				bool s2 = false;
-				bool s3 = false;
-				bool s4 = false;
-				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+				// MULTISELECT EL
+				/*
+				 * multiselect is done for all sys shifts
+				 * weight and passXxSelection bool-s depend on particle distrs in different sys_shifts
+				 * thus do the loop on sys shifts
+				 * set the bool-s and weight, store multiselect
+				 */
+				for ( const auto s : allSystematics )
 					{
-					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i2++)
-					{
-					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i3++)
-					{
-					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i4++)
-					{
-					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i5++)
+					double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+					const char* name = systematic_shift_names[s];
+
+					bool passJetSelection(n_jets>2); // >= 3 jets
+					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
+					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
+					bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
+
+					// the 5 geometrical for loops...
+					// TODO: it's awekward
+					unsigned int multisel = 0;
+					// multisel += (isSingleMu ? 1 : 0); //! should be 1
+					// multisel += (isSingleE ? 2 : 0);
+					multisel += (passJetSelection ? 1 : 0);
+					multisel += (passMetSelection ? 2 : 0);
+					multisel += (passBtagsSelection ? 4 : 0);
+					multisel += (passTauSelection ? 8 : 0);
+					multisel += (passOS ? 16 : 0);
+
+					bool s1 = false;
+					bool s2 = false;
+					bool s3 = false;
+					bool s4 = false;
+					bool s5 = false;
+					for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 						{
-						s5 = !s5;
-						// if a selection is not considered
-						// it is passed
-						bool pass = (s1 ? passJetSelection : true);
-						pass &= (s2 ? passMetSelection : true);
-						pass &= (s3 ? passBtagsSelection : true);
-						pass &= (s4 ? passTauSelection : true);
-						pass &= (s5 ? passOS : true);
-
-						if (!pass) continue;
-
-						unsigned int multi = 0;
-						multi += (s1 ? 1 : 0);
-						multi += (s2 ? 2 : 0);
-						multi += (s3 ? 4 : 0);
-						multi += (s4 ? 8 : 0);
-						multi += (s5 ? 16 : 0);
-
-						//fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
-						// + to_string(multi)
-						//fill_1d(string("weightflow_el"), 300, 0, 300,   31 + multi, weight );
-						for ( const auto s : allSystematics )
+						s1 = !s1;
+						for (int i2 = 0; i2 < 2; i2++)
+						{
+						s2 = !s2;
+						for (int i3 = 0; i3 < 2; i3++)
+						{
+						s3 = !s3;
+						for (int i4 = 0; i4 < 2; i4++)
+						{
+						s4 = !s4;
+						for (int i5 = 0; i5 < 2; i5++)
 							{
-							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-							const char* name = systematic_shift_names[s];
-							fill_1d(string("weightflow_el_") + name, 300, 0, 300,   31 + multi, weight);
-							}
-						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
-						fill_1d(string("eventflow_el"), 300, 0, 300,   31 + multi, 1);
+							s5 = !s5;
+							// if a selection is not considered
+							// it is passed
+							bool pass = (s1 ? passJetSelection : true);
+							pass &= (s2 ? passMetSelection : true);
+							pass &= (s3 ? passBtagsSelection : true);
+							pass &= (s4 ? passTauSelection : true);
+							pass &= (s5 ? passOS : true);
 
-						//fill_1i(string("weightflow_el_I"), 300, 0, 300,   31 + multi, weight );
-						//fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
-						//fill_1i(string("eventflow_el_I"), 300, 0, 300,   31 + multi, 1);
+							if (!pass) continue;
+
+							unsigned int multi = 0;
+							multi += (s1 ? 1 : 0);
+							multi += (s2 ? 2 : 0);
+							multi += (s3 ? 4 : 0);
+							multi += (s4 ? 8 : 0);
+							multi += (s5 ? 16 : 0);
+
+							//fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
+							// + to_string(multi)
+							//fill_1d(string("weightflow_el"), 300, 0, 300,   31 + multi, weight );
+							fill_1d(string("weightflow_el_") + name, 300, 0, 300,   31 + multi, weight);
+
+							//fill_1d(string("weightflow_el_without_tauIDSFs_") + name, 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+							fill_1d(string("eventflow_el_") + name, 300, 0, 300,   31 + multi, 1);
+							}
 						}
-					}
-					}
-					}
-					}
+						}
+						}
+						}
+						}
 
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
@@ -4509,14 +4542,6 @@ for(size_t f=0; f<urls.size();++f)
 			// bool passBtagsSelection(selBJets.size()>1);
 			bool passBtagsSelection(n_bjets>0);
 
-			// MULTISELECT
-			unsigned int multisel = 0;
-			multisel += (passMllVeto ? 1 : 0);
-			multisel += (passJetSelection ? 2 : 0);
-			multisel += (passMetSelection ? 4 : 0);
-			multisel += (passOS ? 8 : 0);
-			multisel += (passBtagsSelection ? 16 : 0);
-
 			record_jets_fakerate_distrs(string("dilep_"), string("pass2leps"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 			if (passJetSelection)
@@ -4592,66 +4617,83 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("weightflow_control_elel_selection"),  300, -3, 3, weight, weight);
 					}
 
-				// the 5 geometrical for loops...
-				// TODO: it's awekward
 
-				bool s1 = false;
-				bool s2 = false;
-				bool s3 = false;
-				bool s4 = false;
-				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
+				// MULTISELECT ELEL
+				for ( const auto s : allSystematics )
 					{
-					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i2++)
-					{
-					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i3++)
-					{
-					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i4++)
-					{
-					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i5++)
+					double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+					const char* name = systematic_shift_names[s];
+
+					// Event selection booleans
+					// or dilepton mass > 20GeV?
+					// and only for ee/mumu?
+					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
+					bool passJetSelection(n_jets>1);
+					bool passMetSelection(met.pt()>40.);
+					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
+					bool passBtagsSelection(n_bjets>0);
+
+					unsigned int multisel = 0;
+					multisel += (passMllVeto ? 1 : 0);
+					multisel += (passJetSelection ? 2 : 0);
+					multisel += (passMetSelection ? 4 : 0);
+					multisel += (passOS ? 8 : 0);
+					multisel += (passBtagsSelection ? 16 : 0);
+
+					// the 5 geometrical for loops...
+					// TODO: it's awekward
+
+					bool s1 = false;
+					bool s2 = false;
+					bool s3 = false;
+					bool s4 = false;
+					bool s5 = false;
+					for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 						{
-						s5 = !s5;
-						// if a selection is not considered
-						// it is passed
-						bool pass = (s1 ? passMllVeto : true);
-						pass &= (s2 ? passJetSelection : true);
-						pass &= (s3 ? passMetSelection : true);
-						pass &= (s4 ? passOS : true);
-						pass &= (s5 ? passBtagsSelection : true);
-
-						if (!pass) continue;
-
-						unsigned int multi = 0;
-						multi += (s1 ? 1 : 0);
-						multi += (s2 ? 2 : 0);
-						multi += (s3 ? 4 : 0);
-						multi += (s4 ? 8 : 0);
-						multi += (s5 ? 16 : 0);
-
-						// + to_string(multi)
-						//fill_1d(string("weightflow_elel"), 300, 0, 300,   31 + multi, weight);
-						for ( const auto s : allSystematics )
+						s1 = !s1;
+						for (int i2 = 0; i2 < 2; i2++)
+						{
+						s2 = !s2;
+						for (int i3 = 0; i3 < 2; i3++)
+						{
+						s3 = !s3;
+						for (int i4 = 0; i4 < 2; i4++)
+						{
+						s4 = !s4;
+						for (int i5 = 0; i5 < 2; i5++)
 							{
-							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-							const char* name = systematic_shift_names[s];
+							s5 = !s5;
+							// if a selection is not considered
+							// it is passed
+							bool pass = (s1 ? passMllVeto : true);
+							pass &= (s2 ? passJetSelection : true);
+							pass &= (s3 ? passMetSelection : true);
+							pass &= (s4 ? passOS : true);
+							pass &= (s5 ? passBtagsSelection : true);
+
+							if (!pass) continue;
+
+							unsigned int multi = 0;
+							multi += (s1 ? 1 : 0);
+							multi += (s2 ? 2 : 0);
+							multi += (s3 ? 4 : 0);
+							multi += (s4 ? 8 : 0);
+							multi += (s5 ? 16 : 0);
+
+							// + to_string(multi)
+							//fill_1d(string("weightflow_elel_"), 300, 0, 300,   31 + multi, weight);
 							fill_1d(string("weightflow_elel_") + name, 300, 0, 300,   31 + multi, weight);
+							fill_1d(string("eventflow_elel_") + name, 300, 0, 300,   31 + multi, 1);
 							}
-						fill_1d(string("eventflow_elel"), 300, 0, 300,   31 + multi, 1);
 						}
-					}
-					}
-					}
+						}
+						}
+						}
 					}
 				}
 
 			if (isDoubleMu)
 				{
-
-
 				if (passJetSelection)
 					{
 					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
@@ -4712,59 +4754,77 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("weightflow_control_mumu_selection"),  300, -3, 3, weight, weight);
 					}
 
-				// the 5 geometrical for loops...
-				// TODO: it's awekward
+				// MULTISELECT MUMU
+				for ( const auto s : allSystematics )
+					{
+					double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+					const char* name = systematic_shift_names[s];
 
-				bool s1 = false;
-				bool s2 = false;
-				bool s3 = false;
-				bool s4 = false;
-				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
-					{
-					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i2++)
-					{
-					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i3++)
-					{
-					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i4++)
-					{
-					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i5++)
+					// Event selection booleans
+					// or dilepton mass > 20GeV?
+					// and only for ee/mumu?
+					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
+					bool passJetSelection(n_jets>1);
+					bool passMetSelection(met.pt()>40.);
+					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
+					bool passBtagsSelection(n_bjets>0);
+
+					unsigned int multisel = 0;
+					multisel += (passMllVeto ? 1 : 0);
+					multisel += (passJetSelection ? 2 : 0);
+					multisel += (passMetSelection ? 4 : 0);
+					multisel += (passOS ? 8 : 0);
+					multisel += (passBtagsSelection ? 16 : 0);
+
+					// the 5 geometrical for loops...
+					// TODO: it's awekward
+
+					bool s1 = false;
+					bool s2 = false;
+					bool s3 = false;
+					bool s4 = false;
+					bool s5 = false;
+					for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 						{
-						s5 = !s5;
-						// if a selection is not considered
-						// it is passed
-						bool pass = (s1 ? passMllVeto : true);
-						pass &= (s2 ? passJetSelection : true);
-						pass &= (s3 ? passMetSelection : true);
-						pass &= (s4 ? passOS : true);
-						pass &= (s5 ? passBtagsSelection : true);
-
-						if (!pass) continue;
-
-						unsigned int multi = 0;
-						multi += (s1 ? 1 : 0);
-						multi += (s2 ? 2 : 0);
-						multi += (s3 ? 4 : 0);
-						multi += (s4 ? 8 : 0);
-						multi += (s5 ? 16 : 0);
-
-						// + to_string(multi)
-						fill_1d(string("weightflow_mumu"), 300, 0, 300,   31 + multi, weight);
-						for ( const auto s : allSystematics )
+						s1 = !s1;
+						for (int i2 = 0; i2 < 2; i2++)
+						{
+						s2 = !s2;
+						for (int i3 = 0; i3 < 2; i3++)
+						{
+						s3 = !s3;
+						for (int i4 = 0; i4 < 2; i4++)
+						{
+						s4 = !s4;
+						for (int i5 = 0; i5 < 2; i5++)
 							{
-							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-							const char* name = systematic_shift_names[s];
+							s5 = !s5;
+							// if a selection is not considered
+							// it is passed
+							bool pass = (s1 ? passMllVeto : true);
+							pass &= (s2 ? passJetSelection : true);
+							pass &= (s3 ? passMetSelection : true);
+							pass &= (s4 ? passOS : true);
+							pass &= (s5 ? passBtagsSelection : true);
+
+							if (!pass) continue;
+
+							unsigned int multi = 0;
+							multi += (s1 ? 1 : 0);
+							multi += (s2 ? 2 : 0);
+							multi += (s3 ? 4 : 0);
+							multi += (s4 ? 8 : 0);
+							multi += (s5 ? 16 : 0);
+
+							// + to_string(multi)
+							//fill_1d(string("weightflow_mumu_"), 300, 0, 300,   31 + multi, weight);
 							fill_1d(string("weightflow_mumu_") + name, 300, 0, 300,   31 + multi, weight);
+							fill_1d(string("eventflow_mumu_") + name, 300, 0, 300,   31 + multi, 1);
 							}
-						fill_1d(string("eventflow_mumu"), 300, 0, 300,   31 + multi, 1);
 						}
-					}
-					}
-					}
+						}
+						}
+						}
 					}
 				}
 
@@ -4830,137 +4890,79 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("weightflow_control_elmu_selection"),  300, -3, 3, weight, weight);
 					}
 
-				// the 5 geometrical for loops...
-				// TODO: it's awekward
+				// MULTISELECT ELMU
+				for ( const auto s : allSystematics )
+					{
+					double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+					const char* name = systematic_shift_names[s];
 
-				bool s1 = false;
-				bool s2 = false;
-				bool s3 = false;
-				bool s4 = false;
-				bool s5 = false;
-				for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
-					{
-					s1 = !s1;
-					for (int i2 = 0; i2 < 2; i2++)
-					{
-					s2 = !s2;
-					for (int i3 = 0; i3 < 2; i3++)
-					{
-					s3 = !s3;
-					for (int i4 = 0; i4 < 2; i4++)
-					{
-					s4 = !s4;
-					for (int i5 = 0; i5 < 2; i5++)
+					// Event selection booleans
+					// or dilepton mass > 20GeV?
+					// and only for ee/mumu?
+					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
+					bool passJetSelection(n_jets>1);
+					bool passMetSelection(met.pt()>40.);
+					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
+					bool passBtagsSelection(n_bjets>0);
+
+					unsigned int multisel = 0;
+					multisel += (passMllVeto ? 1 : 0);
+					multisel += (passJetSelection ? 2 : 0);
+					multisel += (passMetSelection ? 4 : 0);
+					multisel += (passOS ? 8 : 0);
+					multisel += (passBtagsSelection ? 16 : 0);
+
+					// the 5 geometrical for loops...
+					// TODO: it's awekward
+
+					bool s1 = false;
+					bool s2 = false;
+					bool s3 = false;
+					bool s4 = false;
+					bool s5 = false;
+					for (int i1 = 0; i1 < 2; i1++) // consider selection1 or not
 						{
-						s5 = !s5;
-						// if a selection is not considered
-						// it is passed
-						bool pass = (s1 ? passMllVeto : true);
-						pass &= (s2 ? passJetSelection : true);
-						pass &= (s3 ? passMetSelection : true);
-						pass &= (s4 ? passOS : true);
-						pass &= (s5 ? passBtagsSelection : true);
-
-						if (!pass) continue;
-
-						unsigned int multi = 0;
-						multi += (s1 ? 1 : 0);
-						multi += (s2 ? 2 : 0);
-						multi += (s3 ? 4 : 0);
-						multi += (s4 ? 8 : 0);
-						multi += (s5 ? 16 : 0);
-
-						// + to_string(multi)
-						//fill_1d(string("weightflow_elmu"), 300, 0, 300,   31 + multi, weight);
-						for ( const auto s : allSystematics )
+						s1 = !s1;
+						for (int i2 = 0; i2 < 2; i2++)
+						{
+						s2 = !s2;
+						for (int i3 = 0; i3 < 2; i3++)
+						{
+						s3 = !s3;
+						for (int i4 = 0; i4 < 2; i4++)
+						{
+						s4 = !s4;
+						for (int i5 = 0; i5 < 2; i5++)
 							{
-							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-							const char* name = systematic_shift_names[s];
+							s5 = !s5;
+							// if a selection is not considered
+							// it is passed
+							bool pass = (s1 ? passMllVeto : true);
+							pass &= (s2 ? passJetSelection : true);
+							pass &= (s3 ? passMetSelection : true);
+							pass &= (s4 ? passOS : true);
+							pass &= (s5 ? passBtagsSelection : true);
+
+							if (!pass) continue;
+
+							unsigned int multi = 0;
+							multi += (s1 ? 1 : 0);
+							multi += (s2 ? 2 : 0);
+							multi += (s3 ? 4 : 0);
+							multi += (s4 ? 8 : 0);
+							multi += (s5 ? 16 : 0);
+
+							// + to_string(multi)
+							//fill_1d(string("weightflow_elmu_"), 300, 0, 300,   31 + multi, weight);
 							fill_1d(string("weightflow_elmu_") + name, 300, 0, 300,   31 + multi, weight);
+							fill_1d(string("eventflow_elmu_") + name, 300, 0, 300,   31 + multi, 1);
 							}
-						fill_1d(string("eventflow_elmu"), 300, 0, 300,   31 + multi, 1);
+						}
+						}
+						}
 						}
 					}
-					}
-					}
-					}
 
-				//increment(string("weightflow_emu_") + to_string(multisel), weight);
-				// increment(string("weightflow_up_emu_") + to_string(multisel), weight_up);
-				// increment(string("weightflow_down_emu_") + to_string(multisel), weight_down);
-
-				/*
-				fill_pt_e( string("doubleelmu_channel_met_pt"), met.pt(), weight);
-				if (passMllVeto && passJetSelection)
-					{
-					fill_pt_e( string("doubleelmu_jetsel_met_pt"), met.pt(), weight);
-					}
-				if (passMllVeto && passJetSelection && passOS && passBtagsSelection)
-					{
-					fill_pt_e( string("doubleelmu_allbutmetsel_met_pt"), met.pt(), weight);
-					}
-
-				fill_n( string("elmu_channel_n_jets"), n_jets, weight);
-				fill_n( string("elmu_channel_n_bjets"), n_bjets, weight);
-				fill_n( string("elmu_channel_n_taus"), n_taus, weight);
-
-				if (passMllVeto && passJetSelection && passMetSelection && passOS)
-					{
-					fill_n( string("elmu_prebselpoint_n_jets"), n_jets, weight);
-					fill_n( string("elmu_prebselpoint_n_bjets"), n_bjets, weight);
-					fill_n( string("elmu_prebselpoint_n_taus"), n_taus, weight);
-					}
-
-				if (passMllVeto && passJetSelection && passMetSelection && passOS && passBtagsSelection)
-					{
-					increment( string("weightflow_events_passed_doubleemu_selection"), 1 );
-
-					increment( string("weightflow_weight_passed_doubleemu_selection"), weight );
-
-					fill_n( string("elmu_selection_n_jets"), n_jets, weight);
-					fill_n( string("elmu_selection_n_bjets"), n_bjets, weight);
-					fill_n( string("elmu_selection_n_taus"), n_taus, weight);
-
-					fill_pt_e( string("elmu_selection_el_pt"), selElectrons[0].pt(), weight);
-					fill_pt_e( string("elmu_selection_mu_pt"), selMuons[0].pt(), weight);
-					// fill_pt_e( string("elmu_selection_tau_pt"), selTausNoLep[0].pt(), weight);
-					fill_pt_e( string("elmu_selection_jet1_pt"), selJetsNoLep[0].pt(), weight);
-					fill_pt_e( string("elmu_selection_jet2_pt"), selJetsNoLep[1].pt(), weight);
-					fill_pt_e( string("elmu_selection_bjet_pt"), selBJets[0].pt(), weight);
-					// fill_pt_e( string("elmu_selection_met_pt"), n_met.pt(), weight);
-					fill_pt_e( string("elmu_selection_met_pt"), met.pt(), weight);
-
-					// energies
-					fill_pt_e( string("elmu_selection_el_energy"), selElectrons[0].energy(), weight);
-					fill_pt_e( string("elmu_selection_mu_energy"), selMuons[0].energy(), weight);
-					// fill_pt_e( string("elmu_selection_tau_energy"), selTausNoLep[0].energy(), weight);
-					fill_pt_e( string("elmu_selection_jet1_energy"), selJetsNoLep[0].energy(), weight);
-					fill_pt_e( string("elmu_selection_jet2_energy"), selJetsNoLep[1].energy(), weight);
-					fill_pt_e( string("elmu_selection_bjet_energy"), selBJets[0].energy(), weight);
-					// fill_pt_e( string("elmu_selection_met_energy"), n_met.energy(), weight);
-					fill_pt_e( string("elmu_selection_met_energy"), met.energy(), weight);
-
-					// etas
-					fill_eta( string("elmu_selection_el_eta"), selElectrons[0].eta(), weight);
-					fill_eta( string("elmu_selection_mu_eta"), selMuons[0].eta(), weight);
-					// fill_eta( string("elmu_selection_tau_eta"), selTausNoLep[0].eta(), weight);
-					fill_eta( string("elmu_selection_jet1_eta"), selJetsNoLep[0].eta(), weight);
-					fill_eta( string("elmu_selection_jet2_eta"), selJetsNoLep[1].eta(), weight);
-					fill_eta( string("elmu_selection_bjet_eta"), selBJets[0].eta(), weight);
-					// fill_eta( string("elmu_selection_met_eta"), n_met.eta(), weight);
-					fill_eta( string("elmu_selection_met_eta"), met.eta(), weight);
-
-					fill_pu( string("pileup_elmuselection_rawweight_pergoodpv"), nGoodPV, rawWeight);
-					fill_pu( string("pileup_elmuselection_weight_pergoodpv"), nGoodPV, weight);
-					fill_pu( string("pileup_elmuselection_weight_up_pergoodpv"), nGoodPV, weight_up);
-					fill_pu( string("pileup_elmuselection_weight_down_pergoodpv"), nGoodPV, weight_down);
-
-					fill_pu( string("pileup_elmuselection_rawweight_pernuminters"), num_inters, rawWeight);
-					fill_pu( string("pileup_elmuselection_weight_pernuminters"), num_inters, weight);
-					fill_pu( string("pileup_elmuselection_weight_up_pernuminters"), num_inters, weight_up);
-					fill_pu( string("pileup_elmuselection_weight_down_pernuminters"), num_inters, weight_down);
-					}
-				*/
 				}
 			}
 
