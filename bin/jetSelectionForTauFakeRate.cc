@@ -960,11 +960,29 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
 
-string jetID = runProcess.getParameter<std::string>("jetID"),
-	jetPUID = runProcess.getParameter<std::string>("jetPUID");
+
+
+string jetID_s = runProcess.getParameter<std::string>("jetID"),
+	jetPUID_s = runProcess.getParameter<std::string>("jetPUID");
+jet_id    jetID;
+pu_jet_id jetPUID;
+
+if (jetID_s == string("Loose"))
+	jetID = LooseJET;
+else if (jetID_s == string("Tight"))
+	jetID = TightJET;
+
+if      (jetPUID_s == string("LoosePU"))
+	jetPUID = LoosePUJET;
+else if (jetPUID_s == string("MediumPU"))
+	jetPUID = MediumPUJET;
+else if (jetPUID_s == string("TightPU"))
+	jetPUID = TightPUJET;
+
 bool with_PU            = runProcess.getParameter<bool>  ("with_PU");
 
 cout << "Jet IDs: (main) " << jetID << '\t' << "(PU)" << jetPUID << "\t(with PU)" << with_PU << endl;
+
 
 const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
 const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");

@@ -140,7 +140,7 @@ std::vector<float> smearJES(float pt, float eta, JetCorrectionUncertainty *jecUn
 
 
 
-bool passPFJetID(std::string label, pat::Jet jet)
+bool passPFJetID(jet_id label, pat::Jet jet)
 	{
 	// Set of cuts from the POG group: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
 
@@ -234,9 +234,9 @@ bool passPFJetID(std::string label, pat::Jet jet)
 
 	// And the abs(eta)>3.0 part, but we never consider such jets, so... Meh!
 
-	if (label == "Loose")
+	if (label == LooseJET)
 		return looseJetID;
-	if (label == "Tight")
+	if (label == TightJET)
 		return tightJetID;
 
 	return passID; 
@@ -252,8 +252,8 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::ve
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
-	string& jetID,
-	string& jetPUID,
+	jet_id   & jetID,
+	pu_jet_id& jetPUID,
 	bool with_PUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
@@ -338,11 +338,11 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 		}
 
 	bool passPUJetID        = false;
-	if (jetPUID == string("LoosePU"))
+	if      (jetPUID == LoosePUJET)
 		passPUJetID = passPUJetID_Loose;
-	else if (jetPUID == string("MediumPU"))
+	else if (jetPUID == MediumPUJET)
 		passPUJetID = passPUJetID_Medium;
-	else if (jetPUID == string("TightPU"))
+	else if (jetPUID == TightPUJET)
 		passPUJetID = passPUJetID_Tight;
 
 	if (with_PUID)

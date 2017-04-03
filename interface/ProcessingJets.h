@@ -10,6 +10,15 @@
 
 #include "TRandom3.h"
 
+
+/*
+ * Jet IDs
+ * and PU Jet IDs
+ */
+
+typedef enum {LooseJET, TightJET} jet_id;
+typedef enum {LoosePUJET, MediumPUJET, TightPUJET} pu_jet_id;
+
 std::vector<double> smearJER(double pt, double eta, double genPt);
 
 std::vector<double> JER_SF(double eta);
@@ -25,7 +34,7 @@ std::vector<float> smearJES(float pt, float eta, JetCorrectionUncertainty *jecUn
 
 
 
-bool passPFJetID(std::string label, pat::Jet jet);
+bool passPFJetID(jet_id, pat::Jet);
 
 
 
@@ -37,8 +46,8 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO(pat::JetCollection& jets, std::ve
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
 	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
-	string& jetID,
-	string& jetPUID,
+	jet_id   & jetID,
+	pu_jet_id& jetPUID,
 	bool with_PUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
