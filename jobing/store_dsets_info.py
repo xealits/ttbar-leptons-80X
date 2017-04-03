@@ -9,13 +9,13 @@ import logging
 
 parser = argparse.ArgumentParser(
     formatter_class = argparse.RawDescriptionHelpFormatter,
-    description = "Store info on dsets files localy.",
+    description = "Store info on dsets files localy. Default action is to update presence only.",
     epilog = "Example:\n$ python store_dsets_info.py ./dsets/ bin/ttbar-leptons-80X/analysis/dsets_testing_noHLT_TTbar.json"
     )
 
 parser.add_argument("dsets_dir",   help="the local directory for dsets files info")
 parser.add_argument("dsets",       help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
-parser.add_argument("--presence",  help="just update the presence of the dataset on the tiers",
+parser.add_argument("--all",       help="update presence of a dset and its' files",
         action = "store_true")
 
 
@@ -49,7 +49,7 @@ logging.info("Proxy is ready.")
 with open(args.dsets) as d_f:
     dsets = json.load(d_f)
 
-storing_action = fetch_dset_presence if args.presence else fetch_n_store_dset
+storing_action = fetch_n_store_dset if args.all else fetch_dset_presence
 
 logging.info("To local directory %s" % args.dsets_dir)
 for dset in [d['dset'] for dset_group in dsets['proc'] for d in dset_group['data']]:

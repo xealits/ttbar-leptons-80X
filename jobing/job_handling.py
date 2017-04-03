@@ -233,7 +233,8 @@ def store_dset_files(dsets_dir, dset, dset_files):
     """
 
     dset_dir = dsets_dir + '/' + dset[1:].replace('/', ',')
-    os.makedirs(dset_dir)
+    if not os.path.exists(dset_dir):
+        os.makedirs(dset_dir)
 
     with open(dset_dir + '/files', 'w') as f:
             f.write('\n'.join(dset_files))
@@ -261,7 +262,8 @@ def store_dset_presence(dsets_dir, dset, dset_file_servers):
     #if os.path.isdir(dset_dir):
         #print("Already have stored this dataset info today")
         #return True
-    os.makedirs(dset_dir + '/file_servers/')
+    if not os.path.exists(dset_dir + '/file_servers/'):
+        os.makedirs(dset_dir + '/file_servers/')
 
     # if any 100% full servers are found -- touch the file with server name
     for s in dset_file_servers:
@@ -291,7 +293,8 @@ def store_dset_files_info(dsets_dir, dset, dset_files, dset_file_servers):
     #if os.path.isdir(dset_dir):
         #print("Already have stored this dataset info today")
         #return True
-    os.makedirs(dset_dir + '/file_servers/')
+    if not os.path.exists(dset_dir + '/file_servers/'):
+        os.makedirs(dset_dir + '/file_servers/')
 
     # if any 100% full servers are found -- touch the file with server name
     for s in dset_file_servers:
