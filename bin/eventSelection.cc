@@ -94,6 +94,8 @@
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.h"
 
+#include "UserCode/ttbar-leptons-80X/interface/SystematicShifts.h"
+
 using namespace std;
 
 namespace utils
@@ -127,7 +129,7 @@ namespace utils
 			//init the parameters for correction
 			std::vector<JetCorrectorParameters> corSteps;
 			for(size_t i=0; i<jetCorFiles.size(); i++) corSteps.push_back(JetCorrectorParameters(jetCorFiles[i]));
-			
+			"
 			//return the corrector
 			return new FactorizedJetCorrector(corSteps);
 			}
@@ -2054,10 +2056,12 @@ for(size_t f=0; f<urls.size();++f)
 		double HLT_efficiency_sf = 1.0;
 
 		// final weight of the event
-		double weight           (1.0);
-		double weight_up        (1.0);
-		double weight_down      (1.0);
-		// and systematic corrections? TODO: check how TotalWeight_plus is used?
+		// is map of all possible systematic shifts of weight
+		//double weight           (1.0);
+		std::map<systematic_shift, double> weights_FULL;
+		weights_FULL[SYS_NOMINAL] = 1.0;
+		weights_FULL[SYS_PU_UP]   = 1.0;
+		weights_FULL[SYS_PU_DOWN] = 1.0;
 
 
 		// --------------------------------------------------- RHO variables
@@ -2087,11 +2091,22 @@ for(size_t f=0; f<urls.size();++f)
 
 		// increment( string("weightflow_n_miniaod_events"), 1.0 );
 		// iniweight 1
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   1, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   1, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 1, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 1, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 1, weight);
+		//fill_1d(string("weightflow_mu"), 300, 0, 300,   1, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_el"), 300, 0, 300,   1, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elel"), 300, 0, 300, 1, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elmu"), 300, 0, 300, 1, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_mumu"), 300, 0, 300, 1, weights_FULL[SYS_NOMINAL]);
+		// Saving weight-flow for all systematic shifts
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   1, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   1, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 1, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 1, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 1, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   1, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   1, 1);
@@ -2139,15 +2154,28 @@ for(size_t f=0; f<urls.size();++f)
 
 		fill_1d(string("weight_TopPT"), 200, 0., 2., weight_TopPT, 1);
 
-		weight *= weight_TopPT; // how is the overall integral of MC?
+		// how is the overall integral of MC?
+		weights_FULL[SYS_NOMINAL] *= weight_TopPT;
+		weights_FULL[SYS_PU_UP]   *= weight_TopPT;
+		weights_FULL[SYS_PU_DOWN] *= weight_TopPT;
 		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
 		// wighttoppt 2
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   2, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   2, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 2, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 2, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 2, weight);
+		//fill_1d(string("weightflow_mu"), 300, 0, 300,   2, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_el"), 300, 0, 300,   2, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elel"), 300, 0, 300, 2, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elmu"), 300, 0, 300, 2, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_mumu"), 300, 0, 300, 2, weights_FULL[SYS_NOMINAL]);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   2, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   2, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 2, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 2, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 2, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   2, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   2, 1);
@@ -2265,17 +2293,28 @@ for(size_t f=0; f<urls.size();++f)
 
 		fill_1d(string("weight_Gen"), 200, -2., 2., weight_Gen, 1);
 
-		weight *= weight_Gen;
-		weight_up *= weight_Gen;
-		weight_down *= weight_Gen;
-		rawWeight *=weight_Gen;
+		// TODO: scale it somehow
+		weights_FULL[SYS_NOMINAL] *= weight_Gen;
+		weights_FULL[SYS_PU_UP]   *= weight_Gen;
+		weights_FULL[SYS_PU_DOWN] *= weight_Gen;
+		rawWeight *= weight_Gen;
 
 		// weightgen
-		fill_1d(string("weightflow_el"), 300, 0, 300,   3, weight);
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   3, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 3, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 3, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 3, weight);
+		//fill_1d(string("weightflow_el"), 300, 0, 300,   3, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_mu"), 300, 0, 300,   3, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elel"), 300, 0, 300, 3, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_elmu"), 300, 0, 300, 3, weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("weightflow_mumu"), 300, 0, 300, 3, weights_FULL[SYS_NOMINAL]);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   3, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   3, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 3, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 3, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 3, weight);
+			}
 
 		fill_1d(string("eventflow_el"), 300, 0, 300,   3, 1);
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   3, 1);
@@ -2363,9 +2402,9 @@ for(size_t f=0; f<urls.size();++f)
 
 		fill_1d(string("weight_PU"), 200, 0., 2., weight_PU, 1);
 
-		weight *= weight_PU;
-		weight_up *= weight_PU_up;
-		weight_down *= weight_PU_down;
+		weights_FULL[SYS_NOMINAL] *= weight_PU;
+		weights_FULL[SYS_PU_UP]   *= weight_PU_up;
+		weights_FULL[SYS_PU_DOWN] *= weight_PU_down;
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -2375,11 +2414,16 @@ for(size_t f=0; f<urls.size();++f)
 		// int fill_1i(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup, int value, double weight);
 
 		// puweight
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   4, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   4, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 4, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 4, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 4, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   4, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   4, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 4, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 4, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 4, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   4, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   4, 1);
@@ -2389,28 +2433,32 @@ for(size_t f=0; f<urls.size();++f)
 
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
-		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
+		fill_1d( string("pileup_beforetrig_num_inters_weight"),    100, 0, 100, num_inters, weights_FULL[NOMINAL]);
 
 		// vtx.size
 		fill_1d( string("pileup_beforetrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
-		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+		fill_1d( string("pileup_beforetrig_nvtx_weight"),    100, 0, 100,      vtx.size(), weights_FULL[NOMINAL]);
+		fill_1d( string("pileup_beforetrig_nvtx_weight_up"),    100, 0, 100,   vtx.size(), weights_FULL[PU_UP]);
+		fill_1d( string("pileup_beforetrig_nvtx_weight_down"),    100, 0, 100, vtx.size(), weights_FULL[PU_DOWN]);
 
 		// pu distrs
 		fill_1d( string("pileup_beforetrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		fill_1d( string("pileup_beforetrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weights_FULL[NOMINAL]);
 
 		// RHO distrs
 		fill_1d( string("rho_beforetrig_rawWeight"), 100, 0, 100, rho, rawWeight);
-		fill_1d( string("rho_beforetrig_weight"),    100, 0, 100, rho, weight);
+		fill_1d( string("rho_beforetrig_weight"),         100, 0, 100, rho, weights_FULL[NOMINAL]);
+		fill_1d( string("rho_beforetrig_weight_up"),      100, 0, 100, rho, weights_FULL[PU_UP]);
+		fill_1d( string("rho_beforetrig_weight_down"),    100, 0, 100, rho, weights_FULL[PU_DOWN]);
 
 		fill_1d( string("rhoCentral_beforetrig_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
-		fill_1d( string("rhoCentral_beforetrig_weight"),    100, 0, 100, rhoCentral, weight);
+		fill_1d( string("rhoCentral_beforetrig_weight"),    100, 0, 100, rhoCentral, weights_FULL[NOMINAL]);
 
 		fill_1d( string("rhoCentralNeutral_beforetrig_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
-		fill_1d( string("rhoCentralNeutral_beforetrig_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+		fill_1d( string("rhoCentralNeutral_beforetrig_weight"),    100, 0, 100, rhoCentralNeutral, weights_FULL[NOMINAL]);
 
 		fill_1d( string("rhoCentralChargedPileUp_beforetrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
-		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
+		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weights_FULL[NOMINAL]);
 
 		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
 		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
@@ -2480,11 +2528,16 @@ for(size_t f=0; f<urls.size();++f)
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHT is over
 
 		// FISRT SECTION SUM
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   10, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   10, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 10, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 10, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 10, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   10, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   10, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 10, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 10, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 10, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   10, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   10, 1);
@@ -2515,11 +2568,16 @@ for(size_t f=0; f<urls.size();++f)
 		// increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
 		// passlumi 5
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   11, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   11, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 11, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 11, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 11, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   11, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   11, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 11, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 11, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 11, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   11, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   11, 1);
@@ -2675,11 +2733,16 @@ for(size_t f=0; f<urls.size();++f)
 		//HLT_efficiency_sf *= muTrigger ? muHLT_SF[] : 1 ;
 
 		// passtrig 6
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   12, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   12, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 12, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 12, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 12, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   12, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   12, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 12, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 12, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 12, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   12, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   12, 1);
@@ -2722,28 +2785,28 @@ for(size_t f=0; f<urls.size();++f)
 
 		// pu distrs
 		fill_1d( string("pileup_passtrig_num_inters_rawWeight"), 100, 0, 100, num_inters, rawWeight);
-		fill_1d( string("pileup_passtrig_num_inters_weight"),    100, 0, 100, num_inters, weight);
+		fill_1d( string("pileup_passtrig_num_inters_weight"),    100, 0, 100, num_inters, weights_FULL[SYS_NOMINAL]);
 
 		// vtx.size
 		fill_1d( string("pileup_passtrig_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
-		fill_1d( string("pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
+		fill_1d( string("pileup_passtrig_nvtx_weight"),    100, 0, 100, vtx.size(), weights_FULL[SYS_NOMINAL]);
 
 		// pu distrs
 		fill_1d( string("pileup_passtrig_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
-		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+		fill_1d( string("pileup_passtrig_nGoodPV_weight"),    100, 0, 100, nGoodPV, weights_FULL[SYS_NOMINAL]);
 
 		// RHO distributions
 		fill_1d( string("rho_passtrig_rawWeight"), 100, 0, 100, rho, rawWeight);
-		fill_1d( string("rho_passtrig_weight"),    100, 0, 100, rho, weight);
+		fill_1d( string("rho_passtrig_weight"),    100, 0, 100, rho, weights_FULL[SYS_NOMINAL]);
 
 		fill_1d( string("rhoCentral_passtrig_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
-		fill_1d( string("rhoCentral_passtrig_weight"),    100, 0, 100, rhoCentral, weight);
+		fill_1d( string("rhoCentral_passtrig_weight"),    100, 0, 100, rhoCentral, weights_FULL[SYS_NOMINAL]);
 
 		fill_1d( string("rhoCentralNeutral_passtrig_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
-		fill_1d( string("rhoCentralNeutral_passtrig_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+		fill_1d( string("rhoCentralNeutral_passtrig_weight"),    100, 0, 100, rhoCentralNeutral, weights_FULL[SYS_NOMINAL]);
 
 		fill_1d( string("rhoCentralChargedPileUp_passtrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
-		fill_1d( string("rhoCentralChargedPileUp_passtrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
+		fill_1d( string("rhoCentralChargedPileUp_passtrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weights_FULL[SYS_NOMINAL]);
 
 		// fill_pu( string("pileup_passtrig_rawweight_pernuminters"), num_inters, rawWeight);
 		// fill_pu( string("pileup_passtrig_weight_pernuminters"), num_inters, weight);
@@ -2800,11 +2863,16 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		// passmetfilters 7
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   13, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   13, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 13, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 13, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 13, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   13, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   13, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 13, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 13, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 13, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   13, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   13, 1);
@@ -2813,11 +2881,16 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 13, 1);
 
 		// -------------------------------------------------- SECOND SECTION OF event cuts is over
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   20, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   20, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 20, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 20, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 20, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   20, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   20, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 20, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 20, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 20, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   20, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   20, 1);
@@ -2975,7 +3048,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::MET met = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		fill_1d(string("control_met_slimmedMETs_pt"), 200, 0., 200., met.pt(), weight);
+		fill_1d(string("control_met_slimmedMETs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
 
 
 		if(debug){
@@ -3046,7 +3119,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
-		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
+		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
 			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
 		if(debug){
@@ -3068,7 +3141,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *         pat::MuonCOllection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,       //output
 		 *         bool record, bool debug) // more output
 		 */
-		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
+		processMuons_ID_ISO_Kinematics(muons, goodPV, weights_FULL[SYS_NOMINAL], patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
 			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
 
 		if(debug){
@@ -3104,7 +3177,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::TauCollection IDtaus, selTaus, selTaus_JetTauFakeRate;
 
-		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug);
+		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -3116,8 +3189,8 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
 
-		processTaus_Kinematics(IDtaus, weight, tau_kino_cuts_pt, tau_kino_cuts_eta, selTaus,       false, debug);
-		processTaus_Kinematics(IDtaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus_JetTauFakeRate, false, debug);
+		processTaus_Kinematics(IDtaus, weights_FULL[SYS_NOMINAL], tau_kino_cuts_pt, tau_kino_cuts_eta, selTaus,       false, debug);
+		processTaus_Kinematics(IDtaus, weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus_JetTauFakeRate, false, debug);
 
 		// ------------------------------------------ select the taus cleaned from leptons
 
@@ -3129,8 +3202,8 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep;
-		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weight, string("selTausNoLep"),        false, debug);
-		crossClean_in_dR(selTaus_JetTauFakeRate, selLeptons, 0.4, selTaus_JetTauFakeRate_NoLep, weight, string("selTaus_JetTauFakeRate_NoLep"), false, debug);
+		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weights_FULL[SYS_NOMINAL], string("selTausNoLep"),        false, debug);
+		crossClean_in_dR(selTaus_JetTauFakeRate, selLeptons, 0.4, selTaus_JetTauFakeRate_NoLep, weights_FULL[SYS_NOMINAL], string("selTaus_JetTauFakeRate_NoLep"), false, debug);
 
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
 		// Medium MVA (no dR03) is 0.97 +- 0.05
@@ -3150,7 +3223,7 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: should here be a normalization to all MC events?
 		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);
 
-		weight_without_tauIDsf = weight;
+		weight_without_tauIDsf = weights_FULL[SYS_NOMINAL];
 		// weight *= weight_tauIDsf;// apply tau weight at selection
 
 		if(debug){
@@ -3194,20 +3267,20 @@ for(size_t f=0; f<urls.size();++f)
 		//string jetID("Loose");
 		//string jetPUID("MediumPU");
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weights_FULL[SYS_NOMINAL], rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
 			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
 
 
-		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weight);
+		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weights_FULL[SYS_NOMINAL]);
 		// 1000 bins
 
-		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weight);
-		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr.Z(), weight);
+		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr.Z(), weights_FULL[SYS_NOMINAL]);
 		// 10 000 and 100 bins
 
 		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
 
-		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weight);
+		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
 		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
 		//int processJets_Kinematics(pat::JetCollection& jets, // input
@@ -3218,10 +3291,10 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::JetCollection selJets;
-		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weights_FULL[SYS_NOMINAL], jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
 
 		pat::JetCollection selJets_JetTauFakeRate; // for fake rates in dileptons
-		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jettaufr_jet_kino_cuts_pt, jettaufr_jet_kino_cuts_eta, selJets_JetTauFakeRate, true, debug);
+		processJets_Kinematics(IDjets, /*bool isMC,*/ weights_FULL[SYS_NOMINAL], jettaufr_jet_kino_cuts_pt, jettaufr_jet_kino_cuts_eta, selJets_JetTauFakeRate, true, debug);
 
 		// ---------------------------- Clean jet collections from selected leptons
 		// TODO: add gamma-cleaning as well?
@@ -3233,10 +3306,10 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::JetCollection selJetsNoLep;
-		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), false, debug);
+		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weights_FULL[SYS_NOMINAL], string("selJetsNoLep"), false, debug);
 
 		pat::JetCollection selJets_JetTauFakeRate_NoLep;
-		crossClean_in_dR(selJets_JetTauFakeRate, selLeptons, 0.4, selJets_JetTauFakeRate_NoLep, weight, string("selJets_JetTauFakeRate_NoLep"), false, debug);
+		crossClean_in_dR(selJets_JetTauFakeRate, selLeptons, 0.4, selJets_JetTauFakeRate_NoLep, weights_FULL[SYS_NOMINAL], string("selJets_JetTauFakeRate_NoLep"), false, debug);
 
 		/*
 		// so, just for the fake rates:
@@ -3284,7 +3357,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 		pat::JetCollection selJetsNoLepNoTau;
-		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weight, string("selJetsNoLepNoTau"), false, debug);
+		crossClean_in_dR(selJetsNoLep, selTausNoLep, 0.4, selJetsNoLepNoTau, weights_FULL[SYS_NOMINAL], string("selJetsNoLepNoTau"), false, debug);
 
 		if(debug){
 			cout << "processed jets" << endl;
@@ -3304,9 +3377,12 @@ for(size_t f=0; f<urls.size();++f)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 		float btag_WP = 0.8484; // medium
-		processBJets_BTag(selJetsNoLepNoTau, isMC, weight, weight_bTaggingSF, btagCal, bEffs, btagger_label, btag_WP, selBJets, true, debug);
+		processBJets_BTag(selJetsNoLepNoTau, isMC, weights_FULL[SYS_NOMINAL], weight_bTaggingSF, btagCal, bEffs, btagger_label, btag_WP, selBJets, true, debug);
 
-		weight *= weight_bTaggingSF;
+		//weight *= weight_bTaggingSF;
+		weights_FULL[SYS_NOMINAL] *= weight_bTaggingSF;
+		weights_FULL[SYS_PU_UP]   *= weight_bTaggingSF;
+		weights_FULL[SYS_PU_DOWN] *= weight_bTaggingSF;
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);
 
 		if(debug){
@@ -3316,7 +3392,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// also for referense:
 		pat::TauCollection selTausNoLepNoJet;
-		crossClean_in_dR(selTausNoLep, selJetsNoLep, 0.4, selTausNoLepNoJet, weight, string("selTausNoLepNoJet"), false, debug);
+		crossClean_in_dR(selTausNoLep, selJetsNoLep, 0.4, selTausNoLepNoJet, weights_FULL[SYS_NOMINAL], string("selTausNoLepNoJet"), false, debug);
 
 
 		// -------------------------------------------------- all particles are selected
@@ -3325,28 +3401,28 @@ for(size_t f=0; f<urls.size();++f)
 
 		// fill_1d(string("weightflow_mu_passmetfilters"), 300, 0, 300,   7, weight);
 
-		fill_1d(string("n_slimmedjets"),  10, 0, 10,   jets.size(), weight);
-		fill_1d(string("n_selJets"),      10, 0, 10,   selJets.size(), weight);
-		fill_1d(string("n_selJetsNoLep"), 10, 0, 10,   selJetsNoLep.size(), weight);
-		fill_1d(string("n_selJetsNoLepNoTau"), 10, 0, 10,   selJetsNoLepNoTau.size(), weight);
+		fill_1d(string("n_slimmedjets"),  10, 0, 10,   jets.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selJets"),      10, 0, 10,   selJets.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selJetsNoLep"), 10, 0, 10,   selJetsNoLep.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selJetsNoLepNoTau"), 10, 0, 10,   selJetsNoLepNoTau.size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_selBJets"), 10, 0, 10,   selBJets.size(), weight);
+		fill_1d(string("n_selBJets"), 10, 0, 10,   selBJets.size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weight);
-		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weight);
-		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weight);
-		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weight);
+		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weight);
-		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weight);
-		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weight);
-		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weight);
+		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTausNoLep"), 10, 0, 10,   selTausNoLep.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selTausNoLepNoJet"), 10, 0, 10,   selTausNoLepNoJet.size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_slimmedmuons"),  10, 0, 10,   muons.size(), weight);
-		fill_1d(string("n_selMuons"),      10, 0, 10,   selMuons.size(), weight);
+		fill_1d(string("n_slimmedmuons"),  10, 0, 10,   muons.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selMuons"),      10, 0, 10,   selMuons.size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_slimmedelectrons"),  10, 0, 10,   electrons.size(), weight);
-		fill_1d(string("n_selElectrons"),      10, 0, 10,   selElectrons.size(), weight);
+		fill_1d(string("n_slimmedelectrons"),  10, 0, 10,   electrons.size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selElectrons"),      10, 0, 10,   selElectrons.size(), weights_FULL[SYS_NOMINAL]);
 
 
 
@@ -3360,11 +3436,16 @@ for(size_t f=0; f<urls.size();++f)
 		// fill_1i(string("weightflow_mumu_passmetfilters"), 300, 0, 300, 7, weight);
 
 		// -------------------------------------------------- THIRD SECTION OF mc weights for event probability SF-s
-		fill_1d(string("weightflow_mu"), 300, 0, 300,   30, weight);
-		fill_1d(string("weightflow_el"), 300, 0, 300,   30, weight);
-		fill_1d(string("weightflow_elel"), 300, 0, 300, 30, weight);
-		fill_1d(string("weightflow_elmu"), 300, 0, 300, 30, weight);
-		fill_1d(string("weightflow_mumu"), 300, 0, 300, 30, weight);
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   30, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   30, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 30, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 30, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 30, weight);
+			}
 
 		fill_1d(string("eventflow_mu"), 300, 0, 300,   30, 1);
 		fill_1d(string("eventflow_el"), 300, 0, 300,   30, 1);
@@ -3485,8 +3566,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (fabs(dilep_ids) == 121 )
 				{
 				isDoubleE = true;
-				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weight);
+				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
+				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 
 				// float l1_eta = fabs(selElectrons[0].eta());
 				// float l1_pt  = fabs(selElectrons[0].pt());
@@ -3503,8 +3584,8 @@ for(size_t f=0; f<urls.size();++f)
 			else if (fabs(dilep_ids) == 169 )
 				{
 				isDoubleMu = true;
-				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weight);
+				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
+				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 
 				// Double_t electron_HLTeff_SF = 1;
 				float l1_eta = fabs(selMuons[0].eta());
@@ -3521,8 +3602,8 @@ for(size_t f=0; f<urls.size();++f)
 			else
 				{
 				isEMu = true;
-				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weight);
-				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weight);
+				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
+				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 
 				float mu_eta = fabs(selMuons[0].eta());
 				float mu_pt  = fabs(selMuons[0].pt());
@@ -3555,6 +3636,24 @@ for(size_t f=0; f<urls.size();++f)
 		if (isSingleMu || isSingleE)
 			{
 			// in-channel selection/multiselect for leptons
+			// for all the control distr-s
+			weights_FULL[SYS_NOMINAL] *= weight_tauIDsf;
+			weights_FULL[SYS_PU_UP]   *= weight_tauIDsf;
+			weights_FULL[SYS_PU_DOWN] *= weight_tauIDsf;
+			double weight = weights_FULL[SYS_NOMINAL];
+
+			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
+			//bool passJetSelection(selSingleLepJets.size()>1); // 2 jets // 2^4
+			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
+			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
+			bool passJetSelection(n_jets>2); // >= 3 jets
+			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
+			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
+			//bool passBtagsSelection(selBJets.size()>0); // 1 b jet // 2^2
+			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
+			// bool passTauSelection(n_taus==1); // only 1 tau // 2^1
+			//bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 
 			// vtx.size
 			fill_1d( string("pileup_singlelepton_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
@@ -3583,31 +3682,7 @@ for(size_t f=0; f<urls.size();++f)
 			if(n_taus>0)
 				{
 				dileptonSystem = selLeptons[0].p4() + selTausNoLep[0].p4();
-				/*
-				if (isMC && withTauIDSFs)
-					{
-					// weight_tauIDsf = 1 - (1 -  0.83 + r3->Gaus(0, 0.06))^n_taus;
-					weight_tauIDsf = 1 - pow(1 -  0.83 + r3->Gaus(0, 0.06), n_taus);
-					//weight_tauIDsf = 0.83;
-					// weight *= weight_tauIDsf;
-					}
-				*/
 				}
-			weight *= weight_tauIDsf;
-			//fill_1d(string("weight_tauIDsf_2"), 200, 0., 2.,   weight_tauIDsf, 1);
-
-			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
-			//bool passJetSelection(selSingleLepJets.size()>1); // 2 jets // 2^4
-			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
-			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
-			bool passJetSelection(n_jets>2); // >= 3 jets
-			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
-			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
-			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
-			//bool passBtagsSelection(selBJets.size()>0); // 1 b jet // 2^2
-			bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
-			// bool passTauSelection(n_taus==1); // only 1 tau // 2^1
-			//bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 
 			//bool passTauSelection(n_taus>0 && dileptonSystem.mass()>12.); // >= 1 tau in v8.8
 			bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
@@ -4066,7 +4141,13 @@ for(size_t f=0; f<urls.size();++f)
 
 						//fill_1d(string("tauIDSFs_in_weightflow_mu_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_mu"), 300, 0, 300,   31 + multi, weight );
+						//fill_1d(string("weightflow_mu"), 300, 0, 300,   31 + multi, weight );
+						for ( const auto s : allSystematics )
+							{
+							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+							const char* name = systematic_shift_names[s];
+							fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   31 + multi, weight);
+							}
 						fill_1d(string("weightflow_mu_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
 						fill_1d(string("eventflow_mu"), 300, 0, 300,   31 + multi, 1);
 
@@ -4145,13 +4226,19 @@ for(size_t f=0; f<urls.size();++f)
 
 						//fill_1d(string("tauIDSFs_in_weightflow_el_") + to_string(multi), 200, 0., 2.,   weight_tauIDsf, 1);
 						// + to_string(multi)
-						fill_1d(string("weightflow_el"), 300, 0, 300,   31 + multi, weight );
+						//fill_1d(string("weightflow_el"), 300, 0, 300,   31 + multi, weight );
+						for ( const auto s : allSystematics )
+							{
+							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+							const char* name = systematic_shift_names[s];
+							fill_1d(string("weightflow_el_") + name, 300, 0, 300,   31 + multi, weight);
+							}
 						fill_1d(string("weightflow_el_without_tauIDSFs"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
 						fill_1d(string("eventflow_el"), 300, 0, 300,   31 + multi, 1);
 
-						fill_1i(string("weightflow_el_I"), 300, 0, 300,   31 + multi, weight );
-						fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
-						fill_1i(string("eventflow_el_I"), 300, 0, 300,   31 + multi, 1);
+						//fill_1i(string("weightflow_el_I"), 300, 0, 300,   31 + multi, weight );
+						//fill_1i(string("weightflow_el_without_tauIDSFs_I"), 300, 0, 300,   31 + multi, weight_without_tauIDsf);
+						//fill_1i(string("eventflow_el_I"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
 					}
@@ -4376,6 +4463,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (isDoubleE || isDoubleMu || isEMu)
 			{
+			// nominal weight for all the control distr-s
+			double weight = weights_FULL[SYS_NOMINAL];
 			// vtx.size
 			fill_1d( string("pileup_dilepton_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
 			fill_1d( string("pileup_dilepton_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
@@ -4545,7 +4634,13 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1d(string("weightflow_elel"), 300, 0, 300,   31 + multi, weight);
+						//fill_1d(string("weightflow_elel"), 300, 0, 300,   31 + multi, weight);
+						for ( const auto s : allSystematics )
+							{
+							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+							const char* name = systematic_shift_names[s];
+							fill_1d(string("weightflow_elel_") + name, 300, 0, 300,   31 + multi, weight);
+							}
 						fill_1d(string("eventflow_elel"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
@@ -4660,6 +4755,12 @@ for(size_t f=0; f<urls.size();++f)
 
 						// + to_string(multi)
 						fill_1d(string("weightflow_mumu"), 300, 0, 300,   31 + multi, weight);
+						for ( const auto s : allSystematics )
+							{
+							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+							const char* name = systematic_shift_names[s];
+							fill_1d(string("weightflow_mumu_") + name, 300, 0, 300,   31 + multi, weight);
+							}
 						fill_1d(string("eventflow_mumu"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
@@ -4771,7 +4872,13 @@ for(size_t f=0; f<urls.size();++f)
 						multi += (s5 ? 16 : 0);
 
 						// + to_string(multi)
-						fill_1d(string("weightflow_elmu"), 300, 0, 300,   31 + multi, weight);
+						//fill_1d(string("weightflow_elmu"), 300, 0, 300,   31 + multi, weight);
+						for ( const auto s : allSystematics )
+							{
+							double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+							const char* name = systematic_shift_names[s];
+							fill_1d(string("weightflow_elmu_") + name, 300, 0, 300,   31 + multi, weight);
+							}
 						fill_1d(string("eventflow_elmu"), 300, 0, 300,   31 + multi, 1);
 						}
 					}
