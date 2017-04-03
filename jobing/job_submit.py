@@ -1,6 +1,7 @@
 # very bad practice:
 from job_handling import *
 import yaml
+import logging
 
 
 # why __main__ if the whole file is script?
@@ -71,9 +72,9 @@ if __name__ == "__main__":
 
     if args.more_configs:
         # var=val list
-        print args.more_configs
+        logging.info(args.more_configs)
         top_configs = dict([c.split('=') for c in args.more_configs])
-        print top_configs
+        logging.info(top_configs)
         configs.update(top_configs)
 
     job_dir = outdirname + "/FARM/inputs/"
@@ -82,19 +83,19 @@ if __name__ == "__main__":
 
     # Make job FARM directories
 
-    print("Making the task (job batch) area in {}".format(outdirname))
+    logging.info("Making the task (job batch) area in {}".format(outdirname))
 
     try:
         os.makedirs(job_dir)
         os.makedirs(job_outs)
     except OSError, e:
         if e.errno == 17:
-            print("The directories exist, no need to make them.")
+            logging.info("The directories exist, no need to make them.")
         else:
             raise
 
     project_dir = os.getcwd() + '/' # just in case
-    print("Project dir  is set to:", project_dir)
+    logging.info("Project dir  is set to:", project_dir)
 
     # could use list comprehension instead of this
     def chunks(l, n):
@@ -108,11 +109,11 @@ if __name__ == "__main__":
     # Submit them
 
     if args.test_configs:
-        print "Config test: all configs are parsed, exiting."
+        logging.info("Config test: all configs are parsed, exiting.")
         exit(0)
 
     proxy_file = outdirname + "/FARM/inputs/x509_proxy"
-    print("Initializing proxy in " + proxy_file)
+    logging.info("Initializing proxy in " + proxy_file)
     #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
     # os.system handles the hidden input well
     # subprocess.check_output(shell=True) and .Popen(shell=True)
@@ -120,9 +121,7 @@ if __name__ == "__main__":
     status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
     if status !=0:
-        print("Proxy initialization failed:")
-        print("    status = " + str(status))
-        print("    output =\n" + output)
+        logging.error("Proxy initialization failed: status = %s output =\n%s" % (str(status), output))
         exit(2)
 
     #os.system('export X509_USER_PROXY=' + proxy_file)
@@ -130,14 +129,14 @@ if __name__ == "__main__":
     #my_env["X509_USER_PROXY"] = proxy_file
     os.environ["X509_USER_PROXY"] = proxy_file
 
-    print("Proxy is ready.")
+    logging.info("Proxy is ready.")
 
 
     # finding local computing resourses
     hostname = commands.getstatusoutput("hostname -f")[1]
-    print("hostname = %s" % hostname)
+    logging.info("hostname = %s" % hostname)
     hostname = '.'.join(hostname.split('.')[1:])
-    print("hostname = %s" % hostname)
+    logging.info("hostname = %s" % hostname)
     # on lxplus hostnames are lxplusNNN.cern.ch
     #known_file_tiers = {"cern.ch": ("T2_CH_CERN", "root://eoscms//eos/cms/")}
     local_tier, local_file_server = known_file_tiers.get(hostname, ("CMS_DEFAULT_GLOBAL_XRD", "root://cms-xrd-global.cern.ch/"))
@@ -151,8 +150,8 @@ if __name__ == "__main__":
         for d in dset_group['data']:
             dtag = d['dtag']
             dset = d['dset']
-            print("Submitting dtag " + dtag)
-            print(dset)
+            loggin.info("Submitting dtag " + dtag)
+            loggin.info(dset)
 
             if args.lumi_mask:
                 lumiMask = args.lumi_mask
@@ -168,9 +167,7 @@ if __name__ == "__main__":
             # and list of data tiers (file servers), which contain 100% files of this dataset
             dset_files, file_tiers = file_info_source(dset)
             if not dset_files:
-                print("FAILED to fetch files on dset %s" % dset)
-                print("dset files len  = %s" % len(dset_files))
-                print("dset 100p tiers = %s" % file_tiers)
+                logging.error("FAILED to fetch files on dset %s\n dset files len  = %s\n dset 100p tiers = %s" % (dset, len(dset_files), file_tiers))
                 continue
 
             if args.file_server:
@@ -182,10 +179,10 @@ if __name__ == "__main__":
                 file_server = default_file_server
             # could do file_server = local_file_server if local_tier in file_tiers else default_file_server
             # but afraid for Python versions
-            print("Chose file_server %s" % file_server)
+            logging.info("Chose file_server %s" % file_server)
 
             #dset_files = out_rows[3:]
-            print("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
+            logging.info("Found {} files. Splitting {} per job.".format(len(dset_files), n_files_per_job))
 
 
             #sites = sites_rows[3:]
@@ -227,26 +224,19 @@ if __name__ == "__main__":
                 job_stdout = outdirname + '/FARM/outputs/' + dtag + '_' + str(i) + '.cout'
                 dset_bsubs.append(job_command_template.format(job_name = job_name, job_stdout = job_stdout, jobsh = job_sh_filename))
 
-            print("Created {} jobs. Ready to submit.".format(len(dset_bsubs)))
+            logging.info("Created {} jobs. Ready to submit.".format(len(dset_bsubs)))
             with open(outdirname + '/FARM/inputs/' + dtag + '_' + 'bsub.sh', 'w') as bsub_file:
                 bsub_file.write('\n'.join(dset_bsubs))
-                print("Wrote the bsub commands to {}".format(bsub_file.name))
+                logging.info("Wrote the bsub commands to {}".format(bsub_file.name))
 
-            print("Ready to submit.")
+            logging.info("Ready to submit.")
             #print("No submit in the test run.")
             #print("printing the bsubs instead")
 
             if args.no_submit:
-                print("NO SUBMIT, as requested on command line.")
+                logging.info("NO SUBMIT, as requested on command line.")
             else:
                 for bsub in dset_bsubs:
                     #print(bsub)
-                    print(commands.getstatusoutput(bsub))
-
-
-
-
-
-
-
+                    logging.info(commands.getstatusoutput(bsub))
 
