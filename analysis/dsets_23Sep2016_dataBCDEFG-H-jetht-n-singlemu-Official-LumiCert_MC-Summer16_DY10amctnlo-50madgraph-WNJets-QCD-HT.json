@@ -69,53 +69,53 @@
 
         { "dtag":"Data13TeV_SingleMuon2016B_23Sep2016_v3", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016B_23Sep2016_v3",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016B-23Sep2016-v3/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
         { "dtag":"Data13TeV_SingleMuon2016C_23Sep2016_v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016C_23Sep2016_v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016C-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
         { "dtag":"Data13TeV_SingleMuon2016D_23Sep2016_v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016D_23Sep2016_v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016D-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
 
         { "dtag":"Data13TeV_SingleMuon2016E_23Sep2016_v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016E_23Sep2016_v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016E-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
         { "dtag":"Data13TeV_SingleMuon2016F_23Sep2016_v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016F_23Sep2016_v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016F-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
         { "dtag":"Data13TeV_SingleMuon2016G_23Sep2016_v1", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016G_23Sep2016_v1",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016G-23Sep2016-v1/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
 
         { "dtag":"Data13TeV_SingleMuon2016H_PromptReco_v2", "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/SingleMuon/Run2016H-PromptReco-v2/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" },
         { "dtag":"Data13TeV_JetHT2016H_PromptReco_v2",  "split_NoUse_TestingAutomaticOne":50, "xsec":1.0, "br":[ 1.0 ],
           "dset":"/JetHT/Run2016H-PromptReco-v2/MINIAOD",
-          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/llvv_fwk/bin/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" }
+          "lumiMask":"/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" }
 
       ]
     }
