@@ -1,1 +1,4 @@
 *.pyc
+.RData
+.Rhistory
+x509_proxy
