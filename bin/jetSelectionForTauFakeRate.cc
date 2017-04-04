@@ -2430,6 +2430,13 @@ for(size_t f=0; f<urls.size();++f)
 		// check distances between jets:
 		for (int i=0; i<selJetsNoLep.size(); i++)
 			{
+			// also save jet energy distr per eta, checking for boosted jets in endcups
+			//fill_1d(string("control_selJetsNoLep_energy"), 100, 0., 500., selJetsNoLep[i].energy(), weight);
+			fill_2d(string("control_selJetsNoLep_energy_eta"), 100, 0., 500., 20, -3., 3., selJetsNoLep[i].energy(), selJetsNoLep[i].eta(), weight);
+			// and also separately etaetaMoment and phiphiMoment
+			// etaetaMoment
+			fill_2d(string("control_selJetsNoLep_etaetaMoment_eta"), 100, 0., 5., 20, -3., 3., selJetsNoLep[i].etaetaMoment(), selJetsNoLep[i].eta(), weight);
+			fill_2d(string("control_selJetsNoLep_phiphiMoment_eta"), 100, 0., 5., 20, -3., 3., selJetsNoLep[i].phiphiMoment(), selJetsNoLep[i].eta(), weight);
 			for (int j=i+1; j<selJetsNoLep.size(); j++)
 				{
 				double delta_R = reco::deltaR(selJetsNoLep[i], selJetsNoLep[j]);
