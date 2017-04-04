@@ -200,7 +200,7 @@ int fill_3d(string control_point_name, Int_t nbinsx, Double_t xlow, Double_t xup
 // but probably TH3F depends on it and pulls it in anyway
 
 // good bins 1, 2
-Float_t largebins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 55, 75, 100, 150, 500 }; // 11 bins 12 edges
+static Float_t largebins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 55, 75, 100, 150, 500 }; // 11 bins 12 edges
 //Float_t bins_pt[11] = { 0, 30, 33, 37, 40, 43, 45, 48, 56, 63, 500 }; // 10 bins, 11 edges
 //static Float_t bins_pt[12] = { 0, 20, 25, 30, 35, 40, 45, 50, 60, 80, 150, 500 }; // 11 bins, 12 edges
 static int n_largebins_pt = 11;
@@ -212,15 +212,15 @@ static int n_largebins_pt = 11;
 //static int n_bins_pt = 14;
 
 // 0.1 pt bins
-static Float_t bins_pt[48] = { 0,    20, 21, 22, 23, 24,    25, 26, 27, 28, 29,    30, 31, 32, 33, 34,    35, 36, 37, 38, 39,    40, 41, 42, 43, 44,    45, 46, 47, 48, 49, 50, 51, 52, 53, 54,    55, 56, 58, 60, 65,     75, 80,    100, 125,    150, 180, 220    500 }; // 47 bins 48 edges
-static int n_bins_pt = 47;
+static Float_t bins_pt[49] = { 0,    20, 21, 22, 23, 24,    25, 26, 27, 28, 29,    30, 31, 32, 33, 34,    35, 36, 37, 38, 39,    40, 41, 42, 43, 44,    45, 46, 47, 48, 49, 50, 51, 52, 53, 54,    55, 56, 58, 60, 65,     75, 80,    100, 125,    150, 180, 220,    500 }; // 48 bins 49 edges
+static int n_bins_pt = 48;
 
 
 
 
 // Float_t bins_eta[6] = { -3, -1.5, -0.45, 0.45, 1.5, 3 }; // 5 bins, 6 edges
-Float_t largebins_eta[8] = { -3, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3 }; // 7 bins, 8 edges
-int n_largebins_eta = 7;
+static Float_t largebins_eta[8] = { -3, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3 }; // 7 bins, 8 edges
+static int n_largebins_eta = 7;
 //static Float_t bins_eta[10] = { -3, -2.4, -2.3, -1.5, -0.45, 0.45, 1.5, 2.3, 2.4, 3 }; // 9 bins 10 edges
 //static int n_bins_eta = 9;
 // AN bins go in 0.5, and are done for abs eta
@@ -234,8 +234,8 @@ static Float_t bins_eta[53] = { -3.0,    -2.5, -2.4, -2.3, -2.2, -2.1, -2., -1.9
 static int n_bins_eta = 52;
 
 
-Float_t largebins_rad[14] = { 0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.4, 1, 2 }; // 13 bins 14 edges
-int n_largebins_rad = 13;
+static Float_t largebins_rad[14] = { 0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.4, 1, 2 }; // 13 bins 14 edges
+static int n_largebins_rad = 13;
 // exactly from AN489:
 //static Float_t bins_rad[12] = { 0, 0.04, 0.08, 0.12, 0.16, 0.2, 0.24, 0.28, 0.32, 0.4, 1, 2 }; // 11 bins 12 edges
 //static int n_bins_rad = 11;
