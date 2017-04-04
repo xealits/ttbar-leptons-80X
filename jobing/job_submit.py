@@ -95,7 +95,7 @@ if __name__ == "__main__":
             raise
 
     project_dir = os.getcwd() + '/' # just in case
-    logging.info("Project dir  is set to:", project_dir)
+    logging.info("Project dir  is set to: %s" % project_dir)
 
     # could use list comprehension instead of this
     def chunks(l, n):
@@ -150,8 +150,8 @@ if __name__ == "__main__":
         for d in dset_group['data']:
             dtag = d['dtag']
             dset = d['dset']
-            loggin.info("Submitting dtag " + dtag)
-            loggin.info(dset)
+            logging.info("Submitting dtag " + dtag)
+            logging.info(dset)
 
             if args.lumi_mask:
                 lumiMask = args.lumi_mask
