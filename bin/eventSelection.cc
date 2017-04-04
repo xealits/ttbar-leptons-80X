@@ -3702,6 +3702,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("slep_vanila_selection_tau_mass"), 100, 0, 300,   tau.p4().mass(), weight);
 				LorentzVector taujetSystem (0, 0, 0, 0);
 				LorentzVector tau2jetsSystem (0, 0, 0, 0);
+
 				for (int i=0; i<selJetsNoLepNoTau.size(); i++)
 					{
 					// record jets around tau in taujet mass
@@ -3771,13 +3772,76 @@ for(size_t f=0; f<urls.size();++f)
 					}
 
 				// check if tau matches a jet in the collection
+				// save the jet if so
+				pat::Jet* the_tau_jet = NULL;
 				bool taujet_is_in_collection = false;
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
 					if (reco::deltaR(tau, selJetsNoLep[i]) < 0.4)
 						{
 						taujet_is_in_collection = true;
+						the_tau_jet = &selJetsNoLep[i];
 						break;
+						}
+					}
+
+				// if tau-mathcing jet is found
+				// save the kinematics of W and b
+				// for the jet instead of just tau
+				if (taujet_is_in_collection)
+					{
+					LorentzVector dijetSystem (0, 0, 0, 0);
+					LorentzVector trijetSystem (0, 0, 0, 0);
+					for (int i=0; i<selJetsNoLepNoTau.size(); i++)
+						{
+						// record jets around tau in taujet mass
+						// scope all jets
+						// record their taujet_mass VS inverse dR to tau
+						// inline double deltaR(double eta1, double phi1, double eta2, double phi2) {
+						//   return std::sqrt(deltaR2 (eta1, phi1, eta2, phi2));
+						// }
+						pat::Jet& jet = selJetsNoLepNoTau[i];
+
+						// this jet should be light jet (TODO: check assumption that W doesn't produce jets with high b-tag)
+						if (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.5)
+							{
+							//fill_1d(string("slep_vanila_selection_taujets_selJetsNoLepNoTau_passb"), 4, 0, 2,   2, weight);
+							continue;
+							}
+
+						dijetSystem = jet.p4() + the_tau_jet.p4();
+						double dijet_mass = dijetSystem.mass();
+						double dijet_momentum = dijetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
+						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+						fill_1d(string("slep_vanila_selection_njets"), 10, 0, 10,   n_jets, weight);
+						// and bin in N jets
+						if (n_jets == 3)
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj3"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+						else if (n_jets == 4)
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj4"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+						else if (n_jets == 5)
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj5"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+						else if (n_jets == 6)
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj6"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+						else //if (n_jets >  6)
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum_nj6p"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
+
+
+						// record 3-jet system with top mass, W mass and top momentum
+						for (int u=i+1; u<selJetsNoLepNoTau.size(); u++)
+							{
+							if (u==i) continue; // shouldn't happen
+							pat::Jet & jet = selJetsNoLepNoTau[u];
+
+							// this jet should be kind of b-jet
+							if (jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") < 0.5)
+								continue;
+
+							trijetSystem = dijetSystem + jet.p4();
+							double trijet_mass = trijetSystem.mass();
+							fill_2d(string("slep_vanila_selection_dijet_mass_VS_trijet_mass"), 100, 0, 200, 100, 0, 300,  dijet_mass, trijet_mass, weight);
+							fill_2d(string("slep_vanila_selection_trijet_mass_VS_trijet_momentum"), 100, 0, 300, 100, 0, 300,  trijet_mass, trijetSystem.P(), weight);
+							}
 						}
 					}
 
