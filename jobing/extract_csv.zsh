@@ -3,7 +3,7 @@
 job=$1
 dtags_file=$2
 
-merged_dir=test/tests/outdir_"$job"/merged-sets/
+merged_dir=outdir/"$job"/merged-sets/
 csv_dir=$merged_dir/jobsums/
 
 mkdir $csv_dir

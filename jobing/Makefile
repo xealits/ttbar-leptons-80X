@@ -401,6 +401,11 @@ jets_taus_mc_distrs_dileptons:
 
 
 
+jet_tau_origin_distrs_stacked_jets_qcd:
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau y 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau z 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+
 jet_tau_origin_distrs_stacked_jets:
 	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
 	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau y 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
@@ -417,6 +422,12 @@ jet_tau_origin_distrs_stacked_dileptons:
 	jet_distrs_stacked_per_origin --normalize 0.25 elmu_passjets_tau x 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 	jet_distrs_stacked_per_origin --normalize 0.25 elmu_passjets_tau y 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 	jet_distrs_stacked_per_origin --normalize 0.25 elmu_passjets_tau z 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+
+
+jet_origin_distrs_stacked_jets_qcd:
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd y 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd z 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
 
 
 jet_origin_distrs_stacked_jets:
