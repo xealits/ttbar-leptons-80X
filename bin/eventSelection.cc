@@ -1003,7 +1003,27 @@ double SingleMuon_data_bcdef_fraction = 19716.274 / (19716.274 + 15931.028);
 double SingleMuon_data_gh_fraction    = 15931.028 / (19716.274 + 15931.028);
 
 
-// --- now, these SFs will be applied to the selected leptons independently
+// now, electrons have
+//      track(reconstruction) efficiency, which is recommended per eta of muon now (however there should be something about N vertices too..
+//      and ID sf
+//      also trigger
+//
+// the trig eff for dilepton case is: apply negative of it for both leptons
+
+TFile* electron_effs_tracking_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronReconstructionSF_egammaEffi.txt_EGM2D.root").Data() );
+TH2D* electron_effs_tracking_all_histo = (TH2D*) electron_effs_tracking_all_file->Get("EGamma_SF2D");
+
+// for the selected electrons, Tight ID
+// not for Veto
+TFile* electron_effs_id_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronID_TightCutBased_egammaEffi.txt_EGM2D.root").Data() );
+TH2D* electron_effs_id_all_histo = (TH2D*) electron_effs_id_all_file->Get("EGamma_SF2D");
+
+//analysis/electron-effs/2016_03Feb_TriggerSF_Run2016All_v1.root
+TFile* electron_effs_trg_all_file = TFile::Open((electron_effs_dirname + "/2016_03Feb_TriggerSF_Run2016All_v1.root").Data() );
+TH2D* electron_effs_trg_all_histo = (TH2D*) electron_effs_trg_all_file->Get("Ele27_WPTight_Gsf");
+
+// --- these SFs will be applied to the selected leptons independently
+
 
 
 
@@ -1472,9 +1492,6 @@ Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should b
 //ElectronEnergyCalibratorRun2 ElectronEnCorrector(theEpCombinationTool, isMC, false, EGammaEnergyCorrectionFile);
 //ElectronEnCorrector.initPrivateRng(new TRandom(1234));
 
-
-// --------------------------------------- lepton efficiencies
-LeptonEfficiencySF lepEff;
 
 // --------------------------------------- b-tagging 
 
@@ -3203,6 +3220,65 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed electrons" << endl;
 			}
 
+		if (isMC && selElectrons.size()>0)
+			{
+			double electron_sfs_weight = 1;
+			for (int i = 0; i<selElectrons.size(); i++)
+				{
+				pat::Electron& el = selElectrons[i];
+				double eta = el.eta();
+				double pt  = el.pt();
+
+				// for control (TODO: remove this later)
+				double weight_reco, weight_id;
+
+				// here X axis is eta, Y axis is pt
+				// X is from -2.5 to 2.5 -- our eta is up to 2.4, should be ok
+				//double bin_x = (pt < electron_effs_tracking_all_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
+				double bin_x = eta;
+				double bin_y = (pt < electron_effs_tracking_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_tracking_all_histo->GetYaxis()->GetXmax() - 1);
+				weight_reco = electron_effs_tracking_all_histo->GetBinContent (electron_effs_tracking_all_histo->FindBin(bin_x, bin_y));
+
+				//bin_x = eta;
+				bin_y = (pt < electron_effs_id_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_id_all_histo->GetYaxis()->GetXmax() - 1);
+				weight_id = electron_effs_id_all_histo->GetBinContent (electron_effs_id_all_histo->FindBin(bin_x, bin_y));
+
+				fill_1d(string("weight_electron_effs_all_reco"),  200, 0., 1.1,   weight_reco, 1);
+				fill_1d(string("weight_electron_effs_all_id"),    200, 0., 1.1,   weight_id,  1);
+				electron_sfs_weight *= weight_reco * weight_id;
+				}
+			fill_1d(string("weight_electron_effs_all"),  200, 0., 1.1,   electron_sfs_weight, 1);
+
+			// also, if there was electron trigger apply the trigger weight:
+			double el_trig_weight = 1;
+			if (eTrigger)
+				{
+				// calculate it the inverse-probbility way
+				double no_trig = 1;
+				for (int i = 0; i<selElectrons.size(); i++)
+                                	{
+                                	pat::Electron& el = selElectrons[i];
+					double eta = el.superCluster()->position().eta();
+					double pt = el.pt();
+					// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
+					double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
+					double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
+					no_trig *= 1 - electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
+					}
+				el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
+				fill_1d(string("weight_electron_effs_Trig"),  200, 0., 1.1,   el_trig_weight, 1);
+				}
+
+			// and apply to weights:
+			weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
+			weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
+			weights_FULL[SYS_PU_DOWN] *= electron_sfs_weight * el_trig_weight;
+			}
+
+		if(debug)
+			cout << "applied electron SFs to event weight" << endl;
+
+
 
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
@@ -3236,27 +3312,41 @@ for(size_t f=0; f<urls.size();++f)
 				double abs_eta = abs(mu.eta());
 				double pt = mu.pt();
 
+				// for control (TODO: remove this later)
+				double bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso,
+					gh_weight_trk, gh_weight_id, gh_weight_iso;
+
 				// hopefully tracking won't overflow in eta range:
-				bcdef_weight *= muon_effs_tracking_BCDEF_graph->Eval(abs_eta);
+				bcdef_weight_trk = muon_effs_tracking_BCDEF_graph->Eval(abs_eta);
 				// the id-s totally can overflow:
 				double bin_x = (pt < muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
 				double bin_y = (abs_eta < muon_effs_id_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_id_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-				bcdef_weight *= muon_effs_id_BCDEF_histo->GetBinContent (muon_effs_id_BCDEF_histo->FindBin(bin_x, bin_y));
+				bcdef_weight_id = muon_effs_id_BCDEF_histo->GetBinContent (muon_effs_id_BCDEF_histo->FindBin(bin_x, bin_y));
 				// these too:
 				bin_x = (pt < muon_effs_iso_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_iso_BCDEF_histo->GetXaxis()->GetXmax() - 1);
 				bin_y = (abs_eta < muon_effs_iso_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_iso_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-				bcdef_weight *= muon_effs_iso_BCDEF_histo->GetBinContent (muon_effs_iso_BCDEF_histo->FindBin(bin_x, bin_y));
+				bcdef_weight_iso = muon_effs_iso_BCDEF_histo->GetBinContent (muon_effs_iso_BCDEF_histo->FindBin(bin_x, bin_y));
+
+				fill_1d(string("weight_muon_effs_BCDEF_trk"),  200, 0., 1.1,   bcdef_weight_trk, 1);
+				fill_1d(string("weight_muon_effs_BCDEF_id"),   200, 0., 1.1,   bcdef_weight_id,  1);
+				fill_1d(string("weight_muon_effs_BCDEF_iso"),  200, 0., 1.1,   bcdef_weight_iso, 1);
+				bcdef_weight *= bcdef_weight_trk * bcdef_weight_id * bcdef_weight_iso;
 
 				// same ... for GH era:
-				gh_weight *= muon_effs_tracking_GH_graph->Eval(abs_eta);
+				gh_weight_trk = muon_effs_tracking_GH_graph->Eval(abs_eta);
 				// the id-s totally can overflow:
 				bin_x = (pt < muon_effs_id_GH_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_GH_histo->GetXaxis()->GetXmax() - 1);
 				bin_y = (abs_eta < muon_effs_id_GH_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_id_GH_histo->GetYaxis()->GetXmax() - 1);
-				gh_weight *= muon_effs_id_GH_histo->GetBinContent (muon_effs_id_GH_histo->FindBin(bin_x, bin_y));
+				gh_weight_id = muon_effs_id_GH_histo->GetBinContent (muon_effs_id_GH_histo->FindBin(bin_x, bin_y));
 				// these too:
 				bin_x = (pt < muon_effs_iso_GH_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_iso_GH_histo->GetXaxis()->GetXmax() - 1);
 				bin_y = (abs_eta < muon_effs_iso_GH_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_iso_GH_histo->GetYaxis()->GetXmax() - 1);
-				gh_weight *= muon_effs_iso_GH_histo->GetBinContent (muon_effs_iso_GH_histo->FindBin(bin_x, bin_y));
+				gh_weight_iso = muon_effs_iso_GH_histo->GetBinContent (muon_effs_iso_GH_histo->FindBin(bin_x, bin_y));
+
+				fill_1d(string("weight_muon_effs_GH_trk"),  200, 0., 1.1,   gh_weight_trk, 1);
+				fill_1d(string("weight_muon_effs_GH_id"),   200, 0., 1.1,   gh_weight_id,  1);
+				fill_1d(string("weight_muon_effs_GH_iso"),  200, 0., 1.1,   gh_weight_iso, 1);
+				gh_weight *= gh_weight_trk * gh_weight_id * gh_weight_iso;
 				}
 			// and merge them:
 			muon_sfs_weight = SingleMuon_data_bcdef_fraction * bcdef_weight + SingleMuon_data_gh_fraction * gh_weight;
