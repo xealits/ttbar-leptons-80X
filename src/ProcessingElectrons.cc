@@ -128,7 +128,7 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	// ---------------------- Main lepton kin
 	if(electron.pt() < pt_cut)                 passKin = false;
 	if(leta > eta_cut)                         passKin = false;
-	// also barrel-endcap window (TODO: the recommendations don't mention it anymore?)
+	// also barrel-endcap window (these guys do it: https://gitlab.cern.ch/ttH/reference/blob/master/definitions/Moriond17.md#22-electron)
 	if(leta > 1.4442 && leta < 1.5660)     passKin = false; // Crack veto
 
 	// ---------------------- Veto lepton kin
