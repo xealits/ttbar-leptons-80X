@@ -3141,7 +3141,7 @@ for(size_t f=0; f<urls.size();++f)
 		unsigned int nVetoE(0);
 
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
-			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
+			30., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
