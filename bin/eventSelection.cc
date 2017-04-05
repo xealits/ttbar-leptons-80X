@@ -2335,7 +2335,12 @@ for(size_t f=0; f<urls.size();++f)
 		//goodPV = vtx[0];
 		for(size_t ivtx=0; ivtx<vtx.size(); ++ivtx)
 			{
-			if(utils::isGoodVertex(vtx[ivtx]))
+			//if(utils::isGoodVertex(vtx[ivtx]))
+			// directly from rumors
+			bool its_good = (!vtx[ivtx].isFake()) && vtx[ivtx].ndof() > 4 && abs(vtx[ivtx].z()) < 24 && abs(vtx[ivtx].position().Rho()) < 2;
+			// it should be equivalent to patUtils procedure
+			// only they use reverse: ! > 24 etc -- but without the >=, thus there is 1 bit of discrepancy
+			if(its_good)
 				{
 				if(nGoodPV==0) goodPV=vtx[ivtx];
 				nGoodPV++;
