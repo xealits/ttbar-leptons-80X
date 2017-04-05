@@ -75,6 +75,8 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TGraph.h"
+#include "TGraphAsymmErrors.h"
 #include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
@@ -980,20 +982,20 @@ TGraphAsymmErrors* muon_effs_tracking_GH_graph    = (TGraphAsymmErrors*) muon_ef
 
 TFile* muon_effs_id_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_BCDEF.root").Data() );
 TFile* muon_effs_id_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_GH.root").Data() );
-TH2D* muon_effs_id_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta")->Get("pt_abseta_ratio");
-TH2D* muon_effs_id_GH_histo    = (TH2D*) muon_effs_id_GH_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta")->Get("pt_abseta_ratio");
+TH2D* muon_effs_id_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_id_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file   ->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta"))->Get("pt_abseta_ratio");
 
 TFile* muon_effs_iso_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_BCDEF.root").Data() );
 TFile* muon_effs_iso_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_GH.root").Data() );
-TH2D* muon_effs_iso_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("TightISO_TightID_pt_eta")->Get("pt_abseta_ratio");
-TH2D* muon_effs_iso_GH_histo    = (TH2D*) muon_effs_id_GH_file->   Get("TightISO_TightID_pt_eta")->Get("pt_abseta_ratio");
+TH2D* muon_effs_iso_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_iso_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file->   Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
 
 // --- yep, everywhere here Tight ID and ISO is used, since that's the leptons I use
 
 TFile* muon_effs_trg_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_RunBtoF.root").Data() );
 TFile* muon_effs_trg_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_Period4.root").Data() );
-TH2D* muon_effs_trg_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins")->Get("pt_abseta_ratio");
-TH2D* muon_effs_trg_GH_histo    = (TH2D*) muon_effs_id_GH_file->   Get("IsoMu24_OR_IsoTkMu24_PtEtaBins")->Get("pt_abseta_ratio");
+TH2D* muon_effs_trg_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_trg_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file->   Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
 
 // From run v9.45 (reduced TopTrig-recommended LumiCert, 32 fb^-1, missing the 2nd version of H?) the luminosity ranges are:
 
@@ -3267,7 +3269,7 @@ for(size_t f=0; f<urls.size();++f)
 			if (muTrigger)
 				{
 				// calculate it the inverse-probbility way
-				double no_trig = 
+				double no_trig = 1;
 				for (int i = 0; i<selMuons.size(); i++)
                                 	{
                                 	pat::Muon& mu = selMuons[i];

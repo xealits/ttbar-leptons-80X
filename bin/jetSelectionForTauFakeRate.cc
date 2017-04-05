@@ -76,6 +76,7 @@
 #include "TH1I.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TGraphAsymmErrors.h"
 #include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
@@ -941,6 +942,7 @@ TString electron_effs_dirname = runProcess.getParameter < std::string > ("electr
 gSystem->ExpandPathName(muon_effs_dirname    );
 gSystem->ExpandPathName(electron_effs_dirname);
 
+/*
 cout << "dirs with lepton efficiencies:" << endl;
 cout << muon_effs_dirname << endl;
 cout << electron_effs_dirname << endl;
@@ -983,6 +985,7 @@ TH2D* muon_effs_trg_GH_histo    = (TH2D*) muon_effs_id_GH_file->   Get("IsoMu24_
 
 double SingleMuon_data_bcdef_fraction = 19716.274 / (19716.274 + 15931.028);
 double SingleMuon_data_gh_fraction    = 15931.028 / (19716.274 + 15931.028);
+*/
 
 
 
