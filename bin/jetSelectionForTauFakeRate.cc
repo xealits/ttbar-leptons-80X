@@ -935,6 +935,61 @@ cout << "Triggers:" << endl;
 cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
 cout << jetHLT << endl;
 
+// lepton efficiency scale factors:
+TString muon_effs_dirname     = runProcess.getParameter < std::string > ("muon_effs");
+TString electron_effs_dirname = runProcess.getParameter < std::string > ("electron_effs");
+gSystem->ExpandPathName(muon_effs_dirname    );
+gSystem->ExpandPathName(electron_effs_dirname);
+
+cout << "dirs with lepton efficiencies:" << endl;
+cout << muon_effs_dirname << endl;
+cout << electron_effs_dirname << endl;
+
+// now, muons have
+//      track(reconstruction) efficiency, which is recommended per eta of muon now (however there should be something about N vertices too..
+//      trk->id eff (eff identify reconstructed muon)
+//      id->iso
+//      iso->trig
+// -- in 2016 all this stuff is per run of datataking (also they call it "era" of datataking) before HIP fix (BCDEF) and after (GH)
+//    I use full dataset, thus MC should be weighted to some average of full dataset
+//    (randomly split MC events in portions corresponding to luminosity of each part)
+//    thus I take average of two SF, weighted by luminosity of two eras
+//
+// the trig eff for dilepton case is: apply it for both leptons independently (should be fine on average through whole dataset)
+
+TFile * muon_effs_tracking_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_tracking_more_BCDEF_fits.root").Data() );
+TFile * muon_effs_tracking_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_tracking_more_GH_fits.root").Data() );
+TGraphAsymmErrors* muon_effs_tracking_BCDEF_graph = (TGraphAsymmErrors*) muon_effs_tracking_BCDEF_file->Get("ratio_eff_aeta_dr030e030_corr");
+TGraphAsymmErrors* muon_effs_tracking_GH_graph    = (TGraphAsymmErrors*) muon_effs_tracking_GH_file->Get("ratio_eff_aeta_dr030e030_corr");
+
+TFile* muon_effs_id_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_BCDEF.root").Data() );
+TFile* muon_effs_id_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_GH.root").Data() );
+TH2D* muon_effs_id_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta")->Get("pt_abseta_ratio");
+TH2D* muon_effs_id_GH_histo    = (TH2D*) muon_effs_id_GH_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta")->Get("pt_abseta_ratio");
+
+TFile* muon_effs_iso_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_BCDEF.root").Data() );
+TFile* muon_effs_iso_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_GH.root").Data() );
+TH2D* muon_effs_iso_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("TightISO_TightID_pt_eta")->Get("pt_abseta_ratio");
+TH2D* muon_effs_iso_GH_histo    = (TH2D*) muon_effs_id_GH_file->   Get("TightISO_TightID_pt_eta")->Get("pt_abseta_ratio");
+
+// --- yep, everywhere here Tight ID and ISO is used, since that's the leptons I use
+
+TFile* muon_effs_trg_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_RunBtoF.root").Data() );
+TFile* muon_effs_trg_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_Period4.root").Data() );
+TH2D* muon_effs_trg_BCDEF_histo = (TH2D*) muon_effs_id_BCDEF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins")->Get("pt_abseta_ratio");
+TH2D* muon_effs_trg_GH_histo    = (TH2D*) muon_effs_id_GH_file->   Get("IsoMu24_OR_IsoTkMu24_PtEtaBins")->Get("pt_abseta_ratio");
+
+// From run v9.45 (reduced TopTrig-recommended LumiCert, 32 fb^-1, missing the 2nd version of H?) the luminosity ranges are:
+
+double SingleMuon_data_bcdef_fraction = 19716.274 / (19716.274 + 15931.028);
+double SingleMuon_data_gh_fraction    = 15931.028 / (19716.274 + 15931.028);
+
+
+
+
+
+
+
 // Kino cuts
 double jettaufr_jet_kino_cuts_pt          = runProcess.getParameter<double>("jettaufr_jet_kino_cuts_pt");
 double jettaufr_jet_kino_cuts_eta         = runProcess.getParameter<double>("jettaufr_jet_kino_cuts_eta");
