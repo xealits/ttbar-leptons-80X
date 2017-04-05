@@ -2548,7 +2548,73 @@ for(size_t f=0; f<urls.size();++f)
 
 
 
-		// -------------------------------------------------- SECOND SECTION -- cuts on trigger, lumi etc [11, 20]
+		// -------------------------------------------------- SECOND SECTION -- cuts on MET filters, trigger, lumi etc [11, 20]
+
+		// ------------------------------------------------- Apply MET FILTERS
+		/*
+		 * MET filters are data-only thing -- remove events before passing and counting lumi, since MC is then normalized to data lumi
+		 * thus after passing lumi data and MC should only have the same cuts
+		 */
+
+		//if( !isMC && !metFiler.passMetFilter( ev, isPromptReco)) continue;
+		// New passMetFilter procedure from patUtils:
+		//if( !isMC && !metFiler.passMetFilter( ev )) continue;
+		// trying the HLTs path for metfilters:
+		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss_filters
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
+		// recommendations (6-2016):
+		// Flag_HBHENoiseFilter TO BE USED
+		// Flag_HBHENoiseIsoFilter TO BE USED
+		// Flag_CSCTightHalo2015Filter TO BE USED
+		// Flag_EcalDeadCellTriggerPrimitiveFilter TO BE USED
+		// Flag_goodVertices TO BE USED
+		// Flag_eeBadScFilter TO BE USED 
+		edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
+		if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
+		if(!metFilters.isValid()){       
+			printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");    
+		}
+
+		if (! isMC && metFilters.isValid()) {
+			if(debug){
+				//cout << "Printing PAT/RECO trigger list for MET filters here" << endl;
+				//for(edm::TriggerNames::Strings::const_iterator trnames = metFilters.triggerNames().begin(); trnames!=metFilters.triggerNames().end(); ++trnames)
+					//cout << *trnames << endl;
+				cout << "----------- End of trigger list ----------" << endl;
+				//return 0;
+			}
+			//std::vector<std::string>& patterns("Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter", "Flag_CSCTightHalo2015Filter", "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_goodVertices", "Flag_eeBadScFilter");
+			if (!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*"))
+				continue;
+			if (!utils::passTriggerPatterns(metFilters, "Flag_goodVertices")) continue;
+			if (!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter")) continue;
+			if (!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) continue;
+			// 2016 thing: bad muons
+			if (!utils::passTriggerPatterns(metFilters, "Flag_noBadMuons")) continue;
+		}
+		
+		if(debug)
+			cout << "met filters applied here" << endl;
+
+		// passmetfilters
+		for ( const auto s : allSystematics )
+			{
+			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   11, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   11, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 11, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 11, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 11, weight);
+			}
+
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   11, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   11, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 11, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 11, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 11, 1);
+
+
 
 		// -------------------------------------------------- Skip bad lumi
 		// 80X, v2
@@ -2566,23 +2632,23 @@ for(size_t f=0; f<urls.size();++f)
 		// increment( string("weightflow_weight_up_passed_lumi"), weight_up ); // should not matter
 		// increment( string("weightflow_weight_down_passed_lumi"), weight_down ); // should not matter
 
-		// passlumi 5
+		// passlumi
 		for ( const auto s : allSystematics )
 			{
 			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
 			const char* name = systematic_shift_names[s];
-			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   11, weight);
-			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   11, weight);
-			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 11, weight);
-			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 11, weight);
-			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 11, weight);
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   12, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   12, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 12, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 12, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 12, weight);
 			}
 
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   11, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   11, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 11, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 11, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 11, 1);
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   12, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   12, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 12, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 12, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 12, 1);
 
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -2717,7 +2783,6 @@ for(size_t f=0; f<urls.size();++f)
 		// if data and SingleElectron dataset and both triggers -- skip event
 		if (!debug) {
 			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
-		
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
 		}
 
@@ -2736,18 +2801,18 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
 			const char* name = systematic_shift_names[s];
-			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   12, weight);
-			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   12, weight);
-			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 12, weight);
-			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 12, weight);
-			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 12, weight);
+			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   13, weight);
+			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   13, weight);
+			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 13, weight);
+			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 13, weight);
+			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 13, weight);
 			}
 
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   12, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   12, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 12, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 12, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 12, 1);
+		fill_1d(string("eventflow_mu"), 300, 0, 300,   13, 1);
+		fill_1d(string("eventflow_el"), 300, 0, 300,   13, 1);
+		fill_1d(string("eventflow_elel"), 300, 0, 300, 13, 1);
+		fill_1d(string("eventflow_elmu"), 300, 0, 300, 13, 1);
+		fill_1d(string("eventflow_mumu"), 300, 0, 300, 13, 1);
 		// increment( string("eventflow_1_passed_trig"), weight ); // should not matter
 		// increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
 		// increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
@@ -2818,66 +2883,6 @@ for(size_t f=0; f<urls.size();++f)
 		// fill_pu( string("pileup_passtrig_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
 		// fill_pu( string("pileup_passtrig_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
 
-
-		// ------------------------------------------------- Apply MET filters
-		//if( !isMC && !metFiler.passMetFilter( ev, isPromptReco)) continue;
-		// New passMetFilter procedure from patUtils:
-		//if( !isMC && !metFiler.passMetFilter( ev )) continue;
-		// trying the HLTs path for metfilters:
-		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss_filters
-		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
-		// recommendations (6-2016):
-		// Flag_HBHENoiseFilter TO BE USED
-		// Flag_HBHENoiseIsoFilter TO BE USED
-		// Flag_CSCTightHalo2015Filter TO BE USED
-		// Flag_EcalDeadCellTriggerPrimitiveFilter TO BE USED
-		// Flag_goodVertices TO BE USED
-		// Flag_eeBadScFilter TO BE USED 
-		edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
-		if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
-		if(!metFilters.isValid()){       
-			printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");    
-		}
-
-		if (! isMC && metFilters.isValid()) {
-			if(debug){
-				//cout << "Printing PAT/RECO trigger list for MET filters here" << endl;
-				//for(edm::TriggerNames::Strings::const_iterator trnames = metFilters.triggerNames().begin(); trnames!=metFilters.triggerNames().end(); ++trnames)
-					//cout << *trnames << endl;
-				cout << "----------- End of trigger list ----------" << endl;
-				//return 0;
-			}
-			//std::vector<std::string>& patterns("Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter", "Flag_CSCTightHalo2015Filter", "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_goodVertices", "Flag_eeBadScFilter");
-			if (!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*"))
-				continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_goodVertices")) continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter")) continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) continue;
-		}
-		
-
-		if(debug)
-			{
-			cout << "met filters applied here" << endl;
-			}
-
-		// passmetfilters 7
-		for ( const auto s : allSystematics )
-			{
-			double weight = (weights_FULL.find(s) != weights_FULL.end() ? weights_FULL[s] : weights_FULL[SYS_NOMINAL]);
-			const char* name = systematic_shift_names[s];
-			fill_1d(string("weightflow_mu_") + name, 300, 0, 300,   13, weight);
-			fill_1d(string("weightflow_el_") + name, 300, 0, 300,   13, weight);
-			fill_1d(string("weightflow_elel_") + name, 300, 0, 300, 13, weight);
-			fill_1d(string("weightflow_elmu_") + name, 300, 0, 300, 13, weight);
-			fill_1d(string("weightflow_mumu_") + name, 300, 0, 300, 13, weight);
-			}
-
-		fill_1d(string("eventflow_mu"), 300, 0, 300,   13, 1);
-		fill_1d(string("eventflow_el"), 300, 0, 300,   13, 1);
-		fill_1d(string("eventflow_elel"), 300, 0, 300, 13, 1);
-		fill_1d(string("eventflow_elmu"), 300, 0, 300, 13, 1);
-		fill_1d(string("eventflow_mumu"), 300, 0, 300, 13, 1);
 
 		// -------------------------------------------------- SECOND SECTION OF event cuts is over
 		for ( const auto s : allSystematics )
