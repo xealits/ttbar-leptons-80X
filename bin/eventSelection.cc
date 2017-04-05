@@ -3826,7 +3826,7 @@ for(size_t f=0; f<urls.size();++f)
 							continue;
 							}
 
-						dijetSystem = jet.p4() + the_tau_jet.p4();
+						dijetSystem = jet.p4() + the_tau_jet->p4();
 						double dijet_mass = dijetSystem.mass();
 						double dijet_momentum = dijetSystem.P(); // square of spacial part, use M() for magnitude of spacial part
 						fill_2d(string("slep_vanila_selection_dijet_mass_VS_momentum"), 100, 0, 200, 100, 0, 300,  dijet_mass, dijet_momentum, weight);
