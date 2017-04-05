@@ -3047,13 +3047,25 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::METCollection mets;
 		fwlite::Handle<pat::METCollection> metsHandle;
-		metsHandle.getByLabel(ev, "slimmedMETs");
+		//metsHandle.getByLabel(ev, "slimmedMETs"); // 2016: slimmedMETs are METs corrected by muons
+		metsHandle.getByLabel(ev, "slimmedMETsMuEGClean"); // 2016: slimmedMETsMuEGClean are corrected by muons and electrons
 		if(metsHandle.isValid() ) mets = *metsHandle;
 		pat::MET met = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		fill_1d(string("control_met_slimmedMETs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsMuEGClean_pt"),  200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsMuEGClean_phi"), 200, 0., 200., met.phi(), weights_FULL[SYS_NOMINAL]);
 
+		// also for control let's get uncorrected met and compare the two:
+
+		pat::METCollection mets_uncorrected;
+		fwlite::Handle<pat::METCollection> mets_uncorrectedHandle;
+		mets_uncorrectedHandle.getByLabel(ev, "slimmedMETsUncorrected");
+		if(mets_uncorrectedHandle.isValid() ) mets_uncorrected = *mets_uncorrectedHandle;
+		pat::MET met_uncorrected = mets_uncorrected[0];
+		fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - met.pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - met.phi(), weights_FULL[SYS_NOMINAL]);
 
 		if(debug){
 			// MET try:
@@ -3284,7 +3296,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
 
-		fill_1d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
 		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
 
 		//int processJets_Kinematics(pat::JetCollection& jets, // input
