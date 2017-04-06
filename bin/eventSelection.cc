@@ -974,28 +974,32 @@ cout << electron_effs_dirname << endl;
 //    thus I take average of two SF, weighted by luminosity of two eras
 //
 // the trig eff for dilepton case is: apply negative of it for both leptons
+cout << "unpacking muon eff SFs" << endl;
 
 TFile * muon_effs_tracking_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_tracking_more_BCDEF_fits.root").Data() );
 TFile * muon_effs_tracking_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_tracking_more_GH_fits.root").Data() );
 TGraphAsymmErrors* muon_effs_tracking_BCDEF_graph = (TGraphAsymmErrors*) muon_effs_tracking_BCDEF_file->Get("ratio_eff_aeta_dr030e030_corr");
 TGraphAsymmErrors* muon_effs_tracking_GH_graph    = (TGraphAsymmErrors*) muon_effs_tracking_GH_file->Get("ratio_eff_aeta_dr030e030_corr");
+cout << "Y tracking (reconstruction)" << endl;
 
 TFile* muon_effs_id_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_BCDEF.root").Data() );
 TFile* muon_effs_id_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonID_EfficienciesAndSF_GH.root").Data() );
 TH2D* muon_effs_id_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta"))->Get("pt_abseta_ratio");
 TH2D* muon_effs_id_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file   ->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta"))->Get("pt_abseta_ratio");
+cout << "Y id" << endl;
 
 TFile* muon_effs_iso_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_BCDEF.root").Data() );
 TFile* muon_effs_iso_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_MuonISO_EfficienciesAndSF_GH.root").Data() );
-TH2D* muon_effs_iso_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
-TH2D* muon_effs_iso_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file->   Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_iso_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_iso_BCDEF_file->Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_iso_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_iso_GH_file->   Get("TightISO_TightID_pt_eta"))->Get("pt_abseta_ratio");
 
 // --- yep, everywhere here Tight ID and ISO is used, since that's the leptons I use
 
 TFile* muon_effs_trg_BCDEF_file = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_RunBtoF.root").Data() );
 TFile* muon_effs_trg_GH_file    = TFile::Open((muon_effs_dirname + "/2016_23Sep_SingleMuonTrigger_EfficienciesAndSF_Period4.root").Data() );
-TH2D* muon_effs_trg_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_id_BCDEF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
-TH2D* muon_effs_trg_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_id_GH_file->   Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_trg_BCDEF_histo = (TH2D*) ((TDirectoryFile*) muon_effs_trg_BCDEF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
+TH2D* muon_effs_trg_GH_histo    = (TH2D*) ((TDirectoryFile*) muon_effs_trg_GH_file->   Get("IsoMu24_OR_IsoTkMu24_PtEtaBins"))->Get("pt_abseta_ratio");
+cout << "Y trigger" << endl;
 
 // From run v9.45 (reduced TopTrig-recommended LumiCert, 32 fb^-1, missing the 2nd version of H?) the luminosity ranges are:
 
@@ -1009,18 +1013,22 @@ double SingleMuon_data_gh_fraction    = 15931.028 / (19716.274 + 15931.028);
 //      also trigger
 //
 // the trig eff for dilepton case is: apply negative of it for both leptons
+cout << "unpacking electron eff SFs" << endl;
 
 TFile* electron_effs_tracking_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronReconstructionSF_egammaEffi.txt_EGM2D.root").Data() );
 TH2D* electron_effs_tracking_all_histo = (TH2D*) electron_effs_tracking_all_file->Get("EGamma_SF2D");
+cout << "Y tracking (reconstruction)" << endl;
 
 // for the selected electrons, Tight ID
 // not for Veto
 TFile* electron_effs_id_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronID_TightCutBased_egammaEffi.txt_EGM2D.root").Data() );
 TH2D* electron_effs_id_all_histo = (TH2D*) electron_effs_id_all_file->Get("EGamma_SF2D");
+cout << "Y id" << endl;
 
 //analysis/electron-effs/2016_03Feb_TriggerSF_Run2016All_v1.root
 TFile* electron_effs_trg_all_file = TFile::Open((electron_effs_dirname + "/2016_03Feb_TriggerSF_Run2016All_v1.root").Data() );
 TH2D* electron_effs_trg_all_histo = (TH2D*) electron_effs_trg_all_file->Get("Ele27_WPTight_Gsf");
+cout << "Y trigger" << endl;
 
 // --- these SFs will be applied to the selected leptons independently
 
@@ -3125,25 +3133,36 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::METCollection mets;
 		fwlite::Handle<pat::METCollection> metsHandle;
-		//metsHandle.getByLabel(ev, "slimmedMETs"); // 2016: slimmedMETs are METs corrected by muons
-		metsHandle.getByLabel(ev, "slimmedMETsMuEGClean"); // 2016: slimmedMETsMuEGClean are corrected by muons and electrons
+		if (isMC)
+			metsHandle.getByLabel(ev, "slimmedMETs"); // 2016: slimmedMETs are METs corrected by muons
+		else // ReReco 03Feb data
+			metsHandle.getByLabel(ev, "slimmedMETsMuEGClean");
+		// 2016: slimmedMETsMuEGClean are corrected by muons and electrons, only in Data!
+		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes
 		if(metsHandle.isValid() ) mets = *metsHandle;
 		pat::MET met = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		fill_1d(string("control_met_slimmedMETsMuEGClean_pt"),  200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_met_slimmedMETsMuEGClean_phi"), 200, 0., 200., met.phi(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_main_pt"),  200, 0., 200., met.pt(),  weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_main_phi"), 200, 0., 200., met.phi(), weights_FULL[SYS_NOMINAL]);
+
+		// testing WNJets
+		if(debug){
+			cout << "got main MET" << endl;
+			}
 
 		// also for control let's get uncorrected met and compare the two:
-
-		pat::METCollection mets_uncorrected;
-		fwlite::Handle<pat::METCollection> mets_uncorrectedHandle;
-		mets_uncorrectedHandle.getByLabel(ev, "slimmedMETsUncorrected");
-		if(mets_uncorrectedHandle.isValid() ) mets_uncorrected = *mets_uncorrectedHandle;
-		pat::MET met_uncorrected = mets_uncorrected[0];
-		fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - met.pt(), weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - met.phi(), weights_FULL[SYS_NOMINAL]);
+		if (!isMC)
+			{
+			pat::METCollection mets_uncorrected;
+			fwlite::Handle<pat::METCollection> mets_uncorrectedHandle;
+			mets_uncorrectedHandle.getByLabel(ev, "slimmedMETsUncorrected");
+			if(mets_uncorrectedHandle.isValid() ) mets_uncorrected = *mets_uncorrectedHandle;
+			pat::MET met_uncorrected = mets_uncorrected[0];
+			fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
+			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - met.pt(), weights_FULL[SYS_NOMINAL]);
+			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - met.phi(), weights_FULL[SYS_NOMINAL]);
+			}
 
 		if(debug){
 			// MET try:

@@ -132,6 +132,9 @@ runProcess = cms.PSet(
     useMVA = cms.bool(False),
     tmvaInput = mySignalMVA,
     muscleDir                         = cms.string('{muscleDir}'),
+    muon_effs                      = cms.string('{muon_effs}'),
+    electron_effs                  = cms.string('{electron_effs}'),
+
     jecDir                            = cms.string('{jecDir}'),
     resolutionFile                    = cms.string('{resolutionFile}'),
     scaleFactorFile                   = cms.string('{scaleFactorFile}'),
