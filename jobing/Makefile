@@ -7,11 +7,14 @@ SHELL:=/bin/bash
 reduce:
 	./jobing/reduce.zsh ${job} jobing/dtags/${dtags}
 
-extract_all: extract_eventflow extract_weightflow extract_jet_origins extract_taujet_origins extract_fakerates extract_pileup
+extract_all: extract_eventflow extract_weightflow_NOMINAL extract_jet_origins extract_taujet_origins extract_fakerates extract_pileup
 	# DONE
 
 extract_eventflow:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} eventflow_mu eventflow_el eventflow_elmu eventflow_elel eventflow_mumu
+
+extract_weightflow_NOMINAL:
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_NOMINAL weightflow_el_NOMINAL weightflow_elmu_NOMINAL weightflow_elel_NOMINAL weightflow_mumu_NOMINAL
 
 extract_weightflow:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu weightflow_el weightflow_elmu weightflow_elel weightflow_mumu
@@ -87,6 +90,18 @@ get_dtags:
 
 get_job_dtags:
 	ls outdir/"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*.root//' | sort | uniq > dtags_job_${job}
+
+jet_fakerate_measurements:
+	NEWjet_fakerate_measurements --add-header HLTjet_qcd outdir/${jjob}/merged-sets/ `cat dtags_${jjob} ` 2> /dev/null >  ${jjob}_${vjob}_fakerate_measurement
+	NEWjet_fakerate_measurements HLTmu_wjets   outdir/${jjob}/merged-sets/ `cat dtags_${jjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	NEWjet_fakerate_measurements mumu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	NEWjet_fakerate_measurements elmu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	NEWjet_fakerate_measurements elel_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+
+jet_fakerate_measurements_control:
+	NEWjet_fakerate_measurements --add-header singlemu_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
+	NEWjet_fakerate_measurements singleel_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
+
 
 selection_control_histos: normalize=f
 selection_control_histos: logy=f
