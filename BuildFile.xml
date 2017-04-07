@@ -24,7 +24,6 @@
 <use name="rootrflx"/>
 <use name="fastjet"/>
 <use name="roostats"/>
-<use name="HiggsAnalysis/CombinedLimit"/>
 <use name="CondFormats/BTauObjects"/>
 <use name="CondTools/BTau"/>
 <use name="RecoJet/JetProducers"/>

@@ -34,18 +34,18 @@
 -->
 
   <bin name="eventSelection"    file="eventSelection.cc"></bin>
-  <bin name="NEWjetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
+  <bin name="jetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
 
-  <bin name="NEWsyncExercise_Dileptons"  file="syncExercise_Dileptons.cc"></bin>
+  <bin name="syncExercise_Dileptons"  file="syncExercise_Dileptons.cc"></bin>
 
-  <bin name="NEWscopeEvents"      file="scopeEvents.cc"></bin>
-  <bin name="NEWpilupDistr"       file="pilupDistr.cc"></bin>
-  <bin name="NEWtauOrigins"       file="tauOrigins.cc"></bin>
-  <bin name="NEWtriggerMatching"  file="triggerMatching.cc"></bin>
-  <bin name="NEWgenerationTree"   file="generationTree.cc"></bin>
-  <bin name="NEWprintoutTriggers" file="printoutTriggers.cc"></bin>
-  <bin name="NEWeasyKinoTTbar"    file="easyKinoTTbar.cc"></bin>
-  <bin name="NEWdemoKinoTTbar"    file="demoKinoTTbar.cc"></bin>
+  <bin name="scopeEvents"      file="scopeEvents.cc"></bin>
+  <bin name="pilupDistr"       file="pilupDistr.cc"></bin>
+  <bin name="tauOrigins"       file="tauOrigins.cc"></bin>
+  <bin name="triggerMatching"  file="triggerMatching.cc"></bin>
+  <bin name="generationTree"   file="generationTree.cc"></bin>
+  <bin name="printoutTriggers" file="printoutTriggers.cc"></bin>
+  <bin name="easyKinoTTbar"    file="easyKinoTTbar.cc"></bin>
+  <bin name="demoKinoTTbar"    file="demoKinoTTbar.cc"></bin>
 <!--
 -->
 
