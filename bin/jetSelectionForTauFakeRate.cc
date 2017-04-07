@@ -2319,10 +2319,11 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection IDtaus, selTaus, IDLoosetaus, selLooseTaus;
+		string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 
 		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, conf_record_taus_ID, debug); 
 		// recording loose taus for fake-factor method
-		processTaus_ID_ISO(taus, weight, tau_decayMode, "byLooseCombinedIsolationDeltaBetaCorr3Hits", tau_againstMuon, tau_againstElectron, IDLoosetaus, conf_record_taus_ID, debug); 
+		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_Loose_ID, tau_againstMuon, tau_againstElectron, IDLoosetaus, conf_record_taus_ID, debug); 
 
 		//int processTaus_Kinematics(pat::TauCollection& taus,          // input
 		//	double weight,
@@ -2348,7 +2349,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep;
+		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep, selLooseTausNoLep;
 		crossClean_in_dR(selTaus, selElectrons, 0.4, selTausNoElectrons, weight, string("selTausNoElectrons"), true, debug);
 		crossClean_in_dR(selTaus, selMuons,     0.4, selTausNoMuons,     weight, string("selTausNoMuons"),     true, debug);
 		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"),       true, debug);

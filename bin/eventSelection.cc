@@ -3431,9 +3431,10 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::TauCollection IDtaus, selTaus, selTaus_JetTauFakeRate,
 			IDLoosetaus, selLooseTaus;
+		string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug);
-		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, "byLooseCombinedIsolationDeltaBetaCorr3Hits", tau_againstMuon, tau_againstElectron, IDLoosetaus, false, debug);
+		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_Loose_ID, tau_againstMuon, tau_againstElectron, IDLoosetaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -3459,8 +3460,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep
-			selLooseTausNoLep;
+		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep, selLooseTausNoLep;
 		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weights_FULL[SYS_NOMINAL], string("selTausNoLep"),        false, debug);
 		crossClean_in_dR(selLooseTaus,  selLeptons, 0.4, selLooseTausNoLep,   weights_FULL[SYS_NOMINAL], string("selLooseTausNoLep"),   false, debug);
 		crossClean_in_dR(selTaus_JetTauFakeRate, selLeptons, 0.4, selTaus_JetTauFakeRate_NoLep, weights_FULL[SYS_NOMINAL], string("selTaus_JetTauFakeRate_NoLep"), false, debug);
