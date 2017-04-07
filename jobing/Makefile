@@ -108,11 +108,11 @@ selection_control_histos: logy=f
 selection_control_histos:
 	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	NEWstacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	NEWstacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singleel: normalize=f
@@ -195,7 +195,7 @@ selection_control_histos_rho:
 		 rhoCentralNeutral_beforetrig_rawWeight rhoCentralNeutral_beforetrig_weight rhoCentralNeutral_passtrig_rawWeight rhoCentralNeutral_passtrig_weight rhoCentralNeutral_singlelepton_rawWeight rhoCentralNeutral_singlelepton_weight  rhoCentralNeutral_dilepton_rawWeight rhoCentralNeutral_dilepton_weight \
 		 rhoCentralChargedPileUp_beforetrig_rawWeight rhoCentralChargedPileUp_beforetrig_weight rhoCentralChargedPileUp_passtrig_rawWeight rhoCentralChargedPileUp_passtrig_weight rhoCentralChargedPileUp_singlelepton_rawWeight rhoCentralChargedPileUp_singlelepton_weight  rhoCentralChargedPileUp_dilepton_rawWeight rhoCentralChargedPileUp_dilepton_weight ;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	NEWstacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:

@@ -98,7 +98,7 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		continue;
 		}
 
-	weightflows.push_back((TH1D*) files.back()->Get("weightflow_el"));
+	weightflows.push_back((TH1D*) files.back()->Get("weightflow_el_NOMINAL"));
 	weightflows.back()->Print();
 
 	histos.push_back((TH1D*) ((TH2D*) files.back()->Get(distr))->ProjectionY(projection));
