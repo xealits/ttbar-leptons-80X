@@ -4900,7 +4900,7 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
-					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("elel_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					}
 
@@ -5039,7 +5039,7 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
-					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					}
 
@@ -5178,7 +5178,7 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
-					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					}
 
