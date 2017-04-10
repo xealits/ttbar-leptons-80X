@@ -4184,6 +4184,13 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+
+					/*
+					 * Record number of loose and tight taus for fake factor method (denum and num objects)
+					 */
+					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  4, selTausNoLep.size() * weight);
+
 					// control fake rates (might be useful)
 					record_jets_fakerate_distrs(string("singlemu_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// and the region of our selection fake rates
@@ -4605,6 +4612,13 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection && passMetSelection && passBtagsSelection)
 					{
 					// pre-tau selection
+
+					/*
+					 * Record number of loose and tight taus for fake factor method (denum and num objects)
+					 */
+					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  4, selTausNoLep.size() * weight);
+
 					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
 					// control
 					record_jets_fakerate_distrs(string("singleel_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
