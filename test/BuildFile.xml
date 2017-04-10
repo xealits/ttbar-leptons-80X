@@ -64,6 +64,7 @@
   <bin name="overlay_th1d_distrs"          file="overlay_th1d_distrs.cc"></bin>
   <bin name="histo_1D_annotated"          file="histo_1D_annotated.cc"></bin>
 
+  <bin name="jet_fakefactor_data"         file="jet_fakefactor_data.cc"></bin>
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->
 

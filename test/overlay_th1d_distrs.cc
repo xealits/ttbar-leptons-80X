@@ -56,9 +56,10 @@ TFile * file = TFile::Open(filename);
 TH1D * h = (TH1D*) file->Get(distrname);
 
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
-TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
+TLegend* leg = new TLegend(0.845, 0.8, 0.99, 0.99);
 
 h->Draw("ep");       // Draw the ratio plot
+h->Print();
 leg->AddEntry(h, name, "F");
 
 for (int i=5; i<argc; i+=3)
@@ -66,9 +67,12 @@ for (int i=5; i<argc; i+=3)
 	TString name(argv[i]);
 	TString filename(argv[i+1]);
 	TString distrname(argv[i+2]);
+	cout << filename << '\t' << distrname << endl;
 
 	TFile * file = TFile::Open(filename);
 	TH1D * h = (TH1D*) file->Get(distrname);
+
+	h->Print();
 
 	leg->AddEntry(h, name, "F");
 
@@ -79,11 +83,11 @@ for (int i=5; i<argc; i+=3)
 
 leg->Draw();
 
-cst->SetLogy();
+//cst->SetLogy();
 
-cst->Update();
+//cst->Update();
 
-cst->Modified();
+//cst->Modified();
 
 cst->SaveAs(outfilename);
 
