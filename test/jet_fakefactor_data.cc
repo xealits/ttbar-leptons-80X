@@ -68,7 +68,7 @@ TString distr_selection(argv[input_starts + 2]);
 TString projection(argv[input_starts + 3]);
 Int_t rebin_factor(atoi(argv[input_starts + 4]));
 
-double x_axis_min_range = atof(argv[input_starts + 4]);
+double x_axis_min_range = atof(argv[input_starts + 5]);
 double x_axis_max_range = atof(argv[input_starts + 6]);
 TString name_tag(argv[input_starts + 7]);
 TString dir(argv[input_starts + 8]);
@@ -446,7 +446,7 @@ hs_data[0]->Draw("e");
 if (set_logy)
 	cst->SetLogy();
 
-TString outfilename = dir + "/jobsums/" + distr_selection + "_FakeFactor_" + projection + "_" + name_tag + "_" + Form("%g-%g", x_axis_min_range, x_axis_max_range) + (set_logy? "_logy" : "") + ".png";
+TString outfilename = dir + "/jobsums/FakeFactor_" + distr_selection + "_" + projection + "_" + name_tag + "_" + Form("%g-%g", x_axis_min_range, x_axis_max_range) + (set_logy? "_logy" : "") + ".png";
 
 cst->SaveAs(outfilename);
 
