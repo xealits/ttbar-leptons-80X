@@ -17,6 +17,9 @@ extract_weightflow_systematics:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_PU_DOWN weightflow_el_PU_DOWN weightflow_elmu_PU_DOWN weightflow_elel_PU_DOWN weightflow_mumu_PU_DOWN
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_PU_UP weightflow_el_PU_UP weightflow_elmu_PU_UP weightflow_elel_PU_UP weightflow_mumu_PU_UP
 
+extract_weightflow_NOMINAL:
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_NOMINAL weightflow_el_NOMINAL weightflow_elmu_NOMINAL weightflow_elel_NOMINAL weightflow_mumu_NOMINAL
+
 extract_weightflow:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu weightflow_el weightflow_elmu weightflow_elel weightflow_mumu
 
@@ -124,6 +127,42 @@ selection_control_histos_singleel:
 	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_singleel`;             \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+
+selection_control_histos_elel: normalize=f
+selection_control_histos_elel: logy=f
+selection_control_histos_elel:
+	for h in `cat cur_th1d_histos_pt_eta_energy_elel`;     \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+	for h in `cat cur_th1d_histos_other_elel`;             \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+
+selection_control_histos_elmu: normalize=f
+selection_control_histos_elmu: logy=f
+selection_control_histos_elmu:
+	for h in `cat cur_th1d_histos_pt_eta_energy_elmu`;     \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+	for h in `cat cur_th1d_histos_other_elmu`;             \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+
+selection_control_histos_mumu: normalize=f
+selection_control_histos_mumu: logy=f
+selection_control_histos_mumu:
+	for h in `cat cur_th1d_histos_pt_eta_energy_mumu`;     \
+	do                                                \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	done
+	for h in `cat cur_th1d_histos_other_mumu`;             \
 	do                                                \
 	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
