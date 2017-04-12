@@ -175,7 +175,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (dtag.Contains("Data"))
 		{
 		if (be_verbose) cout << "summing data-stack" << endl;
-		//vector<TString> distro_names;
+		TH1D* histos[4] = {NULL, NULL, NULL, NULL};
+
+		vector<TString> distro_names = {distr_selection + TString("_tau_jets_distr"),
+			distr_selection + TString("_jets_distr"),
+			distr_selection + TString("_looseTaus_tau_jets_distr"),
+			distr_selection + TString("_looseTaus_jets_distr")};
+		/*
 		//distro_names.push_back(distr_selection + string("_tau_jets_distr"));
 		//distro_names.push_back(distr_selection + string("_jets_distr"));
 		TString tight_tau_name = distr_selection + string("_tau_jets_distr");
@@ -183,28 +189,35 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		TString loose_tau_name = distr_selection + string("_looseTaus_tau_jets_distr");
 		TString loose_jet_name = distr_selection + string("_looseTaus_jets_distr");
 		// _looseTaus
+		*/
 
-		if (!file->GetListOfKeys()->Contains(tight_tau_name))
+		for (unsigned int i=0; i<distro_names.size(); i++)
 			{
-			if (be_verbose) cout << "no " << tight_tau_name << endl;
-			continue;
-			}
+			if (be_verbose) cout << distro_names[i] << endl;
+			if (!file->GetListOfKeys()->Contains(distro_names[i]))
+				{
+				if (be_verbose) cout << "no " << distro_names[i] << endl;
+				continue;
+				}
 
-		//TH1D* hs_data[4] = {NULL, NULL, NULL, NULL};
-		// get the histogram's projection
-		TH1D* histos[4] = {(TH1D*) ((TH3D*) file->Get(tight_tau_name))->Project3D(projection),
-			(TH1D*) ((TH3D*) file->Get(tight_jet_name))->Project3D(projection),
-			(TH1D*) ((TH3D*) file->Get(loose_tau_name))->Project3D(projection),
-			(TH1D*) ((TH3D*) file->Get(loose_jet_name))->Project3D(projection)};
-		//histos.push_back();
-		//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
-		if (be_verbose)
-			for (int i=0; i<4; i++) histos[i]->Print();
+			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_names[i]))->Project3D(projection);
 
-		// normalize the histos for bin width
-		for (int h=0; h<4; h++)
-			{
-			TH1D* histo = histos[h];
+			/*
+			//TH1D* hs_data[4] = {NULL, NULL, NULL, NULL};
+			// get the histogram's projection
+			TH1D* histos[4] = {(TH1D*) ((TH3D*) file->Get(tight_tau_name))->Project3D(projection),
+				(TH1D*) ((TH3D*) file->Get(tight_jet_name))->Project3D(projection),
+				(TH1D*) ((TH3D*) file->Get(loose_tau_name))->Project3D(projection),
+				(TH1D*) ((TH3D*) file->Get(loose_jet_name))->Project3D(projection)};
+			//histos.push_back();
+			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
+			*/
+
+			if (be_verbose)
+				histo->Print();
+
+			// normalize the histos for bin width (actually it's not needed for fake rates and ratios
+			/*
 			for (Int_t i=0; i<=histo->GetSize(); i++)
 				{
 				//yAxis->GetBinLowEdge(3)
@@ -212,20 +225,21 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 				histo->SetBinContent(i, content/width);
 				}
+			*/
 
 			// also set colours/markers:
 			histo->SetMarkerStyle(9);
 
 			// and record
-			if (hs_data[h] == NULL)
+			if (hs_data[i] == NULL)
 				{
 				if (be_verbose) cout << "creating data histo" << endl;
-				hs_data[h] = (TH1D*) histo->Clone();
+				hs_data[i] = (TH1D*) histo->Clone();
 				}
 			else
 				{
 				if (be_verbose) cout << "add histo to data histo" << endl;
-				hs_data[h]->Add(histo);
+				hs_data[i]->Add(histo);
 				}
 			}
 		}

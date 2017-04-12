@@ -26,6 +26,7 @@
 
 using namespace std;
 
+#define INPUT_START 6
 
 
 //histo_project3toN_ratio_distr.cc
@@ -36,17 +37,22 @@ if (argc < 4)
 	{
 	//std::cout << "Usage : " << argv[0] << " lumi distr projection rebin_factor dir dtags" << std::endl;
 	//std::cout << "Usage : " << argv[0] << " x|y|z proj_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
-	std::cout << "Usage : " << argv[0] << "outfilename name filename distrname [name filename distrname]*" << std::endl;
+	std::cout << "Usage : " << argv[0] << "logy outfilename name filename distrname [name filename distrname]*" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString outfilename(argv[1]);
+TString set_logy(argv[1]);
+bool logy = false;
+if (set_logy == TString('T') || set_logy == TString('Y'))
+	logy=true;
 
-TString name(argv[2]);
-TString filename(argv[3]);
-TString distrname(argv[4]);
+TString outfilename(argv[2]);
+
+TString name(argv[3]);
+TString filename(argv[4]);
+TString distrname(argv[5]);
 
 cout << argc << endl;
 cout << filename    << endl;
@@ -62,7 +68,7 @@ h->Draw("ep");       // Draw the ratio plot
 h->Print();
 leg->AddEntry(h, name, "F");
 
-for (int i=5; i<argc; i+=3)
+for (int i=INPUT_START; i<argc; i+=3)
 	{
 	TString name(argv[i]);
 	TString filename(argv[i+1]);
@@ -83,7 +89,8 @@ for (int i=5; i<argc; i+=3)
 
 leg->Draw();
 
-//cst->SetLogy();
+if (logy)
+	cst->SetLogy();
 
 //cst->Update();
 

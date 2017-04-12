@@ -1628,3 +1628,33 @@ file_size: 1316608905354
 
 -- use extMAX everywhere.
 
+
+
+
+
+HT-binned WJets
+======================================
+
+Use inclusive dataset for HT < lowest bin.
+
+There is 70-100 HT bin:
+
+$ das_client --limit=0 --query="summary dataset=/WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"                           
+nfiles   : 207
+nevents  : 10094300
+nblocks  : 71
+nlumis   : 59911
+file_size: 313384971344
+
+0 otoldaie @lxplus012 master ~/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/datasets
+$ das_client --limit=0 --query="summary dataset=/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"                          
+nfiles   : 134
+nevents  : 10235198
+nblocks  : 16
+nlumis   : 65565
+file_size: 339100477514
+
+-- and it looks like real dataset.
+
+
+
