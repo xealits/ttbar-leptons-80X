@@ -2142,6 +2142,7 @@ for(size_t f=0; f<urls.size();++f)
 		weights_FULL[SYS_NOMINAL] = 1.0;
 		weights_FULL[SYS_PU_UP]   = 1.0;
 		weights_FULL[SYS_PU_DOWN] = 1.0;
+		weights_FULL[SYS_TOP_PT] = 1.0;
 
 
 		// --------------------------------------------------- RHO variables
@@ -2235,9 +2236,11 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("weight_TopPT"), 200, 0., 2., weight_TopPT, 1);
 
 		// how is the overall integral of MC?
-		weights_FULL[SYS_NOMINAL] *= weight_TopPT;
-		weights_FULL[SYS_PU_UP]   *= weight_TopPT;
-		weights_FULL[SYS_PU_DOWN] *= weight_TopPT;
+		// TOP PT is a systematic
+		//weights_FULL[SYS_NOMINAL] *= weight_TopPT;
+		//weights_FULL[SYS_PU_UP]   *= weight_TopPT;
+		//weights_FULL[SYS_PU_DOWN] *= weight_TopPT;
+		weights_FULL[SYS_TOP_PT] *= weight_TopPT;
 		// the MC is lumi-xsec scaled to weightflow_weighted_miniaod_events
 
 		// wighttoppt 2
@@ -2377,6 +2380,11 @@ for(size_t f=0; f<urls.size();++f)
 		weights_FULL[SYS_NOMINAL] *= weight_Gen;
 		weights_FULL[SYS_PU_UP]   *= weight_Gen;
 		weights_FULL[SYS_PU_DOWN] *= weight_Gen;
+		// it's a nominal weight, i.e. weight all weights with it
+		for ( const auto s : allSystematics )
+			{
+			weights_FULL[s] *= weight_Gen;
+			}
 		rawWeight *= weight_Gen;
 
 		// weightgen
@@ -2487,9 +2495,19 @@ for(size_t f=0; f<urls.size();++f)
 
 		fill_1d(string("weight_PU"), 200, 0., 2., weight_PU, 1);
 
-		weights_FULL[SYS_NOMINAL] *= weight_PU;
-		weights_FULL[SYS_PU_UP]   *= weight_PU_up;
-		weights_FULL[SYS_PU_DOWN] *= weight_PU_down;
+		for ( const auto s : allSystematics )
+			{
+			if (s == SYS_PU_UP)
+				weights_FULL[s] *= weight_PU_up;
+			else if (s == SYS_PU_DOWN)
+				weights_FULL[s] *= weight_PU_down;
+			else
+				weights_FULL[s] *= weight_PU;
+			}
+
+		//weights_FULL[SYS_NOMINAL] *= weight_PU;
+		//weights_FULL[SYS_PU_UP]   *= weight_PU_up;
+		//weights_FULL[SYS_PU_DOWN] *= weight_PU_down;
 
 		// --------------- here the weighting/shaping of MC should be done
 		// --------------------- save distributions of weights
@@ -2611,6 +2629,7 @@ for(size_t f=0; f<urls.size();++f)
 		// it's not needed with the latest versions of RunB rereconstruction
 
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHT is over
+		// MC weights (not changing the integral of N events)
 
 		// FISRT SECTION SUM
 		for ( const auto s : allSystematics )
@@ -3288,10 +3307,14 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("weight_electron_effs_Trig"),  200, 0., 1.1,   el_trig_weight, 1);
 				}
 
-			// and apply to weights:
-			weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
-			weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
-			weights_FULL[SYS_PU_DOWN] *= electron_sfs_weight * el_trig_weight;
+			// and apply to all weights:
+			for ( const auto s : allSystematics )
+				{
+				weights_FULL[s] *= electron_sfs_weight * el_trig_weight;
+				}
+			//weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
+			//weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
+			//weights_FULL[SYS_PU_DOWN] *= electron_sfs_weight * el_trig_weight;
 			}
 
 		if(debug)
@@ -3393,10 +3416,11 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("weight_muon_effs_Trig"),  200, 0., 1.1,   mu_trig_weight, 1);
 				}
 
-			// and apply to weights:
-			weights_FULL[SYS_NOMINAL] *= muon_sfs_weight * mu_trig_weight;
-			weights_FULL[SYS_PU_UP]   *= muon_sfs_weight * mu_trig_weight;
-			weights_FULL[SYS_PU_DOWN] *= muon_sfs_weight * mu_trig_weight;
+			// and apply to all weights:
+			for ( const auto s : allSystematics )
+				{
+				weights_FULL[s] *= muon_sfs_weight * mu_trig_weight;
+				}
 			}
 
 		if(debug)
@@ -3640,9 +3664,10 @@ for(size_t f=0; f<urls.size();++f)
 		processBJets_BTag(selJetsNoLepNoTau, isMC, weights_FULL[SYS_NOMINAL], weight_bTaggingSF, btagCal, bEffs, btagger_label, btag_WP, selBJets, true, debug);
 
 		//weight *= weight_bTaggingSF;
-		weights_FULL[SYS_NOMINAL] *= weight_bTaggingSF;
-		weights_FULL[SYS_PU_UP]   *= weight_bTaggingSF;
-		weights_FULL[SYS_PU_DOWN] *= weight_bTaggingSF;
+		for ( const auto s : allSystematics )
+			{
+			weights_FULL[s] *= weight_bTaggingSF;
+			}
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);
 
 		if(debug){
@@ -3897,9 +3922,10 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			// in-channel selection/multiselect for leptons
 			// for all the control distr-s
-			weights_FULL[SYS_NOMINAL] *= weight_tauIDsf;
-			weights_FULL[SYS_PU_UP]   *= weight_tauIDsf;
-			weights_FULL[SYS_PU_DOWN] *= weight_tauIDsf;
+			for ( const auto s : allSystematics )
+				{
+				weights_FULL[s] *= weight_tauIDsf;
+				}
 			double weight = weights_FULL[SYS_NOMINAL];
 
 			// bool passJetRawSelection(selSingleLepJets.size()>1); // 2 jets
