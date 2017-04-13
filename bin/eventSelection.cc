@@ -3379,7 +3379,7 @@ for(size_t f=0; f<urls.size();++f)
 			// and apply to all weights:
 			for ( const auto s : weightSystematics )
 				{
-				weights_FULL[s] *= muon_sfs_weight * mu_trig_weight;
+				weights_FULL[s] *= muon_sfs_weight;
 				}
 			}
 
@@ -3454,6 +3454,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("weight_trigger_weight_mumu"),200, 0., 1.1,   lep_trig_weight, 1);
 			if (eTrigger && muTrigger)
 				fill_1d(string("weight_trigger_weight_elmu"),  200, 0., 1.1,   lep_trig_weight, 1);
+
 			for ( const auto s : weightSystematics )
 				{
 				weights_FULL[s] *= lep_trig_weight;
@@ -4290,7 +4291,7 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("singlemu_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// and the region of our selection fake rates
 					// (used for jet origins mainly, plus for control)
-					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singlemu_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
@@ -4732,7 +4733,7 @@ for(size_t f=0; f<urls.size();++f)
 					// control
 					record_jets_fakerate_distrs(string("singleel_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// and our selection fake rates (counting jet origins)
-					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep, selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singleel_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)

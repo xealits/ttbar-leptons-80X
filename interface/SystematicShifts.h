@@ -1,3 +1,6 @@
+#ifndef SYSTEMATICSHIFTS_H
+#define SYSTEMATICSHIFTS_H
+
 #include <map>
 using namespace std;
 
@@ -36,4 +39,6 @@ const char * systematic_shift_name[] = {
     "PU_DOWN",
 };
 */
+
+#endif /* SYSTEMATICSHIFTS_H */
 
