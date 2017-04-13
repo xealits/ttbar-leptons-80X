@@ -3287,30 +3287,10 @@ for(size_t f=0; f<urls.size();++f)
 				}
 			fill_1d(string("weight_electron_effs_all"),  200, 0., 1.1,   electron_sfs_weight, 1);
 
-			// also, if there was electron trigger apply the trigger weight:
-			double el_trig_weight = 1;
-			if (eTrigger)
-				{
-				// calculate it the inverse-probbility way
-				double no_trig = 1;
-				for (int i = 0; i<selElectrons.size(); i++)
-                                	{
-                                	pat::Electron& el = selElectrons[i];
-					double eta = el.superCluster()->position().eta();
-					double pt = el.pt();
-					// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
-					double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
-					double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
-					no_trig *= 1 - electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
-					}
-				el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
-				fill_1d(string("weight_electron_effs_Trig"),  200, 0., 1.1,   el_trig_weight, 1);
-				}
-
 			// and apply to all weights:
 			for ( const auto s : weightSystematics )
 				{
-				weights_FULL[s] *= electron_sfs_weight * el_trig_weight;
+				weights_FULL[s] *= electron_sfs_weight;
 				}
 			//weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
 			//weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
@@ -3396,26 +3376,6 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d(string("weight_muon_effs_GH"),    200, 0., 1.1,   gh_weight, 1);
 			fill_1d(string("weight_muon_effs_FULL"),  200, 0., 1.1,   muon_sfs_weight, 1);
 
-			// also, if there was muon trigger apply the trigger weight:
-			double mu_trig_weight = 1;
-			if (muTrigger)
-				{
-				// calculate it the inverse-probbility way
-				double no_trig = 1;
-				for (int i = 0; i<selMuons.size(); i++)
-                                	{
-                                	pat::Muon& mu = selMuons[i];
-					double abs_eta = abs(mu.eta());
-					double pt = mu.pt();
-					double bin_x = (pt < muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-					double bin_y = (abs_eta < muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-					no_trig *= SingleMuon_data_bcdef_fraction * (1 - muon_effs_trg_BCDEF_histo->GetBinContent( muon_effs_trg_BCDEF_histo->FindBin(bin_x, bin_y) )) +
-							SingleMuon_data_gh_fraction * (1 - muon_effs_trg_GH_histo->GetBinContent( muon_effs_trg_GH_histo->FindBin(bin_x, bin_y) ));
-					}
-				mu_trig_weight = 1 - no_trig; // so for 1 muon it will = to the SF, for 2 there will be a mix
-				fill_1d(string("weight_muon_effs_Trig"),  200, 0., 1.1,   mu_trig_weight, 1);
-				}
-
 			// and apply to all weights:
 			for ( const auto s : weightSystematics )
 				{
@@ -3433,6 +3393,72 @@ for(size_t f=0; f<urls.size();++f)
 		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
 		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
 
+
+		// -------------------- trigger weights
+		if (isMC)
+			{
+			// calculate no-trig probability, then multiply them and get 1 - multiplication
+			// should work for all cases
+			// single trig
+			// two leptons of the same type or different
+			double lep_trig_weight = 1;
+
+			double no_ele_trig = 1;
+			if (eTrigger)
+				{
+				// calculate it the inverse-probbility way
+				for (int i = 0; i<selElectrons.size(); i++)
+                                	{
+                                	pat::Electron& el = selElectrons[i];
+					double eta = el.superCluster()->position().eta();
+					double pt = el.pt();
+					// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
+					double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
+					double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
+					no_ele_trig *= 1 - electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
+					}
+				//el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
+				fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
+				}
+
+			// also, if there was muon trigger apply the trigger weight:
+			double no_mu_trig = 1;
+			//double mu_trig_weight = 1;
+			if (muTrigger)
+				{
+				// calculate it the inverse-probbility way
+				for (int i = 0; i<selMuons.size(); i++)
+                                	{
+                                	pat::Muon& mu = selMuons[i];
+					double abs_eta = abs(mu.eta());
+					double pt = mu.pt();
+					double bin_x = (pt < muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax() - 1);
+					double bin_y = (abs_eta < muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() - 1);
+					no_mu_trig *= SingleMuon_data_bcdef_fraction * (1 - muon_effs_trg_BCDEF_histo->GetBinContent( muon_effs_trg_BCDEF_histo->FindBin(bin_x, bin_y) )) +
+							SingleMuon_data_gh_fraction * (1 - muon_effs_trg_GH_histo->GetBinContent( muon_effs_trg_GH_histo->FindBin(bin_x, bin_y) ));
+					}
+				//mu_trig_weight = 1 - no_trig; // so for 1 muon it will = to the SF, for 2 there will be a mix
+				fill_1d(string("weight_trigger_no_muon"),  200, 0., 1.1,   no_mu_trig, 1);
+				}
+
+			lep_trig_weight = 1 - no_mu_trig*no_ele_trig;
+
+			fill_1d(string("weight_trigger_weight"),  200, 0., 1.1,   lep_trig_weight, 1);
+			if (eTrigger && selElectrons.size() == 1 && ! muTrigger)
+				fill_1d(string("weight_trigger_weight_el"),  200, 0., 1.1,   lep_trig_weight, 1);
+			if (eTrigger && selElectrons.size() == 2 && ! muTrigger)
+				fill_1d(string("weight_trigger_weight_elel"),200, 0., 1.1,   lep_trig_weight, 1);
+			if (!eTrigger && muTrigger && selMuons.size() == 1)
+				fill_1d(string("weight_trigger_weight_mu"),  200, 0., 1.1,   lep_trig_weight, 1);
+			if (!eTrigger && muTrigger && selMuons.size() == 2)
+				fill_1d(string("weight_trigger_weight_mumu"),200, 0., 1.1,   lep_trig_weight, 1);
+			if (eTrigger && muTrigger)
+				fill_1d(string("weight_trigger_weight_elmu"),  200, 0., 1.1,   lep_trig_weight, 1);
+			for ( const auto s : weightSystematics )
+				{
+				weights_FULL[s] *= lep_trig_weight;
+				}
+			}
 
 		// ------------------------------------- Propagate lepton energy scale to MET
 		// Propagate now (v13)
