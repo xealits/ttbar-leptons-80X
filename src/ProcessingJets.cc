@@ -124,13 +124,27 @@ std::vector<double> JER_SF(double eta)
 
 
 
-/* TODO: taken from the latest MacroUtils of llvv
- * need to check it
+
+/* 
+ * Jet Energy Scale (JES)
+ *
+ * taken from the latest MacroUtils of llvv
+ * corresponds to
+ * https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+ * and here
+ * https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources#Example_implementation
+ * they say
+ * > It is left up to the user to create separate instances of JetCorrectionUncertainty for any and each of the uncertainty sources.
+ *
+ * also in https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+ * > Note: JEC uncertainty sources (i.e. correlations, for advanced users)
+ * and they show example with
+ * JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("Jec11_V12_Uncertainty_AK5PF.txt")
  */
 std::vector<float> smearJES(float pt, float eta, JetCorrectionUncertainty *jecUnc)
 	{
 	jecUnc->setJetEta(eta);
-	jecUnc->setJetPt(pt);
+	jecUnc->setJetPt(pt); // should be the corrected jet pt
 	float relShift=fabs(jecUnc->getUncertainty(true));
 	std::vector<float> toRet;
 	toRet.push_back((1.0+relShift)*pt);
@@ -530,6 +544,366 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 
 
 std::sort (selJets.begin(),  selJets.end(),  utils::sort_CandidatesByPt);
+
+// ----------------------------------- here is the correctF jet correction point
+// Propagate full_jet_corr to MET:
+//met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
+// TODO: uncertainties?
+// for leptons they are done as:
+//met.setUncShift(met.px() - muDiff.px()*0.01, met.py() - muDiff.py()*0.01, met.sumEt() - muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnUp);   //assume 1% uncertainty on muon rochester
+//met.setUncShift(met.px() + muDiff.px()*0.01, met.py() + muDiff.py()*0.01, met.sumEt() + muDiff.pt()*0.01, pat::MET::METUncertainty::MuonEnDown); //assume 1% uncertainty on muon rochester
+//met.setUncShift(met.px() - elDiff.px()*0.01, met.py() - elDiff.py()*0.01, met.sumEt() - elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnUp);   //assume 1% uncertainty on electron scale correction
+//met.setUncShift(met.px() + elDiff.px()*0.01, met.py() + elDiff.py()*0.01, met.sumEt() + elDiff.pt()*0.01, pat::MET::METUncertainty::ElectronEnDown); //assume 1% uncertainty on electron scale correction
+
+
+
+if(debug) cout << "Jet Energy Corrections updated" << endl;
+
+
+// TODO: should MET corrections be done here?
+// METs with corrections
+// not used now
+//
+//double met_pt_values[7];
+//met_pt_values[0] = n_met.pt();
+//met_pt_values[1] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnUp).pt();
+//met_pt_values[2] = mets[0].shiftedP4(pat::MET::METUncertainty::JetEnDown).pt();
+//met_pt_values[3] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResUp).pt();
+//met_pt_values[4] = mets[0].shiftedP4(pat::MET::METUncertainty::JetResDown).pt();
+//met_pt_values[5] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp).pt();
+//met_pt_values[6] = mets[0].shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown).pt();
+
+
+return 0;
+}
+
+
+int processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(pat::JetCollection& jets, std::vector<reco::GenJet>& genJets, // input
+	bool isMC, double weight,
+	double rho, unsigned int nGoodPV,
+	FactorizedJetCorrector *jesCor,
+	JetCorrectionUncertainty *totalJESUnc,
+	double dR_max, // for jet matching in jet corrections smearing for MC
+	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
+	jet_id   & jetID,
+	pu_jet_id& jetPUID,
+	bool with_PUID,
+	//double pt_cut, double eta_cut,
+	TRandom3 *r3,   // the randomizer for the smearing
+	LorentzVector& full_jet_corr,
+	map<systematic_shift, pat::JetCollection>& selJets,                          // output
+	bool record, bool debug) // more output
+
+{
+// the PF ID (in Moriond17 recommended to be applied before corrections)
+/*
+JME::JetResolution resolution = JME::JetResolution(jetResolutionFileName);
+JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
+Variation m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+*/
+
+for(size_t ijet=0; ijet<jets.size(); ijet++)
+	{
+	// the input jets here are, supposedly, slimmedJets from MINIAODs -- which are already corrected
+	// -- apparently, the parameters that are used in PF ID calculation use the uncorrected values stored in the jets
+	// so, everything is fine anyway
+	pat::Jet& jet = jets[ijet];
+	if (record)
+		{
+		fill_1d(string("control_jet_jets_forID_per_eta"), 100, -3., 3., jet.eta(), weight);
+		fill_1d(string("control_jet_jets_forID_per_pt"),  100,  0., 400., jet.pt(), weight);
+		}
+
+	bool passID = passPFJetID(jetID, jet);
+
+	// PUJet ID
+	float PUJetID_descriminant = jet.userFloat("pileupJetId:fullDiscriminant");
+	if (record)
+		{
+		fill_2d(string("control_jet_PUJetID_discriminant_vs_eta"), 100, -1.5, 1.5, 100, -3., 3., PUJetID_descriminant, jet.eta(), weight);
+		}
+
+	bool passPUJetID_Loose  = false;
+	bool passPUJetID_Medium = false;
+	bool passPUJetID_Tight  = false;
+	// assume eta < 2.5 always
+	if (jet.pt() > 30.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.86;
+		passPUJetID_Medium = PUJetID_descriminant >  0.61;
+		passPUJetID_Loose  = PUJetID_descriminant > -0.89;
+		}
+	else if (jet.pt() > 20.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+	else if (jet.pt() > 10.)
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+	else
+		{
+		passPUJetID_Tight  = PUJetID_descriminant >  0.69; 
+		passPUJetID_Medium = PUJetID_descriminant >  0.18; 
+		passPUJetID_Loose  = PUJetID_descriminant > -0.97; 
+		}
+
+	if (record)
+		{
+		if (passPUJetID_Loose)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Loose_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Loose_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
+		if (passPUJetID_Medium)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Medium_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Medium_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
+		if (passPUJetID_Tight)
+			{
+			fill_1d(string("control_jet_jets_passPUJetID_Tight_per_eta"), 100, -3., 3., jet.eta(), weight);
+			fill_1d(string("control_jet_jets_passPUJetID_Tight_per_pt"),  100,  0., 400., jet.pt(), weight);
+			}
+		}
+
+	bool passPUJetID        = false;
+	if      (jetPUID == LoosePUJET)
+		passPUJetID = passPUJetID_Loose;
+	else if (jetPUID == MediumPUJET)
+		passPUJetID = passPUJetID_Medium;
+	else if (jetPUID == TightPUJET)
+		passPUJetID = passPUJetID_Tight;
+
+	if (with_PUID)
+		passID &= (passPUJetID);
+
+	if (passID)
+		{
+		for ( const auto s : jetSystematics )
+			{
+			selJets[s].push_back(jet);
+			}
+		if (record)
+			{
+			fill_2d(string("control_jet_jetsIDed_pt_eta"), 250, 0., 500., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_jetsIDed_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			}
+		}
+	}
+
+// The jet corrections
+
+// v6, adding jet corrections and b-tagging
+//LorentzVector full_jet_corr(0., 0., 0., 0.);
+
+for ( const auto s : jetSystematics )
+	{
+	pat::JetCollection>& jet_col = selJets[s];
+	for(size_t ijet=0; ijet<jet_col.size(); ijet++)
+		{
+		// TODO: so does this mean "in place"?
+		pat::Jet& jet = jet_col[ijet];
+
+		// for MC smearing
+		//TRandom *r3 = new TRandom3();
+
+		if (record && s == SYS_NOMINAL)
+			{
+			//fill_2d(string("slimmedjet_pt_eta"), 400, 0., 400., 200, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_2d(string("control_jet_slimmedjet_pt_eta"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+			fill_1d(string("control_jet_slimmedjet_phi"), 128, -3.2, 3.2, jet.phi(), weight);
+			}
+
+		LorentzVector jet_initial_momentum = jet.p4();
+
+		if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
+
+		// no-corrections jet
+		LorentzVector rawJet = jet.correctedP4("Uncorrected");
+
+		if (record && s == SYS_NOMINAL)
+			fill_2d(string("control_jet_slimmedjet_uncorrected_pt_eta"), 200, 0., 400., 100, -4., 4., rawJet.pt(), rawJet.eta(), weight);
+
+		if(debug) cout << rawJet.eta() << " " << rawJet.pt() << " " << rawJet.energy() << endl;
+
+		//double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt();
+		//LorentzVector rawJet(jet*toRawSF);
+		// FactorizedCorrector with all jet correction files
+		jesCor->setJetEta(rawJet.eta());
+		jesCor->setJetPt(rawJet.pt());
+		jesCor->setJetA(jet.jetArea());
+		jesCor->setRho(rho);
+		//jesCor->setNPV(nGoodPV); // not used in PU Jet ID example, shouldn't matter
+		float jes_correction = jesCor->getCorrection();
+		LorentzVector jesCorJet = (rawJet*jes_correction);
+
+		// jet energy scale is corrected
+		// now do the uncertainty calculation:
+		//std::vector<float> jes_shifted_pts = smearJES(jesCorJet.pt(), jesCorJet.eta(), totalJESUnc);
+		totalJESUnc->setJetEta(jesCorJet.eta());
+		totalJESUnc->setJetPt(jesCorJet.pt()); // should be the corrected jet pt
+		float relShift = fabs(totalJESUnc->getUncertainty(true));
+		// up, down
+		if (s == SYS_JER_UP)
+			{
+			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1+relShift), weight);
+			jet.setP4(jesCorJet*(1 + relShift))
+			}
+		else if (s == SYS_JER_DOWN)
+			{
+			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1-relShift), weight);
+			jet.setP4(jesCorJet*(1 - relShift))
+			}
+		else
+			{
+			if (s == SYS_NOMINAL)
+				fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction, weight);
+			jet.setP4(jesCor);
+			}
+
+
+		if (record && s == SYS_NOMINAL)
+			fill_2d(string("control_jet_slimmedjet_jescor_pt_eta"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+
+		if(debug) cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
+
+		//smear Jet Energy Resolution (JER)
+		//https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+		// if a jet matches well to a genJet -- it can be just scaled and that's fine
+		// if id doesn't -- one needs to smear it with a randomizer according to the resolution and other stuff
+
+		// here is the matching of the jet:
+		if(isMC)
+			{
+			if (record && s == SYS_NOMINAL)
+			       {
+			       fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_before"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+			       }
+			// the JER SF and resolution for the jet:
+			//std::vector<double> jer_sf_pair = JER_SF(jet.eta());
+			//double jer_sf = jer_sf_pair[0];
+			//double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
+			// getting it with the tool from files:
+			double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
+			double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
+
+			// it's needed to control smearing calculation -- do it in according branches of genJet-matching bellow
+			//fill_1d(string("control_jet_slimmedjet_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+			//fill_1d(string("control_jet_slimmedjet_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
+
+			// matching to generation jet:
+			//const reco::GenJet* genJet=jet.genJet();
+			// the PAT doc describes it as "return the matched generated jet"
+			// what's the matching procedure?
+			// for now I'll do it manually in dR, as shown in Jet POG example
+			// https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
+			const reco::GenJet* matched_genJet = nullptr;
+			//double dR_max = 0.4/2; // 0.4 is the jet cone parameter of AK4 jets, which I use
+			// moved it to parameters of the procedure
+			for (unsigned int i=0; i<genJets.size(); i++)
+				{
+				reco::GenJet& genJet = genJets[i];
+				double dR = reco::deltaR(jet, genJet);
+
+				if (dR > dR_max) continue;
+
+				double dPt = std::abs(genJet.pt() - jet.pt());
+				double dPt_max_factor = 3*jet.pt(); // from twiki
+				if (dPt > dPt_max_factor * jet_resolution) continue;
+
+				matched_genJet = &genJet;
+				}
+
+			// calculate and apply the smearing factor to jet energy
+			// with one of the two algorithms, if jet matched to genJet or not
+			if (matched_genJet)
+				{ // the scaling is ok
+				if (s == SYS_NOMINAL)
+					{
+					fill_1d(string("control_jet_slimmedjet_matched_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+					fill_1d(string("control_jet_slimmedjet_matched_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
+					}
+
+				double dPt = jet.pt() - matched_genJet->pt();
+				//double genjetpt( genJet ? genJet->pt(): 0.);                    
+				//std::vector<double> smearJER=utils::cmssw::smearJER(jet.pt(),jet.eta(),genjetpt);
+				// using the local smear:
+				//std::vector<double> JER_smearing_factor = smearJER(jet.pt(),jet.eta(),genjetpt);
+				//double jer_smearing = JER_smearing_factor[0];
+				double jer_smearing = TMath::Max(0., 1. + (jer_sf - 1) * dPt / jet.pt());
+				jet.setP4(jet.p4()*jer_smearing); // same as scaleEnergy in the Jet POG example
+				// but they also do MIN_ENERGY thing
+				// which is static constexpr const double MIN_JET_ENERGY = 1e-2;
+				if (s == SYS_NOMINAL)
+					fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_scaling"), 400, 0., 2., jer_smearing, weight);
+
+				if (record && s == SYS_NOMINAL)
+					{
+					fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_scaling_done"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+					}
+				}
+			else
+				{ // the smearing with gaussian randomizer
+				if (s == SYS_NOMINAL)
+					{
+					fill_1d(string("control_jet_slimmedjet_notmatched_jet_resolution"), 400, 0., 2., jet_resolution, weight);
+					fill_1d(string("control_jet_slimmedjet_notmatched_jet_jer_scalefactor"), 400, 0., 2., jer_sf, weight);
+					}
+
+				// this is the example:
+				//double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
+				//double smearFactor = 1 + r3->Gaus(0, sigma);
+				// this is the twiki:
+				double smearFactor = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+				// multiplying a Gaussian should = to multiplying the sigma
+				jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
+				if (s == SYS_NOMINAL)
+					fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
+
+				if (record && s == SYS_NOMINAL)
+					{
+					fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_smearing_done"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+					}
+				}
+			}
+
+		// FIXME: this is not to be re-set. Check that this is a desired non-feature.
+		// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
+		//to get the raw jet again
+		//selJets[ijet].setVal("torawsf",1./(newJECSF*newJERSF));
+
+		// Add the jet momentum correction:
+		LorentzVector jet_corr(0., 0., 0., 0.);
+		jet_corr = jet.p4() - jet_initial_momentum;
+		full_jet_corr += jet_corr;
+
+		if (record && s == SYS_NOMINAL)
+			{
+			fill_2d(string("control_jet_slimmedjet_jet_corr_pt_eta"), 200,   0., 400., 100, -4., 4., jet_corr.pt(), jet_corr.eta(), weight);
+			fill_2d(string("control_jet_slimmedjet_jet_corr_pX_pY"),  100, -50.,  50., 100, -50., 50.,  jet_corr.X(), jet_corr.Y(), weight);
+			fill_1d(string("control_jet_slimmedjet_jet_corr_pZ"),     100, -50.,  50., jet_corr.Z(), weight);
+			// so, jes & jer shouldn't change the eta of the jet -- only the energy (pt)
+			// record the correction per jet's eta and per original pt
+			//fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_eta"), 400, 0., 400., 200, -4., 4., full_jet_corr.pt(), jet.eta(), weight);
+			//fill_2d(string("control_jet_slimmedjet_full_jetcor_pt_per_jet_pt"), 400, 0., 400., 200, -4., 4.,  full_jet_corr.pt(), jet_initial_momentum.eta(), weight);
+			}
+
+		if(debug)
+			{
+			cout << jet.eta() << " " << jet.pt() << " " << jet.energy() << endl;
+			cout << "-" << jet_initial_momentum.eta() << " " << jet_initial_momentum.pt() << " " << jet_initial_momentum.energy() << endl;
+			}
+
+		}
+	std::sort (jet_col.begin(),  jet_col.end(),  utils::sort_CandidatesByPt);
+	}
+
+
 
 // ----------------------------------- here is the correctF jet correction point
 // Propagate full_jet_corr to MET:
