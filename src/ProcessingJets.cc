@@ -1,5 +1,7 @@
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
+#include "UserCode/ttbar-leptons-80X/interface/SystematicShifts.h"
+
 
 
 std::vector<double> smearJER(double pt, double eta, double genPt)
@@ -703,7 +705,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 
 for ( const auto s : jetSystematics )
 	{
-	pat::JetCollection>& jet_col = selJets[s];
+	pat::JetCollection& jet_col = selJets[s];
 	for(size_t ijet=0; ijet<jet_col.size(); ijet++)
 		{
 		// TODO: so does this mean "in place"?
@@ -752,18 +754,18 @@ for ( const auto s : jetSystematics )
 		if (s == SYS_JER_UP)
 			{
 			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1+relShift), weight);
-			jet.setP4(jesCorJet*(1 + relShift))
+			jet.setP4(jesCorJet*(1 + relShift));
 			}
 		else if (s == SYS_JER_DOWN)
 			{
 			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1-relShift), weight);
-			jet.setP4(jesCorJet*(1 - relShift))
+			jet.setP4(jesCorJet*(1 - relShift));
 			}
 		else
 			{
 			if (s == SYS_NOMINAL)
 				fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction, weight);
-			jet.setP4(jesCor);
+			jet.setP4(jesCorJet);
 			}
 
 
