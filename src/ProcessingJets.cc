@@ -750,12 +750,12 @@ for ( const auto s : jetSystematics )
 		totalJESUnc->setJetPt(jesCorJet.pt()); // should be the corrected jet pt
 		float relShift = fabs(totalJESUnc->getUncertainty(true));
 		// up, down
-		if (s == SYS_JER_UP)
+		if (s == SYS_JES_UP)
 			{
 			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1+relShift), weight);
 			jet.setP4(jesCorJet*(1 + relShift));
 			}
-		else if (s == SYS_JER_DOWN)
+		else if (s == SYS_JES_DOWN)
 			{
 			fill_1d(string("control_jet_slimmedjet_jescorrection_") + systematic_shift_names[s], 200, 0., 2., jes_correction*(1-relShift), weight);
 			jet.setP4(jesCorJet*(1 - relShift));
