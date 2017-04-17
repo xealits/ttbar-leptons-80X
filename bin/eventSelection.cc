@@ -4535,7 +4535,7 @@ for(size_t f=0; f<urls.size();++f)
 					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
-					bool passJetSelection(n_jets>2); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
+					bool passJetSelection(n_jets>1); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
 					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
 					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
@@ -4651,7 +4651,7 @@ for(size_t f=0; f<urls.size();++f)
 					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
-					bool passJetSelection(n_jets>2); // >= 3 jets
+					bool passJetSelection(n_jets>1); // >= 3 jets
 					// -- TODO: actually there is no point for >= 3 jets
 					// if we select jets cleaned from taus
 					// this ttbar channel has 2 b-jets + tau&lepton
