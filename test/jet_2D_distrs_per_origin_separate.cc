@@ -244,9 +244,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D * weightflow;
 			// actually, only 1 number will be needed:
 			double normal_initial_weight = 0;
-			if (file->GetListOfKeys()->Contains("weightflow_elel"))
+			if (file->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
 				{
-				weightflow = (TH1D*) file->Get("weightflow_elel");
+				weightflow = (TH1D*) file->Get("weightflow_elel_NOMINAL");
 				normal_initial_weight = weightflow->GetBinContent(11);
 				}
 			else if (file->GetListOfKeys()->Contains("weightflow"))

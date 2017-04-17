@@ -106,9 +106,9 @@ TFile * file = TFile::Open(job_dir + "/" + dtag + ".root");
 TH1D * weightflow;
 
 // for ttbar dileptons
-if (file->GetListOfKeys()->Contains("weightflow_elel"))
+if (file->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
 	{
-	weightflow = (TH1D*) file->Get("weightflow_elel");
+	weightflow = (TH1D*) file->Get("weightflow_elel_NOMINAL");
 	ratio = xsec / weightflow->GetBinContent(11);
 	}
 else if (file->GetListOfKeys()->Contains("weightflow"))

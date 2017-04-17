@@ -3980,10 +3980,10 @@ for(size_t f=0; f<urls.size();++f)
 		// unsigned int n_taus = selTaus.size();
 		unsigned int n_taus = selTausNoLep.size();
 		// unsigned int n_taus = selTausNoLepNoJet.size(); // Try "reverse" tau-jet cleanning logic
-		//unsigned int n_jets = selJets.size();
 		//unsigned int n_bjets = selBJets[SYS_NOMINAL].size();
-		// unsigned int n_jets = selJetsNoLepNoTau[SYS_NOMINAL].size();
-		unsigned int n_jets = selJetsNoLepNoTau[SYS_NOMINAL].size(); // noLep jet as in jet fake-rate study
+		//unsigned int n_jets = selJets.size();
+		//unsigned int n_jets = selJetsNoLepNoTau[SYS_NOMINAL].size();
+		unsigned int n_jets = selJetsNoLep[SYS_NOMINAL].size(); // noLep jet as in jet fake-rate study
 		// unsigned int n_bjets = selSingleLepBJets.size();
 		unsigned int n_bjets = selBJets[SYS_NOMINAL].size();
 
@@ -4532,10 +4532,11 @@ for(size_t f=0; f<urls.size();++f)
 					unsigned int n_leptons = selLeptons.size();
 					unsigned int n_taus = selTausNoLep.size();
 					// the jets contain only jetSystematics
-					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
-					bool passJetSelection(n_jets>1); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
+					bool passJetSelection(n_jets>2); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
 					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
 					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
@@ -4648,10 +4649,11 @@ for(size_t f=0; f<urls.size();++f)
 					unsigned int n_taus = selTausNoLep.size();
 					//unsigned int n_jets = selJetsNoLepNoTau[sys].size(); // noLep jet as in jet fake-rate study
 					//unsigned int n_bjets = selBJets[sys].size();
-					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
-					bool passJetSelection(n_jets>1); // >= 3 jets
+					bool passJetSelection(n_jets>2); // >= 3 jets
 					// -- TODO: actually there is no point for >= 3 jets
 					// if we select jets cleaned from taus
 					// this ttbar channel has 2 b-jets + tau&lepton
@@ -5084,7 +5086,8 @@ for(size_t f=0; f<urls.size();++f)
 					// TODO: maybe require NoTau in jets? (b-jets have it)
 					//unsigned int n_jets = selJetsNoLepNoTau[sys].size(); // noLep jet as in jet fake-rate study
 					//unsigned int n_bjets = selBJets[sys].size();
-					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
 					// Event selection booleans
@@ -5229,7 +5232,8 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_taus = selTausNoLep.size();
 					//unsigned int n_jets = selJetsNoLepNoTau[sys].size(); // noLep jet as in jet fake-rate study
 					//unsigned int n_bjets = selBJets[sys].size();
-					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
 					// Event selection booleans
@@ -5374,7 +5378,8 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_taus = selTausNoLep.size();
 					//unsigned int n_jets = selJetsNoLepNoTau[sys].size(); // noLep jet as in jet fake-rate study
 					//unsigned int n_bjets = selBJets[sys].size();
-					unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
+					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
 
 					// Event selection booleans
