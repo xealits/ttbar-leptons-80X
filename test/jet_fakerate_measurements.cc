@@ -227,16 +227,16 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D * weightflow;
 			// actually, only 1 number will be needed:
 			double normal_initial_weight = 0;
-			if (file->GetListOfKeys()->Contains("weightflow_elel"))
+			if (file->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
 				{
-				weightflow = (TH1D*) file->Get("weightflow_elel");
+				weightflow = (TH1D*) file->Get("weightflow_elel_NOMINAL");
 				normal_initial_weight = weightflow->GetBinContent(11); // normalized weightflow
 				}
 			else if (file->GetListOfKeys()->Contains("weightflow"))
 				{
 				weightflow = (TH1D*) file->Get("weightflow");
 				//normal_initial_weight = weightflow->GetBinContent(11); // not yet...
-				normal_initial_weight = weightflow->GetBinContent(4); // TODO: make normalized weightflow in jet study
+				normal_initial_weight = weightflow->GetBinContent(11); // TODO: make normalized weightflow in jet study
 				}
 			else
 				{

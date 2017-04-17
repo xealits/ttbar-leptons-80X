@@ -115,7 +115,7 @@ else if (file->GetListOfKeys()->Contains("weightflow"))
 	{
 	weightflow = (TH1D*) file->Get("weightflow");
 	//ratio = xsec / weightflow->GetBinContent(11); // not yet...
-	ratio = xsec / weightflow->GetBinContent(4);
+	ratio = xsec / weightflow->GetBinContent(11);
 	}
 else
 	{

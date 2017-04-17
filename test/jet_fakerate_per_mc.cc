@@ -251,7 +251,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			{
 			weightflow = (TH1D*) file->Get("weightflow");
 			//normal_initial_weight = weightflow->GetBinContent(11); // not yet...
-			normal_initial_weight = weightflow->GetBinContent(4);
+			normal_initial_weight = weightflow->GetBinContent(11);
 			}
 		else
 			{

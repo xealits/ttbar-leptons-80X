@@ -16,6 +16,9 @@ extract_eventflow:
 extract_weightflow_systematics:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_PU_DOWN weightflow_el_PU_DOWN weightflow_elmu_PU_DOWN weightflow_elel_PU_DOWN weightflow_mumu_PU_DOWN
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_PU_UP weightflow_el_PU_UP weightflow_elmu_PU_UP weightflow_elel_PU_UP weightflow_mumu_PU_UP
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_TOP_PT weightflow_el_TOP_PT weightflow_elmu_TOP_PT weightflow_elel_TOP_PT weightflow_mumu_TOP_PT
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_JES_UP weightflow_el_JES_UP weightflow_elmu_JES_UP weightflow_elel_JES_UP weightflow_mumu_JES_UP
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_JES_DOWN weightflow_el_JES_DOWN weightflow_elmu_JES_DOWN weightflow_elel_JES_DOWN weightflow_mumu_JES_DOWN
 
 extract_weightflow_NOMINAL:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_NOMINAL weightflow_el_NOMINAL weightflow_elmu_NOMINAL weightflow_elel_NOMINAL weightflow_mumu_NOMINAL
@@ -96,15 +99,15 @@ get_job_dtags:
 	ls outdir/"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*.root//' | sort | uniq > dtags_job_${job}
 
 jet_fakerate_measurements:
-	NEWjet_fakerate_measurements --add-header HLTjet_qcd outdir/${jjob}/merged-sets/ `cat dtags_${jjob} ` 2> /dev/null >  ${jjob}_${vjob}_fakerate_measurement
-	NEWjet_fakerate_measurements HLTmu_wjets   outdir/${jjob}/merged-sets/ `cat dtags_${jjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
-	NEWjet_fakerate_measurements mumu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
-	NEWjet_fakerate_measurements elmu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
-	NEWjet_fakerate_measurements elel_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	jet_fakerate_measurements --add-header HLTjet_qcd outdir/${jjob}/merged-sets/ `cat dtags_${jjob}_JetHT ` 2> /dev/null >  ${jjob}_${vjob}_fakerate_measurement
+	jet_fakerate_measurements HLTmu_wjets   outdir/${jjob}/merged-sets/ `cat dtags_${jjob}_SingleMuon ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	jet_fakerate_measurements mumu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	jet_fakerate_measurements elmu_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
+	jet_fakerate_measurements elel_passjets outdir/${vjob}/merged-sets/ `cat dtags_${vjob} ` 2> /dev/null >> ${jjob}_${vjob}_fakerate_measurement
 
 jet_fakerate_measurements_control:
-	NEWjet_fakerate_measurements --add-header singlemu_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
-	NEWjet_fakerate_measurements singleel_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
+	jet_fakerate_measurements --add-header singlemu_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
+	jet_fakerate_measurements singleel_pretau outdir/${job}/merged-sets/ `cat dtags_${job}` 2> /dev/null >> ${job}_fakerate_measurement_control
 
 
 selection_control_histos: normalize=f
