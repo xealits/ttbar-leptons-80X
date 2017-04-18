@@ -2381,9 +2381,9 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("weight_Gen"), 200, -2., 2., weight_Gen, 1);
 
 		// TODO: scale it somehow
-		weights_FULL[SYS_NOMINAL] *= weight_Gen;
-		weights_FULL[SYS_PU_UP]   *= weight_Gen;
-		weights_FULL[SYS_PU_DOWN] *= weight_Gen;
+		//weights_FULL[SYS_NOMINAL] *= weight_Gen;
+		//weights_FULL[SYS_PU_UP]   *= weight_Gen;
+		//weights_FULL[SYS_PU_DOWN] *= weight_Gen;
 		// it's a nominal weight, i.e. weight all weights with it
 		for ( const auto s : weightSystematics )
 			{
@@ -2430,6 +2430,10 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			//if(utils::isGoodVertex(vtx[ivtx]))
 			// directly from rumors
+			// some use:
+			// * at least 4 degrees of freedome (ndof) (>=4) (!)
+			// * Rho < 2 (impact parameter to the beam spot
+			// * z < 24
 			bool its_good = (!vtx[ivtx].isFake()) && vtx[ivtx].ndof() > 4 && abs(vtx[ivtx].z()) < 24 && abs(vtx[ivtx].position().Rho()) < 2;
 			// it should be equivalent to patUtils procedure
 			// only they use reverse: ! > 24 etc -- but without the >=, thus there is 1 bit of discrepancy
