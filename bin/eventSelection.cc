@@ -1056,8 +1056,8 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
 	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
 
-string tau_Loose_ID = runProcess.getParameter<std::string>("tau_Loose_ID");
 //("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+string tau_Loose_ID = runProcess.getParameter<std::string>("tau_Loose_ID");
 string tau_Tight_ID = runProcess.getParameter<std::string>("tau_Tight_ID");
 
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << "\t| " << tau_Tight_ID << endl;
