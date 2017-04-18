@@ -1056,10 +1056,11 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
 	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
 
-string tau_Loose_ID = runProcess.getParameter<std::string>("tau_LooseID");
+string tau_Loose_ID = runProcess.getParameter<std::string>("tau_Loose_ID");
 //("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+string tau_Tight_ID = runProcess.getParameter<std::string>("tau_Tight_ID");
 
-cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << endl;
+cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << "\t| " << tau_Tight_ID << endl;
 
 
 string jetID_s = runProcess.getParameter<std::string>("jetID"),
@@ -3484,11 +3485,13 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection IDtaus, selTaus, selTaus_JetTauFakeRate,
-			IDLoosetaus, selLooseTaus;
+			IDLoosetaus, selLooseTaus,
+			IDTighttaus, selTightTaus;
 		//string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug);
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_Loose_ID, tau_againstMuon, tau_againstElectron, IDLoosetaus, false, debug);
+		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_Tight_ID, tau_againstMuon, tau_againstElectron, IDTighttaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -3504,6 +3507,7 @@ for(size_t f=0; f<urls.size();++f)
 		processTaus_Kinematics(IDtaus, weights_FULL[SYS_NOMINAL],      jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus_JetTauFakeRate, false, debug);
 		// and loose taus only for the fake factor method:
 		processTaus_Kinematics(IDLoosetaus, weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selLooseTaus, false, debug);
+		processTaus_Kinematics(IDTighttaus, weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTightTaus, false, debug);
 
 		// ------------------------------------------ select the taus cleaned from leptons
 
@@ -3514,9 +3518,11 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep, selLooseTausNoLep;
+		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep,
+			selLooseTausNoLep, selTightTausNoLep;
 		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weights_FULL[SYS_NOMINAL], string("selTausNoLep"),        false, debug);
 		crossClean_in_dR(selLooseTaus,  selLeptons, 0.4, selLooseTausNoLep,   weights_FULL[SYS_NOMINAL], string("selLooseTausNoLep"),   false, debug);
+		crossClean_in_dR(selTightTaus,  selLeptons, 0.4, selTightTausNoLep,   weights_FULL[SYS_NOMINAL], string("selTightTausNoLep"),   false, debug);
 		crossClean_in_dR(selTaus_JetTauFakeRate, selLeptons, 0.4, selTaus_JetTauFakeRate_NoLep, weights_FULL[SYS_NOMINAL], string("selTaus_JetTauFakeRate_NoLep"), false, debug);
 
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
@@ -4289,7 +4295,8 @@ for(size_t f=0; f<urls.size();++f)
 					 * Record number of loose and tight taus for fake factor method (denum and num objects)
 					 */
 					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
-					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  4, selTausNoLep.size() * weight);
+					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+					fill_1d(string("singlemu_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 
 					// control fake rates (might be useful)
 					record_jets_fakerate_distrs(string("singlemu_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
@@ -4736,7 +4743,8 @@ for(size_t f=0; f<urls.size();++f)
 					 * Record number of loose and tight taus for fake factor method (denum and num objects)
 					 */
 					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
-					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  4, selTausNoLep.size() * weight);
+					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+					fill_1d(string("singleel_pretauselection_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 
 					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
 					// control
@@ -5020,7 +5028,12 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("elel_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
 					record_jets_fakerate_distrs(string("elel_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elel_"), string("passjets_tightTaus"), selJets_JetTauFakeRate_NoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("elel_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
+
+					fill_1d(string("elel_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+					fill_1d(string("elel_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+					fill_1d(string("elel_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 					}
 
 				if (passJetSelection && passBtagsSelection)
@@ -5168,7 +5181,12 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
 					record_jets_fakerate_distrs(string("mumu_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("mumu_"), string("passjets_tightTaus"), selJets_JetTauFakeRate_NoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("mumu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
+
+					fill_1d(string("mumu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+					fill_1d(string("mumu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+					fill_1d(string("mumu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 					}
 
 				if (passJetSelection && passBtagsSelection)
@@ -5315,7 +5333,12 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// loose taus for fake-factor method: selLooseTausNoLep
 					record_jets_fakerate_distrs(string("elmu_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs(string("elmu_"), string("passjets_tightTaus"), selJets_JetTauFakeRate_NoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
+
+					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 					}
 
 				if (passJetSelection && passBtagsSelection)

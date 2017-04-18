@@ -1017,8 +1017,9 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
 
 string tau_Loose_ID = runProcess.getParameter<std::string>("tau_LooseID");
+string tau_Tight_ID = runProcess.getParameter<std::string>("tau_TightID");
 
-cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << endl;
+cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << "\t| " << tau_Tight_ID << endl;
 
 
 
@@ -2320,12 +2321,14 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::TauCollection& selTaus,                          // output
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection IDtaus, selTaus, IDLoosetaus, selLooseTaus;
+		pat::TauCollection IDtaus, selTaus, IDLoosetaus, selLooseTaus,
+			IDTighttaus, selTightTaus;
 		//string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 
 		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, conf_record_taus_ID, debug); 
 		// recording loose taus for fake-factor method
 		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_Loose_ID, tau_againstMuon, tau_againstElectron, IDLoosetaus, conf_record_taus_ID, debug); 
+		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_Tight_ID, tau_againstMuon, tau_againstElectron, IDTighttaus, false, debug);
 
 		//int processTaus_Kinematics(pat::TauCollection& taus,          // input
 		//	double weight,
@@ -2335,6 +2338,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		processTaus_Kinematics(IDtaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus, conf_record_taus_kino, debug);
 		processTaus_Kinematics(IDLoosetaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selLooseTaus, conf_record_taus_kino, debug);
+		processTaus_Kinematics(IDTighttaus, weight, jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTightTaus, false, debug);
 
 		if(debug){
 			cout << "selected taus [individual]" << endl;
@@ -2351,11 +2355,13 @@ for(size_t f=0; f<urls.size();++f)
 		//	string control_name,
 		//	bool record, bool debug) // more output
 
-		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep, selLooseTausNoLep;
+		pat::TauCollection selTausNoMuons, selTausNoElectrons, selTausNoLep,
+			selLooseTausNoLep, selTightTausNoLep;
 		crossClean_in_dR(selTaus, selElectrons, 0.4, selTausNoElectrons, weight, string("selTausNoElectrons"), true, debug);
 		crossClean_in_dR(selTaus, selMuons,     0.4, selTausNoMuons,     weight, string("selTausNoMuons"),     true, debug);
 		crossClean_in_dR(selTaus, selLeptons,   0.4, selTausNoLep,       weight, string("selTausNoLep"),       true, debug);
-		crossClean_in_dR(selLooseTaus, selLeptons,   0.4, selLooseTausNoLep,  weight, string("selLooseTausNoLep"),       true, debug);
+		crossClean_in_dR(selTightTaus, selLeptons, 0.4, selTightTausNoLep,  weight, string("selTightTausNoLep"),   false, debug);
+		crossClean_in_dR(selLooseTaus, selLeptons, 0.4, selLooseTausNoLep,  weight, string("selLooseTausNoLep"),   true, debug);
 
 		// actually these will be recorded in 2d pt-eta distr-s of crossClean-ing
 		// check the cleaning of taus from leptons per eta (the problem with high fake rate in endcups):
@@ -2709,6 +2715,11 @@ for(size_t f=0; f<urls.size();++f)
 			// fake rate with loose taus for fake-factor method:
 			// selLooseTausNoLep
 			record_jets_fakerate_distrs(hlt_channel, selection + "_looseTaus", selJetsNoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs(hlt_channel, selection + "_tightTaus", selJetsNoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
+
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 			}
 
 		if (W1jet_selection) for (int i = 0; i<hlt_channels.size(); i++)
@@ -3008,6 +3019,11 @@ for(size_t f=0; f<urls.size();++f)
 			//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus)
 			// fake rate of loose taus for fake factor method:
 			record_jets_fakerate_distrs(hlt_channel, selection + "_looseTaus", probeJets, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+			record_jets_fakerate_distrs(hlt_channel, selection + "_tightTaus", probeJets, selTightTausNoLep, visible_gen_taus, weight, isMC);
+
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
+			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 			}
 
 		/*
