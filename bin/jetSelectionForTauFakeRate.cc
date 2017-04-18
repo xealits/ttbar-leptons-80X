@@ -2717,9 +2717,9 @@ for(size_t f=0; f<urls.size();++f)
 			record_jets_fakerate_distrs(hlt_channel, selection + "_looseTaus", selJetsNoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
 			record_jets_fakerate_distrs(hlt_channel, selection + "_tightTaus", selJetsNoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
 
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  2, selTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 			}
 
 		if (W1jet_selection) for (int i = 0; i<hlt_channels.size(); i++)
@@ -3021,9 +3021,9 @@ for(size_t f=0; f<urls.size();++f)
 			record_jets_fakerate_distrs(hlt_channel, selection + "_looseTaus", probeJets, selLooseTausNoLep, visible_gen_taus, weight, isMC);
 			record_jets_fakerate_distrs(hlt_channel, selection + "_tightTaus", probeJets, selTightTausNoLep, visible_gen_taus, weight, isMC);
 
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
-			fill_1d(string(hlt_channel, selection + "_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  2, selTausNoLep.size() * weight);
+			fill_1d(hlt_channel + selection + "_fakefactor_n_loose_tight_taus", 5, 0, 5,  3, selTightTausNoLep.size() * weight);
 			}
 
 		/*
