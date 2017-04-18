@@ -89,6 +89,7 @@ runProcess = cms.PSet(
     tau_ID        = cms.string("{tau_ID}"),
     tau_againstMuon     = cms.string("{tau_againstMuon}"),
     tau_againstElectron = cms.string("{tau_againstElectron}"),
+    tau_LooseID         = cms.string("{tau_LooseID}"),
     jetID   = cms.string("{jetID}"),
     jetPUID = cms.string("{jetPUID}"),
     with_PU  = cms.bool({with_PU}),

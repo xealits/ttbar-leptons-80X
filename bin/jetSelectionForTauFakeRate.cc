@@ -1016,7 +1016,9 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
 	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
 
-cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << endl;
+string tau_Loose_ID = runProcess.getParameter<std::string>("tau_LooseID");
+
+cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << endl;
 
 
 
@@ -2319,7 +2321,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection IDtaus, selTaus, IDLoosetaus, selLooseTaus;
-		string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+		//string tau_Loose_ID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 
 		processTaus_ID_ISO(taus, weight, tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, conf_record_taus_ID, debug); 
 		// recording loose taus for fake-factor method
