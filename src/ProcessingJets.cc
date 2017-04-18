@@ -585,7 +585,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(pat::JetCollecti
 	FactorizedJetCorrector *jesCor,
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
-	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
+	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, //Variation& m_systematic_variation,
 	jet_id   & jetID,
 	pu_jet_id& jetPUID,
 	bool with_PUID,
@@ -791,7 +791,28 @@ for ( const auto s : jetSystematics )
 			//double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
 			// getting it with the tool from files:
 			double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
-			double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
+
+			// the JER systematic is shift in JER scale factor
+			// according to
+			// https://gitlab.cern.ch/ttH/reference/blob/master/definitions/Moriond17.md#7-systematic-uncertainties
+			// and other places
+			double jer_sf;
+			if (s == SYS_JER_UP)
+				jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::UP);
+			else if (s == SYS_JER_DOWN)
+				jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::DOWN);
+			else
+				jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::NOMINAL);
+
+			/*
+			 * from CondFormats/JetMETObjects/interface/JetResolutionObject.h
+			 *
+			 * enum class Variation {
+			 *   NOMINAL = 0,
+			 *   DOWN = 1,
+			 *   UP = 2
+			 *};
+			*/
 
 			// it's needed to control smearing calculation -- do it in according branches of genJet-matching bellow
 			//fill_1d(string("control_jet_slimmedjet_jet_resolution"), 400, 0., 2., jet_resolution, weight);

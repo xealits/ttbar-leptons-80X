@@ -63,7 +63,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(pat::JetCollecti
 	FactorizedJetCorrector *jesCor,
 	JetCorrectionUncertainty *totalJESUnc,
 	double dR_max, // for jet matching in jet corrections smearing for MC
-	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, Variation& m_systematic_variation,
+	JME::JetResolution& resolution, JME::JetResolutionScaleFactor& resolution_sf, //Variation& m_systematic_variation,
 	jet_id   & jetID,
 	pu_jet_id& jetPUID,
 	bool with_PUID,

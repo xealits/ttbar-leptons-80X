@@ -1481,7 +1481,18 @@ string jetResolutionSFFileName (TjetResolutionSFFileName);
 JME::JetResolution jet_resolution_in_pt = JME::JetResolution(jetResolutionFileName);
 JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScaleFactor(jetResolutionSFFileName);
 
-Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+/*
+ * from CondFormats/JetMETObjects/interface/JetResolutionObject.h
+ *
+ * enum class Variation {
+ *   NOMINAL = 0,
+ *   DOWN = 1,
+ *   UP = 2
+ *};
+*/
+
+//Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
+// moved it to jets with systematics
 
 
 // ------------------------------------- muon energy scale and uncertainties
@@ -3611,7 +3622,7 @@ for(size_t f=0; f<urls.size();++f)
 		//string jetPUID("MediumPU");
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(jets, genJets, isMC, weights_FULL[SYS_NOMINAL], rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, /*jet_m_systematic_variation,*/ jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
 
 
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weights_FULL[SYS_NOMINAL]);
