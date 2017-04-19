@@ -235,6 +235,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				weightflow = (TH1D*) file->Get("weightflow_elel_NOMINAL");
 				normal_initial_weight = weightflow->GetBinContent(11);
 				}
+			else if (file->GetListOfKeys()->Contains("weightflow_elel"))
+				{
+				weightflow = (TH1D*) file->Get("weightflow_elel");
+				normal_initial_weight = weightflow->GetBinContent(11);
+				}
 			else if (file->GetListOfKeys()->Contains("weightflow"))
 				{
 				weightflow = (TH1D*) file->Get("weightflow");

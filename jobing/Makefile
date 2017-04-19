@@ -462,6 +462,19 @@ jets_taus_mc_distrs_dileptons:
 	stacked_histo_project2to1_distr --normalize 1.7 elmu_passjets_taus_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 
 
+jets_taus_mc_distrs_control:
+	stacked_histo_project3to1_distr --normalize 1.7 singlemu_pretau_jets_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr --normalize 1.7 singlemu_pretau_jets_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr --normalize 1.7 singlemu_pretau_jets_distr z 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr --normalize 1.7 singleel_pretau_jets_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr --normalize 1.7 singleel_pretau_jets_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr --normalize 1.7 singleel_pretau_jets_distr z 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	#
+	stacked_histo_project2to1_distr --normalize 1.7 singlemu_pretau_taus_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project2to1_distr --normalize 1.7 singlemu_pretau_taus_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project2to1_distr --normalize 1.7 singleel_pretau_taus_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project2to1_distr --normalize 1.7 singleel_pretau_taus_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+
 
 jet_tau_origin_distrs_stacked_jets_qcd:
 	jet_distrs_stacked_per_origin --normalize 0.25 HLTjet_qcd_tau x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
@@ -529,6 +542,14 @@ jet_origin_fractions_stacked_dileptons:
 	jet_distrs_origin_fractions_stacked --normalize 0.25 elmu_passjets y 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 	jet_distrs_origin_fractions_stacked --normalize 0.25 elmu_passjets z 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 
+jet_origin_fractions_stacked_control:
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singleel_pretau x 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singleel_pretau y 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singleel_pretau z 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singlemu_pretau x 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singlemu_pretau y 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked --normalize 0.25 singlemu_pretau z 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+
 
 
 
@@ -550,6 +571,17 @@ jet_fakerate_fractions_stacked_dileptons:
 	jet_fakerate_fractions_per_origin  0.25 elmu_passjets x 1  0   200    elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
 	jet_fakerate_fractions_per_origin  0.25 elmu_passjets y 1 -2.5   2.5  elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
 	jet_fakerate_fractions_per_origin  0.25 elmu_passjets z 1  0     1    elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+
+jet_fakerate_fractions_stacked_control:
+	jet_fakerate_fractions_per_origin  0.25 singleel_pretau x 1  0   200    eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_fakerate_fractions_per_origin  0.25 singleel_pretau y 1 -2.5   2.5  eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_fakerate_fractions_per_origin  0.25 singleel_pretau z 1  0     1    eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_fakerate_fractions_per_origin  0.25 singlemu_pretau x 1  0   200    mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_fakerate_fractions_per_origin  0.25 singlemu_pretau y 1 -2.5   2.5  mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+	jet_fakerate_fractions_per_origin  0.25 singlemu_pretau z 1  0     1    mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" ` 
+
+
+
 
 
 jet_tau_origin_distrs_overlayed:
