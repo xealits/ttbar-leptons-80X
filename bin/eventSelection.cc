@@ -3180,14 +3180,14 @@ for(size_t f=0; f<urls.size();++f)
 		// 2016: slimmedMETsMuEGClean are corrected by muons and electrons, only in Data!
 		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes
 		if(metsHandle.isValid() ) mets = *metsHandle;
-		pat::MET met = mets[0];
+		pat::MET MET = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		fill_1d(string("control_met_main_pt"),  200, 0., 200., met.pt(),  weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_met_main_phi"), 200, 0., 200., met.phi(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_main_pt"),  200, 0., 200., MET.pt(),  weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_main_phi"), 200, 0., 200., MET.phi(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("control_met_corr1_pt"),  200, 0., 200., met.corPt(pat::MET::Type1),  weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_met_corr1_phi"), 200, 0., 200., met.corPhi(pat::MET::Type1), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_corr1_pt"),  200, 0., 200., MET.corPt(pat::MET::Type1),  weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_corr1_phi"), 200, 0., 200., MET.corPhi(pat::MET::Type1), weights_FULL[SYS_NOMINAL]);
 
 		// testing WNJets
 		if(debug){
@@ -3203,8 +3203,8 @@ for(size_t f=0; f<urls.size();++f)
 			if(mets_uncorrectedHandle.isValid() ) mets_uncorrected = *mets_uncorrectedHandle;
 			pat::MET met_uncorrected = mets_uncorrected[0];
 			fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
-			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - met.pt(), weights_FULL[SYS_NOMINAL]);
-			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - met.phi(), weights_FULL[SYS_NOMINAL]);
+			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - MET.pt(), weights_FULL[SYS_NOMINAL]);
+			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - MET.phi(), weights_FULL[SYS_NOMINAL]);
 			}
 
 		if(debug){
@@ -3634,14 +3634,49 @@ for(size_t f=0; f<urls.size();++f)
 		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr[SYS_NOMINAL].X(), full_jet_corr[SYS_NOMINAL].Y(), full_jet_corr[SYS_NOMINAL].Z(), weights_FULL[SYS_NOMINAL]);
 		// 1000 bins
 
-		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr[SYS_NOMINAL].X(), full_jet_corr[SYS_NOMINAL].Y(), weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr[SYS_NOMINAL].Z(), weights_FULL[SYS_NOMINAL]);
+		//fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr[SYS_NOMINAL].X(), full_jet_corr[SYS_NOMINAL].Y(), weights_FULL[SYS_NOMINAL]);
+		//fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr[SYS_NOMINAL].Z(), weights_FULL[SYS_NOMINAL]);
 		// 10 000 and 100 bins
 
-		met.setP4(met.p4() - full_jet_corr[SYS_NOMINAL]); // just return the full correction and propagate in place
+		//met.setP4(met.p4() - full_jet_corr[SYS_NOMINAL]); // just return the full correction and propagate in place
 
-		fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
-		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
+		// -------------------------------------------------- different mets with jet corrections and some nominal met corrections
+		/*
+		 * the original pat::MET is stored in object MET
+		 * it corresponds to jet corrections at the production of data
+		 * (and it hass all the corrections: jet/met etc; default operations return Type1 values MET.pt() == MET.corPt(pat::MET::Type1) -- and same for .p4())
+		 *
+		 * now the jets were recorrected and these changes should be propagated to METs
+		 */
+		map<systematic_shift, LorentzVector> systematic_mets;
+
+		// the NOMINAL and jet systematic shifts
+		for ( const auto s : jetSystematics )
+			{
+			const char* name = systematic_shift_names[s];
+			systematic_mets[s] = MET.p4() - full_jet_corr[s];
+			fill_2d(string("control_jet_full_jet_corr_pX_pY") + name, 100, -50., 50., 100, -50., 50.,  full_jet_corr[s].X(), full_jet_corr[s].Y(), weights_FULL[SYS_NOMINAL]);
+			}
+
+		// also the original MET contains some Unclustered Energy UP/DOWN variations
+		// UnclusteredEnUp=10, UnclusteredEnDown=11,
+		// need to up-port them into new NOMINAL MET
+		// with this
+		// LorentzVector shiftedP4(METUncertainty shift, METCorrectionLevel level=Type1)  const ;
+		// so I want: shifted + (new_nominal - old_nominal) = shifted - nominal + new_nominal
+		systematic_mets[SYS_MET_UNCLUSTERED_EN_UP]   = MET.shiftedP4(pat::MET::UnclusteredEnUp)   - MET.p4() + systematic_mets[SYS_NOMINAL];
+		systematic_mets[SYS_MET_UNCLUSTERED_EN_DOWN] = MET.shiftedP4(pat::MET::UnclusteredEnDown) - MET.p4() + systematic_mets[SYS_NOMINAL];
+
+
+		// ok, let's save them all
+		for ( const auto s : jetSystematics )
+			{
+			const char* name = systematic_shift_names[s];
+			fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt") + name, 100, 0., 200., systematic_mets[s].pt(), weights_FULL[SYS_NOMINAL]);
+			//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);
+			}
+		fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt") + systematic_shift_names[SYS_MET_UNCLUSTERED_EN_UP],   100, 0., 200., systematic_mets[SYS_MET_UNCLUSTERED_EN_UP].pt(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt") + systematic_shift_names[SYS_MET_UNCLUSTERED_EN_DOWN], 100, 0., 200., systematic_mets[SYS_MET_UNCLUSTERED_EN_DOWN].pt(), weights_FULL[SYS_NOMINAL]);
 
 		//int processJets_Kinematics(pat::JetCollection& jets, // input
 		//	//bool isMC,
@@ -4059,7 +4094,7 @@ for(size_t f=0; f<urls.size();++f)
 			//bool passJetSelection(selJets.size()>1); // 2 jets // 2^4
 			//bool passJetSelection(n_jets>1); // 2 jets // 2^4
 			bool passJetSelection(n_jets>2); // >= 3 jets
-			bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+			bool passMetSelection(systematic_mets[SYS_NOMINAL].pt()>40.); // MET > 40 // 2^3
 			// bool passMetSelection(n_met.pt()>40.); // MET > 40 // 2^3
 			//bool passBtagsSelection(selSingleLepBJets.size()>0); // 1 b jet // 2^2
 			//bool passBtagsSelection(selBJets[SYS_NOMINAL].size()>0); // 1 b jet // 2^2
@@ -4292,7 +4327,7 @@ for(size_t f=0; f<urls.size();++f)
 
 
 			{
-				fill_2d(string("control_met_singlelep_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_met_singlelep_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 				for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 					fill_2d(string("control_jet_singlelep_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 				for (int i=0; i<selTausNoLep.size(); i++)
@@ -4302,7 +4337,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 			if (passJetSelection) {
-				fill_2d(string("control_met_singlelep_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_met_singlelep_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 				for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 					fill_2d(string("control_jet_singlelep_passjet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 				for (int i=0; i<selTausNoLep.size(); i++)
@@ -4313,7 +4348,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleMu)
 				{
-				fill_2d(string("control_met_singlemu_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_met_singlemu_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 				for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 					fill_2d(string("control_jet_singlemu_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 				for (int i=0; i<selTausNoLep.size(); i++)
@@ -4325,7 +4360,7 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("singlemu_"), string("control_passjet"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("singlemu_"), string("control_passjet"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
-					fill_2d(string("control_met_singlemu_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singlemu_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singlemu_passjet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4350,7 +4385,7 @@ for(size_t f=0; f<urls.size();++f)
 					// (used for jet origins mainly, plus for control)
 					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
-					fill_2d(string("control_met_singlemu_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singlemu_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singlemu_pretau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4516,7 +4551,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					fill_1d( string("weightflow_control_mu_passtau"),  300, -3, 3, weight, weight);
 
-					fill_2d(string("control_met_singlemu_passtau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singlemu_passtau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singlemu_passtau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4549,7 +4584,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
 					fill_1d( string("singlemu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("singlemu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
-					fill_1d( string("singlemu_selection_met_pt"),  200, 0, 400, met.pt(), weight);
+					fill_1d( string("singlemu_selection_met_pt"),  200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
 					// energy
 					fill_1d( string("singlemu_selection_muon_energy"), 200, 0, 400, selLeptons[0].energy(), weight);
@@ -4558,7 +4593,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
 					fill_1d( string("singlemu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("singlemu_selection_met_energy"), 200, 0, 400,  n_met.energy(), weight);
-					fill_1d( string("singlemu_selection_met_energy"),  200, 0, 400, met.energy(), weight);
+					fill_1d( string("singlemu_selection_met_energy"),  200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
 
 					// eta
 					fill_1d( string("singlemu_selection_muon_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
@@ -4567,7 +4602,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
 					fill_1d( string("singlemu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("singlemu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
-					fill_1d( string("singlemu_selection_met_eta"),  300, -3, 3, met.eta(), weight);
+					fill_1d( string("singlemu_selection_met_eta"),  300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 
 					weightflow_control_mu_selection += weight;
 					fill_1d( string("weightflow_control_mu_selection"),  300, -3, 3, weight, weight);
@@ -4601,7 +4636,11 @@ for(size_t f=0; f<urls.size();++f)
 						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					bool passJetSelection(n_jets>2); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
-					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+
 					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
 					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 					bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
@@ -4675,7 +4714,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			if (isSingleE)
 				{
-				fill_2d(string("control_met_singleel_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+				fill_2d(string("control_met_singleel_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 				for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 					fill_2d(string("control_jet_singleel_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 				for (int i=0; i<selTausNoLep.size(); i++)
@@ -4687,7 +4726,7 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs(string("singleel_"), string("control_passjet"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_large_bins(string("singleel_"), string("control_passjet"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
-					fill_2d(string("control_met_singleel_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singleel_passjet_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singleel_passjet_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4730,7 +4769,11 @@ for(size_t f=0; f<urls.size();++f)
 					// if we select jets cleaned from taus
 					// this ttbar channel has 2 b-jets + tau&lepton
 					// leabing it like this for now, need to try >1 jets later
-					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+
 					bool passBtagsSelection(n_bjets>0); // 1 b jet // 2^2
 					bool passTauSelection(n_taus>0); // >= 1 tau in v8.8
 					bool passOS( n_taus>0 && n_leptons>0 ? selLeptons[0].pdgId() * selTausNoLep[0].pdgId() < 0 : 0); // Oposite sign // 2^0
@@ -4814,7 +4857,7 @@ for(size_t f=0; f<urls.size();++f)
 					// and our selection fake rates (counting jet origins)
 					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
-					fill_2d(string("control_met_singleel_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singleel_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singleel_pretau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4960,7 +5003,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					fill_1d( string("weightflow_control_el_passtau"),  300, -3, 3, weight, weight);
 
-					fill_2d(string("control_met_singleel_passtau_pt_eta"), 250, 0., 500., 200, -4., 4., met.pt(), met.eta(), weight);
+					fill_2d(string("control_met_singleel_passtau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
 						fill_2d(string("control_jet_singleel_passtau_selJetsNoLep_pt_eta"), 250, 0., 500., 200, -4., 4., selJetsNoLep[SYS_NOMINAL][i].pt(), selJetsNoLep[SYS_NOMINAL][i].eta(), weight);
 					for (int i=0; i<selTausNoLep.size(); i++)
@@ -4992,7 +5035,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
 					fill_1d( string("singleel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("singleel_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
-					fill_1d( string("singleel_selection_met_pt"),  200, 0, 400, met.pt(), weight);
+					fill_1d( string("singleel_selection_met_pt"),  200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
 					// energy
 					fill_1d( string("singleel_selection_electron_energy"), 200, 0, 400, selLeptons[0].energy(), weight);
@@ -5001,7 +5044,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
 					fill_1d( string("singleel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("singleel_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
-					fill_1d( string("singleel_selection_met_energy"),  200, 0, 400, met.energy(), weight);
+					fill_1d( string("singleel_selection_met_energy"),  200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
 
 					// eta
 					fill_1d( string("singleel_selection_electron_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
@@ -5010,7 +5053,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
 					fill_1d( string("singleel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("singleel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
-					fill_1d( string("singleel_selection_met_eta"),  300, -3, 3, met.eta(), weight);
+					fill_1d( string("singleel_selection_met_eta"),  300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 
 					weightflow_control_el_selection += weight;
 					fill_1d( string("weightflow_control_el_selection"),  300, -3, 3, weight, weight);
@@ -5065,7 +5108,7 @@ for(size_t f=0; f<urls.size();++f)
 			bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 			// bool passJetSelection(selJets.size()>1);
 			bool passJetSelection(n_jets>1);
-			bool passMetSelection(met.pt()>40.);
+			bool passMetSelection(systematic_mets[SYS_NOMINAL].pt()>40.);
 			bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
 			// bool passBtagsSelection(selBJets[SYS_NOMINAL].size()>1);
 			bool passBtagsSelection(n_bjets>0);
@@ -5125,8 +5168,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elel_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("elel_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
 					fill_1d( string("elel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
-					// fill_1d( string("elel_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
-					fill_1d( string("elel_selection_met_pt"), 200, 0, 400, met.pt(), weight);
+					// fill_1d( string("elel_selection_met_pt"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].pt(), weight);
+					fill_1d( string("elel_selection_met_pt"), 200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
 					// energies
 					fill_1d( string("elel_selection_el1_energy"), 200, 0, 400, selLeptons[0].energy(), weight);
@@ -5135,8 +5178,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elel_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("elel_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
 					fill_1d( string("elel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
-					// fill_1d( string("elel_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
-					fill_1d( string("elel_selection_met_energy"), 200, 0, 400, met.energy(), weight);
+					// fill_1d( string("elel_selection_met_energy"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].energy(), weight);
+					fill_1d( string("elel_selection_met_energy"), 200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
 
 					//etas:
 					fill_1d( string("elel_selection_el1_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
@@ -5145,8 +5188,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elel_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("elel_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
 					fill_1d( string("elel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
-					// fill_1d( string("elel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
-					fill_1d( string("elel_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+					// fill_1d( string("elel_selection_met_eta"), 300, -3, 3, n_systematic_mets[SYS_NOMINAL].eta(), weight);
+					fill_1d( string("elel_selection_met_eta"), 300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 
 					weightflow_control_elel_selection += weight;
 					fill_1d( string("weightflow_control_elel_selection"),  300, -3, 3, weight, weight);
@@ -5181,7 +5224,11 @@ for(size_t f=0; f<urls.size();++f)
 					// and only for ee/mumu?
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
-					bool passMetSelection(met.pt()>40.);
+
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.);
 					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
 					bool passBtagsSelection(n_bjets>0);
 
@@ -5286,8 +5333,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("mumu_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("mumu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
 					fill_1d( string("mumu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
-					// fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
-					fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, met.pt(), weight);
+					// fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].pt(), weight);
+					fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
 					// energies
 					fill_1d( string("mumu_selection_mu1_energy"), 200, 0, 200, selLeptons[0].energy(), weight);
@@ -5296,8 +5343,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("mumu_selection_jet1_energy"), 200, 0, 200, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("mumu_selection_jet2_energy"), 200, 0, 200, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
 					fill_1d( string("mumu_selection_bjet_energy"), 200, 0, 200, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
-					// fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, n_met.energy(), weight);
-					fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, met.energy(), weight);
+					// fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, n_systematic_mets[SYS_NOMINAL].energy(), weight);
+					fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, systematic_mets[SYS_NOMINAL].energy(), weight);
 
 					//etas:
 					fill_1d( string("mumu_selection_mu1_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
@@ -5306,8 +5353,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("mumu_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("mumu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
 					fill_1d( string("mumu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
-					// fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
-					fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+					// fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, n_systematic_mets[SYS_NOMINAL].eta(), weight);
+					fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 
 					weightflow_control_mumu_selection += weight;
 					fill_1d( string("weightflow_control_mumu_selection"),  300, -3, 3, weight, weight);
@@ -5341,7 +5388,11 @@ for(size_t f=0; f<urls.size();++f)
 					// and only for ee/mumu?
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
-					bool passMetSelection(met.pt()>40.);
+
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.);
 					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
 					bool passBtagsSelection(n_bjets>0);
 
@@ -5446,8 +5497,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elmu_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("elmu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
 					fill_1d( string("elmu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
-					// fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
-					fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, met.pt(), weight);
+					// fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].pt(), weight);
+					fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
 					// energies
 					fill_1d( string("elmu_selection_lep1_energy"), 200, 0, 400, selLeptons[0].energy(), weight);
@@ -5456,8 +5507,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elmu_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("elmu_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
 					fill_1d( string("elmu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
-					// fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
-					fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, met.energy(), weight);
+					// fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].energy(), weight);
+					fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
 
 					//etas:
 					fill_1d( string("elmu_selection_lep1_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
@@ -5466,8 +5517,8 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elmu_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("elmu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
 					fill_1d( string("elmu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
-					// fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
-					fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
+					// fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, n_systematic_mets[SYS_NOMINAL].eta(), weight);
+					fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 
 					weightflow_control_elmu_selection += weight;
 					fill_1d( string("weightflow_control_elmu_selection"),  300, -3, 3, weight, weight);
@@ -5501,7 +5552,11 @@ for(size_t f=0; f<urls.size();++f)
 					// and only for ee/mumu?
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
-					bool passMetSelection(met.pt()>40.);
+
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
+					//bool passMetSelection(met.pt()>40.);
 					bool passOS(selLeptons[0].pdgId() * selLeptons[1].pdgId() < 0 );
 					bool passBtagsSelection(n_bjets>0);
 

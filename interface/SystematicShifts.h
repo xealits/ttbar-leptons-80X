@@ -16,7 +16,8 @@ typedef enum {SYS_NOMINAL,
 	SYS_TOP_PT,
 	SYS_JES_UP, SYS_JES_DOWN,
 	SYS_JER_UP, SYS_JER_DOWN,
-	SYS_BTAG_UP, SYS_BTAG_DOWN} systematic_shift;
+	SYS_BTAG_UP, SYS_BTAG_DOWN,
+	SYS_MET_UNCLUSTERED_EN_UP, SYS_MET_UNCLUSTERED_EN_DOWN} systematic_shift;
 
 systematic_shift weightSystematics[] = {SYS_NOMINAL,
 	SYS_PU_UP, SYS_PU_DOWN,
@@ -38,7 +39,8 @@ systematic_shift allSystematics[] = {SYS_NOMINAL,
 	SYS_TOP_PT,
 	SYS_JES_UP, SYS_JES_DOWN,
 	SYS_JER_UP, SYS_JER_DOWN,
-	SYS_BTAG_UP, SYS_BTAG_DOWN};
+	SYS_BTAG_UP, SYS_BTAG_DOWN,
+	SYS_MET_UNCLUSTERED_EN_UP, SYS_MET_UNCLUSTERED_EN_DOWN};
 
 // C++11 feature:
 map<systematic_shift, const char*> systematic_shift_names = {{SYS_NOMINAL, "NOMINAL"},
@@ -46,7 +48,8 @@ map<systematic_shift, const char*> systematic_shift_names = {{SYS_NOMINAL, "NOMI
 	{SYS_TOP_PT, "TOP_PT"},
 	{SYS_JES_UP,   "JES_UP"}, {SYS_JES_DOWN, "JES_DOWN"},
 	{SYS_JER_UP,   "JER_UP"}, {SYS_JER_DOWN, "JER_DOWN"},
-	{SYS_BTAG_UP,   "BTAG_UP"}, {SYS_BTAG_DOWN, "BTAG_DOWN"}
+	{SYS_BTAG_UP,   "BTAG_UP"}, {SYS_BTAG_DOWN, "BTAG_DOWN"},
+	{SYS_MET_UNCLUSTERED_EN_UP,   "MET_UNCLUSTERED_EN_UP"}, {SYS_MET_UNCLUSTERED_EN_DOWN, "MET_UNCLUSTERED_EN_DOWN"}
 };
 
 map<systematic_shift, const string> btag_sys_points = {{SYS_NOMINAL, "central"},
