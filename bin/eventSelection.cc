@@ -3746,16 +3746,22 @@ for(size_t f=0; f<urls.size();++f)
 		float btag_WP = 0.8484; // medium
 
 		//pat::JetCollection selBJets;
-		map<systematic_shift, pat::JetCollection> selBJets;
-		for ( const auto s : jetSystematics )
+		// JET_SHIFT, BTAG_SHIFT
+		// in multiselect I'll use NOMINAL BTAG_SHIFT for jet corrections
+		// and record BTAG_SHIFT-s for NOMINAL jets
+		map<systematic_shift, map<systematic_shift, pat::JetCollection>> selBJets;
+		for ( const auto jet_sys : jetSystematics )
 			{
-			// TODO: maybe selJetsNoLep are more appropriate here?
-			double temp_jet_sys_b_tagging_sf = 1;
-			processBJets_BTag(selJetsNoLepNoTau[s], isMC, weights_FULL[SYS_NOMINAL],
-				(s == SYS_NOMINAL? weight_bTaggingSF : temp_jet_sys_b_tagging_sf),
-				btagCal, bEffs, btagger_label, btag_WP,
-				selBJets[s],
-				(s == SYS_NOMINAL? true : false), debug);
+			for ( const auto btag_sys : btagSystematics )
+				{
+				double temp_jet_sys_b_tagging_sf = 1;
+				// TODO: maybe selJetsNoLep are more appropriate here?
+				processBJets_BTag(selJetsNoLepNoTau[s], isMC, weights_FULL[SYS_NOMINAL],
+					(s == SYS_NOMINAL? weight_bTaggingSF : temp_jet_sys_b_tagging_sf),
+					btagCal, bEffs, btagger_label, btag_WP,
+					selBJets[jet_sys][btag_sys],
+					(s == SYS_NOMINAL? true : false), debug);
+				}
 			}
 
 		//weight *= weight_bTaggingSF;
@@ -3786,7 +3792,7 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("n_selJetsNoLep"), 10, 0, 10,   selJetsNoLep[SYS_NOMINAL].size(), weights_FULL[SYS_NOMINAL]);
 		fill_1d(string("n_selJetsNoLepNoTau"), 10, 0, 10,   selJetsNoLepNoTau[SYS_NOMINAL].size(), weights_FULL[SYS_NOMINAL]);
 
-		fill_1d(string("n_selBJets"), 10, 0, 10,   selBJets[SYS_NOMINAL].size(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("n_selBJets"), 10, 0, 10,   selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weights_FULL[SYS_NOMINAL]);
 
 		fill_1d(string("n_slimmedtaus"),  10, 0, 10,   taus.size(), weights_FULL[SYS_NOMINAL]);
 		fill_1d(string("n_selTaus"),      10, 0, 10,   selTaus.size(), weights_FULL[SYS_NOMINAL]);
@@ -4009,7 +4015,7 @@ for(size_t f=0; f<urls.size();++f)
 		//unsigned int n_jets = selJetsNoLepNoTau[SYS_NOMINAL].size();
 		unsigned int n_jets = selJetsNoLep[SYS_NOMINAL].size(); // noLep jet as in jet fake-rate study
 		// unsigned int n_bjets = selSingleLepBJets.size();
-		unsigned int n_bjets = selBJets[SYS_NOMINAL].size();
+		unsigned int n_bjets = selBJets[SYS_NOMINAL][SYS_NOMINAL].size();
 
 
 		// ------------------------------------------ SINGLE LEPTON CHANNELS
@@ -4509,14 +4515,14 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("singlemu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
 					fill_1d( string("singlemu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau[SYS_NOMINAL].size(), weight);
-					fill_1d( string("singlemu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL].size(), weight);
+					fill_1d( string("singlemu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weight);
 
 					// pts
 					fill_1d( string("singlemu_selection_muon_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
 					fill_1d( string("singlemu_selection_tau_pt"),  200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("singlemu_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("singlemu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("singlemu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("singlemu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("singlemu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
 					fill_1d( string("singlemu_selection_met_pt"),  200, 0, 400, met.pt(), weight);
 
@@ -4525,7 +4531,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_tau_energy"),  200, 0, 400, selTausNoLep[0].energy(), weight);
 					fill_1d( string("singlemu_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("singlemu_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("singlemu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("singlemu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("singlemu_selection_met_energy"), 200, 0, 400,  n_met.energy(), weight);
 					fill_1d( string("singlemu_selection_met_energy"),  200, 0, 400, met.energy(), weight);
 
@@ -4534,7 +4540,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singlemu_selection_tau_eta"),  300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("singlemu_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("singlemu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("singlemu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("singlemu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("singlemu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("singlemu_selection_met_eta"),  300, -3, 3, met.eta(), weight);
 
@@ -4559,7 +4565,15 @@ for(size_t f=0; f<urls.size();++f)
 					// the jets contain only jetSystematics
 					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
-					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					// this is tricky:
+					unsigned int n_bjets;
+					// if it's BTAG systematic shift -- get it from the NOMINAL jet shift
+					if (sys == SYS_BTAG_UP || sys == SYS_BTAG_DOWN)
+						n_bjets = selBJets[SYS_NOMINAL][sys].size();
+					// else -- get NOMINAL btags from SYS jets or default to nominal jets and nominal btags
+					else
+						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					bool passJetSelection(n_jets>2); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
 					bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
@@ -4676,7 +4690,15 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_bjets = selBJets[sys].size();
 					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
-					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					// this is tricky:
+					unsigned int n_bjets;
+					// if it's BTAG systematic shift -- get it from the NOMINAL jet shift
+					if (sys == SYS_BTAG_UP || sys == SYS_BTAG_DOWN)
+						n_bjets = selBJets[SYS_NOMINAL][sys].size();
+					// else -- get NOMINAL btags from SYS jets or default to nominal jets and nominal btags
+					else
+						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					bool passJetSelection(n_jets>2); // >= 3 jets
 					// -- TODO: actually there is no point for >= 3 jets
@@ -4936,14 +4958,14 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					fill_1d( string("singleel_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
 					fill_1d( string("singleel_selection_njets"), 10, 0, 10, selJetsNoLepNoTau[SYS_NOMINAL].size(), weight);
-					fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL].size(), weight);
+					fill_1d( string("singleel_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weight);
 
 					// pts
 					fill_1d( string("singleel_selection_electron_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
 					fill_1d( string("singleel_selection_tau_pt"),  200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("singleel_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("singleel_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("singleel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("singleel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("singleel_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
 					fill_1d( string("singleel_selection_met_pt"),  200, 0, 400, met.pt(), weight);
 
@@ -4952,7 +4974,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_tau_energy"),  200, 0, 400, selTausNoLep[0].energy(), weight);
 					fill_1d( string("singleel_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("singleel_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("singleel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("singleel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("singleel_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
 					fill_1d( string("singleel_selection_met_energy"),  200, 0, 400, met.energy(), weight);
 
@@ -4961,7 +4983,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("singleel_selection_tau_eta"),  300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("singleel_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("singleel_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("singleel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("singleel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("singleel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("singleel_selection_met_eta"),  300, -3, 3, met.eta(), weight);
 
@@ -5069,7 +5091,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elel_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("elel_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
 					fill_1d( string("elel_selection_njets"), 10, 0, 10, selJetsNoLepNoTau[SYS_NOMINAL].size(), weight);
-					fill_1d( string("elel_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL].size(), weight);
+					fill_1d( string("elel_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weight);
 
 					// pt
 					fill_1d( string("elel_selection_el1_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
@@ -5077,7 +5099,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elel_selection_tau_pt"), 200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("elel_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("elel_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("elel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("elel_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("elel_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
 					fill_1d( string("elel_selection_met_pt"), 200, 0, 400, met.pt(), weight);
 
@@ -5087,7 +5109,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elel_selection_tau_energy"), 200, 0, 400, selTausNoLep[0].energy(), weight);
 					fill_1d( string("elel_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("elel_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("elel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("elel_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("elel_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
 					fill_1d( string("elel_selection_met_energy"), 200, 0, 400, met.energy(), weight);
 
@@ -5097,7 +5119,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elel_selection_tau_eta"), 300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("elel_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("elel_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("elel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("elel_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("elel_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("elel_selection_met_eta"), 300, -3, 3, met.eta(), weight);
 
@@ -5119,7 +5141,15 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_bjets = selBJets[sys].size();
 					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
-					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					// this is tricky:
+					unsigned int n_bjets;
+					// if it's BTAG systematic shift -- get it from the NOMINAL jet shift
+					if (sys == SYS_BTAG_UP || sys == SYS_BTAG_DOWN)
+						n_bjets = selBJets[SYS_NOMINAL][sys].size();
+					// else -- get NOMINAL btags from SYS jets or default to nominal jets and nominal btags
+					else
+						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					// Event selection booleans
 					// or dilepton mass > 20GeV?
@@ -5222,7 +5252,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("mumu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("mumu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
 					fill_1d( string("mumu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau[SYS_NOMINAL].size(), weight);
-					fill_1d( string("mumu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL].size(), weight);
+					fill_1d( string("mumu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weight);
 
 					// pt
 					fill_1d( string("mumu_selection_mu1_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
@@ -5230,7 +5260,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("mumu_selection_tau_pt"), 200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("mumu_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("mumu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("mumu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("mumu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
 					fill_1d( string("mumu_selection_met_pt"), 200, 0, 400, met.pt(), weight);
 
@@ -5240,7 +5270,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("mumu_selection_tau_energy"), 200, 0, 200, selTausNoLep[0].energy(), weight);
 					fill_1d( string("mumu_selection_jet1_energy"), 200, 0, 200, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("mumu_selection_jet2_energy"), 200, 0, 200, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("mumu_selection_bjet_energy"), 200, 0, 200, selBJets[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("mumu_selection_bjet_energy"), 200, 0, 200, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, n_met.energy(), weight);
 					fill_1d( string("mumu_selection_met_energy"), 200, 0, 200, met.energy(), weight);
 
@@ -5250,7 +5280,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("mumu_selection_tau_eta"), 300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("mumu_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("mumu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("mumu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("mumu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("mumu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
 
@@ -5270,7 +5300,16 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_bjets = selBJets[sys].size();
 					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
-					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					// this is tricky:
+					unsigned int n_bjets;
+					// if it's BTAG systematic shift -- get it from the NOMINAL jet shift
+					if (sys == SYS_BTAG_UP || sys == SYS_BTAG_DOWN)
+						n_bjets = selBJets[SYS_NOMINAL][sys].size();
+					// else -- get NOMINAL btags from SYS jets or default to nominal jets and nominal btags
+					else
+						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					// Event selection booleans
 					// or dilepton mass > 20GeV?
@@ -5373,7 +5412,7 @@ for(size_t f=0; f<urls.size();++f)
 					fill_1d( string("elmu_selection_nleps"), 10, 0, 10, selLeptons.size(), weight);
 					//fill_1d( string("elmu_selection_ntaus"), 10, 0, 10, selTausNoLep.size(), weight);
 					fill_1d( string("elmu_selection_njets"), 10, 0, 10, selJetsNoLepNoTau[SYS_NOMINAL].size(), weight);
-					fill_1d( string("elmu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL].size(), weight);
+					fill_1d( string("elmu_selection_nbjets"), 10, 0, 10, selBJets[SYS_NOMINAL][SYS_NOMINAL].size(), weight);
 
 					// pt
 					fill_1d( string("elmu_selection_lep1_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
@@ -5381,7 +5420,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_selection_tau_pt"), 200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("elmu_selection_jet1_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("elmu_selection_jet2_pt"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("elmu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("elmu_selection_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, n_met.pt(), weight);
 					fill_1d( string("elmu_selection_met_pt"), 200, 0, 400, met.pt(), weight);
 
@@ -5391,7 +5430,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_selection_tau_energy"), 200, 0, 400, selTausNoLep[0].energy(), weight);
 					fill_1d( string("elmu_selection_jet1_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("elmu_selection_jet2_energy"), 200, 0, 400, selJetsNoLepNoTau[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("elmu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("elmu_selection_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, n_met.energy(), weight);
 					fill_1d( string("elmu_selection_met_energy"), 200, 0, 400, met.energy(), weight);
 
@@ -5401,7 +5440,7 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_selection_tau_eta"), 300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("elmu_selection_jet1_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("elmu_selection_jet2_eta"), 300, -3, 3, selJetsNoLepNoTau[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("elmu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("elmu_selection_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, n_met.eta(), weight);
 					fill_1d( string("elmu_selection_met_eta"), 300, -3, 3, met.eta(), weight);
 
@@ -5421,7 +5460,16 @@ for(size_t f=0; f<urls.size();++f)
 					//unsigned int n_bjets = selBJets[sys].size();
 					//unsigned int n_jets = (selJetsNoLepNoTau.find(sys) != selJetsNoLepNoTau.end() ? selJetsNoLepNoTau[sys].size() : selJetsNoLepNoTau[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
 					unsigned int n_jets = (selJetsNoLep.find(sys) != selJetsNoLep.end() ? selJetsNoLep[sys].size() : selJetsNoLep[SYS_NOMINAL].size()); // noLep jet as in jet fake-rate study
-					unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					//unsigned int n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys].size() : selBJets[SYS_NOMINAL].size());
+					// this is tricky:
+					unsigned int n_bjets;
+					// if it's BTAG systematic shift -- get it from the NOMINAL jet shift
+					if (sys == SYS_BTAG_UP || sys == SYS_BTAG_DOWN)
+						n_bjets = selBJets[SYS_NOMINAL][sys].size();
+					// else -- get NOMINAL btags from SYS jets or default to nominal jets and nominal btags
+					else
+						n_bjets = (selBJets.find(sys) != selBJets.end() ? selBJets[sys][SYS_NOMINAL].size() : selBJets[SYS_NOMINAL][SYS_NOMINAL].size());
 
 					// Event selection booleans
 					// or dilepton mass > 20GeV?
