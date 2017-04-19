@@ -4637,7 +4637,7 @@ for(size_t f=0; f<urls.size();++f)
 
 					bool passJetSelection(n_jets>2); // >= 3 jets TODO: try >= 2 jets (logical choice, since the jets are cleaned from taus)
 
-					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt());
 					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 
@@ -4770,7 +4770,7 @@ for(size_t f=0; f<urls.size();++f)
 					// this ttbar channel has 2 b-jets + tau&lepton
 					// leabing it like this for now, need to try >1 jets later
 
-					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt());
 					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 
@@ -5225,7 +5225,7 @@ for(size_t f=0; f<urls.size();++f)
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
 
-					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt());
 					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.);
@@ -5389,7 +5389,7 @@ for(size_t f=0; f<urls.size();++f)
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
 
-					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt());
 					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.);
@@ -5553,7 +5553,7 @@ for(size_t f=0; f<urls.size();++f)
 					bool passMllVeto(isEMu ? dileptonSystem.mass()>20. : (fabs(dileptonSystem.mass()-91.)>15 && dileptonSystem.mass()>20. ) );
 					bool passJetSelection(n_jets>1);
 
-					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt())
+					double met_pt = (systematic_mets.find(sys) != systematic_mets.end() ? systematic_mets[sys].pt() : systematic_mets[SYS_NOMINAL].pt());
 					bool passMetSelection(met_pt>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.); // MET > 40 // 2^3
 					//bool passMetSelection(met.pt()>40.);

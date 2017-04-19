@@ -69,7 +69,8 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(pat::JetCollecti
 	bool with_PUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
-	LorentzVector& full_jet_corr,
+	//LorentzVector& full_jet_corr,
+	map<systematic_shift, LorentzVector>& full_jet_corr,
 	map<systematic_shift, pat::JetCollection>& selJets,                          // output
 	bool record, bool debug); // more output
 
