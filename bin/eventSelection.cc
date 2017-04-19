@@ -3741,6 +3741,14 @@ for(size_t f=0; f<urls.size();++f)
 		//	pat::JetCollection& selBJets,                          // output
 		//	bool record, bool debug) // more output
 
+		//int processBJets_BTag_for_sys(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
+		//	BTagCalibrationReader& btagCal, // BTagSFUtil& btsfutil, old b-tag SF weighting, done with bEffs now
+		//	struct bTaggingEfficiencyHistograms& bEffs,
+		//	string& b_tagger_label, float b_tag_WP,
+		//	pat::JetCollection& selBJets,                          // output
+		//	string& btag_sys_point,
+		//	bool record, bool record_control, bool debug) // more output
+
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 		float btag_WP = 0.8484; // medium
@@ -3754,13 +3762,15 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			for ( const auto btag_sys : btagSystematics )
 				{
+				bool record_btag_processing = jet_sys == SYS_NOMINAL && btag_sys == SYS_NOMINAL;
 				double temp_jet_sys_b_tagging_sf = 1;
 				// TODO: maybe selJetsNoLep are more appropriate here?
-				processBJets_BTag(selJetsNoLepNoTau[s], isMC, weights_FULL[SYS_NOMINAL],
-					(s == SYS_NOMINAL? weight_bTaggingSF : temp_jet_sys_b_tagging_sf),
+				processBJets_BTag_for_sys(selJetsNoLepNoTau[jet_sys], isMC, weights_FULL[SYS_NOMINAL],
+					(jet_sys == SYS_NOMINAL && btag_sys == SYS_NOMINAL? weight_bTaggingSF : temp_jet_sys_b_tagging_sf),
 					btagCal, bEffs, btagger_label, btag_WP,
 					selBJets[jet_sys][btag_sys],
-					(s == SYS_NOMINAL? true : false), debug);
+					btag_sys_points[btag_sys],
+					record_btag_processing, record_btag_processing, debug);
 				}
 			}
 
