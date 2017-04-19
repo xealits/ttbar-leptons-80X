@@ -2139,7 +2139,9 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_PU_down    (1.0);
 
 		// ---------------------------------- b-tagging SF weight
-		double weight_bTaggingSF (1.0);
+		map<systematic_shift, double> weight_bTaggingSFs = {{SYS_NOMINAL, 1.0}, {SYS_BTAG_UP, 1.0}, {SYS_BTAG_DOWN, 1.0}};
+		//double weight_bTaggingSF_up   (1.0);
+		//double weight_bTaggingSF_down (1.0);
 
 		// --------------------------------- tau ID SF
 		double weight_tauIDsf         (1.0);
@@ -3766,7 +3768,9 @@ for(size_t f=0; f<urls.size();++f)
 				double temp_jet_sys_b_tagging_sf = 1;
 				// TODO: maybe selJetsNoLep are more appropriate here?
 				processBJets_BTag_for_sys(selJetsNoLepNoTau[jet_sys], isMC, weights_FULL[SYS_NOMINAL],
-					(jet_sys == SYS_NOMINAL && btag_sys == SYS_NOMINAL? weight_bTaggingSF : temp_jet_sys_b_tagging_sf),
+					// for nominal jets find the btag SF weights
+					// for other jets -- temporary weight
+					(jet_sys == SYS_NOMINAL ? weight_bTaggingSFs[btag_sys] : temp_jet_sys_b_tagging_sf),
 					btagCal, bEffs, btagger_label, btag_WP,
 					selBJets[jet_sys][btag_sys],
 					btag_sys_points[btag_sys],
@@ -3777,9 +3781,16 @@ for(size_t f=0; f<urls.size();++f)
 		//weight *= weight_bTaggingSF;
 		for ( const auto s : weightSystematics )
 			{
-			weights_FULL[s] *= weight_bTaggingSF;
+			if (s == SYS_BTAG_UP)
+				weights_FULL[s] *= weight_bTaggingSFs[SYS_BTAG_UP];
+			else if (s == SYS_BTAG_DOWN)
+				weights_FULL[s] *= weight_bTaggingSFs[SYS_BTAG_DOWN];
+			else
+				weights_FULL[s] *= weight_bTaggingSFs[SYS_NOMINAL];
 			}
-		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSF, 1.);
+		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSFs[SYS_NOMINAL], 1.);
+		fill_1d(string("weight_bTaggingSF_UP"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_UP], 1.);
+		fill_1d(string("weight_bTaggingSF_DOWN"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_DOWN], 1.);
 
 		if(debug){
 			cout << "processed b-tagged jets" << endl;
