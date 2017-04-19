@@ -3186,6 +3186,9 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("control_met_main_pt"),  200, 0., 200., met.pt(),  weights_FULL[SYS_NOMINAL]);
 		fill_1d(string("control_met_main_phi"), 200, 0., 200., met.phi(), weights_FULL[SYS_NOMINAL]);
 
+		fill_1d(string("control_met_corr1_pt"),  200, 0., 200., met.corPt(pat::MET::Type1),  weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_met_corr1_phi"), 200, 0., 200., met.corPhi(pat::MET::Type1), weights_FULL[SYS_NOMINAL]);
+
 		// testing WNJets
 		if(debug){
 			cout << "got main MET" << endl;
@@ -3616,7 +3619,8 @@ for(size_t f=0; f<urls.size();++f)
 		//	map<systematic_shift, pat::JetCollection>& selJets,                          // output
 		//	bool record, bool debug) // more output
 
-		LorentzVector full_jet_corr(0., 0., 0., 0.);
+		//LorentzVector full_jet_corr(0., 0., 0., 0.);
+		map<systematic_shift, LorentzVector> full_jet_corr;
 		//pat::JetCollection IDjets;
 		map<systematic_shift, pat::JetCollection> IDjets;
 		// it's filled with jetSystematics by processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics
@@ -3627,14 +3631,14 @@ for(size_t f=0; f<urls.size();++f)
 			jet_resolution_in_pt, jet_resolution_sf_per_eta, /*jet_m_systematic_variation,*/ jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
 
 
-		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr.X(), full_jet_corr.Y(), full_jet_corr.Z(), weights_FULL[SYS_NOMINAL]);
+		fill_3d(string("control_jet_full_jet_corr_pX_pY_pZ"), 10, -100., 100., 10, -100., 100., 10, -100., 100.,  full_jet_corr[SYS_NOMINAL].X(), full_jet_corr[SYS_NOMINAL].Y(), full_jet_corr[SYS_NOMINAL].Z(), weights_FULL[SYS_NOMINAL]);
 		// 1000 bins
 
-		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr.X(), full_jet_corr.Y(), weights_FULL[SYS_NOMINAL]);
-		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr.Z(), weights_FULL[SYS_NOMINAL]);
+		fill_2d(string("control_jet_full_jet_corr_pX_pY"), 100, -50., 50., 100, -50., 50.,  full_jet_corr[SYS_NOMINAL].X(), full_jet_corr[SYS_NOMINAL].Y(), weights_FULL[SYS_NOMINAL]);
+		fill_1d(string("control_jet_full_jet_corr_pZ"),    100, -50., 50., full_jet_corr[SYS_NOMINAL].Z(), weights_FULL[SYS_NOMINAL]);
 		// 10 000 and 100 bins
 
-		met.setP4(met.p4() - full_jet_corr); // just return the full correction and propagate in place
+		met.setP4(met.p4() - full_jet_corr[SYS_NOMINAL]); // just return the full correction and propagate in place
 
 		fill_1d(string("control_met_slimmedMETsMuEGClean_fulljetcorrs_pt"), 200, 0., 200., met.pt(), weights_FULL[SYS_NOMINAL]);
 		//fill_2d(string("control_met_slimmedMETs_fulljetcorrs_pt"), 200, 0., 200., 200, -4., 4., met.pt(), met.eta(), weight);

@@ -591,7 +591,7 @@ int processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics(pat::JetCollecti
 	bool with_PUID,
 	//double pt_cut, double eta_cut,
 	TRandom3 *r3,   // the randomizer for the smearing
-	LorentzVector& full_jet_corr,
+	map<systematic_shift, LorentzVector>& full_jet_corr,
 	map<systematic_shift, pat::JetCollection>& selJets,                          // output
 	bool record, bool debug) // more output
 
@@ -705,6 +705,7 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 for ( const auto s : jetSystematics )
 	{
 	pat::JetCollection& jet_col = selJets[s];
+	full_jet_corr[s] = LorentzVector(0,0,0,0);
 	for(size_t ijet=0; ijet<jet_col.size(); ijet++)
 		{
 		// TODO: so does this mean "in place"?
@@ -902,7 +903,7 @@ for ( const auto s : jetSystematics )
 		// Add the jet momentum correction:
 		LorentzVector jet_corr(0., 0., 0., 0.);
 		jet_corr = jet.p4() - jet_initial_momentum;
-		full_jet_corr += jet_corr;
+		full_jet_corr[s] += jet_corr;
 
 		if (record && s == SYS_NOMINAL)
 			{
