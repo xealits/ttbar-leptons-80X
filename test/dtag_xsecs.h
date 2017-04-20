@@ -196,6 +196,19 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_WJets_HT1200to2500_madgraph" , 1.329},
 {"MC2016_Summer16_WJets_HT2500toInf_madgraph"  , 0.03216},
 
+{"DYJetsToLL_M-5to50_HT-100to200", 224.2 },
+{"DYJetsToLL_M-5to50_HT-200to400", 37.2 },
+{"DYJetsToLL_M-5to50_HT-400to600", 3.581 },
+{"DYJetsToLL_M-5to50_HT-600toInf", 1.124 },
+
+{"DYJetsToLL_M-50_HT-70to100", 175.3 },
+{"DYJetsToLL_M-50_HT-100to200", 147.4 },
+{"DYJetsToLL_M-50_HT-200to400", 40.99 },
+{"DYJetsToLL_M-50_HT-400to600", 5.678 },
+{"DYJetsToLL_M-50_HT-600to800", 1.367 },
+{"DYJetsToLL_M-50_HT-800to1200", 0.6304 },
+{"DYJetsToLL_M-50_HT-1200to2500", 0.1514 },
+{"DYJetsToLL_M-50_HT-2500toInf", 0.003565 }
 
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo", 18610},
 {"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 5765.4}, // but McM shows 4970

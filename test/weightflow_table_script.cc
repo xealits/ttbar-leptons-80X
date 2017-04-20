@@ -62,7 +62,7 @@ else if (inp1 == string("--normalize"))
 
 if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
-cout << "options are taken from " << input_starts << endl;
+if (be_verbose) cout << "options are taken from " << input_starts << endl;
 
 double lumi = atof(argv[input_starts + 1]);
 TString distro_name(argv[input_starts + 2]);
@@ -70,10 +70,13 @@ TString distro_name(argv[input_starts + 2]);
 TString dir(argv[input_starts + 3]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
-cout << lumi  << endl;
-cout << distro_name << endl;
-cout << dir   << endl;
-cout << dtag1 << endl;
+if (be_verbose)
+	{
+	cout << lumi  << endl;
+	cout << distro_name << endl;
+	cout << dir   << endl;
+	cout << dtag1 << endl;
+	}
 
 
 /*
@@ -84,7 +87,8 @@ cout << dtag1 << endl;
 TH1D* hs_data_sum = NULL;
 TH1D* hs_mc_sum   = NULL;
 
-int         our_selection_bins[] = {1, 2, 3, 4, 10, 11, 12, 13, 20, 30,    31, 32, 34, 38, 46, 62};
+// bins with root-shift (the overflow bin is 0, the 0 bin is 1, 1 is 2...)
+int         our_selection_bins[] = {1 + 1, 2 + 1, 3 + 1, 4 + 1, 10 + 1, 11 + 1, 12 + 1, 13 + 1, 20 + 1, 30 + 1,    31 + 1, 32 + 1, 34 + 1, 38 + 1, 46 + 1, 62 + 1};
 std::vector<string> our_selection_names = {"ini", "top", "gen", "PUw", "sec1", "METf", "Lumi", "Trig", "sec2", "sec3",    "s", "sj", "sjm", "sjmb", "sjmbt", "sjmbto"};
 
 cout << "dtag,ratio" ;
@@ -103,9 +107,12 @@ cout << endl;
 for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	cout << dtag << endl;
 	TString the_file = dir + "/" + dtag + ".root";
-	if (be_verbose) cout << the_file << endl;
+	if (be_verbose)
+		{
+		cout << the_file << endl;
+		cout << dtag << endl;
+		}
 	TFile* file = TFile::Open(the_file);
 
 	if (dtag.Contains("Data"))
