@@ -93,7 +93,7 @@ std::vector<string> our_selection_names = {"ini", "top", "gen", "PUw", "sec1", "
 
 cout << "dtag,ratio" ;
 for (int i=0; i<our_selection_names.size(); i++)
-	cout << ',' << our_selection_names[i];
+	cout << "," << our_selection_names[i];
 cout << endl;
 
 
@@ -128,9 +128,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		TH1D* histo = (TH1D*) file->Get(distro_name);
 
 		// print the dtag line
-		cout << dtag << ',' << 1 ;
+		cout << dtag << "," << 1 ;
 		for (int i=0; i<our_selection_names.size(); i++)
-			cout << ',' << histo->GetBinContent(our_selection_bins[i]);
+			cout << "," << histo->GetBinContent(our_selection_bins[i]);
 		cout << endl;
 
 		// sum the data
@@ -196,9 +196,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (be_verbose) histo->Print();
 
 		// print the dtag line
-		cout << dtag << ',' << ratio ;
+		cout << dtag << "," << ratio ;
 		for (int i=0; i<our_selection_names.size(); i++)
-			cout << ',' << histo->GetBinContent(our_selection_bins[i]);
+			cout << "," << histo->GetBinContent(our_selection_bins[i]);
 		cout << endl;
 
 		// sum the data
@@ -217,17 +217,23 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "processed dtag" << endl;
 	}
 
-// print the data sum line
-cout << "sum_data" << ',' << 1 ;
-for (int i=0; i<our_selection_names.size(); i++)
-	cout << ',' << hs_data_sum->GetBinContent(our_selection_bins[i]);
-cout << endl;
+if (hs_data_sum)
+	{
+	// print the data sum line
+	cout << "sum_data" << "," << 1 ;
+	for (int i=0; i<our_selection_names.size(); i++)
+		cout << "," << hs_data_sum->GetBinContent(our_selection_bins[i]);
+	cout << endl;
+	}
 
-// print the mc sum line
-cout << "sum_mc" << ',' << 1 ;
-for (int i=0; i<our_selection_names.size(); i++)
-	cout << ',' << hs_mc_sum->GetBinContent(our_selection_bins[i]);
-cout << endl;
+if (hs_mc_sum)
+	{
+	// print the mc sum line
+	cout << "sum_mc" << "," << 1 ;
+	for (int i=0; i<our_selection_names.size(); i++)
+		cout << "," << hs_mc_sum->GetBinContent(our_selection_bins[i]);
+	cout << endl;
+	}
 
 return 0;
 }

@@ -187,6 +187,7 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_W3Jets_madgraph", 942.3},
 {"MC2016_Summer16_W4Jets_madgraph", 524.2},
 {"MC2016_Summer16_WJets_amcatnlo", 61526.7},
+
 {"MC2016_Summer16_WJets_HT70to100_madgraph"    , 1319 },
 {"MC2016_Summer16_WJets_HT100to200_madgraph"   , 1345 },
 {"MC2016_Summer16_WJets_HT200to400_madgraph"   , 359.7},
@@ -195,6 +196,15 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_WJets_HT800to1200_madgraph"  , 5.501},
 {"MC2016_Summer16_WJets_HT1200to2500_madgraph" , 1.329},
 {"MC2016_Summer16_WJets_HT2500toInf_madgraph"  , 0.03216},
+
+{"MC2016_Summer16_WJetsToLNu_HT-70To100"    , 1319 },
+{"MC2016_Summer16_WJetsToLNu_HT-100To200"   , 1345 },
+{"MC2016_Summer16_WJetsToLNu_HT-200To400"   , 359.7},
+{"MC2016_Summer16_WJetsToLNu_HT-400To600"   , 48.91},
+{"MC2016_Summer16_WJetsToLNu_HT-600To800"   , 12.05},
+{"MC2016_Summer16_WJetsToLNu_HT-800To1200"  , 5.501},
+{"MC2016_Summer16_WJetsToLNu_HT-1200To2500" , 1.329},
+{"MC2016_Summer16_WJetsToLNu_HT-2500ToInf"  , 0.03216},
 
 {"DYJetsToLL_M-5to50_HT-100to200", 224.2 },
 {"DYJetsToLL_M-5to50_HT-200to400", 37.2 },
@@ -208,7 +218,7 @@ std::map<TString, double> xsecs = {
 {"DYJetsToLL_M-50_HT-600to800", 1.367 },
 {"DYJetsToLL_M-50_HT-800to1200", 0.6304 },
 {"DYJetsToLL_M-50_HT-1200to2500", 0.1514 },
-{"DYJetsToLL_M-50_HT-2500toInf", 0.003565 }
+{"DYJetsToLL_M-50_HT-2500toInf", 0.003565 },
 
 {"MC2016_Summer16_DYJetsToLL_10to50_amcatnlo", 18610},
 {"MC2016_Summer16_DYJetsToLL_50toInf_madgraph", 5765.4}, // but McM shows 4970
