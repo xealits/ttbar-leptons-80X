@@ -23,6 +23,8 @@ extract_weightflow_systematics:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_JER_DOWN weightflow_el_JER_DOWN weightflow_elmu_JER_DOWN weightflow_elel_JER_DOWN weightflow_mumu_JER_DOWN
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_BTAG_UP weightflow_el_BTAG_UP weightflow_elmu_BTAG_UP weightflow_elel_BTAG_UP weightflow_mumu_BTAG_UP
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_BTAG_DOWN weightflow_el_BTAG_DOWN weightflow_elmu_BTAG_DOWN weightflow_elel_BTAG_DOWN weightflow_mumu_BTAG_DOWN
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_MET_UNCLUSTERED_EN_UP weightflow_el_MET_UNCLUSTERED_EN_UP weightflow_elmu_MET_UNCLUSTERED_EN_UP weightflow_elel_MET_UNCLUSTERED_EN_UP weightflow_mumu_MET_UNCLUSTERED_EN_UP
+	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_MET_UNCLUSTERED_EN_DOWN weightflow_el_MET_UNCLUSTERED_EN_DOWN weightflow_elmu_MET_UNCLUSTERED_EN_DOWN weightflow_elel_MET_UNCLUSTERED_EN_DOWN weightflow_mumu_MET_UNCLUSTERED_EN_DOWN
 
 extract_weightflow_NOMINAL:
 	./jobing/extract_csv.zsh ${job} jobing/dtags/${dtags} weightflow_mu_NOMINAL weightflow_el_NOMINAL weightflow_elmu_NOMINAL weightflow_elel_NOMINAL weightflow_mumu_NOMINAL
