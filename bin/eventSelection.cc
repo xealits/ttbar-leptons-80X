@@ -2156,10 +2156,14 @@ for(size_t f=0; f<urls.size();++f)
 		// is map of all possible systematic shifts of weight
 		//double weight           (1.0);
 		std::map<systematic_shift, double> weights_FULL;
-		weights_FULL[SYS_NOMINAL] = 1.0;
-		weights_FULL[SYS_PU_UP]   = 1.0;
-		weights_FULL[SYS_PU_DOWN] = 1.0;
-		weights_FULL[SYS_TOP_PT] = 1.0;
+		//weights_FULL[SYS_NOMINAL] = 1.0;
+		//weights_FULL[SYS_PU_UP]   = 1.0;
+		//weights_FULL[SYS_PU_DOWN] = 1.0;
+		//weights_FULL[SYS_TOP_PT] = 1.0;
+		for ( const auto s : weightSystematics )
+			{
+			weights_FULL[s] = 1.0;
+			}
 
 
 		// --------------------------------------------------- RHO variables
