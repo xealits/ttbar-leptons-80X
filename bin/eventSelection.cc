@@ -2684,21 +2684,27 @@ for(size_t f=0; f<urls.size();++f)
 		/*
 		 * MET filters are data-only thing -- remove events before passing and counting lumi, since MC is then normalized to data lumi
 		 * thus after passing lumi data and MC should only have the same cuts
+		 *
+		 * info on MET filters and their presence in MINIAOD:
+		 *   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#ETmiss_filters
+		 *   https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#Moriond_2017
+		 *     filter	location	data	MC(fullSim)	MC(fastSim)	comment
+		 *     primary vertex filter	available in miniAOD v2	DONE	suggested	suggested	 
+		 *     beam halo filter	available in miniAOD v2	DONE	suggested	not suggested	Beam Halo Presentation
+		 *     HBHE noise filter	available in miniAOD v2	DONE	suggested	suggested	HCAL DPG Presentation
+		 *     HBHEiso noise filter	available in miniAOD v2	DONE	suggested	suggested	same as above
+		 *     ECAL TP filter	available in miniAOD v2	DONE	suggested	suggested	ECAL DPG Presentation
+		 *     Bad PF Muon Filter	to be run on the fly	DONE	suggested	suggested	PPD presentation
+		 *     Bad Charged Hadron Filter	to be run on the fly	DONE	suggested	suggested	PPD presentation
+		 *     ee badSC noise filter	available in miniAOD v2	DONE	not suggested	not suggested
+		 *   https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/PhysicsTools/PatAlgos/python/slimming/metFilterPaths_cff.py
+		 *   https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#MET_Recipes
+		 *
+		 *   https://twiki.cern.ch/twiki/bin/view/CMS/MissingET
+		 *   and their hypernews:
+		 *   https://hypernews.cern.ch/HyperNews/CMS/get/met.html
 		 */
 
-		//if( !isMC && !metFiler.passMetFilter( ev, isPromptReco)) continue;
-		// New passMetFilter procedure from patUtils:
-		//if( !isMC && !metFiler.passMetFilter( ev )) continue;
-		// trying the HLTs path for metfilters:
-		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss_filters
-		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
-		// recommendations (6-2016):
-		// Flag_HBHENoiseFilter TO BE USED
-		// Flag_HBHENoiseIsoFilter TO BE USED
-		// Flag_CSCTightHalo2015Filter TO BE USED
-		// Flag_EcalDeadCellTriggerPrimitiveFilter TO BE USED
-		// Flag_goodVertices TO BE USED
-		// Flag_eeBadScFilter TO BE USED 
 		edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
 		if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
 		if(!metFilters.isValid()){       
@@ -2713,16 +2719,83 @@ for(size_t f=0; f<urls.size();++f)
 				cout << "----------- End of trigger list ----------" << endl;
 				//return 0;
 			}
-			//std::vector<std::string>& patterns("Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter", "Flag_CSCTightHalo2015Filter", "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_goodVertices", "Flag_eeBadScFilter");
-			if (!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*"))
-				continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_goodVertices")) continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter")) continue;
-			if (!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) continue;
+
+			// event is good if all filters ar true
+			bool filters1 = utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*");
+			bool good_vertices = utils::passTriggerPatterns(metFilters, "Flag_goodVertices");
+			bool eebad = utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter");
+			bool halo  = utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter");
 			// 2016 thing: bad muons
-			if (!utils::passTriggerPatterns(metFilters, "Flag_noBadMuons")) continue;
-		}
-		
+			bool flag_noBadMuons = utils::passTriggerPatterns(metFilters, "Flag_noBadMuons");
+			bool flag_duplicateMuons = utils::passTriggerPatterns(metFilters, "Flag_duplicateMuons");
+
+			// TODO: de-hardcode
+			// recording which filters are _not_ passed (filtered events by the filter) (less computing, more to the point)
+			if (!filters1           ) fill_1d(string("control_MET_filters"), 10, 0, 10, 0, 1);
+			if (!good_vertices      ) fill_1d(string("control_MET_filters"), 10, 0, 10, 1, 1);
+			if (!eebad              ) fill_1d(string("control_MET_filters"), 10, 0, 10, 2, 1);
+			if (!halo               ) fill_1d(string("control_MET_filters"), 10, 0, 10, 3, 1);
+			if (!flag_noBadMuons    ) fill_1d(string("control_MET_filters"), 10, 0, 10, 4, 1);
+			if (!flag_duplicateMuons) fill_1d(string("control_MET_filters"), 10, 0, 10, 5, 1);
+
+			if (! (filters1 & good_vertices & eebad & halo & flag_noBadMuons & flag_duplicateMuons)) continue;
+			// these Flag_noBadMuons/Flag_duplicateMuons are MET flags (the issue with bad muons in 2016),
+			// they are true if the MET got corrected and event is fine
+
+			/* 
+			 * add: BadChHadron and BadPFMuon -- it seems their name should be Flag_BadChHadron etc
+			 *
+			 * https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#Moriond_2017
+			 * Bad PF Muon Filter	to be run on the fly	
+			 * -- "run on the fly", no this flag in the data itself
+			 *
+			 * but at the same time:
+			 *
+			 * Note that with the in the re-miniaod you will have (will rerun as pointed out below for) the following flags for the "bad muon" events:
+			      Bad PF Muon Filter
+			      Bad Charged Hadrons
+			      Flag_badMuons -> New Giovanni's Filter that the MET is corrected for (flag is set to true if the MET got corrected)
+			      Flag_duplicateMuons -> New Giovanni's Filter that the MET is corrected for (flag is set to true if the MET got corrected)
+
+			 * aha https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#ETmiss_filters
+			 * "Note that many of the current recommended filters can be accessed directly from Miniaod using the flag stored in the TriggerResults,
+			 *  with the exception of Bad Charged Hadron and Bad Muon Filters."
+			 * --- so, 2 vs 1 that there should be no Flags for these two in MINIAOD
+			 *  they should be run on the fly
+			 */
+
+
+			/*
+			 * MET POG gives some names to their filters instead of givin the name in code
+			 * apparently the actual name in the code can be found at:
+			 * https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/PhysicsTools/PatAlgos/python/slimming/metFilterPaths_cff.py
+			 *
+			 * and there is no BadChHandron
+			 * the closes to their names are:
+			 * BadChargedCandidateFilter BadPFMuonFilter
+			 *
+			 * -- need to print out what actually is in 03Feb ReReco & ask on hypernews.
+			 *
+			 *  found these:
+			 *  root [7] metFilters.triggerNames()
+			 *  (const std::vector<std::string> &)
+			 *  { "Flag_duplicateMuons", "Flag_badMuons", "Flag_noBadMuons",
+			 *    "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
+			 *    "Flag_CSCTightHaloFilter", "Flag_CSCTightHaloTrkMuUnvetoFilter", "Flag_CSCTightHalo2015Filter",
+			 *    "Flag_globalTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter",
+			 *    "Flag_HcalStripHaloFilter", "Flag_hcalLaserEventFilter",
+			 *    "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellBoundaryEnergyFilter",
+			 *    "Flag_goodVertices",
+			 *    "Flag_eeBadScFilter",
+			 *    "Flag_ecalLaserCorrFilter",
+			 *    "Flag_trkPOGFilters",
+			 *    "Flag_chargedHadronTrackResolutionFilter",
+			 *    "Flag_muonBadTrackFilter",
+			 *    "Flag_trkPOG_manystripclus53X", "Flag_trkPOG_toomanystripclus53X", "Flag_trkPOG_logErrorTooManyClusters",
+			 *    "Flag_METFilters" }
+			 */
+			}
+
 		if(debug)
 			cout << "met filters applied here" << endl;
 
@@ -2783,47 +2856,7 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
-		/* passed from job cfg.py
-		string //jetHLT("HLT_PFJet40_v*"), // jetHLT("HLT_AK4PFJet30_v*"),
-			muHLT_MC1("HLT_IsoMu24_v4"), muHLT_MC2("HLT_IsoTkMu24_v4"),
-			muHLT_Data1("HLT_IsoMu24_v*"), muHLT_Data2("HLT_IsoTkMu24_v*"),
-			elHLT_MC("HLT_Ele32_eta2p1_WPTight_Gsf_v8"), elHLT_Data("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
-		*/
-
-			/* more triggers:
-			for Run2016B,C, D, E, F and G 25 ns data with RunIISpring16reHLT80 MC (7th October Update)
-			https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger#Run2016B_C_D_E_F_and_G_25_ns_dat
-			          Data                              MC
-			Muon      HLT_Iso(Tk)Mu24_v*                HLT_Iso(Tk)Mu24_v2
-			Electron  HLT_Ele32_eta2p1_WPTight_Gsf_v*   HLT_Ele32_eta2p1_WPTight_Gsf_v3 
-			*/
-
-			/*
-			// 2015, 76X MC
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") :
-			// 2016, 80X MC
-			//true : // for noHLT MC
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v2") : // recommended inn ttbar trig for reHLT
-			//utils::passTriggerPatterns(tr, "HLT_Ele32_eta2p1_WPTight_Gsf_v3") : // recommended inn ttbar trig for reHLT Spring 16 MC
-			utils::passTriggerPatterns(tr, "") : // recommended inn ttbar trig for Summer16 MC
-			//utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") : // Using no-reHLT MC for now
-			//utils::passTriggerPatterns(tr, "HLT_Ele*") : // Using no-reHLT MC for now
-			// other trigger HLT_Ele27_eta2p1_WPTight_Gsf_v2
-			// utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPTight_Gsf_v*") :
-			utils::passTriggerPatterns(tr, "*")
-
-			// 2015, 76X MC
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*") // the efficiency scale factor are available for these only
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*", "HLT_IsoTkMu18_v*")
-			// utils::passTriggerPatterns (tr, "HLT_IsoMu18_v*")
-			// 2016, 80X MC
-			//true : // for noHLT MC
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu24_v2", "HLT_IsoTkMu24_v2") : // recommended in ttbar trig for reHLT Spring16 MC
-			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v4", "HLT_IsoTkMu24_v4") : // recommended in ttbar trig Summer16 MC
-			//utils::passTriggerPatterns (tr, "HLT_IsoMu22_v*", "HLT_IsoTkMu22_v*") :
-			utils::passTriggerPatterns (tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*")
-			*/
-
+		// HLT2 was a quirk of Spring16 MC campaigns (noHLT/reHLT/withHLT thing)
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
 		if (!tr.isValid ()){
 			if(debug){
@@ -2911,6 +2944,7 @@ for(size_t f=0; f<urls.size();++f)
 		// SingleElectron-dataset jobs skip them
 
 		// if data and SingleElectron dataset and both triggers -- skip event
+		// i.e. SingleElectron + HLT mu are removed
 		if (!debug) {
 			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
@@ -3035,112 +3069,10 @@ for(size_t f=0; f<urls.size();++f)
 		// ------------------------- event physics and the corresponding selection
 
 		//------------------------- PROCESS OBJECTS
-		// -------------------------------------------------- possible THIRD SECTION of MC WEIGHTS and corrections (with efficiency SFs used as event probability correction)
+		// ----------------------------------------- possible THIRD SECTION of MC WEIGHTS and corrections (with efficiency SFs used as event probability correction)
 
 
-
-
-		// TODO: figure out quark status/tau status in MC
-		// FIXME: Save time and don't load the rest of the objects when selecting by mctruthmode :)
-		//bool hasTop(false);
-		//int
-		//ngenLeptonsStatus3(0),
-		//ngenLeptonsNonTauSonsStatus3(0),
-		//ngenTausStatus3(0),
-		//ngenQuarksStatus3(0);
-
-		//double tPt(0.), tbarPt(0.); // top pt reweighting - dummy value results in weight equal to 1 if not set in loop
-		//float wgtTopPt(1.0), wgtTopPtUp(1.0), wgtTopPtDown(1.0);
-		// TODO: what is this??
-		// there was some wague answer from Pietro.....
-/*
-		if(isMC)
-			{
-			// FIXME: Considering add support for different generators (based on PYTHIA6) for comparison.
-			for(size_t igen=0; igen<gen.size(); igen++)
-				{
-				// FIXME: Should pass to the new status scheme from: https://github.com/cms-sw/cmssw/pull/7791
-				// ////// if(!gen[igen].isHardProcess() && !gen[igen].isPromptFinalState()) continue;
-
-				if(gen[igen].status() != 1 &&  gen[igen].status() !=2 && gen[igen].status() !=62 ) continue;
-				int absid=abs(gen[igen].pdgId());
-				// OK, so taus should be checked as status 2, and quarks as 71 or 23. More testing needed
-				//if( absid==15 && hasWasMother(gen[igen]) ) cout << "Event " << iev << ", Particle " << igen << " has " << gen[igen].numberOfDaughters() << " daughters, pdgId " << gen[igen].pdgId() << " and status " << gen[igen].status() << ", mothers " << gen[igen].numberOfMothers() << ", pt " << gen[igen].pt() << ", eta " << gen[igen].eta() << ", phi " << gen[igen].phi() << ". isHardProcess is " << gen[igen].isHardProcess() << ", and isPromptFinalState is " << gen[igen].isPromptFinalState() << endl;
-
-
-				////// if(absid==6 && gen[igen].isHardProcess()){ // particles of the hardest subprocess 22 : intermediate (intended to have preserved mass)
-				if(absid==6 && gen[igen].status()==62)
-					{
-					// particles of the hardest subprocess 22 : intermediate (intended to have preserved mass). Josh says 62 (last in chain)
-					hasTop=true;
-					// FIXME: Top pT reweighting. 13 TeV values not propagated yet, so not using.
-					//if(isTTbarMC){
-					//  if(gen[igen].get("id") > 0) tPt=gen[igen].pt();
-					//  else                        tbarPt=gen[igen].pt();
-					//}
-					} 
-
-
-				//if(!gen[igen].isPromptFinalState() ) continue;
-				if( (gen[igen].status() != 1 && gen[igen].status()!= 2 ) || !hasWasMother(gen[igen])) continue;
-
-				if((absid==11 || absid==13) && hasLeptonAsDaughter(gen[igen]))
-					cout << "Electron or muon " << igen << " has " << gen[igen].numberOfDaughters() << " daughter which is a lepton." << endl;
-
-				if((absid==11 || absid==13) && gen[igen].status()==1)
-					{
-					ngenLeptonsStatus3++;
-
-					if(!hasTauAsMother(gen[igen]))
-						ngenLeptonsNonTauSonsStatus3++;
-					}
-
-				if(absid==15 && gen[igen].status()==2 )
-					{
-					ngenTausStatus3++; // This should be summed to ngenLeptonsStatus3 for the dilepton final states, not summed for the single lepton final states.
-					//if(hasLeptonAsDaughter(gen[igen]))
-					//	cout << "Tau " << igen << " has " << gen[igen].numberOfDaughters() << " daughter which is a lepton." << endl;
-					}
-
-				if(debug && (ngenTausStatus3==1 && ngenLeptonsStatus3==1 )  ) cout << "Event: " << iev << ". Leptons: " << ngenLeptonsStatus3 << ". Leptons notaus: " << ngenLeptonsNonTauSonsStatus3 << ". Taus: " << ngenTausStatus3 << ". Quarks: " << ngenQuarksStatus3 << endl;
-						
-				// Dileptons:
-				//    ttbar dileptons --> 1
-				//    ttbar other     --> 2
-				if(mctruthmode==1 && (ngenLeptonsStatus3+ngenTausStatus3!=2 || !hasTop )) continue;
-				if(mctruthmode==2 && (ngenLeptonsStatus3+ngenTausStatus3==2 || !hasTop )) continue;
-				// FIXME: port tt+bb splitting from 8 TeV (check the reference to the matched genjet)
-				//if(mcTruthMode==1 && (ngenLeptonsStatus3!=2 || !hasTop || ngenBQuarksStatus23>=4)) continue;
-				//if(mcTruthMode==2 && (ngenLeptonsStatus3==2 || !hasTop || ngenBQuarksStatus23>=4)) continue;
-				//if(mcTruthMode==3 && (ngenBQuarksStatus23<4 || !hasTop))                           continue;
-						
-				// lepton-tau:
-				//    ttbar ltau      --> 3
-				//    ttbar dileptons --> 4
-				//    ttbar ljets     --> 5
-				//    ttbar hadrons   --> 6
-				if(mctruthmode==3 && (ngenLeptonsNonTauSonsStatus3!=1 || ngenTausStatus3!=1  || !hasTop )) continue; // This is bugged, as it is obvious
-				if(mctruthmode==4 && (ngenLeptonsNonTauSonsStatus3!=2                        || !hasTop )) continue;
-				if(mctruthmode==5 && (ngenLeptonsNonTauSonsStatus3+ngenTausStatus3!=1        || !hasTop )) continue;
-						
-				bool isHad(false);
-				if (
-					(ngenLeptonsNonTauSonsStatus3!=1 || ngenTausStatus3!=1 ) &&
-					(ngenLeptonsNonTauSonsStatus3!=2                      ) &&
-					(ngenLeptonsNonTauSonsStatus3+ngenTausStatus3!=1      ) 
-					)
-				isHad=true;
-					
-				//if(mctruthmode==6 && (ngenLeptonsNonTauSonsStatus3!=0 || ngenTausStatus3!=0  || !hasTop )) continue;
-				if(mctruthmode==6 && (!isHad || !hasTop )) continue;
-				}
-			}
-
-		if(debug) cout << "DEBUG: Event was not stopped by the ttbar sample categorization (either success, or it was not ttbar)" << endl;
-*/
-
-
-		// ------------------------------------ actual particles?
+		// ------------------------------------ actual particles
 
 		pat::MuonCollection muons;
 		fwlite::Handle<pat::MuonCollection> muonsHandle;
