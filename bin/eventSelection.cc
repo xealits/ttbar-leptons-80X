@@ -929,7 +929,7 @@ TRandom3 *r3 = new TRandom3();
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
 
 bool debug           = runProcess.getParameter<bool>  ("debug");
-int debug_len           = runProcess.getParameter<int>  ("debug_len");
+int debug_len        = runProcess.getParameter<int>  ("debug_len");
 bool runSystematics  = runProcess.getParameter<bool>  ("runSystematics");
 bool saveSummaryTree = runProcess.getParameter<bool>  ("saveSummaryTree");
 bool isMC            = runProcess.getParameter<bool>  ("isMC");
@@ -1095,12 +1095,6 @@ VersionedPatElectronSelector electronVidVetoId(myVidElectronVetoIdWPConf);
 	
 TString suffix = runProcess.getParameter < std::string > ("suffix");
 std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vector < std::string > >("input");
-//TString baseDir = runProcess.getParameter < std::string > ("dirName");
-//  if (mctruthmode != 0) //FIXME
-//    {
-//      outFileUrl += "_filt";
-//      outFileUrl += mctruthmode;
-//    }
 
 // Good lumi mask
 // v2
@@ -1151,60 +1145,6 @@ bool period_EF  = !isMC && (dtag.Contains("2016E") || dtag.Contains("2016F"));
 bool period_G   = !isMC && (dtag.Contains("2016G"));
 bool period_H   = !isMC && (dtag.Contains("2016H"));
 
-/* not in use now
- * I need some method to check which jobs run now
-TString outTxtUrl = outUrl + ".ran";
-FILE *outTxtFile = NULL;
-if (!isMC) outTxtFile = fopen (outTxtUrl.Data (), "w");
-printf ("StartFile URL = %s\n", outTxtUrl.Data ());
-if (outTxtFile) fclose (outTxtFile);
-*/
-
-//tree info
-TString dirname = runProcess.getParameter < std::string > ("dirName");
-
-//systematics
-std::vector<TString> systVars(1,"");
-if(runSystematics && isMC)
-	{
-	systVars.push_back("jerup" );     systVars.push_back("jerdown"   );
-	systVars.push_back("jesup" );     systVars.push_back("jesdown"   );
-	//systVars.push_back("lesup" );   systVars.push_back("lesdown"   );
-	systVars.push_back("leffup");     systVars.push_back("leffdown"  );
-	systVars.push_back("puup"  );     systVars.push_back("pudown"   );
-	systVars.push_back("umetup");     systVars.push_back("umetdown" );
-	systVars.push_back("btagup");     systVars.push_back("btagdown" );
-	systVars.push_back("unbtagup");   systVars.push_back("unbtagdown" );
-	if(isTTbarMC) {systVars.push_back("topptuncup"); systVars.push_back("topptuncdown"); }
-	//systVars.push_back(); systVars.push_back();
-
-	if(isTTbarMC) { systVars.push_back("pdfup"); systVars.push_back("pdfdown"); }
-	cout << "Systematics will be computed for this analysis - this will take a bit" << endl;
-	}
-
-size_t nSystVars(systVars.size());
-	
-
-// TODO: what is this: allWeightsURL ... "weightsFile"??
-std::vector < std::string > allWeightsURL = runProcess.getParameter < std::vector < std::string > >("weightsFile");
-std::string weightsDir (allWeightsURL.size ()? allWeightsURL[0] : "");
-// weightsDir is not used
-//  //shape uncertainties for dibosons
-//  std::vector<TGraph *> vvShapeUnc;
-//  if(isMC_ZZ || isMC_WZ)
-//    {
-//      TString weightsFile=weightsDir+"/zzQ2unc.root";
-//      TString dist("zzpt");
-//      if(isMC_WZ) { weightsFile.ReplaceAll("zzQ2","wzQ2"); dist.ReplaceAll("zzpt","wzpt"); }
-//      gSystem->ExpandPathName(weightsFile);
-//      TFile *q2UncF=TFile::Open(weightsFile);
-//      if(q2UncF){
-//    vvShapeUnc.push_back( new TGraph( (TH1 *)q2UncF->Get(dist+"_up") ) );
-//    vvShapeUnc.push_back( new TGraph( (TH1 *)q2UncF->Get(dist+"_down") ) );
-//    q2UncF->Close();
-//      }
-//    }
-
 
 
 
@@ -1213,33 +1153,6 @@ std::string weightsDir (allWeightsURL.size ()? allWeightsURL[0] : "");
 //######## GET READY FOR THE EVENT LOOP ########
 //##############################################
 size_t totalEntries(0);
-
-TFile* summaryFile = NULL;
-TTree* summaryTree = NULL; //ev->;
-
-//  
-//  if(saveSummaryTree)
-//    {
-//      TDirectory* cwd = gDirectory;
-//      std::string summaryFileName(outUrl); 
-//      summaryFileName.replace(summaryFileName.find(".root", 0), 5, "_summary.root");
-//      
-//      summaryFile = new TFile(summaryFileName.c_str() "recreate");
-//      
-//      summaryTree = new TTree("Events", "Events");
-//      KEY: TTreeMetaData;1
-//      KEY: TTreeParameterSets;1
-//      KEY: TTreeParentage;1
-//      KEY: TTreeEvents;1
-//      KEY: TTreeLuminosityBlocks;1
-//      KEY: TTreeRuns;
-//      summaryTree->SetDirectory(summaryFile);  // This line is probably not needed
-//      
-//      summmaryTree->Branch(
-//
-//      cwd->cd();
-//    }
-//
 
 
 // Data-driven tau fakerate background FAKERATES
@@ -1491,9 +1404,6 @@ JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScal
  *};
 */
 
-//Variation jet_m_systematic_variation = Variation::NOMINAL; // FIXME: it should be in some headers, included before... but remake it somehow
-// moved it to jets with systematics
-
 
 // ------------------------------------- muon energy scale and uncertainties
 // MuScleFitCorrector *muCor = NULL;
@@ -1507,6 +1417,7 @@ JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScal
 // last muon POG talk:
 // https://indico.cern.ch/event/533054/contributions/2171540/attachments/1274536/1891597/rochcor_run2_MuonPOG_051716.pdf
 
+// ------------------------------------- electron energy scale
 // Electron energy scale, based on https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMSmearer and adapted to this framework
 // v1
 //string EGammaEnergyCorrectionFile = "EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015";
@@ -1576,10 +1487,6 @@ else
 	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
 	}
 
-//	TH2F* c_tagged   ;
-//	TH2F* udsg_alljet;
-//	TH2F* udsg_tagged;
-//	};
 struct bTaggingEfficiencyHistograms bEffs;
 
 bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
@@ -1589,33 +1496,8 @@ bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
 bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
 bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
 
-// Prescriptions taken from: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X
-// TODO: update to https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
-
-// b-tagging working points for 50ns 
-//   (pfC|c)ombinedInclusiveSecondaryVertexV2BJetTags
-//      v2CSVv2L 0.605
-//      v2CSVv2M 0.890
-//      v2CSVv2T 0.970
-double
-	btagLoose(0.605), // not used anywhere in the code
-	//btagMedium(0.890), // used twice in the code
-	btagMedium(0.8), // new medium working point
-	btagTight(0.970); // not used anywhere in the code
-
-//b-tagging: scale factors
-//beff and leff must be derived from the MC sample using the discriminator vs flavor
-//the scale factors are taken as average numbers from the pT dependent curves see:
-//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
-//BTagSFUtil btsfutil;
-double beff(0.68), sfb(0.99), sfbunc(0.015);
-double leff(0.13), sfl(1.05), sflunc(0.12);
-
-// Btag SF and eff from https://indico.cern.ch/event/437675/#preview:1629681
-sfb = 0.861; // SF is not used --- BTagCalibrationReader btagCal instead
-// sbbunc =;
-beff = 0.559;
-beff = 0.747;
+// Prescriptions taken from:
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 
 // new btag calibration
 // TODO: check callibration readers in https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
@@ -1750,12 +1632,6 @@ if (DoubleUncertainty) {
 
 
 
-// ------------------------------ electron IDs
-// does not appear anywhere in the code at all
-// TString
-	// electronIdMainTag("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"),
-	// electronIdVetoTag("cutBasedElectronID-Spring15-25ns-V1-standalone-tight");
-
 // --------------------------------------- pileup weighting
 // pile-up is done directly with direct_pileup_reweight
 // v7-10 pile-up is back
@@ -1764,65 +1640,6 @@ std::vector<double> direct_pileup_reweight_up = runProcess.getParameter < std::v
 std::vector<double> direct_pileup_reweight_down = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_down");
 	
 gROOT->cd ();                 //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
-
-// --------------------------------------- hardcoded MET filter
-// trying met-filters in HLT paths (76X MINIAODs should have it)
-/*
-patUtils::MetFilter metFiler;
-if(!isMC)
-	{
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/DoubleEG_RunD/DoubleEG_csc2015.txt");
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/DoubleEG_RunD/DoubleEG_ecalscn1043093.txt");
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/DoubleMuon_RunD/DoubleMuon_csc2015.txt");
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/DoubleMuon_RunD/DoubleMuon_ecalscn1043093.txt");
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/MuonEG_RunD/MuonEG_csc2015.txt");
-	metFiler.FillBadEvents(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/MetFilter/MuonEG_RunD/MuonEG_ecalscn1043093.txt");
-	}
-*/
-
-// ---------------------------------------- HLT trigger efficiencies
-// https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Muon_reconstruction_identificati
-// -- SingleMu Triggers
-// ??? https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Efficiencies_and_scale_factors
-// ??? -- Triggering electrons MVA-based WPs, scale factors for 76X
-//
-// in principle, one needs the electron/muon which triggered the HLT
-// and according to its' pt, eta the scale factor is extracted
-// TODO: procedure of getting the fired lepton
-//
-// only single-lepton HLTs are used, and their scale factors are taken accordingly
-// though events with both HLTs on are also considered
-// how to deal with them having only single-lepton SF?
-//
-// the formula can be such:
-// e = 1 - (1 - e_mu)(1 - e_el)
-// --- e_mu and e_el are trigger eff-s for single lepton
-// the formula is taken from TOP-16-017
-// https://indico.cern.ch/event/546389/contributions/2218845/attachments/1299941/1940277/khvastunov_28Jun_2016_TopPAG.pdf
-//
-// the study measures the efficiencies themselves
-// I use the values provided by POGs
-// muon POG only has efficiency SF for IsoMu20_OR_IsoTkMu20 yet
-// (runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins)
-// EGamma doesn't have any, thus there will be 1 on its' place
-
-// v1
-//TString muon_HLTeff_filename(string(std::getenv("CMSSW_BASE")) + "/src/UserCode/llvv_fwk/analysis/hlt-triggers/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root");
-// .Data() returns char *
-// c_str as well?
-//TFile* muon_HLTeff_file = TFile::Open(muon_HLTeff_filename.Data());
-//TH2F* muon_HLTeff_TH2F = (TH2F*) muon_HLTeff_file->Get("runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio");
-
-// I do access the muon_HLTeff_TH2F histo with muon_HLTeff_TH2F->GetBin(eta, pt)
-
-// To USE:
-/*
-muon_HLTeff_TH2F->FindBin
-Double_t weight *= muon_HLTeff_TH2F->GetBinContent( muon_HLTeff_TH2F->FindBin(fabs(leta), electron.pt()) );
-
--- and it should return the scale factor for the HLT
-*/
-
 
 // generator token for event Gen weight call:
 //edm::EDGetTokenT<GenEventInfoProduct> generatorToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")));
@@ -1854,26 +1671,11 @@ cout << "jecDir = "      << jecDir << "\n";
 //########    INITIATING HISTOGRAMS     ########
 //##############################################
 
-// Removed the SmartSelectionMonitor
-// SmartSelectionMonitor mon;
-
-TH1D* singlelep_ttbar_initialevents  = (TH1D*) new TH1D("singlelep_ttbar_init",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_presele",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-/* These counter histograms are dissabled -- use int for that
-TH1D* singlelep_ttbar_selected_mu_events = (TH1D*) new TH1D("singlelep_ttbar_sele_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected_el_events = (TH1D*) new TH1D("singlelep_ttbar_sele_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected2_mu_events = (TH1D*) new TH1D("singlelep_ttbar_sele2_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_selected2_el_events = (TH1D*) new TH1D("singlelep_ttbar_sele2_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-
-TH1D* singlelep_ttbar_maraselected_mu_events = (TH1D*) new TH1D("singlelep_ttbar_marasele_mu",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-TH1D* singlelep_ttbar_maraselected_el_events = (TH1D*) new TH1D("singlelep_ttbar_marasele_el",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
-*/
-
-// Kinematic parameters of the decay
-TLorentzVector pl, plb, pb, pbb, prest;
-
-// -------------------------------
-// Here the output histograms and other object should be initialized
+/*
+ * now all output histograms are handled with recordFuncs -- fill_1d etc
+ */
+//TH1D* singlelep_ttbar_initialevents  = (TH1D*) new TH1D("singlelep_ttbar_init",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
+//TH1D* singlelep_ttbar_preselectedevents = (TH1D*) new TH1D("singlelep_ttbar_presele",     ";Transverse momentum [GeV];Events",            100, 0.,  500.  ); 
 
 
 
@@ -1882,13 +1684,11 @@ TLorentzVector pl, plb, pb, pbb, prest;
 //########           EVENT LOOP         ########
 //##############################################
 //loop on all the events
+
+// this progress bar is idle now -- at times jobs were crashing on printing a dot in the progress bar
 printf ("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
 
 int nMultiChannel(0);
-
-// FIXME: it's initialization of a rare control point, make it automatic somehow? initialize all?
-// to check if processing goes well now
-// increment( string("weight_passed_oursel"), 0. );
 
 unsigned int iev = 0;
 double weightflow_control_el_selection = 0;
@@ -1899,10 +1699,10 @@ double weightflow_control_elmu_selection = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
-	cout << "Processing file: " << urls[f].c_str() << "\n";
 	TFile* file = TFile::Open(urls[f].c_str());
 	fwlite::Event ev(file);
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
+	cout << "Processing file: " << urls[f].c_str() << endl;
 
 	iev++;
 
@@ -2108,7 +1908,6 @@ for(size_t f=0; f<urls.size();++f)
 		//   increment( "control_point_name", weight )
 
 
-		//singlelep_ttbar_initialevents->Fill(1);
 		iev++;
 		totalEntries++;
 		/*
@@ -2351,56 +2150,8 @@ for(size_t f=0; f<urls.size();++f)
 		//
 
 
-		// -------------- it should be the creeppish merging of LO and NLO sets
-		// not used now at all?
-		// This must remain deactivated if you use HT-binned samples (it was for pthat-binned samples)
-		// if (isV0JetsMC)
-		//   {
-		//   fwlite::Handle < LHEEventProduct > lheEPHandle;
-		//   lheEPHandle.getByLabel (ev, "externalLHEProducer");
-		//   mon.fillHisto ("nup", "", lheEPHandle->hepeup ().NUP, 1);
-		//   if (lheEPHandle->hepeup ().NUP > 5)  continue;
-		//   mon.fillHisto ("nupfilt", "", lheEPHandle->hepeup ().NUP, 1);
-		//   }
-
-		// HT-binned samples stitching: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorking2015#MC_and_data_samples
-		/*
-		if(isV0JetsMC)
-			{
-			// access generator level HT               
-			fwlite::Handle<LHEEventProduct> lheEventProduct;
-			lheEventProduct.getByLabel(ev, "externalLHEProducer");
-			//edm::Handle<LHEEventProduct> lheEventProduct;
-			//ev.getByLabel( 'externalLHEProducer', lheEventProduct);
-			const lhef::HEPEUP& lheEvent = lheEventProduct->hepeup(); 
-			std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
-			double lheHt = 0.;
-			size_t numParticles = lheParticles.size();
-			for ( size_t idxParticle = 0; idxParticle < numParticles; ++idxParticle )
-				{
-				int absPdgId = TMath::Abs(lheEvent.IDUP[idxParticle]);
-				int status = lheEvent.ISTUP[idxParticle];
-				if ( status == 1 && ((absPdgId >= 1 && absPdgId <= 6) || absPdgId == 21) )
-					{
-					// quarks and gluons
-					lheHt += TMath::Sqrt(TMath::Power(lheParticles[idxParticle][0], 2.) + TMath::Power(lheParticles[idxParticle][1], 2.));
-					// first entry is px, second py
-					}                                        
-				}
-			if(debug) cout << "Sample: " << dtag << ", lheHt: " << lheHt << ", scale factor from spreadsheet: " << patUtils::getHTScaleFactor(dtag, lheHt) << endl;
-			// getHTScaleFactor works on combining several LO datasets with NLO
-			// now one 1 NLO dataset is used for both WJets and DYJets
-			// thus it is commented out here
-			//weight_Gen *=   patUtils::getHTScaleFactor(dtag, lheHt);
-			}
-		*/
-
 		fill_1d(string("weight_Gen"), 200, -2., 2., weight_Gen, 1);
 
-		// TODO: scale it somehow
-		//weights_FULL[SYS_NOMINAL] *= weight_Gen;
-		//weights_FULL[SYS_PU_UP]   *= weight_Gen;
-		//weights_FULL[SYS_PU_DOWN] *= weight_Gen;
 		// it's a nominal weight, i.e. weight all weights with it
 		for ( const auto s : weightSystematics )
 			{
@@ -2588,73 +2339,10 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d( string("rhoCentralChargedPileUp_beforetrig_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
 		fill_1d( string("rhoCentralChargedPileUp_beforetrig_weight"),    100, 0, 100, rhoCentralChargedPileUp, weights_FULL[SYS_NOMINAL]);
 
-		//fill_1d( string("pileup_passtrig_rawweight_pernuminters"), 100, 0, 100, nGoodPV, rawWeight);
-		//fill_1d( string("pileup_passtrig_weight_pernuminters"),    100, 0, 100, nGoodPV, weight);
-
-		// inline control functions usage:
-		//   fill_pt_e( "control_point_name", value, weight)
-		//   fill_eta( "control_point_name", value, weight )   <-- different TH1F range and binning
-		//   increment( "control_point_name", weight )
-
-		// increment( string("weightflow_weighted_raw_miniaod_events"), rawWeight );
-		// increment( string("weightflow_weighted_miniaod_events"), weight );
-		// increment( string("weightflow_weighted_up_miniaod_events"), weight_up );
-		// increment( string("weightflow_weighted_down_miniaod_events"), weight_down );
-
-		// // fill_pu( string("pileup_rawweight_perrawvtxsize"), vtx.size(), rawWeight);
-		// fill_pu( string("pileup_weight_perrawvtxsize"), vtx.size(), weight_pu_test);
-
-		// fill_pu( string("pileup_ini_rawweight_pergoodpv"), nGoodPV, rawWeight);
-		// fill_pu( string("pileup_ini_weight_pergoodpv"), nGoodPV, weight);
-		// fill_pu( string("pileup_ini_weight_up_pergoodpv"), nGoodPV, weight_up);
-		// fill_pu( string("pileup_ini_weight_down_pergoodpv"), nGoodPV, weight_down);
-
-		// fill_pu( string("pileup_rawweight_pernuminters"), num_inters, rawWeight);
-		// fill_pu( string("pileup_weight_pernuminters"), num_inters, weight);
-		// fill_pu( string("pileup_weight_up_pernuminters"), num_inters, weight_up);
-		// fill_pu( string("pileup_weight_down_pernuminters"), num_inters, weight_down);
-
-		//num_inters = 1;
-		// TODO: turn it back on for sakes of additional check
-		// -- the weights are rarely negative now
-
-		// if (num_inters>99) num_inters = 99;
-		// if (nGoodPV>100) nGoodPV = 99;
-		// event_pergoodpv_weight[nGoodPV] += weight;
-		// //if (num_inters<0)  num_inters = 0;
-		// if (weight_Gen<0)
-		// 	{
-		// 	increment( string("negative_events"), 1 );
-		// 	fill_pu( string("pileup_negative_weight_pernuminters"), num_inters, weight);
-		// 	fill_pu( string("pileup_negative_rawweight_pernuminters"), num_inters, rawWeight);
-
-		// 	negative_event_nvtx[num_inters] += 1;
-		// 	negative_event_pernvtx_weight[num_inters] += weight;
-		// 	negative_event_pergoodpv_weight[nGoodPV] += weight;
-		// 	}
-		// else
-		// 	{
-		// 	increment( string("positive_events"), 1 );
-		// 	fill_pu( string("pileup_positive_weight_pernuminters"), num_inters, weight);
-		// 	fill_pu( string("pileup_positive_rawweight_pernuminters"), num_inters, rawWeight);
-		// 	positive_event_nvtx[num_inters] += 1;
-		// 	positive_event_pernvtx_weight[num_inters] += weight;
-		// 	positive_event_pergoodpv_weight[nGoodPV] += weight;
-		// 	}
-
 		// -------------------------------------   Basic event selection
 
-		// ---------------------- Orthogonalize Run2015B PromptReco+17Jul15 mix
-		// let's remove Run2015B
-		// if(isRun2015B)
-		// {
-		// if(!patUtils::exclusiveDataEventFilter(ev.eventAuxiliary().run(), isMC, isPromptReco ) ) continue;
-		// }
-
-		// it's not needed with the latest versions of RunB rereconstruction
-
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHT is over
-		// MC weights (not changing the integral of N events)
+		// MC weights (weights that don't change the integral of N events)
 
 		// FISRT SECTION SUM
 		for ( const auto s : weightSystematics )
@@ -2716,7 +2404,7 @@ for(size_t f=0; f<urls.size();++f)
 				//cout << "Printing PAT/RECO trigger list for MET filters here" << endl;
 				//for(edm::TriggerNames::Strings::const_iterator trnames = metFilters.triggerNames().begin(); trnames!=metFilters.triggerNames().end(); ++trnames)
 					//cout << *trnames << endl;
-				cout << "----------- End of trigger list ----------" << endl;
+				cout << "----------- End of MET filters trigger list ----------" << endl;
 				//return 0;
 			}
 
@@ -2727,7 +2415,16 @@ for(size_t f=0; f<urls.size();++f)
 			bool halo  = utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter");
 			// 2016 thing: bad muons
 			bool flag_noBadMuons = utils::passTriggerPatterns(metFilters, "Flag_noBadMuons");
-			bool flag_duplicateMuons = utils::passTriggerPatterns(metFilters, "Flag_duplicateMuons");
+			//bool flag_duplicateMuons = utils::passTriggerPatterns(metFilters, "Flag_duplicateMuons");
+			/* from
+			 * https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#Event_flags
+			 * Three flags are saved in the event:
+			      Flag_badMuons: the event contained at least one PF muon of pT > 20 GeV that is flagged as bad
+			      Flag_duplicateMuons: the event contained at least one PF muon of pT > 20 GeV that is flagged as duplicate
+			      Flag_noBadMuons: the event does not contain any PF muon of pT > 20 GeV flagged as bad or duplicate (i.e. the event is safe)
+
+			 * --- thus the Flag_noBadMuons should be enough
+			 */
 
 			// TODO: de-hardcode
 			// recording which filters are _not_ passed (filtered events by the filter) (less computing, more to the point)
@@ -2736,9 +2433,9 @@ for(size_t f=0; f<urls.size();++f)
 			if (!eebad              ) fill_1d(string("control_MET_filters"), 10, 0, 10, 2, 1);
 			if (!halo               ) fill_1d(string("control_MET_filters"), 10, 0, 10, 3, 1);
 			if (!flag_noBadMuons    ) fill_1d(string("control_MET_filters"), 10, 0, 10, 4, 1);
-			if (!flag_duplicateMuons) fill_1d(string("control_MET_filters"), 10, 0, 10, 5, 1);
+			//if (!flag_duplicateMuons) fill_1d(string("control_MET_filters"), 10, 0, 10, 5, 1);
 
-			if (! (filters1 & good_vertices & eebad & halo & flag_noBadMuons & flag_duplicateMuons)) continue;
+			if (! (filters1 & good_vertices & eebad & halo & flag_noBadMuons)) continue;
 			// these Flag_noBadMuons/Flag_duplicateMuons are MET flags (the issue with bad muons in 2016),
 			// they are true if the MET got corrected and event is fine
 
@@ -5584,16 +5281,6 @@ printf("End of (file loop) the job.\n");
 
 // Controls distributions of processed particles
 
-
-if(saveSummaryTree)
-	{
-	TDirectory* cwd = gDirectory;
-	summaryFile->cd();
-	summaryTree->Write();
-	summaryFile->Close();
-	delete summaryFile;
-	cwd->cd();
-	}
 
 
 if(nMultiChannel>0) cout << "Warning! There were " << nMultiChannel << " multi-channel events out of " << totalEntries << " events!" << endl;
