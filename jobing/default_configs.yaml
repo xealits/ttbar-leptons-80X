@@ -57,6 +57,8 @@ tau_decayMode       : "decayModeFinding"
 tau_ID              : "byMediumCombinedIsolationDeltaBetaCorr3Hits"
 tau_againstMuon     : "againstMuonTight3"
 tau_againstElectron : "againstElectronTightMVA6"
+tauIDsf          : 0.97
+tauIDsf_shift    : 0.05
 tau_Loose_ID         : "byLooseCombinedIsolationDeltaBetaCorr3Hits"
 tau_Tight_ID         : "byTightIsolationMVArun2v1DBoldDMwLT"
 jetID   : "Loose"

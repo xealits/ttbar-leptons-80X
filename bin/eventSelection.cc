@@ -1056,6 +1056,9 @@ string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
 	tau_againstElectron = runProcess.getParameter<std::string>("tau_againstElectron");
 
+double tauIDsf          = runProcess.getParameter<double>("tauIDsf");
+double tauIDsf_shift    = runProcess.getParameter<double>("tauIDsf_shift");
+
 //("byLooseCombinedIsolationDeltaBetaCorr3Hits");
 string tau_Loose_ID = runProcess.getParameter<std::string>("tau_Loose_ID");
 string tau_Tight_ID = runProcess.getParameter<std::string>("tau_Tight_ID");
@@ -1944,6 +1947,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------------------------- tau ID SF
 		double weight_tauIDsf         (1.0);
+		double weight_tauIDsf_up      (1.0);
+		double weight_tauIDsf_down    (1.0);
 		double weight_without_tauIDsf (1.0);
 
 		// rawWeight is everything but Pile-Up
@@ -3181,23 +3186,55 @@ for(size_t f=0; f<urls.size();++f)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
 		// Medium MVA (no dR03) is 0.97 +- 0.05
 
+		/*
+		 * tau ID SF needs:
+		 * the SF
+		 * the up/down variation
+		 */
 		if (isMC && selTausNoLep.size() > 0) // 2016 data/MC tau ID efficiency (all discriminators, all pt and eta ranges) = 0.83 +- 0.06
 			{
-			double pre_weight_tauIDsf = 1;
+			/*
+			 * this calculates probability to get at least 1 tau from the given event, if the tdu ID efficiency was shifted by SF
+			 * usually there is only 1 tau in the event
+			 * rarely two are found (SingleElectron Run2016G):
+			 *             mean    dev
+			 * slimmedTaus 1.14722 0.758783
+			 *              ratio 2-tau events to 1-tau
+			 * selTaus      0.00079
+			 * selTausNoLep 0.00077
+			 *
+			 * -- so, let's assume there are only 1-tau events:
+			 */
+
+			/*
+			double pre_weight_tauIDsf      = 1;
+			double pre_weight_tauIDsf_up   = 1;
+			double pre_weight_tauIDsf_down = 1;
 			for (size_t itau = 0; itau < selTausNoLep.size(); ++itau)
+				{
 				//pre_weight_tauIDsf *= (1 - 0.83 + r3->Gaus(0, 0.06)); // gaussian +- 0.06
 				// recommendations update (noticed 8-11-2016, last page update 2016-11-07)
 				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Tau_ID_efficiency
 				// in ReReco it's different
 				// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
-				pre_weight_tauIDsf *= (1 - 0.97 + r3->Gaus(0, 0.05)); // gaussian +- 0.05
-			weight_tauIDsf = 1 - pre_weight_tauIDsf;
+				// previous, randomized SF
+				//pre_weight_tauIDsf *= (1 - 0.97 + r3->Gaus(0, 0.05)); // gaussian +- 0.05
+				// now the SF shifts are accounted as systematics
+				pre_weight_tauIDsf      *= (1 -  0.97);
+				pre_weight_tauIDsf_up   *= (1 - (0.97 + 0.05)); // 1.02
+				pre_weight_tauIDsf_down *= (1 - (0.97 - 0.05));
+				}
+			*/
+			weight_tauIDsf      *= tauIDsf;
+			weight_tauIDsf_up   *= tauIDsf + tauIDsf_shift;
+			weight_tauIDsf_down *= tauIDsf - tauIDsf_shift;
 			}
 			// TODO: should here be a normalization to all MC events?
-		fill_1d(string("weight_tauIDsf"), 200, 0., 2.,   weight_tauIDsf, 1);
+		fill_1d(string("weight_tauIDsf"), 100, 0., 2.,   weight_tauIDsf, 1); // const value now
 
 		weight_without_tauIDsf = weights_FULL[SYS_NOMINAL];
-		// weight *= weight_tauIDsf;// apply tau weight at selection
+		// weight *= weight_tauIDsf;
+		// ------- apply tau weight at single-lepton selection
 
 		if(debug){
 			cout << "processed taus" << " N selTausNoLep = " << selTausNoLep.size() << endl;
@@ -3718,7 +3755,12 @@ for(size_t f=0; f<urls.size();++f)
 			// for all the control distr-s
 			for ( const auto s : weightSystematics )
 				{
-				weights_FULL[s] *= weight_tauIDsf;
+				if (s == SYS_TAUID_SF_UP)
+					weights_FULL[s] *= weight_tauIDsf_up;
+				else if (s == SYS_TAUID_SF_DOWN)
+					weights_FULL[s] *= weight_tauIDsf_down;
+				else
+					weights_FULL[s] *= weight_tauIDsf;
 				}
 			double weight = weights_FULL[SYS_NOMINAL];
 

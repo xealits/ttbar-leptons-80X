@@ -78,6 +78,7 @@ runProcess = cms.PSet(
     outfile = cms.string("{outfile}"),
     outdir = cms.string("{outdir}"),
     isMC = cms.bool({isMC}),
+
     elHLT_MC     = cms.string("{elHLT_MC}"), # should I just pass v8 and in matching always add * at the end?
     elHLT_Data   = cms.string("{elHLT_Data}"),
     muHLT_MC1    = cms.string("{muHLT_MC1}"),
@@ -85,12 +86,16 @@ runProcess = cms.PSet(
     muHLT_Data1  = cms.string("{muHLT_Data1}"),
     muHLT_Data2  = cms.string("{muHLT_Data2}"),
     jetHLT       = cms.string("{jetHLT}"),
+
     tau_decayMode = cms.string("{tau_decayMode}"),
     tau_ID        = cms.string("{tau_ID}"),
     tau_againstMuon     = cms.string("{tau_againstMuon}"),
     tau_againstElectron = cms.string("{tau_againstElectron}"),
+    tauIDsf          = cms.double({tauIDsf}),
+    tauIDsf_shift    = cms.double({tauIDsf_shift}),
     tau_Loose_ID         = cms.string("{tau_Loose_ID}"),
     tau_Tight_ID         = cms.string("{tau_Tight_ID}"),
+
     jetID   = cms.string("{jetID}"),
     jetPUID = cms.string("{jetPUID}"),
     with_PU  = cms.bool({with_PU}),
