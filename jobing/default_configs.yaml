@@ -48,29 +48,29 @@ muscleDir    :     '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/data/jec/'
 jecDir       :     '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/data/jec/25ns/'
 resolutionFile  :  '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/data/jec/25ns/Spring16_25nsV10_MC_PtResolution_AK4PFchs.txt'
 scaleFactorFile :  '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/data/jec/25ns/Spring16_25nsV10_MC_SF_AK4PFchs.txt'
-dataDriven_tauFakeRates1 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates1.root'
-dataDriven_tauFakeRates2 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates2.root'
-dataDriven_tauFakeRates_dileptons : '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates_dileptons.root'
+dataDriven_tauFakeRates1 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates1_tauMVA.root'
+dataDriven_tauFakeRates2 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates2_tauMVA.root'
+dataDriven_tauFakeRates_dileptons : '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates_dileptons_tauMVA.root'
 bTaggingEfficiencies          :     '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root'
 tau_fake_rate_histo1_fraction : 0.5
 tau_decayMode       : "decayModeFinding"
-tau_ID              : "byMediumCombinedIsolationDeltaBetaCorr3Hits"
+tau_ID              : "byMediumIsolationMVArun2v1DBoldDMwLT"
 tau_againstMuon     : "againstMuonTight3"
 tau_againstElectron : "againstElectronTightMVA6"
 tauIDsf          : 0.97
 tauIDsf_shift    : 0.05
-tau_Loose_ID         : "byLooseCombinedIsolationDeltaBetaCorr3Hits"
+tau_Loose_ID         : "byLooseIsolationMVArun2v1DBoldDMwLT"
 tau_Tight_ID         : "byTightIsolationMVArun2v1DBoldDMwLT"
 jetID   : "Loose"
-jetPUID : "TightPU"
-with_PU: False
-jet_kino_cuts_pt    : 25.
+jetPUID : "LoosePU"
+with_PU: True
+jet_kino_cuts_pt    : 30.
 jet_kino_cuts_eta   : 2.4
-tau_kino_cuts_pt    : 25.
+tau_kino_cuts_pt    : 30.
 tau_kino_cuts_eta   : 2.3
-jettaufr_jet_kino_cuts_pt    : 20.
+jettaufr_jet_kino_cuts_pt    : 30.
 jettaufr_jet_kino_cuts_eta   : 2.4
-jettaufr_tau_kino_cuts_pt    : 20.
+jettaufr_tau_kino_cuts_pt    : 30.
 jettaufr_tau_kino_cuts_eta   : 2.3
 conf_record_electrons:  False
 conf_record_muons:      False
