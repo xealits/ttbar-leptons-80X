@@ -5,7 +5,14 @@
 SHELL:=/bin/bash
 
 reduce:
-	./jobing/reduce.zsh ${job} jobing/dtags/${dtags}
+	# job output filenames:
+	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
+	mkdir outdir/${job}/merged-sets
+	echo hadd-ing jobs of jobing/dtags/${dtags} dtags in outdir/${job} to merged-sets/
+	for d in `cat jobing/dtags/${dtags}`; \
+	do                                    \
+	  echo $$d; hadd outdir/${job}/merged-sets/$$d.root outdir/${job}/"$$d"*root ;  \
+	done
 
 extract_all: extract_eventflow extract_weightflow_NOMINAL extract_jet_origins extract_taujet_origins extract_fakerates extract_pileup
 	# DONE
