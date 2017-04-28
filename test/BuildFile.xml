@@ -68,6 +68,7 @@
 
 
   <bin name="weightflow_table_script"         file="weightflow_table_script.cc"></bin>
+  <bin name="weightflow_nicknames_script"     file="weightflow_nicknames_script.cc"></bin>
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->
 

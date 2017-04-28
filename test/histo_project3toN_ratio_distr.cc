@@ -22,7 +22,7 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 6
+#define INPUT_DTAGS_START 7
 
 using namespace std;
 
@@ -32,16 +32,17 @@ using namespace std;
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 5)
+if (argc < 6)
 	{
 	//std::cout << "Usage : " << argv[0] << " lumi distr projection rebin_factor dir dtags" << std::endl;
-	std::cout << "Usage : " << argv[0] << " x|y|z proj_name cont_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
+	std::cout << "Usage : " << argv[0] << "largebins x|y|z proj_name cont_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString proj(argv[1]);
+TString largebins(argv[1]);
+TString proj(argv[2]);
 if (proj != TString("x") && proj != TString("y") && proj != TString("z"))
 	{
 	printf("UNKNOWN PROJECTION GIVEN\n");
@@ -49,14 +50,14 @@ if (proj != TString("x") && proj != TString("y") && proj != TString("z"))
 	return 2;
 	}
 
-TString proj_name(argv[2]);
-TString cont_name(argv[3]);
-TString distr1(argv[4]);
-TString distr2(argv[5]);
-Int_t rebin_factor(atoi(argv[6]));
-double x_axis_min_range = atof(argv[7]);
-double x_axis_max_range = atof(argv[8]);
-TString filename(argv[9]);
+TString proj_name(argv[3]);
+TString cont_name(argv[4]);
+TString distr1(argv[5]);
+TString distr2(argv[6]);
+Int_t rebin_factor(atoi(argv[7]));
+double x_axis_min_range = atof(argv[8]);
+double x_axis_max_range = atof(argv[9]);
+TString filename(argv[10]);
 
 cout << distr1 << endl;
 cout << distr2 << endl;

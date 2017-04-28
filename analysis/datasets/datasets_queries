@@ -90,3 +90,16 @@ das_client --limit=0 --query="dataset=/QCD*HT*/RunIISummer16MiniAODv2*/MINIAODSI
 } | tee allHLT_datasets
 
 
+{
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4_13TeV-powheg-isrdown-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_hdampUP_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4_13TeV-powheg-fsrup-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneCUETP8M2T4_13TeV-powheg-fsrdown-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TT_TuneEE5C_13TeV-powheg-herwigpp/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2*/MINIAODSIM"
+} | tee systematicTTbar_datasets
+

@@ -7,12 +7,22 @@ SHELL:=/bin/bash
 reduce:
 	# job output filenames:
 	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
-	mkdir outdir/${job}/merged-sets
+	#mkdir outdir/${job}/merged-sets
 	echo hadd-ing jobs of jobing/dtags/${dtags} dtags in outdir/${job} to merged-sets/
 	for d in `cat jobing/dtags/${dtags}`; \
 	do                                    \
 	  echo $$d; hadd outdir/${job}/merged-sets/$$d.root outdir/${job}/"$$d"*root ;  \
 	done
+#for new job format:
+#$ for d in `cat jobing/dtags/dtag_xsecs_ttbar`                                                                                                                                                                                    
+#do
+#  dtag=`echo $d | sed "s/,.*$//"`
+#  echo $dtag
+#  chan=`echo $d | sed "s/.*,//"`
+#  echo $chan
+#  hadd outdir/v10.8/merged-sets/"$dtag"_"$chan".root outdir/v10.8/$dtag*$chan*root
+#done
+
 
 extract_all: extract_eventflow extract_weightflow_NOMINAL extract_jet_origins extract_taujet_origins extract_fakerates extract_pileup
 	# DONE
@@ -109,7 +119,9 @@ get_dtags:
 	ls outdir/"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > dtags_${job}
 
 get_job_dtags:
-	ls outdir/"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*.root//' | sort | uniq > dtags_job_${job}
+	# job output filenames:
+	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
+	ls outdir/"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*..root//' | sort | uniq > dtags_job_${job}
 
 jet_fakerate_measurements:
 	jet_fakerate_measurements --add-header HLTjet_qcd outdir/${jjob}/merged-sets/ `cat dtags_${jjob}_JetHT ` 2> /dev/null >  ${jjob}_${vjob}_fakerate_measurement
@@ -251,7 +263,7 @@ selection_control_histos_rho:
 		 rhoCentralNeutral_beforetrig_rawWeight rhoCentralNeutral_beforetrig_weight rhoCentralNeutral_passtrig_rawWeight rhoCentralNeutral_passtrig_weight rhoCentralNeutral_singlelepton_rawWeight rhoCentralNeutral_singlelepton_weight  rhoCentralNeutral_dilepton_rawWeight rhoCentralNeutral_dilepton_weight \
 		 rhoCentralChargedPileUp_beforetrig_rawWeight rhoCentralChargedPileUp_beforetrig_weight rhoCentralChargedPileUp_passtrig_rawWeight rhoCentralChargedPileUp_passtrig_weight rhoCentralChargedPileUp_singlelepton_rawWeight rhoCentralChargedPileUp_singlelepton_weight  rhoCentralChargedPileUp_dilepton_rawWeight rhoCentralChargedPileUp_dilepton_weight ;     \
 	do                                                \
-	NEWstacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:
@@ -364,6 +376,10 @@ jet_weightflow:
 	ls outdir/"${job}"/merged-sets/*root | sed -e 's_.*sets/__' -e 's/.root$$//' > test_dtags
 	for d in `cat test_dtags | sed -n '/^MC/p' `; do jet_weightflow outdir/"${job}"/merged-sets/ $$d; done
 
+weightflow_table:
+	mkdir -p sys_weightflows/${job}.${dtags}/
+	weightflow_table_script ${lumi} ${distr} outdir/${job}/merged-sets/ `cat ${dtags}` > sys_weightflows/${job}.${dtags}/${distr}
+
 .PHONY:fakerate_distr_plots
 fakerate_distr_plots:
 	test -s ${file}
@@ -397,18 +413,20 @@ taujet_distr_plots_SingleMuon: fakerate_distr_plots
 fakerate_ratio_plots:
 	test -s ${file}
 	# make stops if a command in the recipe fails...
-	histo_project3toN_ratio_distr x pT     "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1  0 150   ${file}
-	histo_project3toN_ratio_distr y eta    "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1 -2.5 2.5 ${file}
-	histo_project3toN_ratio_distr z radius "fake rate" ${selection}_tau_jets_distr ${selection}_jets_distr 1  0   0.3 ${file}
+	histo_project3toN_ratio_distr x pT     "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0 150   ${file}
+	histo_project3toN_ratio_distr y eta    "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1 -2.5 2.5 ${file}
+	histo_project3toN_ratio_distr z radius "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0   0.3 ${file}
 
 .PHONY:jet_fakerate_plots_JetHT
 jet_fakerate_plots_JetHT: file=outdir/${job}/merged-sets/jobsums/Data13TeV_JetHT2016X.root
 jet_fakerate_plots_JetHT: selection=HLTjet_qcd
+jet_fakerate_plots_JetHT: largebins=""
 jet_fakerate_plots_JetHT: fakerate_ratio_plots
 
 .PHONY:jet_fakerate_plots_SingleMuon
 jet_fakerate_plots_SingleMuon: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleMuon2016X.root
 jet_fakerate_plots_SingleMuon: selection=HLTmu_wjets
+jet_fakerate_plots_SingleMuon: largebins=""
 jet_fakerate_plots_SingleMuon: fakerate_ratio_plots
 
 jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
@@ -416,25 +434,30 @@ jet_fakerate_plots: jet_fakerate_plots_JetHT jet_fakerate_plots_SingleMu
 .PHONY:jet_fakerate_plots_control_el
 jet_fakerate_plots_control_el: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 jet_fakerate_plots_control_el: selection=singleel_pretau
+jet_fakerate_plots_control_el: largebins=""
 jet_fakerate_plots_control_el: fakerate_ratio_plots
 
 .PHONY:jet_fakerate_plots_control_mu
 jet_fakerate_plots_control_mu: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 jet_fakerate_plots_control_mu: selection=singlemu_pretau
+jet_fakerate_plots_control_mu: largebins=""
 jet_fakerate_plots_control_mu: fakerate_ratio_plots
 
 jet_fakerate_plots_control: jet_fakerate_plots_control_el jet_fakerate_plots_control_mu
 
 mumu_fakerate_ratio_plots: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 mumu_fakerate_ratio_plots: selection=mumu_passjets
+mumu_fakerate_ratio_plots: largebins=""
 mumu_fakerate_ratio_plots: fakerate_ratio_plots
 
 elmu_fakerate_ratio_plots: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 elmu_fakerate_ratio_plots: selection=elmu_passjets
+elmu_fakerate_ratio_plots: largebins=""
 elmu_fakerate_ratio_plots: fakerate_ratio_plots
 
 elel_fakerate_ratio_plots: file=outdir/${job}/merged-sets/jobsums/Data13TeV_SingleLepton2016X.root
 elel_fakerate_ratio_plots: selection=elel_passjets
+elel_fakerate_ratio_plots: largebins=""
 elel_fakerate_ratio_plots: fakerate_ratio_plots
 
 dilep_fakerate_ratio_plots: elel_fakerate_ratio_plots mumu_fakerate_ratio_plots elmu_fakerate_ratio_plots
@@ -750,9 +773,9 @@ overlay_fakerates:
 	overlay_th1d_distrs Y ${ttjob}_${jetjob}_fake-rates-per-z-radius_overlayed.png qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_z.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_z.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_z.root h3
 
 overlay_fakerates_4:
-	overlay_th1d_distrs Y ${ttjob}_${jetjob}_fake-rates-per-x-pt_overlayed.png     qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_x.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_x.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_x.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr_over_elmu_passjets_jets_distr_x.root h3
-	overlay_th1d_distrs Y ${ttjob}_${jetjob}_fake-rates-per-y-eta_overlayed.png    qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_y.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_y.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_y.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr_over_elmu_passjets_jets_distr_y.root h3
-	overlay_th1d_distrs Y ${ttjob}_${jetjob}_fake-rates-per-z-radius_overlayed.png qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_z.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_z.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_z.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr_over_elmu_passjets_jets_distr_z.root h3
+	overlay_th1d_distrs Y ${ttjob}_${jetjob}_${largebins}_fake-rates-per-x-pt_overlayed.png     qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr${largebins}_over_HLTjet_qcd_jets_distr${largebins}_x.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr${largebins}_over_HLTmu_wjets_jets_distr${largebins}_x.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr${largebins}_over_mumu_passjets_jets_distr${largebins}_x.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr${largebins}_over_elmu_passjets_jets_distr${largebins}_x.root h3
+	overlay_th1d_distrs Y ${ttjob}_${jetjob}_${largebins}_fake-rates-per-y-eta_overlayed.png    qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr${largebins}_over_HLTjet_qcd_jets_distr${largebins}_y.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr${largebins}_over_HLTmu_wjets_jets_distr${largebins}_y.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr${largebins}_over_mumu_passjets_jets_distr${largebins}_y.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr${largebins}_over_elmu_passjets_jets_distr${largebins}_y.root h3
+	overlay_th1d_distrs Y ${ttjob}_${jetjob}_${largebins}_fake-rates-per-z-radius_overlayed.png qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_tau_jets_distr${largebins}_over_HLTjet_qcd_jets_distr${largebins}_z.root h3 wjets-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_SingleMuon2016X_HLTmu_wjets_tau_jets_distr${largebins}_over_HLTmu_wjets_jets_distr${largebins}_z.root h3 mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr${largebins}_over_mumu_passjets_jets_distr${largebins}_z.root h3 elmu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_elmu_passjets_tau_jets_distr${largebins}_over_elmu_passjets_jets_distr${largebins}_z.root h3
 
 overlay_fakerates_qcd_n_mumu:
 	overlay_th1d_distrs Y ${ttjob}_${jetjob}_fake-rates-per-x-pt_overlayed.png     qcd-sel outdir/${jetjob}/merged-sets/jobsums/Data13TeV_JetHT2016X_HLTjet_qcd_jets_distr_x.root h3  mumu-sel outdir/${ttjob}/merged-sets/jobsums/Data13TeV_SingleLepton2016X_mumu_passjets_tau_jets_distr_over_mumu_passjets_jets_distr_x.root h3 
