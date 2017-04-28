@@ -2186,7 +2186,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 3, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 3, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 3, 1);
-		// ------------------------------- count N good verteces
+
+		// ------------------------------- PRIMARY VERTEX
 		// needed for particle selection/event classification later
 		// and pile-up control-distribution for data
 		reco::VertexCollection vtx;
@@ -4500,8 +4501,8 @@ for(size_t f=0; f<urls.size();++f)
 					}
 				else if (isSingleMu)
 					{
-					string multiselect_weight_output_name = string("weightflow_mu_") + name;
-					string multiselect_count_output_name  = string("eventflow_mu_") + name;
+					multiselect_weight_output_name = string("weightflow_mu_") + name;
+					multiselect_count_output_name  = string("eventflow_mu_") + name;
 					}
 				else
 					{
