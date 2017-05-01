@@ -9,10 +9,12 @@ reduce:
 	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
 	#mkdir outdir/${job}/merged-sets
 	echo hadd-ing jobs of jobing/dtags/${dtags} dtags in outdir/${job} to merged-sets/
-	for d in `cat jobing/dtags/${dtags}`; \
-	do                                    \
-	  echo $$d; hadd outdir/${job}/merged-sets/$$d.root outdir/${job}/"$$d"*root ;  \
+	for pair in `cat jobing/dtags/${dtags}`; \
+	do                                           \
+	  echo $$pair - `echo $$pair | cut -d, -f1` _ `echo $$pair | cut -d, -f2` ;               \
+	  hadd outdir/${job}/merged-sets/"`echo $$pair | cut -d, -f1`"_`echo $$pair | cut -d, -f2`.root outdir/${job}/"`echo $$pair | cut -d, -f1`"*.`echo $$pair | cut -d, -f2`.root ; \
 	done
+
 #for new job format:
 #$ for d in `cat jobing/dtags/dtag_xsecs_ttbar`                                                                                                                                                                                    
 #do

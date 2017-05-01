@@ -1674,7 +1674,6 @@ cout << "jecDir = "      << jecDir << "\n";
 //########    INITIATING HISTOGRAMS     ########
 //##############################################
 
-
 /* aMCatNLO_weight
  * gen_t_pt
  * gen_tb_pt
@@ -1706,6 +1705,8 @@ cout << "jecDir = "      << jecDir << "\n";
  * jet1_p
  * jet1_rad
  * jet1_b_discr
+ * jet1_hadronFlavour
+ * jet1_partonFlavour
  * jet2_id
  * jet2_eta
  * jet2_phi
@@ -1713,6 +1714,8 @@ cout << "jecDir = "      << jecDir << "\n";
  * jet2_p
  * jet2_rad
  * jet2_b_discr
+ * jet2_hadronFlavour
+ * jet2_partonFlavour
  * jet3_id
  * jet3_eta
  * jet3_phi
@@ -1720,6 +1723,8 @@ cout << "jecDir = "      << jecDir << "\n";
  * jet3_p
  * jet3_rad
  * jet3_b_discr
+ * jet3_hadronFlavour
+ * jet3_partonFlavour
  * jet4_id
  * jet4_eta
  * jet4_phi
@@ -1727,6 +1732,8 @@ cout << "jecDir = "      << jecDir << "\n";
  * jet4_p
  * jet4_rad
  * jet4_b_discr
+ * jet4_hadronFlavour
+ * jet4_partonFlavour
  * jet5_id
  * jet5_eta
  * jet5_phi
@@ -1734,6 +1741,8 @@ cout << "jecDir = "      << jecDir << "\n";
  * jet5_p
  * jet5_rad
  * jet5_b_discr
+ * jet5_hadronFlavour
+ * jet5_partonFlavour
  * njets
  * nbjets
  * tau1_id
@@ -1749,9 +1758,10 @@ cout << "jecDir = "      << jecDir << "\n";
  * tau2_p
  * tau2_IDlev
  * ntaus
+ * met_init
  * met_uncorrected
  * met_corrected
- *
+
  * add:
  * jet PU discr
  * offlineSlimmedPrimaryVertices -> what here?
@@ -1761,7 +1771,7 @@ cout << "jecDir = "      << jecDir << "\n";
  */
 
 // VIM
-const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx:nvtx_gen:fixedGridRhoFastjetAll:HLT_el:HLT_mu:lep1_id:lep1_pt:lep1_eta:lep1_eta:lep2_pt:";
+const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected";
 
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_output_description);
 
@@ -1795,32 +1805,32 @@ for(size_t f=0; f<urls.size();++f)
 
 	int treeStep (ev.size()/50);
 
-	// the output parameters for the NTuple
-	Float_t NT_aMCatNLO_weight = -1;
-	Float_t NT_gen_t_pt = -1, NT_gen_tb_pt = -1;
-	Float_t NT_NUP_gen = -1;
-	Float_t NT_nvtx_gen = -1, NT_nvtx = -1, NT_nvtx_good = -1;
-	Float_t NT_fixedGridRhoFastjetAll = -1, NT_fixedGridRhoFastjetCentral = -1, NT_fixedGridRhoFastjetCentralNeutral = -1, NT_fixedGridRhoFastjetCentralChargedPileUp = -1;
-	Float_t NT_HLT_el = -1, Float_t NT_HLT_mu = -1; // yep these are floats too
-	Float_t NT_lep_id[2] = {-1, -1}, NT_lep_eta[2] = {-1, -1}, NT_lep_phi[2] = {-1, -1}, NT_lep_pt[2] = {-1, -1}, NT_lep_p[2] = {-1, -1};
-	Float_t NT_nleps = -1;
-	Float_t NT_jet_id           [5] = {-1, -1, -1, -1, -1},
-		NT_jet_eta          [5] = {-1, -1, -1, -1, -1},
-		NT_jet_phi          [5] = {-1, -1, -1, -1, -1},
-		NT_jet_pt           [5] = {-1, -1, -1, -1, -1},
-		NT_jet_p            [5] = {-1, -1, -1, -1, -1},
-		NT_jet_rad          [5] = {-1, -1, -1, -1, -1},
-		NT_jet_b_discr      [5] = {-1, -1, -1, -1, -1},
-		NT_jet_hadronFlavour[5] = {-1, -1, -1, -1, -1},
-		NT_jet_partonFlavour[5] = {-1, -1, -1, -1, -1};
-	Float_t NT_njets = -1, NT_nbjets = -1;
-	Float_t NT_tau_id[2] = {-1, -1}, NT_tau_eta[2] = {-1, -1}, NT_tau_phi[2] = {-1, -1}, NT_tau_pt[2] = {-1, -1}, NT_tau_p[2] = {-1, -1}, NT_tau_IDlev[2] = {-1, -1};
-	Float_t NT_ntaus = -1;
-	Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
-	// ----- done
-
 	for (ev.toBegin(); !ev.atEnd(); ++ev)
 		{
+		// the output parameters for the NTuple
+		Float_t NT_aMCatNLO_weight = -1;
+		Float_t NT_gen_t_pt = -1, NT_gen_tb_pt = -1;
+		Float_t NT_NUP_gen = -1;
+		Float_t NT_nvtx_gen = -1, NT_nvtx = -1, NT_nvtx_good = -1;
+		Float_t NT_fixedGridRhoFastjetAll = -1, NT_fixedGridRhoFastjetCentral = -1, NT_fixedGridRhoFastjetCentralNeutral = -1, NT_fixedGridRhoFastjetCentralChargedPileUp = -1;
+		Float_t NT_HLT_el = -1, NT_HLT_mu = -1; // yep these are floats too
+		Float_t NT_lep_id[2] = {-1, -1}, NT_lep_eta[2] = {-1, -1}, NT_lep_phi[2] = {-1, -1}, NT_lep_pt[2] = {-1, -1}, NT_lep_p[2] = {-1, -1};
+		Float_t NT_nleps = -1;
+		Float_t NT_jet_id           [5] = {-1, -1, -1, -1, -1},
+			NT_jet_eta          [5] = {-1, -1, -1, -1, -1},
+			NT_jet_phi          [5] = {-1, -1, -1, -1, -1},
+			NT_jet_pt           [5] = {-1, -1, -1, -1, -1},
+			NT_jet_p            [5] = {-1, -1, -1, -1, -1},
+			NT_jet_rad          [5] = {-1, -1, -1, -1, -1},
+			NT_jet_b_discr      [5] = {-1, -1, -1, -1, -1},
+			NT_jet_hadronFlavour[5] = {-1, -1, -1, -1, -1},
+			NT_jet_partonFlavour[5] = {-1, -1, -1, -1, -1};
+		Float_t NT_njets = -1, NT_nbjets = -1;
+		Float_t NT_tau_id[2] = {-1, -1}, NT_tau_eta[2] = {-1, -1}, NT_tau_phi[2] = {-1, -1}, NT_tau_pt[2] = {-1, -1}, NT_tau_p[2] = {-1, -1}, NT_tau_IDlev[2] = {-1, -1};
+		Float_t NT_ntaus = -1;
+		Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
+		// ----- done
+
 		if(debug)
 			{
 			cout << "Processing event " << iev << "\n\n" ;
@@ -2018,6 +2028,7 @@ for(size_t f=0; f<urls.size();++f)
 		double weight_PU_down    (1.0);
 
 		// ---------------------------------- b-tagging SF weight
+		double weight_bTaggingSF (1.0);
 		map<systematic_shift, double> weight_bTaggingSFs = {{SYS_NOMINAL, 1.0}, {SYS_BTAG_UP, 1.0}, {SYS_BTAG_DOWN, 1.0}};
 		//double weight_bTaggingSF_up   (1.0);
 		//double weight_bTaggingSF_down (1.0);
@@ -2845,6 +2856,7 @@ for(size_t f=0; f<urls.size();++f)
 		//
 		//
 		
+		double weight = weights_FULL[SYS_NOMINAL];
 
 
 		if(debug){
@@ -2892,7 +2904,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::ElectronCollection selElectrons;
 		unsigned int nVetoE(0);
 
-		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
+		processElectrons_ID_ISO_Kinematics(electrons, goodPV, NT_fixedGridRhoFastjetAll, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
 			30., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
 		if(debug){
@@ -3219,8 +3231,9 @@ for(size_t f=0; f<urls.size();++f)
 		// it's filled with jetSystematics by processJets_CorrectJES_SmearJERnJES_ID_ISO_with_systematics
 		//string jetID("Loose");
 		//string jetPUID("MediumPU");
+		Variation jet_m_systematic_variation = Variation::NOMINAL;
 
-		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, rho, nGoodPV, jesCor, totalJESUnc, 0.4/2,
+		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, NT_fixedGridRhoFastjetAll, nGoodPV, jesCor, totalJESUnc, 0.4/2,
 			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
 
 		LorentzVector MET_corrected = MET.p4() - full_jet_corr;
@@ -3241,9 +3254,15 @@ for(size_t f=0; f<urls.size();++f)
 		string btagger_label("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 
 		// also, just in case seva nbjets with medium WP
+		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
+		//	BTagCalibrationReader& btagCal,
+		//	struct bTaggingEfficiencyHistograms& bEffs,
+		//	string& b_tagger_label, float b_tag_WP,
+		//	pat::JetCollection& selBJets,                          // output
+		//	bool record, bool debug) // more output
 		float btag_WP = 0.8484; // medium
 		pat::JetCollection selBJets;
-		processBJets_BTag(selJetsNoLep, isMC, weight, btagCal, btsfutil, btagger_label, btag_WP, 0.747, 0.13, selBJets, true, debug);
+		processBJets_BTag(selJetsNoLep, isMC, weight, weight_bTaggingSF, btagCal, bEffs, btagger_label, btag_WP, selBJets, true, debug);
 
 		// now NT output
 		NT_njets = selJetsNoLep.size();
@@ -3269,8 +3288,8 @@ for(size_t f=0; f<urls.size();++f)
 			NT_jet_pt [i]  = jet.pt();
 			NT_jet_p  [i]  = jet.p();
 			NT_jet_rad[i]  = jet_radius(jet);
-			NT_jet_b_discr[i]  = jet.bDiscriminator(b_tagger_label);
-			//jet.bDiscriminator(b_tagger_label)
+			NT_jet_b_discr[i]  = jet.bDiscriminator(btagger_label);
+			//jet.bDiscriminator(btagger_label)
 			NT_jet_hadronFlavour[i]  = jet.hadronFlavour();
 			NT_jet_partonFlavour[i]  = jet.partonFlavour();
 			}
@@ -3284,7 +3303,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// also for referense:
 		pat::TauCollection selTausNoLepNoJet;
-		crossClean_in_dR(selTausNoLep, selJetsNoLep[SYS_NOMINAL], 0.4, selTausNoLepNoJet, weights_FULL[SYS_NOMINAL], string("selTausNoLepNoJet"), false, debug);
+		crossClean_in_dR(selTausNoLep, selJetsNoLep, 0.4, selTausNoLepNoJet, weights_FULL[SYS_NOMINAL], string("selTausNoLepNoJet"), false, debug);
 
 
 		// -------------------------------------------------- all particles are selected
@@ -3472,7 +3491,7 @@ for(size_t f=0; f<urls.size();++f)
 			// and for NTuple
 			const unsigned int output_n = 13 + 5*2 + 1 + 9*5 + 2 + 6*2 + 1 + 3;
 			Float_t output[output_n];
-			if (output_v.size != output_n)
+			if (output_v.size() != output_n)
 				{
 				perror("vector and pointer size of output for NTuple are not equal");
 				exit(22);
@@ -3480,7 +3499,7 @@ for(size_t f=0; f<urls.size();++f)
 			for (int i = 0; i<output_v.size(); i++)
 				output[i] = output_v[i];
 
-			ntuple.Fill(output);
+			ntuple->Fill(output);
 			}
 
 		// TODO: properly count multichannel?
