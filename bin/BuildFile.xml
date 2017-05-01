@@ -35,6 +35,7 @@
 
   <bin name="eventSelection"    file="eventSelection.cc"></bin>
   <bin name="jetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
+  <bin name="ntupleEvents"  file="ntupleEvents.cc"></bin>
 
   <bin name="syncExercise_Dileptons"  file="syncExercise_Dileptons.cc"></bin>
 
