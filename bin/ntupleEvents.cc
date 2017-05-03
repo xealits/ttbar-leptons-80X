@@ -2700,7 +2700,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// record "ID of the channel" -- product of lepton IDs
 		// if 1 lepton -- just its' ID
-		int NT_leps_ID = 1;
+		//int NT_leps_ID = 1;
 		for (int i = 0; i<selLeptons.size(); i++)
 			{
 			NT_leps_ID *= selLeptons[i].pdgId();
@@ -2812,11 +2812,11 @@ for(size_t f=0; f<urls.size();++f)
 				// https://root.cern.ch/root/html606/SMatrixDoc.html
 
 				// should I check .hasSecondaryVertex() && isPFTau() to access the secondary vertex covariance?
-				pat::tau::TauPFEssential::CovMatrix& secVertex_cov_matrix = tau.secondaryVertexCov();
+				const pat::tau::TauPFEssential::CovMatrix& secVertex_cov_matrix = tau.secondaryVertexCov();
 				for (int r=0; r<3; r++)
 					for (int c=0; c<3; c++)
 						{
-						NT_tau_secondaryVertexCov[r,c] =  secVertex_cov_matrix(r,c,);
+						NT_tau_secondaryVertexCov[r][c] =  secVertex_cov_matrix(r,c);
 						}
 				}
 			}
@@ -3031,10 +3031,10 @@ for(size_t f=0; f<urls.size();++f)
 			LorentzVector dileptonSystem = selLeptons[0].p4() + selLeptons[1].p4();
 			pass_dileptons = dileptonSystem.mass() > 15;
 			}
-		bool record_ntuple = (NT_met_corrected > 20) && NT_njets >= 1 && (isSingleMu || isSingleE || pass_dileptons);
+		bool record_ntuple = (NT_met_corrected > 20) && NT_njets >= 2 && (isSingleMu || isSingleE || pass_dileptons);
 		// record if event has 1 or 2 well isolated leptons
 		// MET > 20
-		// and at least 1 jet
+		// and at least 2 jets (maybe record 1-jet events for background later)
 		// -- should be enough margins for backgrounds and not too many events
 		if (record_ntuple)
 			{
@@ -3107,7 +3107,7 @@ for(size_t f=0; f<urls.size();++f)
 			for (int r=0; r<3; r++)
 				for (int c=0; c<3; c++)
 					{
-					output_v.push_back(NT_tau_secondaryVertexCov[r,c]);
+					output_v.push_back(NT_tau_secondaryVertexCov[r][c]);
 					}
 			// so, taus get 4+9 more parameters in output
 			output_v.push_back(NT_ntaus);
@@ -3134,13 +3134,13 @@ for(size_t f=0; f<urls.size();++f)
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
 					pat::Jet & jet = selJetsNoLep[i];
-					if (jet.bDiscriminator(b_tagger_label) < 0.5)
+					if (jet.bDiscriminator(btagger_label) < 0.5)
 						jets_light.push_back(&jet);
 					else
 						jets_b.push_back(&jet);
 					}
 
-				if (jets_light.size() >= 2, jets_b.size() >= 1)
+				if (jets_light.size() >= 2 && jets_b.size() >= 1)
 					{
 					// without matching to tau
 					LorentzVector Wpair(0,0,0,0), Ttrio(0,0,0,0);
@@ -3156,9 +3156,11 @@ for(size_t f=0; f<urls.size();++f)
 								pat::Jet& jetl2 = * jets_light[il2];
 								// here are all permutations
 								Wpair = jetl1.p4() + jetl2.p4();
-								Ttrio = jetb.p4()  + Wpair.p4();
+								Float_t Wmass = Wpair.mass();
+								Ttrio = jetb.p4()  + Wpair;
+								Float_t Tmass = Ttrio.mass();
 								// distance to the peak
-								Float_t dist = ((Wpair.mass() - 80)^2 + (Ttrio.mass() - 170)^2);
+								Float_t dist = ((Wmass - 80)*(Wmass - 80) + (Tmass - 170)*(Tmass - 170));
 								if (dist < NT_lj_peak_distance)
 									NT_lj_peak_distance = dist;
 								}
@@ -3171,15 +3173,19 @@ for(size_t f=0; f<urls.size();++f)
 					{
 					pat::Tau& tau = selTausNoLep[0];
 					// very few events have this, so just reselect the necessary jets
-					pat::Jet* tau_jet;
+					LorentzVector tau_jet(0,0,0,0);
+					bool matched_tau_jet = false;
 					vector<pat::Jet*> jets_light, jets_b;
 					for (int i=0; i<selJetsNoLep.size(); i++)
 						{
 						pat::Jet & jet = selJetsNoLep[i];
 						if (reco::deltaR(jet, tau) < 0.4)
-							tau_jet = &jet;
+							{
+							tau_jet = jet.p4();
+							matched_tau_jet = true;
+							}
 						// so it might reassign tau, but the jets are AK4 -- teir radius is 0.4, in data rarly 2 jets match 1 tau within 0.4
-						else if (jet.bDiscriminator(b_tagger_label) < 0.5)
+						else if (jet.bDiscriminator(btagger_label) < 0.5)
 							jets_light.push_back(&jet);
 						else
 							jets_b.push_back(&jet);
@@ -3189,7 +3195,7 @@ for(size_t f=0; f<urls.size();++f)
 					// and there are light jets > 0 and b jets > 0
 					// find closest distance to the peak
 
-					if (tau_jet && jets_light.size() >= 1 && jets_b.size() >= 1)
+					if (matched_tau_jet && jets_light.size() >= 1 && jets_b.size() >= 1)
 						{
 						// without matching to tau
 						LorentzVector Wpair(0,0,0,0), Ttrio(0,0,0,0);
@@ -3201,10 +3207,12 @@ for(size_t f=0; f<urls.size();++f)
 								{
 								pat::Jet& jetl = * jets_light[il];
 								// here are all permutations
-								Wpair = jetl.p4() + tau_jet->p4();
-								Ttrio = jetb.p4() + Wpair.p4();
+								Wpair = jetl.p4() + tau_jet;
+								Float_t Wmass = Wpair.mass();
+								Ttrio = jetb.p4() + Wpair;
+								Float_t Tmass = Ttrio.mass();
 								// distance to the peak
-								Float_t dist = ((Wpair.mass() - 80)^2 + (Ttrio.mass() - 170)^2);
+								Float_t dist = ((Wmass - 80)*(Wmass - 80) + (Tmass - 170)*(Tmass - 170));
 								if (dist < NT_lj_taumatched_peak_distance)
 									NT_lj_taumatched_peak_distance = dist;
 								}
