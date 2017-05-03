@@ -1476,6 +1476,7 @@ cout << "jecDir = "      << jecDir << "\n";
  * met_uncorrected
  * met_corrected
  * lj_peak_distance
+ * lj_taumatched_peak_distance
 
  * add:
  * jet PU discr
@@ -1486,7 +1487,7 @@ cout << "jecDir = "      << jecDir << "\n";
  */
 
 // VIM
-const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance";
+const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance:lj_taumatched_peak_distance";
 
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_output_description);
 ntuple->SetDirectory(0);
@@ -1546,6 +1547,7 @@ for(size_t f=0; f<urls.size();++f)
 		Float_t NT_ntaus = -1;
 		Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
 		Float_t NT_lj_peak_distance = 20000;
+		Float_t NT_lj_taumatched_peak_distance = 20000;
 		// ----- done
 
 		if(debug)
@@ -3048,7 +3050,7 @@ for(size_t f=0; f<urls.size();++f)
 				// and light jets + b jet
 				// result = {(massW, massT) for all permutations}
 				// store the closest to the peak (80, 170)?
-				vector<*pat::Jet> jets_light, jets_b;
+				vector<pat::Jet*> jets_light, jets_b;
 				for (int i=0; i<selJetsNoLep.size(); i++)
 					{
 					pat::Jet & jet = selJetsNoLep[i];
@@ -3066,10 +3068,10 @@ for(size_t f=0; f<urls.size();++f)
 					for (int ib=0; ib<jets_b.size(); ib++)
 						{
 						pat::Jet& jetb = * jets_b[ib];
-						for (int il1=0; il1<jets_b.size() - 1; il1++)
+						for (int il1=0; il1<jets_light.size() - 1; il1++)
 							{
 							pat::Jet& jetl1 = * jets_light[il1];
-							for (int il2=il1+1; il2<jets_b.size(); il2++)
+							for (int il2=il1+1; il2<jets_light.size(); il2++)
 								{
 								pat::Jet& jetl2 = * jets_light[il2];
 								// here are all permutations
@@ -3083,11 +3085,58 @@ for(size_t f=0; f<urls.size();++f)
 							}
 						}
 					}
+
+				// and check tau-matching jet:
+				if (selTausNoLep.size() > 0)
+					{
+					pat::Tau& tau = selTausNoLep[0];
+					// very few events have this, so just reselect the necessary jets
+					pat::Jet* tau_jet;
+					vector<pat::Jet*> jets_light, jets_b;
+					for (int i=0; i<selJetsNoLep.size(); i++)
+						{
+						pat::Jet & jet = selJetsNoLep[i];
+						if (reco::deltaR(jet, tau) < 0.4)
+							tau_jet = &jet;
+						// so it might reassign tau, but the jets are AK4 -- teir radius is 0.4, in data rarly 2 jets match 1 tau within 0.4
+						else if (jet.bDiscriminator(b_tagger_label) < 0.5)
+							jets_light.push_back(&jet);
+						else
+							jets_b.push_back(&jet);
+						}
+
+					// if found the tau_jet
+					// and there are light jets > 0 and b jets > 0
+					// find closest distance to the peak
+
+					if (tau_jet && jets_light.size() >= 1 && jets_b.size() >= 1)
+						{
+						// without matching to tau
+						LorentzVector Wpair(0,0,0,0), Ttrio(0,0,0,0);
+						// buckle up
+						for (int ib=0; ib<jets_b.size(); ib++)
+							{
+							pat::Jet& jetb = * jets_b[ib];
+							for (int il=0; il<jets_light.size(); il++)
+								{
+								pat::Jet& jetl = * jets_light[il];
+								// here are all permutations
+								Wpair = jetl.p4() + tau_jet->p4();
+								Ttrio = jetb.p4() + Wpair.p4();
+								// distance to the peak
+								Float_t dist = ((Wpair.mass() - 80)^2 + (Ttrio.mass() - 170)^2);
+								if (dist < NT_lj_taumatched_peak_distance)
+									NT_lj_taumatched_peak_distance = dist;
+								}
+							}
+						}
+					}
 				}
 			output_v.push_back(NT_lj_peak_distance);
+			output_v.push_back(NT_lj_taumatched_peak_distance);
 
 			// and for NTuple
-			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3 + 1;
+			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3 + 2;
 			Float_t output[output_n];
 			if (output_v.size() != output_n)
 				{
