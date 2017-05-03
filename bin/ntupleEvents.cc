@@ -2769,9 +2769,10 @@ for(size_t f=0; f<urls.size();++f)
 			NT_taus["tau_pt_" ][i]  = tau.pt();
 			NT_taus["tau_p_"  ][i]  = tau.p();
 
-			Float_t IDlev = 1;
+			Float_t IDlev = 0;
 			if (tau.tauID(tau_Tight_ID)) IDlev = 3;
 			else if (tau.tauID(tau_ID)) IDlev = 2;
+			else if (tau.tauID(tau_Loose_ID)) IDlev = 1;
 			NT_taus["tau_IDlev_"][i] = IDlev;
 
 			// also store for the first tau:

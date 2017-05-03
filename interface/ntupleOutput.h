@@ -173,6 +173,17 @@ map<TString, Float_t> NT_common_event = {
 	{"lj_peak_distance", -1},
 	{"lj_taumatched_peak_distance", -1}}
 
+
+/*
+ * These are on tau decay
+ * More in class reference:
+ * http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_8_0_25/doc/html/d1/de9/classpat_1_1Tau.html
+ *
+ * the EnergyLead/all_Energy should provide something similar to R variable
+ *   -- a (not so great) discriminant for true/fake taus, which is also correlated with tau polarization (to check?)
+ * the secondary vertex and decay should provide selection of the 3-pion decay of hadronic taus
+ * there are more available, tracks etc
+ */
 map<TString, Float_t> NT_leading_tau_decay_info = {
 	{"tau_decay", -1},
 	{"tau_hasSecondaryVertex", -1},
@@ -208,6 +219,11 @@ map<TString, vector<Float_t>> NT_taus = {
 	{"tau_pt_", {-1, -1}},
 	{"tau_p_", {-1, -1}},
 	{"tau_IDlev_", {-1, -1}}};
+// tau IDlev is the highest ID of the tau:
+// 3 -- Tight
+// 2 -- Medium
+// 1 -- loose
+// 0 -- it somehow passed into the tau collection but doesn't pass any of the 3 IDs
 
 #define N_OUTPUT 103
 // for now: define N ouf output values (N of -1 in the above)

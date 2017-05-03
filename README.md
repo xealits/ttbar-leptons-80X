@@ -18,7 +18,11 @@ Just check out the repository in your CMSSW project:
 	git clone git@github.com:xealits/ttbar-leptons-80X.git
 
 And add all used CMSSW modules in `<CMSSW_X_X_X/src>`.
-(The list of modules is comming.)
+
+The list of modules:
+
+* `UserCode/llvv_fwk` from this repository: `https://github.com/cms2l2v/2l2v_fwk` -- it's used for POG definitions (Moriond17 etc), now lepton IDs and jet IDs and corrections are used in the ntuple output
+* (The rest of the list of modules is comming.)
 
 Also for convenience add your `<CMSSW>/test/<arch>` to `PATH`:
 some small utilities are in `test/` directory and `scram` copies them to `test` of the CMSSW project,
