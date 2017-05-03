@@ -1475,6 +1475,7 @@ cout << "jecDir = "      << jecDir << "\n";
  * met_init
  * met_uncorrected
  * met_corrected
+ * lj_peak_distance
 
  * add:
  * jet PU discr
@@ -1485,7 +1486,7 @@ cout << "jecDir = "      << jecDir << "\n";
  */
 
 // VIM
-const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected";
+const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance";
 
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_output_description);
 ntuple->SetDirectory(0);
@@ -1544,6 +1545,7 @@ for(size_t f=0; f<urls.size();++f)
 		Float_t NT_tau_id[2] = {-1, -1}, NT_tau_eta[2] = {-1, -1}, NT_tau_phi[2] = {-1, -1}, NT_tau_pt[2] = {-1, -1}, NT_tau_p[2] = {-1, -1}, NT_tau_IDlev[2] = {-1, -1};
 		Float_t NT_ntaus = -1;
 		Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
+		Float_t NT_lj_peak_distance = 20000;
 		// ----- done
 
 		if(debug)
@@ -2956,38 +2958,19 @@ for(size_t f=0; f<urls.size();++f)
 		// ------------------------------------------ SINGLE LEPTON CHANNELS
 		// --------------------------------------------- DILEPTON CHANNELS
 
-		bool record_ntuple = (NT_met_corrected > 20) && NT_njets >= 1 && (isSingleMu || isSingleE || isDoubleE || isDoubleMu || isEMu);
+		bool pass_dileptons = false;
+		if ((isDoubleE || isDoubleMu || isEMu) && selLeptons.size()==2) // just a bunch of precautions
+			{
+			LorentzVector dileptonSystem = selLeptons[0].p4() + selLeptons[1].p4();
+			pass_dileptons = dileptonSystem.mass() > 15;
+			}
+		bool record_ntuple = (NT_met_corrected > 20) && NT_njets >= 1 && (isSingleMu || isSingleE || pass_dileptons);
 		// record if event has 1 or 2 well isolated leptons
 		// MET > 20
 		// and at least 1 jet
 		// -- should be enough margins for backgrounds and not too many events
 		if (record_ntuple)
 			{
-
-			//// the output parameters for the NTuple
-			//Float_t NT_aMCatNLO_weight = -1;
-			//Float_t NT_gen_t_pt = -1, NT_gen_tb_pt = -1;
-			//Float_t NT_NUP_gen = -1;
-			//Float_t NT_nvtx_gen = -1, NT_nvtx = -1, NT_nvtx_good = -1;
-			//Float_t NT_fixedGridRhoFastjetAll = -1, NT_fixedGridRhoFastjetCentral = -1, NT_fixedGridRhoFastjetCentralNeutral = -1, NT_fixedGridRhoFastjetCentralChargedPileUp = -1;
-			//Float_t NT_HLT_el = -1, Float_t NT_HLT_mu = -1; // yep these are floats too
-			//Float_t NT_lep_id[2] = {-1, -1}, NT_lep_eta[2] = {-1, -1}, NT_lep_phi[2] = {-1, -1}, NT_lep_pt[2] = {-1, -1}, NT_lep_p[2] = {-1, -1};
-			//Float_t NT_nleps = -1;
-			//Float_t NT_jet_id           [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_eta          [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_phi          [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_pt           [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_p            [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_rad          [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_b_discr      [5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_hadronFlavour[5] = {-1, -1, -1, -1, -1},
-			//	NT_jet_partonFlavour[5] = {-1, -1, -1, -1, -1};
-			//Float_t NT_njets = -1, NT_nbjets = -1;
-			//Float_t NT_tau_id[2] = {-1, -1}, NT_tau_eta[2] = {-1, -1}, NT_tau_phi[2] = {-1, -1}, NT_tau_pt[2] = {-1, -1}, NT_tau_p[2] = {-1, -1}, NT_tau_IDlev[2] = {-1, -1};
-			//Float_t NT_ntaus = -1;
-			//Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
-			//// ----- done
-
 			// it seems NTuple doesn't have a method Fill(NN) for NN inputs...
 			// or for a vector...
 			// it can Fill Float_t[] pointer
@@ -3053,8 +3036,58 @@ for(size_t f=0; f<urls.size();++f)
 			output_v.push_back(NT_met_uncorrected);
 			output_v.push_back(NT_met_corrected);
 
+			// calculate lj mass-peak (W mass and top mass)
+			// it can be done downstream
+			// (and it's better to have the W etc for each njet bin etc.. here I have to store only 1 W/top mass -- so I store the closest match)
+			// but for now just a test:
+			//Float_t NT_lj_peak_distance = 20000;
+			if (selJetsNoLep.size()>=3)
+				{
+				// split jets into 2 cathegories according to their bDiscr >< 0.5: light and b
+				// calculate mass of pairs of light jets
+				// and light jets + b jet
+				// result = {(massW, massT) for all permutations}
+				// store the closest to the peak (80, 170)?
+				vector<*pat::Jet> jets_light, jets_b;
+				for (int i=0; i<selJetsNoLep.size(); i++)
+					{
+					pat::Jet & jet = selJetsNoLep[i];
+					if (jet.bDiscriminator(b_tagger_label) < 0.5)
+						jets_light.push_back(&jet);
+					else
+						jets_b.push_back(&jet);
+					}
+
+				if (jets_light.size() >= 2, jets_b.size() >= 1)
+					{
+					// without matching to tau
+					LorentzVector Wpair(0,0,0,0), Ttrio(0,0,0,0);
+					// buckle up
+					for (int ib=0; ib<jets_b.size(); ib++)
+						{
+						pat::Jet& jetb = * jets_b[ib];
+						for (int il1=0; il1<jets_b.size() - 1; il1++)
+							{
+							pat::Jet& jetl1 = * jets_light[il1];
+							for (int il2=il1+1; il2<jets_b.size(); il2++)
+								{
+								pat::Jet& jetl2 = * jets_light[il2];
+								// here are all permutations
+								Wpair = jetl1.p4() + jetl2.p4();
+								Ttrio = jetb.p4()  + Wpair.p4();
+								// distance to the peak
+								Float_t dist = ((Wpair.mass() - 80)^2 + (Ttrio.mass() - 170)^2);
+								if (dist < NT_lj_peak_distance)
+									NT_lj_peak_distance = dist;
+								}
+							}
+						}
+					}
+				}
+			output_v.push_back(NT_lj_peak_distance);
+
 			// and for NTuple
-			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3;
+			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3 + 1;
 			Float_t output[output_n];
 			if (output_v.size() != output_n)
 				{
