@@ -1471,6 +1471,19 @@ cout << "jecDir = "      << jecDir << "\n";
  * tau2_pt
  * tau2_p
  * tau2_IDlev
+ * tau_decay
+ * tau_hasSecondaryVertex
+ * tau_hcalEnergy
+ * tau_hcalEnergyLeadChargedHadrCand
+ * tau_secondaryVertexCov_00
+ * tau_secondaryVertexCov_01
+ * tau_secondaryVertexCov_02
+ * tau_secondaryVertexCov_10
+ * tau_secondaryVertexCov_11
+ * tau_secondaryVertexCov_12
+ * tau_secondaryVertexCov_20
+ * tau_secondaryVertexCov_21
+ * tau_secondaryVertexCov_22
  * ntaus
  * met_init
  * met_uncorrected
@@ -1487,7 +1500,7 @@ cout << "jecDir = "      << jecDir << "\n";
  */
 
 // VIM
-const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance:lj_taumatched_peak_distance";
+const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:tau_decay:tau_hasSecondaryVertex:tau_hcalEnergy:tau_hcalEnergyLeadChargedHadrCand:tau_secondaryVertexCov_00:tau_secondaryVertexCov_01:tau_secondaryVertexCov_02:tau_secondaryVertexCov_10:tau_secondaryVertexCov_11:tau_secondaryVertexCov_12:tau_secondaryVertexCov_20:tau_secondaryVertexCov_21:tau_secondaryVertexCov_22:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance:lj_taumatched_peak_distance";
 
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_output_description);
 ntuple->SetDirectory(0);
@@ -1543,8 +1556,16 @@ for(size_t f=0; f<urls.size();++f)
 			NT_jet_hadronFlavour[5] = {-1, -1, -1, -1, -1},
 			NT_jet_partonFlavour[5] = {-1, -1, -1, -1, -1};
 		Float_t NT_njets = -1, NT_nbjets = -1;
+
 		Float_t NT_tau_id[2] = {-1, -1}, NT_tau_eta[2] = {-1, -1}, NT_tau_phi[2] = {-1, -1}, NT_tau_pt[2] = {-1, -1}, NT_tau_p[2] = {-1, -1}, NT_tau_IDlev[2] = {-1, -1};
+		// saving more infor only for 1st tay (top pt):
+		Float_t NT_tau_decay = -1,
+			NT_tau_hasSecondaryVertex = -99,
+			NT_tau_hcalEnergy = -1,
+			NT_tau_hcalEnergyLeadChargedHadrCand = -1;
+		Float_t NT_tau_secondaryVertexCov[3][3] = {{-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}};
 		Float_t NT_ntaus = -1;
+
 		Float_t NT_met_init = -1, NT_met_uncorrected = -1, NT_met_corrected = -1;
 		Float_t NT_lj_peak_distance = 20000;
 		Float_t NT_lj_taumatched_peak_distance = 20000;
@@ -2738,6 +2759,8 @@ for(size_t f=0; f<urls.size();++f)
 		// and these are the NT output taus
 		std::sort (selTausNoLep.begin(),  selTausNoLep.end(),  utils::sort_CandidatesByPt);
 
+		if(debug) cout << "selected taus now prepare output (might crash due to PF/Calo-Tau difference)" << endl;
+
 		NT_ntaus = selTausNoLep.size();
 		// max taus output is 2
 		for (int i = 0; i<selTausNoLep.size() && i<2; i++)
@@ -2754,17 +2777,59 @@ for(size_t f=0; f<urls.size();++f)
 			if (tau.tauID(tau_Tight_ID)) IDlev = 3;
 			else if (tau.tauID(tau_ID)) IDlev = 2;
 			NT_tau_IDlev[i] = IDlev;
+
+			// also store for the first tau:
+			if (i==0)
+				{
+				// int tau.decayMode() (they say "secific to PFTau" -- it means exception if it's not or what?)
+				// bool hasSecondaryVertex ()
+				// and
+				// float 	hcalEnergy () const
+				// return sum of hcal energies from signal candidates More...
+				// float 	hcalEnergyLeadChargedHadrCand () const
+				// return hcal energy from LeadChargedHadrCand More...
+				NT_tau_decay = tau.decayMode();
+				NT_tau_hasSecondaryVertex = tau.hasSecondaryVertex();
+				NT_tau_hcalEnergy = tau.hcalEnergy();
+				NT_tau_hcalEnergyLeadChargedHadrCand = tau.hcalEnergyLeadChargedHadrCand();
+
+				// instead of going through tracks
+				// no track impact parameters
+				// and secondary vertex
+				// const reco::VertexRef & 	secondaryVertex () const
+
+				// let's try returning this:
+				// const pat::tau::TauPFEssential::CovMatrix & 	secondaryVertexCov () const
+				// -- not sure if only PFTau has it..
+				// also, there is a chain of typedef:
+				// typedef math::ErrorF<3>::type pat::tau::TauPFEssential::CovMatrix
+				// and in math::ErrorF< N > Struct Template Reference
+				// typedef ROOT::Math::SMatrix<float, N, N, ROOT::Math::MatRepSym<float, N> > math::ErrorF< N >::type
+				// and SMatrix is a ROOT class for linear algebra
+				// and methods of a produced matrix should be accessed with:
+				// matrix(0, 0) -- (row, coloumn) first row, first coloumn
+				// matrix(2, 1) -- should be 3rd row, 2nd coloumn despite "1st coloumn" in doc
+				// https://root.cern.ch/root/html606/SMatrixDoc.html
+
+				// should I check .hasSecondaryVertex() && isPFTau() to access the secondary vertex covariance?
+				pat::tau::TauPFEssential::CovMatrix& secVertex_cov_matrix = tau.secondaryVertexCov();
+				for (int r=0; r<3; r++)
+					for (int c=0; c<3; c++)
+						{
+						NT_tau_secondaryVertexCov[r,c] =  secVertex_cov_matrix(r,c,);
+						}
+				}
 			}
 
 		// also, for their ID SF:
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events
 		// Medium MVA (no dR03) is 0.97 +- 0.05
 
+		if(debug) cout << "done with taus now update Jets" << endl;
+
 		//
 		// JET/MET SELECTION
 		//
-
-		if(debug) cout << "Now update Jets" << endl;
 
 		// ----------------------- JETS CORRECTIONS, JEC, JER
 		// ----------------------- UPDATE JEC
@@ -3020,7 +3085,7 @@ for(size_t f=0; f<urls.size();++f)
 			output_v.push_back(NT_njets);
 			output_v.push_back(NT_nbjets);
 
-			// taus 2
+			// taus 2 (rarely there is 2nd tau, mostly with Loose ID)
 			for (int i=0; i<2; i++)
 				{
 				output_v.push_back(NT_tau_id[i]);
@@ -3030,6 +3095,21 @@ for(size_t f=0; f<urls.size();++f)
 				output_v.push_back(NT_tau_p[i]);
 				output_v.push_back(NT_tau_IDlev[i]);
 				}
+			//Float_t NT_tau_decay = -1,
+			//	NT_tau_hasSecondaryVertex = -99,
+			//	NT_tau_hcalEnergy = -1,
+			//	NT_tau_hcalEnergyLeadChargedHadrCand = -1;
+			//Float_t NT_tau_secondaryVertexCov[3][3] = {{-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}};
+			output_v.push_back(NT_tau_decay);
+			output_v.push_back(NT_tau_hasSecondaryVertex);
+			output_v.push_back(NT_tau_hcalEnergy);
+			output_v.push_back(NT_tau_hcalEnergyLeadChargedHadrCand);
+			for (int r=0; r<3; r++)
+				for (int c=0; c<3; c++)
+					{
+					output_v.push_back(NT_tau_secondaryVertexCov[r,c]);
+					}
+			// so, taus get 4+9 more parameters in output
 			output_v.push_back(NT_ntaus);
 
 			// mets
@@ -3136,7 +3216,7 @@ for(size_t f=0; f<urls.size();++f)
 			output_v.push_back(NT_lj_taumatched_peak_distance);
 
 			// and for NTuple
-			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3 + 2;
+			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 4+9 + 1 + 3 + 2;
 			Float_t output[output_n];
 			if (output_v.size() != output_n)
 				{
