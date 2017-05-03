@@ -945,6 +945,8 @@ JobDef job_def = {string(isMC ? "MC": "Data"), dtag_s, job_num};
 TString outUrl = runProcess.getParameter<std::string>("outfile");
 TString outdir = runProcess.getParameter<std::string>("outdir");
 
+// ----------------- HLT-s
+
 string  muHLT_MC1   = runProcess.getParameter<std::string>("muHLT_MC1"),   muHLT_MC2   = runProcess.getParameter<std::string>("muHLT_MC2"),
 	muHLT_Data1 = runProcess.getParameter<std::string>("muHLT_Data1"), muHLT_Data2 = runProcess.getParameter<std::string>("muHLT_Data2"),
 	elHLT_Data  = runProcess.getParameter<std::string>("elHLT_Data"),  elHLT_MC    = runProcess.getParameter<std::string>("elHLT_MC");
@@ -953,7 +955,7 @@ cout << "Triggers:" << endl;
 cout << muHLT_MC1 << '\t' << muHLT_MC2 << '\t' << muHLT_Data1 << '\t' << muHLT_Data2 << endl;
 cout << elHLT_Data << '\t' << elHLT_MC << endl;
 
-// lepton efficiency scale factors:
+// ----------------- lepton efficiency scale factors:
 TString muon_effs_dirname     = runProcess.getParameter < std::string > ("muon_effs");
 TString electron_effs_dirname = runProcess.getParameter < std::string > ("electron_effs");
 gSystem->ExpandPathName(muon_effs_dirname    );
@@ -1035,7 +1037,7 @@ cout << "Y trigger" << endl;
 
 
 
-// Kino cuts
+// ----------------- Kino cuts
 double jet_kino_cuts_pt          = runProcess.getParameter<double>("jet_kino_cuts_pt");
 double jet_kino_cuts_eta         = runProcess.getParameter<double>("jet_kino_cuts_eta");
 double tau_kino_cuts_pt          = runProcess.getParameter<double>("tau_kino_cuts_pt");
@@ -1050,7 +1052,7 @@ cout << "Kino cuts" << endl;
 cout << "jets: (pt)\t" << jet_kino_cuts_pt << "\t(eta)" << jet_kino_cuts_eta << endl;
 cout << "taus: (pt)\t" << tau_kino_cuts_pt << "\t(eta)" << tau_kino_cuts_eta << endl;
 
-// Tau IDs:
+// ----------------- Tau IDs:
 string tau_decayMode = runProcess.getParameter<std::string>("tau_decayMode"),
 	tau_ID       = runProcess.getParameter<std::string>("tau_ID"),
 	tau_againstMuon     = runProcess.getParameter<std::string>("tau_againstMuon"),
@@ -1065,7 +1067,7 @@ string tau_Tight_ID = runProcess.getParameter<std::string>("tau_Tight_ID");
 
 cout << "Tau IDs:" << tau_decayMode << '\t' << tau_ID << '\t' << tau_againstMuon << '\t' << tau_againstElectron << "\t| " << tau_Loose_ID << "\t| " << tau_Tight_ID << endl;
 
-
+// ----------------- JET IDs
 string jetID_s = runProcess.getParameter<std::string>("jetID"),
 	jetPUID_s = runProcess.getParameter<std::string>("jetPUID");
 jet_id    jetID;
@@ -1087,33 +1089,17 @@ bool with_PU            = runProcess.getParameter<bool>  ("with_PU");
 
 cout << "Jet IDs: (main) " << jetID << '\t' << "(PU)" << jetPUID << "\t(with PU)" << with_PU << endl;
 
+// ----------------- output
 cout << "Output directory: " << outdir << endl;
 
-const edm::ParameterSet& myVidElectronIdConf = runProcess.getParameterSet("electronidparas");
-const edm::ParameterSet& myVidElectronMainIdWPConf = myVidElectronIdConf.getParameterSet("tight");
-const edm::ParameterSet& myVidElectronVetoIdWPConf = myVidElectronIdConf.getParameterSet("loose");
-	
-VersionedPatElectronSelector electronVidMainId(myVidElectronMainIdWPConf);
-VersionedPatElectronSelector electronVidVetoId(myVidElectronVetoIdWPConf);
-	
-TString suffix = runProcess.getParameter < std::string > ("suffix");
+// ----------------- input files
 std::vector < std::string > urls = runProcess.getUntrackedParameter < std::vector < std::string > >("input");
 
-// Good lumi mask
-// v2
+// ----------------- Good lumi mask
 lumiUtils::GoodLumiFilter goodLumiFilter(runProcess.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess", std::vector<edm::LuminosityBlockRange>()));
 
 // for new orthogonality [TESTING]
 bool isSingleElectronDataset = !isMC && dtag.Contains ("SingleEle");
-// old trigger dataset orthogonality:
-bool
-	filterOnlySINGLEE  (false),
-	filterOnlySINGLEMU (false);
-if (!isMC)
-	{
-	if (dtag.Contains ("SingleMuon")) filterOnlySINGLEMU = true;
-	if (dtag.Contains ("SingleEle"))  filterOnlySINGLEE  = true;
-	}
 
 // it is not used now
 bool isV0JetsMC   (isMC && (dtag.Contains ("DYJetsToLL") || dtag.Contains ("WJets")));
@@ -1121,27 +1107,16 @@ bool isV0JetsMC   (isMC && (dtag.Contains ("DYJetsToLL") || dtag.Contains ("WJet
 // bool isMC_ZZ      (isMC && (string (dtag.Data ()).find ("TeV_ZZ") != string::npos));
 // bool isMC_WZ      (isMC && (string (dtag.Data ()).find ("TeV_WZ") != string::npos));
 
-// adding W1Jets, W2Jets, W3Jets, W4Jets
-// thus, the events with 1, 2, 3, 4 of WJets whould be excluded
-// (what are the x-sections for each of these?)
-bool isW0JetsSet   (isMC && (dtag.Contains ("W0Jets")));
-// so, WJets provides only W0Jets events
-// all the rest is in WNJets (W4Jets = W>=4Jets)
-// the cross-section should probably be = WJets - sum(WNJets)
-// and how to do it:
-// < LHEEventProduct > lheEPHandle; lheEPHandle->hepeup().NUP  <-- this parameter
-// it = 6 for W1Jets, 7 for W2Jets, 8 for W3Jets, 9 for W4Jets (why not >=9?)
-// WJets have NUP = all those numbers
-// for W0Jets one takes NUP = 5
-
-//bool isNoHLT = runProcess.getParameter<bool>  ("isNoHLT");
+// the Spring16 MC stuff (there were no HLT bits)
 bool isNoHLT = dtag.Contains("noHLT");
 
-bool withTauIDSFs = runProcess.getParameter <bool> ("withTauIDSFs");
-
+// selecting different ttbar decays in the inclusive sample
 bool isTTbarMC    (isMC && (dtag.Contains("TTJets") || dtag.Contains("_TT_") )); // Is this still useful?
+
+// was used to set -1 weights in aMCatNLO
 bool isNLOMC      (isMC && (dtag.Contains("amcatnlo") || dtag.Contains("powheg")) );
 
+// corrections (b-tag SFs etc) depend on periods -- move these downstream to processing the NTuple output
 // Summer16_23Sep2016BCDV4_DATA_        Summer16_23Sep2016EFV4_DATA_        Summer16_23Sep2016GV4_DATA_        Summer16_23Sep2016HV4_DATA_
 bool period_BCD = !isMC && (dtag.Contains("2016B") || dtag.Contains("2016C") || dtag.Contains("2016D"));
 bool period_EF  = !isMC && (dtag.Contains("2016E") || dtag.Contains("2016F"));
@@ -1159,205 +1134,11 @@ size_t totalEntries(0);
 
 
 // Data-driven tau fakerate background FAKERATES
-
-//TString bTaggingEfficiencies_filename   = runProcess.getParameter<std::string>("bTaggingEfficiencies");
-//gSystem->ExpandPathName(bTaggingEfficiencies_filename);
-//TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Data());
-
-TString fakerate1_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates1");
-TString fakerate2_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates2");
-TString fakerate_dileptons_filename = runProcess.getParameter < std::string > ("dataDriven_tauFakeRates_dileptons");
-gSystem->ExpandPathName(fakerate1_filename);
-gSystem->ExpandPathName(fakerate2_filename);
-gSystem->ExpandPathName(fakerate_dileptons_filename);
-
-cout << "files with fake rates:" << endl;
-cout << fakerate1_filename << endl;
-cout << fakerate2_filename << endl;
-cout << fakerate_dileptons_filename << endl;
-
-TFile * tau_fake_rate1_file = TFile::Open(fakerate1_filename.Data() );
-TFile * tau_fake_rate2_file = TFile::Open(fakerate2_filename.Data() );
-TFile * tau_fake_rate_file_dileptons = TFile::Open(fakerate_dileptons_filename.Data());
-cout << "fake rate QCD file: " << tau_fake_rate1_file << endl;
-
-Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("tau_fake_rate_histo1_fraction");
-
-// LARGE BINS for normal/vanila rates
-// TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
-// rate1 = file1 = JetHT data file
-TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
-TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
-
-cout << "fake rate QCD histogram: " << tau_fake_rate1_jets_histo_q << endl;
-tau_fake_rate1_jets_histo_q->Print();
-
-// rate2 = file2 = SingleMuon data file
-TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
-TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
-
-// dilepton fake rates
-TH3F * tau_fake_rate_jets_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr_large_bins");
-TH3F * tau_fake_rate_jets_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr_large_bins");
-TH3F * tau_fake_rate_jets_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr_large_bins");
-
-
-
-
-// THE SMOOTH 3D PROJECTIONS METHOD
-
-// TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
-// rate1 = file1 = JetHT data file
-TH3F * tau_fake_rate1_jets_histoPROJECTIONS_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr");
-TH3F * tau_fake_rate1_taus_histoPROJECTIONS_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr");
-TH3F * tau_fake_rate1_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_jets_distr");
-TH3F * tau_fake_rate1_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_tau_jets_distr");
-
-
-// rate2 = file2 = SingleMuon data file
-TH3F * tau_fake_rate2_jets_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_jets_distr");
-TH3F * tau_fake_rate2_taus_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_tau_jets_distr");
-TH3F * tau_fake_rate2_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr");
-TH3F * tau_fake_rate2_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr");
-
-
-
-
-// dilepton fake rates
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr");
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr");
-
-cout << "averages of fake rate distrs" << endl << "X,Y,Z projections" << endl;
-
-cout << "qcd:\t";
-cout << tau_fake_rate1_taus_histoPROJECTIONS_q->ProjectionX()->Integral() / tau_fake_rate1_jets_histoPROJECTIONS_q->ProjectionX()->Integral() << ',';
-cout << tau_fake_rate1_taus_histoPROJECTIONS_q->ProjectionY()->Integral() / tau_fake_rate1_jets_histoPROJECTIONS_q->ProjectionY()->Integral() << ',';
-cout << tau_fake_rate1_taus_histoPROJECTIONS_q->ProjectionZ()->Integral() / tau_fake_rate1_jets_histoPROJECTIONS_q->ProjectionZ()->Integral() << endl;
-cout << "wjets:\t";
-cout << tau_fake_rate2_taus_histoPROJECTIONS_w->ProjectionX()->Integral() / tau_fake_rate2_jets_histoPROJECTIONS_w->ProjectionX()->Integral() << ',';
-cout << tau_fake_rate2_taus_histoPROJECTIONS_w->ProjectionY()->Integral() / tau_fake_rate2_jets_histoPROJECTIONS_w->ProjectionY()->Integral() << ',';
-cout << tau_fake_rate2_taus_histoPROJECTIONS_w->ProjectionZ()->Integral() / tau_fake_rate2_jets_histoPROJECTIONS_w->ProjectionZ()->Integral() << endl;
-cout << "mumu:\t";
-cout << tau_fake_rate_taus_histoPROJECTIONS_mumu->ProjectionX()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_mumu->ProjectionX()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_mumu->ProjectionY()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_mumu->ProjectionY()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_mumu->ProjectionZ()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_mumu->ProjectionZ()->Integral() << endl;
-cout << "elmu:\t";
-cout << tau_fake_rate_taus_histoPROJECTIONS_elmu->ProjectionX()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elmu->ProjectionX()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_elmu->ProjectionY()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elmu->ProjectionY()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_elmu->ProjectionZ()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elmu->ProjectionZ()->Integral() << endl;
-cout << "elel:\t";
-cout << tau_fake_rate_taus_histoPROJECTIONS_elel->ProjectionX()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elel->ProjectionX()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_elel->ProjectionY()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elel->ProjectionY()->Integral() << ',';
-cout << tau_fake_rate_taus_histoPROJECTIONS_elel->ProjectionZ()->Integral() / tau_fake_rate_jets_histoPROJECTIONS_elel->ProjectionZ()->Integral() << endl;
-
-// and use? the Y integral -- all bins are in range
-
-// Make fake rate projections for smooth procedure
-//TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
-
-// QCD
-TH1D* tau_fake_rate1_jets_histoPROJECTIONS_q_x = (TH1D*) tau_fake_rate1_jets_histoPROJECTIONS_q->Project3D("x");
-TH1D* tau_fake_rate1_jets_histoPROJECTIONS_q_y = (TH1D*) tau_fake_rate1_jets_histoPROJECTIONS_q->Project3D("y");
-TH1D* tau_fake_rate1_jets_histoPROJECTIONS_q_z = (TH1D*) tau_fake_rate1_jets_histoPROJECTIONS_q->Project3D("z");
-TH1D* tau_fake_rate1_taus_histoPROJECTIONS_q_x = (TH1D*) tau_fake_rate1_taus_histoPROJECTIONS_q->Project3D("x");
-TH1D* tau_fake_rate1_taus_histoPROJECTIONS_q_y = (TH1D*) tau_fake_rate1_taus_histoPROJECTIONS_q->Project3D("y");
-TH1D* tau_fake_rate1_taus_histoPROJECTIONS_q_z = (TH1D*) tau_fake_rate1_taus_histoPROJECTIONS_q->Project3D("z");
-FakeRateProjections frates_qcd_jets_proj;
-frates_qcd_jets_proj.x = tau_fake_rate1_jets_histoPROJECTIONS_q_x;
-frates_qcd_jets_proj.y = tau_fake_rate1_jets_histoPROJECTIONS_q_y;
-frates_qcd_jets_proj.z = tau_fake_rate1_jets_histoPROJECTIONS_q_z;
-frates_qcd_jets_proj.integral = tau_fake_rate1_jets_histoPROJECTIONS_q->Integral();
-FakeRateProjections frates_qcd_taus_proj;
-frates_qcd_taus_proj.x = tau_fake_rate1_taus_histoPROJECTIONS_q_x;
-frates_qcd_taus_proj.y = tau_fake_rate1_taus_histoPROJECTIONS_q_y;
-frates_qcd_taus_proj.z = tau_fake_rate1_taus_histoPROJECTIONS_q_z;
-frates_qcd_taus_proj.integral = tau_fake_rate1_taus_histoPROJECTIONS_q->Integral();
-
-
-// WJets
-TH1D* tau_fake_rate2_jets_histoPROJECTIONS_w_x = (TH1D*) tau_fake_rate2_jets_histoPROJECTIONS_w->Project3D("x");
-TH1D* tau_fake_rate2_jets_histoPROJECTIONS_w_y = (TH1D*) tau_fake_rate2_jets_histoPROJECTIONS_w->Project3D("y");
-TH1D* tau_fake_rate2_jets_histoPROJECTIONS_w_z = (TH1D*) tau_fake_rate2_jets_histoPROJECTIONS_w->Project3D("z");
-TH1D* tau_fake_rate2_taus_histoPROJECTIONS_w_x = (TH1D*) tau_fake_rate2_taus_histoPROJECTIONS_w->Project3D("x");
-TH1D* tau_fake_rate2_taus_histoPROJECTIONS_w_y = (TH1D*) tau_fake_rate2_taus_histoPROJECTIONS_w->Project3D("y");
-TH1D* tau_fake_rate2_taus_histoPROJECTIONS_w_z = (TH1D*) tau_fake_rate2_taus_histoPROJECTIONS_w->Project3D("z");
-FakeRateProjections frates_wjets_jets_proj;
-frates_wjets_jets_proj.x = tau_fake_rate2_jets_histoPROJECTIONS_w_x;
-frates_wjets_jets_proj.y = tau_fake_rate2_jets_histoPROJECTIONS_w_y;
-frates_wjets_jets_proj.z = tau_fake_rate2_jets_histoPROJECTIONS_w_z;
-frates_wjets_jets_proj.integral = tau_fake_rate2_jets_histoPROJECTIONS_w->Integral();
-FakeRateProjections frates_wjets_taus_proj;
-frates_wjets_taus_proj.x = tau_fake_rate2_taus_histoPROJECTIONS_w_x;
-frates_wjets_taus_proj.y = tau_fake_rate2_taus_histoPROJECTIONS_w_y;
-frates_wjets_taus_proj.z = tau_fake_rate2_taus_histoPROJECTIONS_w_z;
-frates_wjets_taus_proj.integral = tau_fake_rate2_taus_histoPROJECTIONS_w->Integral();
-
-// ELMU
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elmu_x = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elmu->Project3D("x");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elmu_y = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elmu->Project3D("y");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elmu_z = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elmu->Project3D("z");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elmu_x = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elmu->Project3D("x");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elmu_y = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elmu->Project3D("y");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elmu_z = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elmu->Project3D("z");
-FakeRateProjections frates_elmu_jets_proj;
-frates_elmu_jets_proj.x = tau_fake_rate_jets_histoPROJECTIONS_elmu_x;
-frates_elmu_jets_proj.y = tau_fake_rate_jets_histoPROJECTIONS_elmu_y;
-frates_elmu_jets_proj.z = tau_fake_rate_jets_histoPROJECTIONS_elmu_z;
-frates_elmu_jets_proj.integral = tau_fake_rate_jets_histoPROJECTIONS_elmu->Integral();
-FakeRateProjections frates_elmu_taus_proj;
-frates_elmu_taus_proj.x = tau_fake_rate_taus_histoPROJECTIONS_elmu_x;
-frates_elmu_taus_proj.y = tau_fake_rate_taus_histoPROJECTIONS_elmu_y;
-frates_elmu_taus_proj.z = tau_fake_rate_taus_histoPROJECTIONS_elmu_z;
-frates_elmu_taus_proj.integral = tau_fake_rate_taus_histoPROJECTIONS_elmu->Integral();
-
-
-// MUMU
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_mumu_x = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_mumu->Project3D("x");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_mumu_y = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_mumu->Project3D("y");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_mumu_z = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_mumu->Project3D("z");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_mumu_x = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_mumu->Project3D("x");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_mumu_y = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_mumu->Project3D("y");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_mumu_z = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_mumu->Project3D("z");
-FakeRateProjections frates_mumu_jets_proj;
-frates_mumu_jets_proj.x = tau_fake_rate_jets_histoPROJECTIONS_mumu_x;
-frates_mumu_jets_proj.y = tau_fake_rate_jets_histoPROJECTIONS_mumu_y;
-frates_mumu_jets_proj.z = tau_fake_rate_jets_histoPROJECTIONS_mumu_z;
-frates_mumu_jets_proj.integral = tau_fake_rate_jets_histoPROJECTIONS_mumu->Integral();
-FakeRateProjections frates_mumu_taus_proj;
-frates_mumu_taus_proj.x = tau_fake_rate_taus_histoPROJECTIONS_mumu_x;
-frates_mumu_taus_proj.y = tau_fake_rate_taus_histoPROJECTIONS_mumu_y;
-frates_mumu_taus_proj.z = tau_fake_rate_taus_histoPROJECTIONS_mumu_z;
-frates_mumu_taus_proj.integral = tau_fake_rate_taus_histoPROJECTIONS_mumu->Integral();
-
-// ELEL
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elel_x = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elel->Project3D("x");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elel_y = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elel->Project3D("y");
-TH1D* tau_fake_rate_jets_histoPROJECTIONS_elel_z = (TH1D*) tau_fake_rate_jets_histoPROJECTIONS_elel->Project3D("z");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elel_x = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elel->Project3D("x");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elel_y = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elel->Project3D("y");
-TH1D* tau_fake_rate_taus_histoPROJECTIONS_elel_z = (TH1D*) tau_fake_rate_taus_histoPROJECTIONS_elel->Project3D("z");
-FakeRateProjections frates_elel_jets_proj;
-frates_elel_jets_proj.x = tau_fake_rate_jets_histoPROJECTIONS_elel_x;
-frates_elel_jets_proj.y = tau_fake_rate_jets_histoPROJECTIONS_elel_y;
-frates_elel_jets_proj.z = tau_fake_rate_jets_histoPROJECTIONS_elel_z;
-frates_elel_jets_proj.integral = tau_fake_rate_jets_histoPROJECTIONS_elel->Integral();
-FakeRateProjections frates_elel_taus_proj;
-frates_elel_taus_proj.x = tau_fake_rate_taus_histoPROJECTIONS_elel_x;
-frates_elel_taus_proj.y = tau_fake_rate_taus_histoPROJECTIONS_elel_y;
-frates_elel_taus_proj.z = tau_fake_rate_taus_histoPROJECTIONS_elel_z;
-frates_elel_taus_proj.integral = tau_fake_rate_taus_histoPROJECTIONS_elel->Integral();
-
-//MC normalization (to 1/pb)
-if(debug) cout << "DEBUG: xsec: " << xsec << endl;
+// do the estimation of fakes downstream, on output of NTuples
+// it doesn't need alot of info from jets and taus -- can be done on pt, eta, radius, no need for full object
 
 // ------------------------------------- jet energy scale and uncertainties 
+// but the jets are corrected here (for now)
 TString jecDir = runProcess.getParameter < std::string > ("jecDir");
 gSystem->ExpandPathName (jecDir);
 // v1
@@ -1431,6 +1212,12 @@ JME::JetResolutionScaleFactor jet_resolution_sf_per_eta = JME::JetResolutionScal
 
 
 // --------------------------------------- b-tagging 
+// b-tagging = its' scale factor * efficiency of tagging
+// only the b-discriminant is needed for that and basic parameters of jets (pt, eta)
+// --> move it downstream
+// but! now I still keep selBJets for control
+// the selection of these jets recomputes the weight for the event according to b efficiency and SF
+// --> TODO: remove the b SF weights, move them downstream
 
 /* https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation
  * https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods
@@ -1560,84 +1347,11 @@ double jet_scalefactor_do = reader.eval_auto_bounds(
 
 */
 
-// in 76X
-
-//The name of the measurements is
-//
-//  * "incl" for light jets,
-//  * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and
-//  * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
-//  * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-// --- so "incl" instead of "comb" for light-quarks
-
-// TODO: update btag CSVv2
-// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Data_MC_Scale_Factors
-// OP_MEDIUM instead of OP_LOOSE?
-// v1
-//BTagCalibrationReader btagCal   (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalUp (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "up"     );  // sys up
-//BTagCalibrationReader btagCalDn (&btagCalib, BTagEntry::OP_MEDIUM, "mujets", "down"   );  // sys down
-//BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_LOOSE, "comb", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_LOOSE, "comb", "up"     );  // sys up
-//BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_LOOSE, "comb", "down"   );  // sys down
-//BTagCalibrationReader btagCalL  (&btagCalib, BTagEntry::OP_MEDIUM, "incl", "central");  // calibration instance, operating point, measurement type, systematics type
-//BTagCalibrationReader btagCalLUp(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "up"     );  // sys up
-//BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
-
-
-/* TODO: CMSSW calibration:
-The twiki https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati says
-
-The name of the measurements is
- * "incl" for light jets,
- * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and 
- * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
- * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-
-
-// setup calibration readers
-// Before CMSSW_8_0_11 and CMSSW_8_1_0, one reader was needed 
-// for every OperatingPoint/MeasurementType/SysType combination.
-BTagCalibration calib("csvv1", "CSVV1.csv");
-BTagCalibrationReader reader(BTagEntry::OP_LOOSE,  // operating point
-                             "central");           // systematics type
-BTagCalibrationReader reader_up(BTagEntry::OP_LOOSE, "up");  // sys up
-BTagCalibrationReader reader_do(BTagEntry::OP_LOOSE, "down");  // sys down
-
-reader.load(&calib,               // calibration instance
-            BTagEntry::FLAV_B,    // btag flavour
-            "comb")               // measurement type
-// reader_up.load(...)
-// reader_down.load(...)
-
-
-
-// Usage:
-
-float JetPt = b_jet.pt(); bool DoubleUncertainty = false;
-if (JetPt>MaxBJetPt)  { // use MaxLJetPt for  light jets
-  JetPt = MaxBJetPt; 
-  DoubleUncertainty = true;
-}  
-
-// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-
-if (DoubleUncertainty) {
-   jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
-   jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
-}
-
-*/
-
-
 
 
 // --------------------------------------- pileup weighting
+// TODO: move PU downstream to NTuple output, here it is left only in weight histograms for control -- remove in cleanup together with weight histograms
 // pile-up is done directly with direct_pileup_reweight
-// v7-10 pile-up is back
 std::vector<double> direct_pileup_reweight = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct");
 std::vector<double> direct_pileup_reweight_up = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_up");
 std::vector<double> direct_pileup_reweight_down = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_down");
@@ -1654,7 +1368,6 @@ gROOT->cd ();                 //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM 
 
 cout << "Some input parameters\n";
 cout << "isMC = " << isMC << "\n";
-cout << "isW0JetsSet = " << isW0JetsSet << "\n";
 cout << "isTTbarMC = "    << isTTbarMC << "\n";
 cout << "isNLOMC = "      << isNLOMC << "\n";
 cout << "period BCD EF G H = " << period_BCD << " " << period_EF << " " << period_G << " " << period_H << endl;
@@ -1698,6 +1411,7 @@ cout << "jecDir = "      << jecDir << "\n";
  * lep2_pt
  * lep2_p
  * nleps
+ * leps_ID
  * jet1_id
  * jet1_eta
  * jet1_phi
@@ -1771,7 +1485,7 @@ cout << "jecDir = "      << jecDir << "\n";
  */
 
 // VIM
-const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected";
+const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:ntaus:met_init:met_uncorrected:met_corrected";
 
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_output_description);
 ntuple->SetDirectory(0);
@@ -1816,7 +1530,7 @@ for(size_t f=0; f<urls.size();++f)
 		Float_t NT_fixedGridRhoFastjetAll = -1, NT_fixedGridRhoFastjetCentral = -1, NT_fixedGridRhoFastjetCentralNeutral = -1, NT_fixedGridRhoFastjetCentralChargedPileUp = -1;
 		Float_t NT_HLT_el = -1, NT_HLT_mu = -1; // yep these are floats too
 		Float_t NT_lep_id[2] = {-1, -1}, NT_lep_eta[2] = {-1, -1}, NT_lep_phi[2] = {-1, -1}, NT_lep_pt[2] = {-1, -1}, NT_lep_p[2] = {-1, -1};
-		Float_t NT_nleps = -1;
+		Float_t NT_nleps = -1, NT_leps_ID = -1;
 		Float_t NT_jet_id           [5] = {-1, -1, -1, -1, -1},
 			NT_jet_eta          [5] = {-1, -1, -1, -1, -1},
 			NT_jet_phi          [5] = {-1, -1, -1, -1, -1},
@@ -1864,9 +1578,18 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "nup = " << lheEPHandle->hepeup().NUP << "\n";
 			}
 
-		// take only W0Jets events from WJets set: (W0Jets have NUP == 5)
-		//if (isW0JetsSet && (lheEPHandle->hepeup().NUP != 5))
-			//continue;
+		// for stiching WNJets with inclusive WJets
+		// adding W1Jets, W2Jets, W3Jets, W4Jets
+		// thus, the events with 1, 2, 3, 4 of WJets whould be excluded
+		// (what are the x-sections for each of these?)
+		// so, WJets provides only W0Jets events
+		// all the rest is in WNJets (W4Jets = W>=4Jets)
+		// the cross-section should probably be = WJets - sum(WNJets)
+		// and how to do it:
+		// < LHEEventProduct > lheEPHandle; lheEPHandle->hepeup().NUP  <-- this parameter
+		// it = 6 for W1Jets, 7 for W2Jets, 8 for W3Jets, 9 for W4Jets (why not >=9?)
+		// WJets have NUP = all those numbers
+		// for W0Jets one takes NUP = 5
 		if (isMC && lheEPHandle.isValid()) NT_NUP_gen = lheEPHandle->hepeup().NUP;
 
 		// -------------------------- trying to extract what decay was generated here
@@ -2692,11 +2415,6 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		else return 233;
 
-		//if(filterOnlySINGLEMU) {                    eTrigger = false; }
-		//if(filterOnlySINGLEE)  { muTrigger = false;                   }
-		// SingleMuon-dataset jobs process double-HLT events
-		// SingleElectron-dataset jobs skip them
-
 		// if data and SingleElectron dataset and both triggers -- skip event
 		// i.e. SingleElectron + HLT mu are removed
 		if (!debug) {
@@ -2912,49 +2630,6 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed electrons" << endl;
 			}
 
-		// applying electron ID SFs
-		if (isMC && selElectrons.size()>0)
-			{
-			double electron_sfs_weight = 1;
-			for (int i = 0; i<selElectrons.size(); i++)
-				{
-				pat::Electron& el = selElectrons[i];
-				double eta = el.eta();
-				double pt  = el.pt();
-
-				// for control (TODO: remove this later)
-				double weight_reco, weight_id;
-
-				// here X axis is eta, Y axis is pt
-				// X is from -2.5 to 2.5 -- our eta is up to 2.4, should be ok
-				//double bin_x = (pt < electron_effs_tracking_all_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-				double bin_x = eta;
-				double bin_y = (pt < electron_effs_tracking_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_tracking_all_histo->GetYaxis()->GetXmax() - 1);
-				weight_reco = electron_effs_tracking_all_histo->GetBinContent (electron_effs_tracking_all_histo->FindBin(bin_x, bin_y));
-
-				//bin_x = eta;
-				bin_y = (pt < electron_effs_id_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_id_all_histo->GetYaxis()->GetXmax() - 1);
-				weight_id = electron_effs_id_all_histo->GetBinContent (electron_effs_id_all_histo->FindBin(bin_x, bin_y));
-
-				fill_1d(string("weight_electron_effs_all_reco"),  200, 0., 1.1,   weight_reco, 1);
-				fill_1d(string("weight_electron_effs_all_id"),    200, 0., 1.1,   weight_id,  1);
-				electron_sfs_weight *= weight_reco * weight_id;
-				}
-			fill_1d(string("weight_electron_effs_all"),  200, 0., 1.1,   electron_sfs_weight, 1);
-
-			// and apply to all weights:
-			for ( const auto s : weightSystematics )
-				{
-				weights_FULL[s] *= electron_sfs_weight;
-				}
-			//weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
-			//weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
-			//weights_FULL[SYS_PU_DOWN] *= electron_sfs_weight * el_trig_weight;
-			}
-
-		if(debug)
-			cout << "applied electron SFs to event weight" << endl;
-
 
 
 		// ---------------------------------- MUONS SELECTION
@@ -2978,70 +2653,6 @@ for(size_t f=0; f<urls.size();++f)
 			cout << "processed muons" << endl;
 			}
 
-		// applying muon ID SFs
-		if (isMC && selMuons.size()>0)
-			{
-			double muon_sfs_weight = 1;
-			double bcdef_weight = 1;
-			double gh_weight = 1;
-			for (int i = 0; i<selMuons.size(); i++)
-				{
-				pat::Muon& mu = selMuons[i];
-				double abs_eta = abs(mu.eta());
-				double pt = mu.pt();
-
-				// for control (TODO: remove this later)
-				double bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso,
-					gh_weight_trk, gh_weight_id, gh_weight_iso;
-
-				// hopefully tracking won't overflow in eta range:
-				bcdef_weight_trk = muon_effs_tracking_BCDEF_graph->Eval(abs_eta);
-				// the id-s totally can overflow:
-				double bin_x = (pt < muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-				double bin_y = (abs_eta < muon_effs_id_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_id_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-				bcdef_weight_id = muon_effs_id_BCDEF_histo->GetBinContent (muon_effs_id_BCDEF_histo->FindBin(bin_x, bin_y));
-				// these too:
-				bin_x = (pt < muon_effs_iso_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_iso_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-				bin_y = (abs_eta < muon_effs_iso_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_iso_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-				bcdef_weight_iso = muon_effs_iso_BCDEF_histo->GetBinContent (muon_effs_iso_BCDEF_histo->FindBin(bin_x, bin_y));
-
-				fill_1d(string("weight_muon_effs_BCDEF_trk"),  200, 0., 1.1,   bcdef_weight_trk, 1);
-				fill_1d(string("weight_muon_effs_BCDEF_id"),   200, 0., 1.1,   bcdef_weight_id,  1);
-				fill_1d(string("weight_muon_effs_BCDEF_iso"),  200, 0., 1.1,   bcdef_weight_iso, 1);
-				bcdef_weight *= bcdef_weight_trk * bcdef_weight_id * bcdef_weight_iso;
-
-				// same ... for GH era:
-				gh_weight_trk = muon_effs_tracking_GH_graph->Eval(abs_eta);
-				// the id-s totally can overflow:
-				bin_x = (pt < muon_effs_id_GH_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_GH_histo->GetXaxis()->GetXmax() - 1);
-				bin_y = (abs_eta < muon_effs_id_GH_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_id_GH_histo->GetYaxis()->GetXmax() - 1);
-				gh_weight_id = muon_effs_id_GH_histo->GetBinContent (muon_effs_id_GH_histo->FindBin(bin_x, bin_y));
-				// these too:
-				bin_x = (pt < muon_effs_iso_GH_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_iso_GH_histo->GetXaxis()->GetXmax() - 1);
-				bin_y = (abs_eta < muon_effs_iso_GH_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_iso_GH_histo->GetYaxis()->GetXmax() - 1);
-				gh_weight_iso = muon_effs_iso_GH_histo->GetBinContent (muon_effs_iso_GH_histo->FindBin(bin_x, bin_y));
-
-				fill_1d(string("weight_muon_effs_GH_trk"),  200, 0., 1.1,   gh_weight_trk, 1);
-				fill_1d(string("weight_muon_effs_GH_id"),   200, 0., 1.1,   gh_weight_id,  1);
-				fill_1d(string("weight_muon_effs_GH_iso"),  200, 0., 1.1,   gh_weight_iso, 1);
-				gh_weight *= gh_weight_trk * gh_weight_id * gh_weight_iso;
-				}
-			// and merge them:
-			muon_sfs_weight = SingleMuon_data_bcdef_fraction * bcdef_weight + SingleMuon_data_gh_fraction * gh_weight;
-			fill_1d(string("weight_muon_effs_BCDEF"), 200, 0., 1.1,   bcdef_weight, 1);
-			fill_1d(string("weight_muon_effs_GH"),    200, 0., 1.1,   gh_weight, 1);
-			fill_1d(string("weight_muon_effs_FULL"),  200, 0., 1.1,   muon_sfs_weight, 1);
-
-			// and apply to all weights:
-			for ( const auto s : weightSystematics )
-				{
-				weights_FULL[s] *= muon_sfs_weight;
-				}
-			}
-
-		if(debug)
-			cout << "applied muon SFs to event weight" << endl;
-
 		// Finally, merge leptons for cross-cleaning with taus and jets, and other conveniences:
 
 		std::vector<patUtils::GenericLepton> selLeptons;
@@ -3062,73 +2673,17 @@ for(size_t f=0; f<urls.size();++f)
 			NT_lep_p  [i] = selLeptons[i].p();
 			}
 
+		// record "ID of the channel" -- product of lepton IDs
+		// if 1 lepton -- just its' ID
+		int NT_leps_ID = 1;
+		for (int i = 0; i<selLeptons.size(); i++)
+			{
+			NT_leps_ID *= selLeptons[i].pdgId();
+			}
+
 
 		// -------------------- weights for trigger SFs
-		if (isMC)
-			{
-			// calculate no-trig probability, then multiply them and get 1 - multiplication
-			// should work for all cases
-			// single trig
-			// two leptons of the same type or different
-			double lep_trig_weight = 1;
-
-			double no_ele_trig = 1;
-			if (eTrigger)
-				{
-				// calculate it the inverse-probbility way
-				for (int i = 0; i<selElectrons.size(); i++)
-                                	{
-                                	pat::Electron& el = selElectrons[i];
-					double eta = el.superCluster()->position().eta();
-					double pt = el.pt();
-					// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
-					double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
-					double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
-					no_ele_trig *= 1 - electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
-					}
-				//el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
-				fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
-				}
-
-			// also, if there was muon trigger apply the trigger weight:
-			double no_mu_trig = 1;
-			//double mu_trig_weight = 1;
-			if (muTrigger)
-				{
-				// calculate it the inverse-probbility way
-				for (int i = 0; i<selMuons.size(); i++)
-                                	{
-                                	pat::Muon& mu = selMuons[i];
-					double abs_eta = abs(mu.eta());
-					double pt = mu.pt();
-					double bin_x = (pt < muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_trg_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-					double bin_y = (abs_eta < muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() ? abs_eta : muon_effs_trg_BCDEF_histo->GetYaxis()->GetXmax() - 1);
-					no_mu_trig *= SingleMuon_data_bcdef_fraction * (1 - muon_effs_trg_BCDEF_histo->GetBinContent( muon_effs_trg_BCDEF_histo->FindBin(bin_x, bin_y) )) +
-							SingleMuon_data_gh_fraction * (1 - muon_effs_trg_GH_histo->GetBinContent( muon_effs_trg_GH_histo->FindBin(bin_x, bin_y) ));
-					}
-				//mu_trig_weight = 1 - no_trig; // so for 1 muon it will = to the SF, for 2 there will be a mix
-				fill_1d(string("weight_trigger_no_muon"),  200, 0., 1.1,   no_mu_trig, 1);
-				}
-
-			lep_trig_weight = 1 - no_mu_trig*no_ele_trig;
-
-			fill_1d(string("weight_trigger_weight"),  200, 0., 1.1,   lep_trig_weight, 1);
-			if (eTrigger && selElectrons.size() == 1 && ! muTrigger)
-				fill_1d(string("weight_trigger_weight_el"),  200, 0., 1.1,   lep_trig_weight, 1);
-			if (eTrigger && selElectrons.size() == 2 && ! muTrigger)
-				fill_1d(string("weight_trigger_weight_elel"),200, 0., 1.1,   lep_trig_weight, 1);
-			if (!eTrigger && muTrigger && selMuons.size() == 1)
-				fill_1d(string("weight_trigger_weight_mu"),  200, 0., 1.1,   lep_trig_weight, 1);
-			if (!eTrigger && muTrigger && selMuons.size() == 2)
-				fill_1d(string("weight_trigger_weight_mumu"),200, 0., 1.1,   lep_trig_weight, 1);
-			if (eTrigger && muTrigger)
-				fill_1d(string("weight_trigger_weight_elmu"),  200, 0., 1.1,   lep_trig_weight, 1);
-
-			for ( const auto s : weightSystematics )
-				{
-				weights_FULL[s] *= lep_trig_weight;
-				}
-			}
+		// apply lepton ID and trigger SFs downstream, in NTuple output
 
 
 		// ------------------------------------------ TAUS SELECTION
@@ -3246,6 +2801,9 @@ for(size_t f=0; f<urls.size();++f)
 		pat::JetCollection selJetsNoLep;
 		crossClean_in_dR(selJets, selLeptons, 0.4, selJetsNoLep, weight, string("selJetsNoLep"), true, debug);
 		// and these are output jets for NTuple
+		// they pass ID, corrected with JEC (smeared JES for MC)
+		// pass kinematic cuts (pt, eta)
+		// and dR-cleaned from selected leptons
 
 		std::sort (selJetsNoLep.begin(),  selJetsNoLep.end(),  utils::sort_CandidatesByPt);
 
@@ -3362,7 +2920,6 @@ for(size_t f=0; f<urls.size();++f)
 		// TODO: test if trigger needed here at all
 		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
 		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
-		// FIXME: TESTING new, trigger-less channel assignment
 		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
 		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
 
@@ -3398,7 +2955,13 @@ for(size_t f=0; f<urls.size();++f)
 
 		// ------------------------------------------ SINGLE LEPTON CHANNELS
 		// --------------------------------------------- DILEPTON CHANNELS
-		if (isSingleMu || isSingleE || isDoubleE || isDoubleMu || isEMu)
+
+		bool record_ntuple = (NT_met_corrected > 20) && NT_njets >= 1 && (isSingleMu || isSingleE || isDoubleE || isDoubleMu || isEMu);
+		// record if event has 1 or 2 well isolated leptons
+		// MET > 20
+		// and at least 1 jet
+		// -- should be enough margins for backgrounds and not too many events
+		if (record_ntuple)
 			{
 
 			//// the output parameters for the NTuple
@@ -3454,6 +3017,7 @@ for(size_t f=0; f<urls.size();++f)
 				output_v.push_back(NT_lep_p[i]);
 				}
 			output_v.push_back(NT_nleps);
+			output_v.push_back(NT_leps_ID);
 
 			// jets 5
 			for (int i=0; i<5; i++)
@@ -3490,7 +3054,7 @@ for(size_t f=0; f<urls.size();++f)
 			output_v.push_back(NT_met_corrected);
 
 			// and for NTuple
-			const unsigned int output_n = 13 + 5*2 + 1 + 9*5 + 2 + 6*2 + 1 + 3;
+			const unsigned int output_n = 13 + 5*2 + 2 + 9*5 + 2 + 6*2 + 1 + 3;
 			Float_t output[output_n];
 			if (output_v.size() != output_n)
 				{
