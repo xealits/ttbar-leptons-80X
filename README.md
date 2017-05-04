@@ -22,7 +22,7 @@ And add all used CMSSW modules in `<CMSSW_X_X_X/src>`.
 The list of modules:
 
 * `UserCode/llvv_fwk` from this repository: `https://github.com/cms2l2v/2l2v_fwk` -- it's used for POG definitions (Moriond17 etc), now lepton IDs and jet IDs and corrections are used in the ntuple output
-* (The rest of the list of modules is comming.)
+* (it seems the rest of dependencies are CMSSW built-ins...)
 
 Overall log of actions:
 
@@ -49,8 +49,11 @@ Overall log of actions:
 	cd ttbar-leptons-80X
 	scram b -j 9
 
+	# and done!
+	# I'm testing if anything else is really needed
+	# like this stuff:
 	# back to src/ for more dependencies
-	git cms-addpkg DataFormats/PatCandidates
+	#git cms-addpkg DataFormats/PatCandidates
 	
 
 
