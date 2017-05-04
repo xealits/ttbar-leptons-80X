@@ -266,16 +266,18 @@ bool hasTauAsMother(const reco::GenParticle  p)
 
 
 /*
- * string find_W_decay(const reco::Candidate * W) {
+ * const reco::Candidate* find_W_decay(const reco::Candidate * W) {
  *
- * returns a substring {el, mu, tau, q} identifing which decay happend
- * or returns "" string if something weird happend
+ * returns the final W, daughters of which are decay products
+ * or returns NULL if something weird happend
  *
  * Usage:
  * const reco::Candidate * W = p.daughter( W_num );
- * mc_decay += find_W_decay(W);
+ * const reco::Candidate * W_final = find_W_decay(W);
+ * W_final->daughter(0)->pdgId();
+ * W_final->daughter(1)->pdgId();
 */
-string find_W_decay(const reco::Candidate * W) {
+const reco::Candidate* find_W_decay(const reco::Candidate * W) {
 	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
 	int d0_id, d1_id; // ids of decay daughters
 	//bool found_decay=false;
@@ -287,22 +289,34 @@ string find_W_decay(const reco::Candidate * W) {
 	while (true) {
 		int n = p->numberOfDaughters();
 		switch(n) {
-		case 0: return string("");
+		case 0: return NULL;
 		case 1: // it should be another W->W transition
 			p = p->daughter(0);
 			break; // there should not be no infinite loop here!
 		case 2: // so, it should be the decay
 			//found_decay = true;
+			return p;
+			/* all this is derived from p
 			d0_id = fabs(p->daughter(0)->pdgId());
 			d1_id = fabs(p->daughter(1)->pdgId());
 			if (d0_id == 15 || d1_id == 15 ) return string("tau");
 			if (d0_id == 11 || d1_id == 11 ) return string("el");
 			if (d0_id == 13 || d1_id == 13 ) return string("mu");
 			return string("q"); // FiXME: quite dangerous control-flow!
+			*/
 		default: // and this is just crazy
-			return string("");
+			return NULL;
 		}
 	}
+}
+
+string parse_W_decay(const reco::Candidate * W) {
+	int d0_id = fabs(W->daughter(0)->pdgId());
+	int d1_id = fabs(W->daughter(1)->pdgId());
+	if (d0_id == 15 || d1_id == 15 ) return string("tau");
+	if (d0_id == 11 || d1_id == 11 ) return string("el");
+	if (d0_id == 13 || d1_id == 13 ) return string("mu");
+	return string("q"); // FiXME: quite dangerous control-flow!
 }
 
 // int n = p.numberOfDaughters();
@@ -1673,7 +1687,19 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == 24 ? 0 : (d1_id == 24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						const reco::Candidate * W_final = find_W_decay(W);
+						mc_decay += parse_W_decay(W_final);
+						int decay_id = 1;
+						// = id of lepton (but the sign means which product is lepton: minus=1, plus=2) or 1 for quarks
+						if (fabs(W_final->daughter(0)->pdgId()) == 11 || fabs(W_final->daughter(0)->pdgId()) == 13 || fabs(W_final->daughter(0)->pdgId()) == 15)
+							decay_id = - fabs(W_final->daughter(0)->pdgId());
+						else if (fabs(W_final->daughter(1)->pdgId()) == 11 || fabs(W_final->daughter(1)->pdgId()) == 13 || fabs(W_final->daughter(1)->pdgId()) == 15)
+							decay_id = fabs(W_final->daughter(1)->pdgId());
+						NT_common_event["gen_t_w_decay_id"] = decay_id;
+						NT_common_event["gen_t_w_p1_eta"] = W_final->daughter(0)->eta();
+						NT_common_event["gen_t_w_p1_phi"] = W_final->daughter(0)->phi();
+						NT_common_event["gen_t_w_p2_eta"] = W_final->daughter(1)->eta();
+						NT_common_event["gen_t_w_p2_phi"] = W_final->daughter(1)->phi();
 					}
 				}
 
@@ -1686,10 +1712,22 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == -24 ? 0 : (d1_id == -24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						const reco::Candidate * W_final = find_W_decay(W);
+						mc_decay += parse_W_decay(W_final);
 						// mc_decay += string("bar");
 						// removing the difference between two branches
 						// to reduce the jobs produced for TTbar
+						int decay_id = 1;
+						// = id of lepton (but the sign means which product is lepton: minus=1, plus=2) or 1 for quarks
+						if (fabs(W_final->daughter(0)->pdgId()) == 11 || fabs(W_final->daughter(0)->pdgId()) == 13 || fabs(W_final->daughter(0)->pdgId()) == 15)
+							decay_id = - fabs(W_final->daughter(0)->pdgId());
+						else if (fabs(W_final->daughter(1)->pdgId()) == 11 || fabs(W_final->daughter(1)->pdgId()) == 13 || fabs(W_final->daughter(1)->pdgId()) == 15)
+							decay_id = fabs(W_final->daughter(1)->pdgId());
+						NT_common_event["gen_tb_w_decay_id"] = decay_id;
+						NT_common_event["gen_tb_w_p1_eta"] = W_final->daughter(0)->eta();
+						NT_common_event["gen_tb_w_p1_phi"] = W_final->daughter(0)->phi();
+						NT_common_event["gen_tb_w_p2_eta"] = W_final->daughter(1)->eta();
+						NT_common_event["gen_tb_w_p2_phi"] = W_final->daughter(1)->phi();
 					}
 				}
 			}

@@ -171,7 +171,17 @@ std::map<TString, Float_t> NT_common_event = {
 	{"met_uncorrected", -1},
 	{"met_corrected", -1},
 	{"lj_peak_distance", -1},
-	{"lj_taumatched_peak_distance", -1}};
+	{"lj_taumatched_peak_distance", -1},
+	{"gen_t_w_decay_id", -1}, // = id of lepton (but the sign means which product is lepton: minus=1, plus=2) or 1 for quarks
+	{"gen_t_w_p1_eta",  -1},
+	{"gen_t_w_p1_phi",  -1},
+	{"gen_t_w_p2_eta",  -1},
+	{"gen_t_w_p2_phi",  -1},
+	{"gen_tb_w_decay_id", -1}, // = id of lepton (same sign thing) or 1 for quarks
+	{"gen_tb_w_p1_eta", -1},
+	{"gen_tb_w_p1_phi", -1},
+	{"gen_tb_w_p2_eta", -1},
+	{"gen_tb_w_p2_phi", -1} };
 
 
 /*
