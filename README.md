@@ -49,7 +49,7 @@ Overall log of actions:
 	cd ttbar-leptons-80X
 	scram b -j 9
 
-	# and done!
+	# and done! (it even compiled on CMSSW_8_0_26, which has "latest greatest MET filters" and I need to switch to them..)
 	# I'm testing if anything else is really needed
 	# like this stuff:
 	# back to src/ for more dependencies
