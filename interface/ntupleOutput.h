@@ -26,7 +26,7 @@
 #include "TNtuple.h"
 
 
-using namespace std;
+//using namespace std;
 
 
 /* 
@@ -148,7 +148,7 @@ using namespace std;
  * they in principle should be stored in a struct or class
  * -- leaving this for later
  */
-map<TString, Float_t> NT_common_event = {
+std::map<TString, Float_t> NT_common_event = {
 	{"aMCatNLO_weight", -1},
 	{"gen_t_pt", -1},
 	{"gen_tb_pt", -1},
@@ -171,7 +171,7 @@ map<TString, Float_t> NT_common_event = {
 	{"met_uncorrected", -1},
 	{"met_corrected", -1},
 	{"lj_peak_distance", -1},
-	{"lj_taumatched_peak_distance", -1}}
+	{"lj_taumatched_peak_distance", -1}};
 
 
 /*
@@ -184,7 +184,7 @@ map<TString, Float_t> NT_common_event = {
  * the secondary vertex and decay should provide selection of the 3-pion decay of hadronic taus
  * there are more available, tracks etc
  */
-map<TString, Float_t> NT_leading_tau_decay_info = {
+std::map<TString, Float_t> NT_leading_tau_decay_info = {
 	{"tau_decay", -1},
 	{"tau_hasSecondaryVertex", -1},
 	{"tau_hcalEnergy", -1},
@@ -193,14 +193,14 @@ map<TString, Float_t> NT_leading_tau_decay_info = {
 Float_t NT_leading_tau_secondaryVertexCov[3][3] = {{-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}};
 
 
-map<TString, vector<Float_t>> NT_leptons = {
+std::map<TString, vector<Float_t>> NT_leptons = {
 	{"lep_id_", {-1, -1}},
 	{"lep_eta_", {-1, -1}},
 	{"lep_phi_", {-1, -1}},
 	{"lep_pt_", {-1, -1}},
 	{"lep_p_", {-1, -1}}};
 
-map<TString, vector<Float_t>> NT_jets = {
+std::map<TString, vector<Float_t>> NT_jets = {
 	{"jet_id_", {-1, -1, -1, -1, -1}},
 	{"jet_eta_", {-1, -1, -1, -1, -1}},
 	{"jet_phi_", {-1, -1, -1, -1, -1}},
@@ -212,7 +212,7 @@ map<TString, vector<Float_t>> NT_jets = {
 	{"jet_partonFlavour_", {-1, -1, -1, -1, -1}}};
 
 
-map<TString, vector<Float_t>> NT_taus = {
+std::map<TString, vector<Float_t>> NT_taus = {
 	{"tau_id_", {-1, -1}},
 	{"tau_eta_", {-1, -1}},
 	{"tau_phi_", {-1, -1}},
@@ -240,13 +240,13 @@ TString return_ntuple_names()
 {
 TString s("nevent");
 
-for(std::map<TString, Float_t>::iterator it = NT_common_event->begin(); it != NT_common_event->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_common_event.begin(); it != NT_common_event.end(); ++it)
 	{
 	TString controlpoint_name = it->first;
 	s += ":" + controlpoint_name;
 	}
 
-for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info->begin(); it != NT_leading_tau_decay_info->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info.begin(); it != NT_leading_tau_decay_info.end(); ++it)
 	{
 	TString controlpoint_name = it->first;
 	s += ":" + controlpoint_name;
@@ -258,7 +258,7 @@ for (Long_t r=0; r<3; r++)
 		s += ":" + TString("tau_secondaryVertexCov_") + r + c;
 		}
 
-for(std::map<TString, Float_t*>::iterator it = NT_leptons->begin(); it != NT_leptons->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons.begin(); it != NT_leptons.end(); ++it)
 	{
 	TString controlpoint_name = it->first;
 	for (Long_t i=0; i<it->second.size(); i++)
@@ -267,7 +267,7 @@ for(std::map<TString, Float_t*>::iterator it = NT_leptons->begin(); it != NT_lep
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_jets->begin(); it != NT_jets->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_jets.begin(); it != NT_jets.end(); ++it)
 	{
 	TString controlpoint_name = it->first;
 	for (Long_t i=0; i<it->second.size(); i++)
@@ -276,7 +276,7 @@ for(std::map<TString, Float_t*>::iterator it = NT_jets->begin(); it != NT_jets->
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_taus->begin(); it != NT_taus->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_taus.begin(); it != NT_taus.end(); ++it)
 	{
 	TString controlpoint_name = it->first;
 	for (Long_t i=0; i<it->second.size(); i++)
@@ -298,13 +298,13 @@ void fill_ntuple(TNtuple& ntuple)
 Float_t output[N_OUTPUT];
 int i = 0;
 
-for(std::map<TString, Float_t>::iterator it = NT_common_event->begin(); it != NT_common_event->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_common_event.begin(); it != NT_common_event.end(); ++it)
 	{
 	output[i] = it->second;
 	i++;
 	}
 
-for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info->begin(); it != NT_leading_tau_decay_info->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info.begin(); it != NT_leading_tau_decay_info.end(); ++it)
 	{
 	output[i] = it->second;
 	i++;
@@ -318,32 +318,32 @@ for (Long_t r=0; r<3; r++)
 		i++;
 		}
 
-for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons->begin(); it != NT_leptons->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons.begin(); it != NT_leptons.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)
 		{
-		output[i] = v[j]
+		output[i] = v[j];
 		i++;
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_jets->begin(); it != NT_jets->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_jets.begin(); it != NT_jets.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)
 		{
-		output[i] = v[j]
+		output[i] = v[j];
 		i++;
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_taus->begin(); it != NT_taus->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_taus.begin(); it != NT_taus.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)
 		{
-		output[i] = v[j]
+		output[i] = v[j];
 		i++;
 		}
 	}
@@ -360,12 +360,12 @@ void reset_ntuple_output()
 Float_t output[N_OUTPUT];
 int i = 0;
 
-for(std::map<TString, Float_t>::iterator it = NT_common_event->begin(); it != NT_common_event->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_common_event.begin(); it != NT_common_event.end(); ++it)
 	{
 	NT_common_event[it->first] = -1;
 	}
 
-for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info->begin(); it != NT_leading_tau_decay_info->end(); ++it)
+for(std::map<TString, Float_t>::iterator it = NT_leading_tau_decay_info.begin(); it != NT_leading_tau_decay_info.end(); ++it)
 	{
 	NT_leading_tau_decay_info[it->first] = -1;
 	}
@@ -376,7 +376,7 @@ for (Long_t r=0; r<3; r++)
 		NT_leading_tau_secondaryVertexCov[r][c] = -1;
 		}
 
-for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons->begin(); it != NT_leptons->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons.begin(); it != NT_leptons.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)
@@ -385,7 +385,7 @@ for(std::map<TString, vector<Float_t>>::iterator it = NT_leptons->begin(); it !=
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_jets->begin(); it != NT_jets->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_jets.begin(); it != NT_jets.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)
@@ -394,7 +394,7 @@ for(std::map<TString, Float_t*>::iterator it = NT_jets->begin(); it != NT_jets->
 		}
 	}
 
-for(std::map<TString, Float_t*>::iterator it = NT_taus->begin(); it != NT_taus->end(); ++it)
+for(std::map<TString, vector<Float_t>>::iterator it = NT_taus.begin(); it != NT_taus.end(); ++it)
 	{
 	vector<Float_t>& v = it->second;
 	for (int j=0; j<v.size(); j++)

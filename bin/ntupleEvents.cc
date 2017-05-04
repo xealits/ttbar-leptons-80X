@@ -1514,7 +1514,7 @@ TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_
 ntuple->SetDirectory(0);
 */
 
-map<string, TNtuple*> mc_decay_ntuples;
+std::map<string, TNtuple*> mc_decay_ntuples;
 
 //##############################################
 //########           EVENT LOOP         ########
@@ -3161,7 +3161,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			//ntuple->Fill(output);
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
-				fill_ntuple(mc_decay_ntuples.find(mc_decay));
+				fill_ntuple(*(mc_decay_ntuples[mc_decay]));
 			else // create new ntuple and put it into the map
 				{
 				TString new_ntuple_name = TString(string("ntuple_") + mc_decay);
