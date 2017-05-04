@@ -70,3 +70,28 @@ Change the `cmssenv` from the usual `alias cmsenv='eval `scramv1 runtime -sh`'` 
 	alias cmsenv='eval `scramv1 runtime -sh` && export PATH="$CMSSW_BASE/test/$SCRAM_ARCH:$PATH"'
 
 
+
+
+
+
+Submition of jobs, working with data
+=======================================
+
+Datasets (called "dset" throughout the jobing code) are treated in bunches called "dtag".
+A "dtag" contains masically the same datasets
+-- mainly "-ext" Monte-Carlo datasets, but also one might join several Data runs in 1 dtag.
+Now 1-to-1 pairs of dtag-dset are used, but the -ext MC is to come.
+
+Jobs are named "dtag_<number of job>" and produce corresponding "<job>.<subchannel>.root", "<job>.json" (luminosities), "<job>.job_done" (for control of resubmit etc).
+    
+Thus datasets in a dtag should have the same cross-sections for correct further processing.
+
+There is a small local "database" made with `store_dsets_info.py` which runs `das_client` and stores locally files of given datasets and their current location.
+So that one doesn't need to pull this list of files on every submition of the jobs.
+The "location" is the tier on which 100% of dataset files (not blocks) are present.
+Currently only CERN's EOS (`T2_CERN_CH`) is distinguished by job submition utility (`job_submit.py`).
+But it is easily extendable.
+
+
+
+

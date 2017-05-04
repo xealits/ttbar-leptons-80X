@@ -1,0 +1,41 @@
+
+- dtag: "Data13TeV_JetHT2016B_03Feb2017_ver2"
+  isMC: false
+  dset: "/JetHT/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_JetHT2016C_03Feb2017_v1"
+  isMC: false
+  dset: "/JetHT/Run2016C-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_JetHT2016D_03Feb2017_v1"
+  isMC: false
+  dset: "/JetHT/Run2016D-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+
+- dtag: "Data13TeV_JetHT2016E_03Feb2017_v1"
+  isMC: false
+  dset: "/JetHT/Run2016E-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_JetHT2016F_03Feb2017_v1"
+  isMC: false
+  dset: "/JetHT/Run2016F-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_JetHT2016G_03Feb2017_v1"
+  isMC: false
+  dset: "/JetHT/Run2016G-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_JetHT2016H_03Feb2017_ver2"
+  isMC: false
+  dset: "/JetHT/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+- dtag: "Data13TeV_JetHT2016H_03Feb2017_ver3"
+  isMC: false
+  dset: "/JetHT/Run2016H-03Feb2017_ver3-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
