@@ -1550,8 +1550,9 @@ double weightflow_control_elmu_selection = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
-	//TFile* file = TFile::Open(urls[f].c_str()); // this should do `new`, create new file on the heap and make me a pointer, later I need to manually delete it
-	Tfile* file(urls[f].c_str()); // this should create temporary object in the scope of the loop, which is exactly what is needed
+	//TFile* file = new TFile(urls[f].c_str()); // this should work only with local files, no networking, Open should be used for networking
+	TFile* file = TFile::Open(urls[f].c_str()); // this should do `new`, create new file on the heap and make me a pointer, later I need to manually delete it
+	//TFile* file(urls[f].c_str()); // this should create temporary object in the scope of the loop, which is exactly what is needed
 	fwlite::Event ev(file);
 	cout << "Processing file: " << urls[f].c_str() << endl;
 	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
@@ -3235,7 +3236,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		} // End single file event loop
 
-	//delete file;
+	delete file;
 	cout << endl << "removed opened input file" << endl;
 	} // End loop on files
 
@@ -3319,7 +3320,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
-	if (debug) cout << "writing |" << channel << "| ntuple" << endl;
+	if (debug) cout << "writing [" << channel << "] ntuple" << endl;
 	//ntuple->Write();
 	if (mc_decay_ntuples.find(channel) == mc_decay_ntuples.end())
 		{
