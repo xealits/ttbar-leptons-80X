@@ -1507,9 +1507,14 @@ cout << "jecDir = "      << jecDir << "\n";
 
 TString ntuple_names = return_ntuple_names();
 
+/* ntuple per decay channel is made (the inclusive ttbar is split into decays)
+ * they are stored in a map
+ * they need different names for ROT... which will be awkward afterwards in processing, but it's not avoidable
 TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_names.Data());
 ntuple->SetDirectory(0);
+*/
 
+map<string, TNtuple*> mc_decay_ntuples;
 
 //##############################################
 //########           EVENT LOOP         ########
@@ -1551,7 +1556,7 @@ for(size_t f=0; f<urls.size();++f)
 		// map<TString, vector<Float_t>> NT_leptons;
 		// map<TString, vector<Float_t>> NT_jets;
 		// map<TString, vector<Float_t>> NT_taus;
-		reset_ntuple_output(ntuple); // defaults all parameters
+		reset_ntuple_output(); // defaults all parameters
 
 		Float_t NT_fixedGridRhoFastjetAll = -1; // rho is needed for jet corrections
 		// needed for event preselection:
@@ -3155,7 +3160,14 @@ for(size_t f=0; f<urls.size();++f)
 			*/
 
 			//ntuple->Fill(output);
-			fill_ntuple(ntuple);
+			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
+				fill_ntuple(mc_decay_ntuples.find(mc_decay));
+			else // create new ntuple and put it into the map
+				{
+				TString new_ntuple_name = TString(string("ntuple_") + mc_decay);
+				mc_decay_ntuples[mc_decay] = new TNtuple(new_ntuple_name.Data(), "ntuple with reduced event data", ntuple_names.Data());
+				mc_decay_ntuples[mc_decay]->SetDirectory(0);
+				}
 			}
 
 		// TODO: properly count multichannel?
@@ -3251,7 +3263,8 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
-	ntuple->Write();
+	//ntuple->Write();
+	mc_decay_ntuples[channel]->Write(); // probably I could rename the ntuple as I do for histograms, but it might crash things
 	out_f->Write();
 
 	out_f->Close();
