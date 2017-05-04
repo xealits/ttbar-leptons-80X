@@ -235,7 +235,7 @@ std::map<TString, vector<Float_t>> NT_taus = {
 // 1 -- loose
 // 0 -- it somehow passed into the tau collection but doesn't pass any of the 3 IDs
 
-#define N_OUTPUT 103
+#define N_OUTPUT 113+1 // placeholder for nevent
 // for now: define N ouf output values (N of -1 in the above)
 
 
@@ -301,12 +301,17 @@ return s;
 
 
 
-void fill_ntuple(TNtuple& ntuple)
+void fill_ntuple(TNtuple& ntuple, bool debug)
 {
 // main problem: construct a correct array const Float_t * to feed into ntuple.Fill();
 // need N of floats...
 Float_t output[N_OUTPUT];
 int i = 0;
+
+if (debug) cout << "ntuple has " << ntuple.GetNbranches() << " branches, filling it with " << N_OUTPUT << " array, got ";
+
+output[i] = 0; // the first element is placeholder for Nlumi/Nevent stuff
+i++;
 
 for(std::map<TString, Float_t>::iterator it = NT_common_event.begin(); it != NT_common_event.end(); ++it)
 	{
@@ -358,6 +363,8 @@ for(std::map<TString, vector<Float_t>>::iterator it = NT_taus.begin(); it != NT_
 		}
 	}
 
+if (debug) cout << i << " records" << endl;
+
 ntuple.Fill(output);
 }
 
@@ -368,7 +375,7 @@ void reset_ntuple_output()
 {
 // loop and reset all to -1
 Float_t output[N_OUTPUT];
-int i = 0;
+//int i = 0;
 
 for(std::map<TString, Float_t>::iterator it = NT_common_event.begin(); it != NT_common_event.end(); ++it)
 	{

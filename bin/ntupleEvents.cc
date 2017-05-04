@@ -1550,10 +1550,11 @@ double weightflow_control_elmu_selection = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
-	TFile* file = TFile::Open(urls[f].c_str());
+	//TFile* file = TFile::Open(urls[f].c_str()); // this should do `new`, create new file on the heap and make me a pointer, later I need to manually delete it
+	Tfile* file(urls[f].c_str()); // this should create temporary object in the scope of the loop, which is exactly what is needed
 	fwlite::Event ev(file);
-	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 	cout << "Processing file: " << urls[f].c_str() << endl;
+	printf ("Scanning the ntuple %2lu/%2lu :",f+1, urls.size());
 
 	iev++;
 
@@ -1647,7 +1648,6 @@ for(size_t f=0; f<urls.size();++f)
 		// -- thus recursion is needed
 
 		// traversing separate t quarks
-		//if (debug) {
 		if (isTTbarMC && genHandle.isValid()) {
 			//string mc_decay(""); // move to all job parameters
 			// every found t-quark decay branch will be added as a substring to this string (el, mu, tau, q)
@@ -3071,6 +3071,8 @@ for(size_t f=0; f<urls.size();++f)
 		// -- should be enough margins for backgrounds and not too many events
 		if (record_ntuple)
 			{
+			if(debug)
+				cout << "recording the event" << endl;
 			// it seems NTuple doesn't have a method Fill(NN) for NN inputs...
 			// or for a vector...
 			// it can Fill Float_t[] pointer
@@ -3183,6 +3185,9 @@ for(size_t f=0; f<urls.size();++f)
 			NT_common_event["lj_peak_distance"] = NT_lj_peak_distance;
 			NT_common_event["lj_taumatched_peak_distance"] = NT_lj_taumatched_peak_distance;
 
+			if(debug)
+				cout << "calculated the lj peak variables, now all ntuple output is ready" << endl;
+
 			// and for NTuple
 			// done with functions in ntupleOutput.h
 			/*
@@ -3199,12 +3204,24 @@ for(size_t f=0; f<urls.size();++f)
 
 			//ntuple->Fill(output);
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
-				fill_ntuple(*(mc_decay_ntuples[mc_decay]));
+				{
+				if(debug)
+					cout << "filling ntuple " << mc_decay << endl;
+				fill_ntuple(*(mc_decay_ntuples[mc_decay]), debug);
+				}
 			else // create new ntuple and put it into the map
 				{
-				TString new_ntuple_name = TString(string("ntuple_") + mc_decay);
-				mc_decay_ntuples[mc_decay] = new TNtuple(new_ntuple_name.Data(), "ntuple with reduced event data", ntuple_names.Data());
+				if(debug)
+					cout << "creating new ntuple " << mc_decay << endl;
+
+				TString new_ntuple_name(string("ntuple_") + mc_decay);
+				mc_decay_ntuples[mc_decay] = (TNtuple*) new TNtuple(new_ntuple_name.Data(), "ntuple with reduced event data", ntuple_names.Data());
+				if(debug)
+					cout << "setting SetDirectory(0)" << endl;
 				mc_decay_ntuples[mc_decay]->SetDirectory(0);
+				if(debug)
+					cout << "filling the ntuple" << endl;
+				fill_ntuple(*(mc_decay_ntuples[mc_decay]), debug);
 				}
 			}
 
@@ -3218,7 +3235,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		} // End single file event loop
 
-	delete file;
+	//delete file;
+	cout << endl << "removed opened input file" << endl;
 	} // End loop on files
 
 printf("Done processing the job of files\n");
@@ -3250,7 +3268,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	// use them separately, take from: dtag_s, job_num
 	// TFile* out_f = TFile::Open (TString(outUrl.Data() + string("_") + channel + string(".root")), "CREATE");
 	TString output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + '.' + channel + string(".root"));
-	cout << "output to " << output_filename;
+	cout << "output to " << output_filename << endl;
 	TFile* out_f = TFile::Open (output_filename, "CREATE");
 
 	std::map<string, TH1D> * th1d_controlpoints = & it->second;
@@ -3301,22 +3319,32 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
+	if (debug) cout << "writing |" << channel << "| ntuple" << endl;
 	//ntuple->Write();
-	mc_decay_ntuples[channel]->Write(); // probably I could rename the ntuple as I do for histograms, but it might crash things
-	out_f->Write();
+	if (mc_decay_ntuples.find(channel) == mc_decay_ntuples.end())
+		{
+		cout << "channel |" << channel << "| not found among ntuples" << endl;
+		continue;
+		}
+	mc_decay_ntuples[channel]->SetName("ntuple"); // probably I could rename the ntuple as I do for histograms, but it might crash things
+	mc_decay_ntuples[channel]->Write();
+	out_f->Write("ntuple");
 
 	out_f->Close();
 	}
 
-printf ("New output results saved in %s\n", (outdir.Data() + string("/") + dtag_s + string("_") + job_num + string(".<channel>") + string(".root")).c_str());
+cout << "done writing" << endl;
+
+cout << "New output results saved in " << outdir << string("/") + dtag_s + string("_") + job_num + string(".<channel>.root") << endl;
 
 
 // JOB_DONE file
 // needed for precise accounting of done jobs, since a job can output many root files
 
 FILE *csv_out;
-string FileName = ((outUrl.ReplaceAll(".root",""))+".job_done").Data();
-csv_out = fopen(FileName.c_str(), "w");
+//string FileName = ((outUrl.ReplaceAll(".root",""))+".job_done").Data();
+//csv_out = fopen(FileName.c_str(), "w");
+csv_out = fopen(((outUrl.ReplaceAll(".root",""))+".job_done").Data(), "w");
 
 fprintf(csv_out, "The job is done!\n\n");
 fprintf(csv_out, "# wheightflow control with plain doubles\n");
@@ -3332,6 +3360,7 @@ fprintf(csv_out, "%s,weightflow_control_elmu_selection,%g\n", job_num.c_str(), w
 
 fclose(csv_out);
 
+cout << "job_done is written" << endl;
 
 // Now that everything is done, dump the list of lumiBlock that we processed in this job
 if(!isMC){
@@ -3339,5 +3368,8 @@ if(!isMC){
 	goodLumiFilter.DumpToJson(((outUrl.ReplaceAll(".root",""))+".json").Data());
 	}
 
+cout << "lumi json is written, exiting." << endl;
+
+return 0;
 }
 
