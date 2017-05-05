@@ -148,7 +148,7 @@ if __name__ == "__main__":
         dtag_name = dtag['dtag']
         logging.info("Submitting dtag " + dtag_name)
 
-        isdata = dtag.get('isMC', False)
+        isMC = dtag.get('isMC', False)
         if args.lumi_mask:
             lumiMask = args.lumi_mask
         else:
@@ -181,7 +181,7 @@ if __name__ == "__main__":
             # and the best guess for the server where to find them (either EOS of cern of cmsglobal)
             # the input file URL is "server/file"
             for f in dset_files:
-                dtag_files.append("%s/%s" % (file_server, f))
+                dtag_files.append("'%s/%s'" % (file_server, f))
 
         logging.info("Found {} files. Splitting {} per job.".format(len(dtag_files), n_files_per_job))
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             # creating the _cfg.py file (which is just a container of parameters for the job)
             # first configs are filled with defaults and for each jobs
             # they are filled with parameters passed on command line
-            configs.update({'input': input_files, 'lumiMask': lumiMask, 'dtag': dtag_name, 'job_num': i, 'isMC': not isdata,
+            configs.update({'input': input_files, 'lumiMask': lumiMask, 'dtag': dtag_name, 'job_num': i, 'isMC': isMC,
                             'outfile'      : outdirname + '/' + dtag_name + '_' + str(i) + '.root',
                             'outdir'       : outdirname + '/',
                             'project_dir'  : project_dir,
