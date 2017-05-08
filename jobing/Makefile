@@ -495,6 +495,19 @@ jets_taus_mc_distrs_dileptons:
 	stacked_histo_project2to1_distr --normalize 1.7 elmu_passjets_taus_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 	stacked_histo_project2to1_distr --normalize 1.7 elmu_passjets_taus_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 
+jets_mc_distrs_dileptons_lumi:
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_jets_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_jets_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_jets_distr z 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	# tau
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_tau_jets_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_tau_jets_distr y 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	stacked_histo_project3to1_distr ${verbose} ${lumi} elmu_passjets_tau_jets_distr z 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+
+
+jets_mc_distrs_dileptons_sf:
+	# Usage : jet_fakerate_sf_mc_to_data[--verbose] [--normalize] lumi distr rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags
+	jet_fakerate_sf_mc_to_data ${verbose} ${lumi} elmu_passjets 1 0 250 sf outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 
 jets_taus_mc_distrs_control:
 	stacked_histo_project3to1_distr --normalize 1.7 singlemu_pretau_jets_distr x 1 outdir/"${job}"/merged-sets/ `cat dtags_${job}`
@@ -665,6 +678,11 @@ jet_mc_fakerates_dilep:
 	jet_fakerate_per_mc 0.25 elmu_passjets z 1  0   0.4  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 	jet_fakerate_per_mc 0.25 elmu_passjets y 1 -2.5 2.5  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 	jet_fakerate_per_mc 0.25 elmu_passjets x 1  0 150    elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+
+jet_mc_fakerates_dilep_lumi:
+	jet_fakerate_per_mc ${lumi} elmu_passjets z 1  0   0.4  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_mc ${lumi} elmu_passjets y 1 -2.5 2.5  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
+	jet_fakerate_per_mc ${lumi} elmu_passjets x 1  0 150    elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 
 jet_origin_fakerates_qcd:
 	jet_fakerate_per_origin ${large} ${set_logy} 0.25 HLTjet_qcd z 1  0   0.4 JetHT outdir/"${job}"/merged-sets/ `cat dtags_${job}_JetHT`

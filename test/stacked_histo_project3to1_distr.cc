@@ -168,7 +168,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	//weightflows.back()->Print();
 	// --- using only the initial weight
 
-	if (be_verbose) cout << "got weightflow init" << endl;
+	if (be_verbose) cout << "got weightflow init " << normal_initial_weight << endl;
 
 	if (be_verbose) cout << "getting " << distr  << " projection to " << projection << endl;
 	// get the histogram's projection

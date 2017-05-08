@@ -329,8 +329,8 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	else if(dtag.Contains("TT"))
 		{
 		if (dtag.Contains("qqbar")) return std::make_pair("tt_jj", kGreen+4);
-		else if (dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return std::make_pair("tt_lj", kGreen+3);
-		else if (dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
+		else if (dtag.Contains("elq") || dtag.Contains("mqu") || dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return std::make_pair("tt_lj", kGreen+3);
+		else if (dtag.Contains("elmu") || dtag.Contains("elmubar") || dtag.Contains("muelbar")) return std::make_pair("tt_em", kGreen-9);
 		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
 		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
 		else if (dtag.Contains("aeltu"))
