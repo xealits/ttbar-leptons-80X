@@ -1874,7 +1874,8 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 		//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
-		mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
+		//mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
+		//mc_decay = mc_decay; // so we'll have "" or "mcdecay"
 
 		//* List of mother-daughters for all particles
 		//* TODO: make it into a separate function
