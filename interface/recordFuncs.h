@@ -197,6 +197,7 @@ int fill_btag_efficiency(string control_point_name, Double_t pt, Double_t eta, D
 
 
 
+int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC);
 
 int record_jets_fakerate_distrs(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC);
 

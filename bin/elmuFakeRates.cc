@@ -3089,7 +3089,7 @@ for(size_t f=0; f<urls.size();++f)
 				fill_1d(string("weight_trigger_no_muon"),  200, 0., 1.1,   no_mu_trig, 1);
 				}
 
-			lep_trig_weight = 1 - no_mu_trig*no_ele_trig;
+			lep_trig_weight = 1 - no_mu_trig; //*no_ele_trig;
 
 			fill_1d(string("weight_trigger_weight"),  200, 0., 1.1,   lep_trig_weight, 1);
 			/*
@@ -3181,7 +3181,6 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep,
-			selLooseTausNoLep, selTightTausNoLep,
 			selVLooseTausNoLep, selLooseTausNoLep, selMediumTausNoLep, selTightTausNoLep, selVTightTausNoLep;
 
 		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weights_FULL[SYS_NOMINAL], string("selTausNoLep"),        false, debug);
