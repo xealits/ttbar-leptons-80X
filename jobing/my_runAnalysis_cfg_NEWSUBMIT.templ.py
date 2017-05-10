@@ -100,6 +100,15 @@ runProcess = cms.PSet(
     jetPUID = cms.string("{jetPUID}"),
     with_PU  = cms.bool({with_PU}),
 
+    kino_cuts_muon_pt       = cms.double({kino_cuts_muon_pt}),
+    kino_cuts_muon_eta      = cms.double({kino_cuts_muon_eta}),
+    kino_cuts_muon_veto_pt  = cms.double({kino_cuts_muon_veto_pt}),
+    kino_cuts_muon_veto_eta = cms.double({kino_cuts_muon_veto_eta}),
+    kino_cuts_electron_pt       = cms.double({kino_cuts_electron_pt}),
+    kino_cuts_electron_eta      = cms.double({kino_cuts_electron_eta}),
+    kino_cuts_electron_veto_pt  = cms.double({kino_cuts_electron_veto_pt}),
+    kino_cuts_electron_veto_eta = cms.double({kino_cuts_electron_veto_eta}),
+
     jet_kino_cuts_pt    = cms.double({jet_kino_cuts_pt}),
     jet_kino_cuts_eta   = cms.double({jet_kino_cuts_eta}),
     tau_kino_cuts_pt    = cms.double({tau_kino_cuts_pt}),

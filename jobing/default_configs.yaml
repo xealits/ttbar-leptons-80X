@@ -64,14 +64,27 @@ tau_Tight_ID         : "byTightIsolationMVArun2v1DBoldDMwLT"
 jetID   : "Loose"
 jetPUID : "LoosePU"
 with_PU: True
+
+kino_cuts_muon_pt      : 30
+kino_cuts_muon_eta     : 2.4
+kino_cuts_muon_veto_pt : 10
+kino_cuts_muon_veto_eta: 2.5
+
+kino_cuts_electron_pt      : 30
+kino_cuts_electron_eta     : 2.4
+kino_cuts_electron_veto_pt : 15
+kino_cuts_electron_veto_eta: 2.5
+
 jet_kino_cuts_pt    : 30.
 jet_kino_cuts_eta   : 2.4
 tau_kino_cuts_pt    : 30.
 tau_kino_cuts_eta   : 2.3
+
 jettaufr_jet_kino_cuts_pt    : 30.
 jettaufr_jet_kino_cuts_eta   : 2.4
 jettaufr_tau_kino_cuts_pt    : 30.
 jettaufr_tau_kino_cuts_eta   : 2.3
+
 conf_record_electrons:  False
 conf_record_muons:      False
 conf_record_taus_ID:    False
