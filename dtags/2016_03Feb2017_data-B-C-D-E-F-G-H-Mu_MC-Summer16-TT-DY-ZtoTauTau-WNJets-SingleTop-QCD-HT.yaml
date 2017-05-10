@@ -1,0 +1,179 @@
+- dtag: "MC2016_Summer16_TTJets_powheg"
+  isMC: true
+  xsec: 831.76
+  dsets:
+    - "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_W0Jets_amcatnlo"
+  isMC: true
+  xsec: 47447.2
+  dsets:
+    - "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_W1Jets_madgraph"
+  isMC: true
+  xsec: 9493
+  dsets:
+    - "/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_W2Jets_madgraph"
+  isMC: true
+  xsec: 3120
+  dsets:
+    - "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_W3Jets_madgraph"
+  isMC: true
+  xsec: 942.3
+  dsets:
+    - "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_W4Jets_madgraph"
+  isMC: true
+  xsec: 524.2
+  dsets:
+    - "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo"
+  isMC: true
+  xsec: 6025.2
+  dsets:
+    - "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_DYJetsToLL_50toInf_madgraph"
+  isMC: true
+  xsec: 6025.2
+  dsets:
+    - "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_DYJetsToTauTau_50toInf_amcatnlo"
+  isMC: true
+  xsec: 1867
+  dsets:
+    - "/DYJetsToTauTau_ForcedMuEleDecay_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+
+- dtag: "MC2016_Summer16_SingleT_tW_5FS_powheg"
+  isMC: true
+  xsec: 35.6
+  dsets:
+    - "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_SingleTbar_tW_5FS_powheg"
+  isMC: true
+  xsec: 35.6
+  dsets:
+    - "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg"
+  isMC: true
+  xsec: 70.69
+  dsets:
+    - "/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg"
+  isMC: true
+  xsec: 70.69
+  dsets:
+    - "/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo"
+  isMC: true
+  xsec: 3.36
+  dsets:
+    - "/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+- dtag: "MC2016_Summer16_QCD_HT-100-200"
+  isMC: true
+  xsec:   27540000
+  dsets:
+    - "/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-200-300"
+  isMC: true
+  xsec:   1717000
+  dsets:
+    - "/QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-300-500"
+  isMC: true
+  xsec:   351300
+  dsets:
+    - "/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-500-700"
+  isMC: true
+  xsec:   31630
+  dsets:
+    - "/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-700-1000"
+  isMC: true
+  xsec:   6802
+  dsets:
+    - "/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-1000-1500"
+  isMC: true
+  xsec:   1206
+  dsets:
+    - "/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-1500-2000"
+  isMC: true
+  xsec:   120.4
+  dsets:
+    - "/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+- dtag: "MC2016_Summer16_QCD_HT-2000-Inf"
+  isMC: true
+  xsec:   25.25
+  dsets:
+    - "/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+
+
+
+- dtag: "Data13TeV_SingleMuon2016B_03Feb2017_ver2"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_SingleMuon2016C_03Feb2017_v1"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016C-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_SingleMuon2016D_03Feb2017_v1"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016D-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+
+- dtag: "Data13TeV_SingleMuon2016E_03Feb2017_v1"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016E-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_SingleMuon2016F_03Feb2017_v1"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016F-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_SingleMuon2016G_03Feb2017_v1"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016G-03Feb2017-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
+- dtag: "Data13TeV_SingleMuon2016H_03Feb2017_ver2"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+- dtag: "Data13TeV_SingleMuon2016H_03Feb2017_ver3"
+  isMC: false
+  xsec: 1
+  dsets:
+    - "/SingleMuon/Run2016H-03Feb2017_ver3-v1/MINIAOD"
+  lumiMask: "/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/analysis/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+
