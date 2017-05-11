@@ -2436,7 +2436,7 @@ for(size_t f=0; f<urls.size();++f)
 			// event is good if all filters ar true
 			bool filters1 = utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter*", "Flag_HBHENoiseIsoFilter*", "Flag_EcalDeadCellTriggerPrimitiveFilter*");
 			bool good_vertices = utils::passTriggerPatterns(metFilters, "Flag_goodVertices");
-			bool eebad = utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter");
+			bool eebad = utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter"); // "not suggested" for 2017 Moriond, but also they say Flag_eeBadScFilter TO BE USED
 			bool halo  = utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter");
 			// 2016 thing: bad muons
 			bool flag_noBadMuons = utils::passTriggerPatterns(metFilters, "Flag_noBadMuons");
@@ -3707,7 +3707,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		// --------------------------------------------- DILEPTON CHANNELS
 
-		if (isDoubleE || isDoubleMu || isEMu)
+		if (isEMu) // reducing the computation isDoubleE || isDoubleMu || isEMu)
 			{
 			// nominal weight for all the control distr-s
 			double weight = weights_FULL[SYS_NOMINAL];
