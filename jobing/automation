@@ -337,3 +337,10 @@ stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outd
 mkdir outdir/t2.0/merged-sets//jobsums/
 stacked_histo_distr_with_ratio f f 35614.903 elmu_passjets_mediumTaus_jets_distr_pt elmu_passjets_mediumTaus_jets_distr_pt 1 -1 -1 outdir/t2.0/merged-sets/ `cat dtags_t2.0 `
 
+
+the SFs
+
+jet_mc_fakerates_dilep_lumi
+
+jet_1D_fakerate_per_mc 35614.903 elmu_passjets_mediumTaus _pt 1 -1 -1 medium_taus outdir/t2.0/merged-sets/ `cat dtags_t2.0`
+

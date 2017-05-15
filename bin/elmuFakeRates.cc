@@ -264,6 +264,38 @@ bool hasTauAsMother(const reco::GenParticle  p)
 
 
 /*
+ * return ID of lepton if the tau decays leptonically
+ * if it's hadronic return 0
+ */
+int tau_leptonic_ID(const reco::Candidate* tau)
+{
+while(true)
+	{
+	int n = tau->numberOfDaughters();
+	switch(n)
+		{
+		case 0: return 0;
+		case 1: // it should be (unheard of) tau->tau transition
+			tau = tau->daughter(0);
+			break; // there should not be no infinite loop here!
+		default: // so, it should be the decay
+			// find lepton among daughters
+			for (int i=0; i<n; i++)
+				{
+				int d_id = fabs(tau->daughter(i)->pdgId());
+				if (d_id == 11 || d_id == 13)
+					return d_id; // and return this lepton
+				else if (d_id == 15)
+					exit(215); // something unexpected
+				}
+			// if no lepton was found -- it's hadronic
+			return 0;
+		}
+	}
+}
+
+
+/*
  * string find_W_decay(const reco::Candidate * W) {
  *
  * returns a substring {el, mu, tau, q} identifing which decay happend
@@ -293,7 +325,18 @@ string find_W_decay(const reco::Candidate * W) {
 			//found_decay = true;
 			d0_id = fabs(p->daughter(0)->pdgId());
 			d1_id = fabs(p->daughter(1)->pdgId());
-			if (d0_id == 15 || d1_id == 15 ) return string("tau");
+			if (d0_id == 15 || d1_id == 15 )
+				{
+				// find tau->lepton or tau->hadronic?
+				const reco::Candidate* tau = (d0_id == 15? p->daughter(0) : p->daughter(1));
+				int tau_decay_id = tau_leptonic_ID(tau);
+				if (tau_decay_id == 11)// leptonic return tauel or taumu
+					return string("tauel");
+				else if (tau_decay_id == 13)
+					return string("taumu");
+				else // hadronic tau -- just tau
+					return string("tau");
+				}
 			if (d0_id == 11 || d1_id == 11 ) return string("el");
 			if (d0_id == 13 || d1_id == 13 ) return string("mu");
 			return string("q"); // FiXME: quite dangerous control-flow!

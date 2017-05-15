@@ -395,6 +395,19 @@ elmu_fake_rates_taus_distrs:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_pt  elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_eta elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
+# FAKE RATE
+elmu_fake_rates:
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 vloose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 vloose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus _pt  1 -1 -1 loose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus _eta 1 -1 -1 loose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus _pt  1 -1 -1 tight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus _eta 1 -1 -1 tight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+
 jet_origins:
 	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
 	# "dilep_passjets_jet_partonFlavour dilep_passjetsNbtag_jet_partonFlavour elel_passjets_jet_partonFlavour"
@@ -709,6 +722,7 @@ jet_mc_fakerates_dilep:
 	jet_fakerate_per_mc 0.25 elmu_passjets y 1 -2.5 2.5  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 	jet_fakerate_per_mc 0.25 elmu_passjets x 1  0 150    elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 
+# elmu FAKERATES
 jet_mc_fakerates_dilep_lumi:
 	jet_fakerate_per_mc ${lumi} elmu_passjets z 1  0   0.4  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
 	jet_fakerate_per_mc ${lumi} elmu_passjets y 1 -2.5 2.5  elmu outdir/"${job}"/merged-sets/ `cat dtags_${job}`
