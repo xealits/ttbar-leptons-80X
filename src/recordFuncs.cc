@@ -318,10 +318,10 @@ int fill_jet_distrs_1D_2D(string control_point_name, Double_t weight, Double_t p
 
 	// fill the distribution:
 	//th3d_distr_maps_control[mc_decay][control_point_name].Fill(pt, eta, radius, weight);
-	th2d_distr_maps_control[mc_decay][pt_eta_name].Fill(pt, eta);
-	th1d_distr_maps_control[mc_decay][pt_name]    .Fill(pt);
-	th1d_distr_maps_control[mc_decay][eta_name]   .Fill(eta);
-	th1d_distr_maps_control[mc_decay][radius_name].Fill(radius);
+	th2d_distr_maps_control[mc_decay][pt_eta_name].Fill(pt, eta, weight);
+	th1d_distr_maps_control[mc_decay][pt_name]    .Fill(pt, weight);
+	th1d_distr_maps_control[mc_decay][eta_name]   .Fill(eta, weight);
+	th1d_distr_maps_control[mc_decay][radius_name].Fill(radius, weight);
 
 	// not sure where header-histograms are used and why
 	if (th2d_distr_maps_control_headers.find(pt_eta_name) == th2d_distr_maps_control_headers.end() )
