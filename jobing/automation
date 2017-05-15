@@ -311,3 +311,29 @@ overlay_th1d_distrs test_fakerates-vs-murates_y.png wjets-sel test/tests/outdir_
 
 overlay_th1d_distrs test_fakerates-vs-murates_z.png wjets-sel test/tests/outdir_j6.5/merged-sets/Data13TeV_SingleMuon2016X_23Sep2016_v1_HLTmu_wjets_tau_jets_distr_over_HLTmu_wjets_jets_distr_z.root h3 qcd-sel test/tests/outdir_j6.5/merged-sets/Data13TeV_JetHT2016X_23Sep2016_v1_HLTjet_qcd_tau_jets_distr_over_HLTjet_qcd_jets_distr_z.root h3 mu-passjet test/tests/outdir_v9.12/merged-sets/Data13TeV_SingleMuon2016D_23Sep2016_v1_singlemu_passjet_tau_jets_distr_over_singlemu_passjet_jets_distr_z.root h3 mu-pretau test/tests/outdir_v9.12/merged-sets/Data13TeV_SingleMuon2016D_23Sep2016_v1_singlemu_pretau_tau_jets_distr_over_singlemu_pretau_jets_distr_z.root h3
 
+
+
+
+
+
+elmu fakerates
+
+inclusive fake rate and 1d distr-s per pt and eta
+
+find lumi
+make calculate_luminosity job=t2.0
+
+build distr-s of jets and taus
+elmu_passjets_mediumTaus_tau_jets_distr_pt
+elmu_passjets_mediumTaus_jets_distr_pt
+elmu_passjets_mediumTaus_tau_jets_distr_eta
+elmu_passjets_mediumTaus_jets_distr_eta
+
+then of SF
+
+with ratio
+stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`
+
+mkdir outdir/t2.0/merged-sets//jobsums/
+stacked_histo_distr_with_ratio f f 35614.903 elmu_passjets_mediumTaus_jets_distr_pt elmu_passjets_mediumTaus_jets_distr_pt 1 -1 -1 outdir/t2.0/merged-sets/ `cat dtags_t2.0 `
+
