@@ -118,8 +118,19 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	weightflows.push_back((TH1D*) files.back()->Get("weightflow_el_NOMINAL"));
 	weightflows.back()->Print();
 
-	histos.push_back((TH1D*) files.back()->Get(distr));
-	histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
+	TH1D* histo = (TH1D*) files.back()->Get(distr);
+	histo->Rebin(rebin_factor); // should rebin the new histo inplace
+	// and normalize per bin-width:
+	for (Int_t i=0; i<=histo->GetSize(); i++)
+		{
+		//yAxis->GetBinLowEdge(3)
+		double content = histo->GetBinContent(i);
+		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+		histo->SetBinContent(i, content/width);
+		}
+
+	histos.push_back(histo);
+
 	histos.back()->Print();
 	if (dtag.Contains("Data"))
 		{
@@ -185,11 +196,17 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	}
 
 // build the sum of MC
+// it has to be done before building the stack because ROOT is crap
+// yep, you cannot scale a stack after it's been built
 TH1D    *hs_sum  = NULL;
 for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
 	{
 	TString nick = it->first;
 	TH1D * distr = it->second;
+	cout << nick;
+
+	// build the summ of MC
+	cout << " summing mc" << endl;
 	if (hs_sum == NULL)
 		{
 		hs_sum = (TH1D*) (distr->Clone("brand_new_hs_sum"));
@@ -214,12 +231,16 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	{
 	TString nick = it->first;
 	TH1D * distr = it->second;
+	cout << nick;
 
-	// normalize MC sum to Data
+	// each histogram has to be normalized before going into Stack
+	// because ROOT is crap
 	if (normalize_to_data)
+		{
 		distr->Scale(scale);
+		}
 
-	cout << "adding to mc stack: " << nick << endl;
+	cout << " adding to mc stack" << endl;
 	distr->Print();
 
 	hs->Add(distr, "HIST");
@@ -228,6 +249,19 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	//entry=leg->AddEntry("singlemu_altstep4rho3","Single top","F");
 	leg->AddEntry(distr, nick, "F");
 	}
+
+/* scale the stack and the sum
+*/
+// normalize MC sum to Data
+if (normalize_to_data)
+	{
+	cout << "normalizeing MC" << endl;
+	hs_sum->Scale(scale);
+	//hs->Scale(scale); // ROOT is crap, THStack doesn't have Scale method
+	}
+
+cout << "Data sum = " << hs_data->Integral() << endl;
+cout << "MC   sum = " << hs_sum->Integral()  << endl;
 
 //cst->SetFillColor(41);
 //cst->Divide(1,1);
@@ -330,6 +364,7 @@ leg->Draw();
 //cst->SetLogy();
 //cst->Modified();
 
+// THE RATIO PLOT
 pad2->cd();
 //cst->cd(2);
 
