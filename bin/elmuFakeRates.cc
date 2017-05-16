@@ -267,29 +267,43 @@ bool hasTauAsMother(const reco::GenParticle  p)
  * return ID of lepton if the tau decays leptonically
  * if it's hadronic return 0
  */
-int tau_leptonic_ID(const reco::Candidate* tau)
+int tau_leptonic_ID(const reco::Candidate* t, bool debug)
 {
+const reco::Candidate* tau = t;
 while(true)
 	{
 	int n = tau->numberOfDaughters();
+	//if (debug) cout << "tau n daughters = " << n << endl;
 	switch(n)
 		{
 		case 0: return 0;
 		case 1: // it should be (unheard of) tau->tau transition
 			tau = tau->daughter(0);
 			break; // there should not be no infinite loop here!
-		default: // so, it should be the decay
+		default: /* so, it should be the decay
+			  * check daughters of tau, if leptons 11/13 is among them -- return, if tau -- loop, if no tau and no leptons -- return 0, it's hadronic
+			  */
+			{
 			// find lepton among daughters
+			//if (debug) cout << "tau decay, daughters";
+			int tau_daughter_i = -1;
 			for (int i=0; i<n; i++)
 				{
+				//if (debug) cout << " (" << i;
 				int d_id = fabs(tau->daughter(i)->pdgId());
+				//if (debug) cout << ", " << d_id << ")";
 				if (d_id == 11 || d_id == 13)
-					return d_id; // and return this lepton
-				else if (d_id == 15)
-					exit(215); // something unexpected
+					return d_id; // if lepton is found -- return immediately
+				else if (d_id == 15) // if tau is found -- store it's index for possible loop
+					tau_daughter_i = i;
 				}
-			// if no lepton was found -- it's hadronic
-			return 0;
+			//if (debug) cout << endl;
+			if (tau_daughter_i != -1)
+				tau = tau->daughter(tau_daughter_i); // loop on tau
+			else
+				// if no 11/13 lepton was found and no tau -- it's hadronic decay
+				return 0;
+			}
 		}
 	}
 }
@@ -305,7 +319,7 @@ while(true)
  * const reco::Candidate * W = p.daughter( W_num );
  * mc_decay += find_W_decay(W);
 */
-string find_W_decay(const reco::Candidate * W) {
+string find_W_decay(const reco::Candidate * W, bool debug) {
 	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
 	int d0_id, d1_id; // ids of decay daughters
 	//bool found_decay=false;
@@ -327,9 +341,12 @@ string find_W_decay(const reco::Candidate * W) {
 			d1_id = fabs(p->daughter(1)->pdgId());
 			if (d0_id == 15 || d1_id == 15 )
 				{
+				//if (debug) cout << "found tau decay of W" << endl;
 				// find tau->lepton or tau->hadronic?
 				const reco::Candidate* tau = (d0_id == 15? p->daughter(0) : p->daughter(1));
-				int tau_decay_id = tau_leptonic_ID(tau);
+				//if (debug) cout << "got tau" << endl;
+				int tau_decay_id = tau_leptonic_ID(tau, debug);
+				//if (debug) cout << "found ID of tau decay = " << tau_decay_id << endl;
 				if (tau_decay_id == 11)// leptonic return tauel or taumu
 					return string("tauel");
 				else if (tau_decay_id == 13)
@@ -1904,7 +1921,7 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == 24 ? 0 : (d1_id == 24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						mc_decay += find_W_decay(W, debug);
 					}
 				}
 
@@ -1917,7 +1934,7 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == -24 ? 0 : (d1_id == -24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						mc_decay += find_W_decay(W, debug);
 						// mc_decay += string("bar");
 						// removing the difference between two branches
 						// to reduce the jobs produced for TTbar
