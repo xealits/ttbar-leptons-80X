@@ -112,7 +112,8 @@ std::vector < TH1D * > weightflows;
 TH1D    *hs_data = NULL;
 
 // different jet origin histos:
-vector<string> mc_jet_origins = {"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
+//vector<string> mc_jet_origins = {"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
+vector<string> mc_jet_origins = {"_jets_distr_q", "_jets_distr_b", "_jets_distr_g", "_jets_distr_o", "_jets_distr_t"};
 vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL};
 //TH1D    *hs_mc_o = NULL; // "other" objects -- not recognized by partonFlavour
 //TH1D    *hs_mc_t = NULL; // taus -- matched not recognized by partonFlavour and matched to a visible part of tau in GenParticles collection
