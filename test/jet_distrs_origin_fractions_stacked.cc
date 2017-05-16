@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 7
+#define INPUT_DTAGS_START 8
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor name_tag dir dtags";
-if (argc < 6)
+char usage_string[128] = "[--verbose] [--normalize] csvOUT lumi distr projection rebin_factor name_tag dir dtags";
+if (argc < 7)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -62,12 +62,17 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-double lumi = atof(argv[input_starts + 1]);
-TString distr_selection(argv[input_starts + 2]);
-TString projection(argv[input_starts + 3]);
-Int_t rebin_factor(atoi(argv[input_starts + 4]));
-TString name_tag(argv[input_starts + 5]);
-TString dir(argv[input_starts + 6]);
+TString csvOUT(argv[input_starts + 1]);
+bool csv_out=false;
+if (csvOUT == TString("T") || csvOUT == TString("Y"))
+	csv_out = true;
+
+double lumi = atof(argv[input_starts + 2]);
+TString distr_selection(argv[input_starts + 3]);
+TString projection(argv[input_starts + 4]);
+Int_t rebin_factor(atoi(argv[input_starts + 5]));
+TString name_tag(argv[input_starts + 6]);
+TString dir(argv[input_starts + 7]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -441,7 +446,33 @@ hs_data->SetXTitle(distr_selection);
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFractionsStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+TString output_file = dir + "/jobsums/" + distr_selection + "_OriginFractionsStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "");
+
+cst->SaveAs( output_file + ".png" );
+
+//TFile* out_file = TFile::Open(output_file + ".root");
+if (csv_out)
+	{
+	// normalized bins to the sum of all jets (to get the fraction of the origin in each bin)
+	// header
+	cout << "bin_x";
+	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+		{
+		cout << ",fraction" + mc_jet_origins[origin_n];
+		}
+	cout << endl;
+
+	TH1D* tamplate_histo = mc_jet_origin_ths[0];
+	for (Int_t i=0; i<=tamplate_histo->GetSize(); i++)
+		{
+		cout << tamplate_histo->GetBinCenter(i);
+		for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+			{
+			cout << "," << mc_jet_origin_ths[origin_n]->GetBinContent(i);
+			}
+		cout << endl;
+		}
+	}
 
 return 0;
 }
