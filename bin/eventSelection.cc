@@ -4011,9 +4011,11 @@ for(size_t f=0; f<urls.size();++f)
 
 					// control fake rates (might be useful)
 					record_jets_fakerate_distrs(string("singlemu_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_large_bins(string("singlemu_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// and the region of our selection fake rates
 					// (used for jet origins mainly, plus for control)
 					record_jets_fakerate_distrs(string("singlemu_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_large_bins(string("singlemu_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singlemu_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
@@ -4277,8 +4279,10 @@ for(size_t f=0; f<urls.size();++f)
 					//int record_jets_fakerate_distrs(string & channel, string & selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, double event_weight, bool isMC)
 					// control
 					record_jets_fakerate_distrs(string("singleel_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_large_bins(string("singleel_"), string("control_pretau"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 					// and our selection fake rates (counting jet origins)
 					record_jets_fakerate_distrs(string("singleel_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_large_bins(string("singleel_"), string("pretau"), selJetsNoLep[SYS_NOMINAL], selTausNoLep, visible_gen_taus, weight, isMC);
 
 					fill_2d(string("control_met_singleel_pretau_pt_eta"), 250, 0., 500., 200, -4., 4., systematic_mets[SYS_NOMINAL].pt(), systematic_mets[SYS_NOMINAL].eta(), weight);
 					for (int i=0; i<selJetsNoLep[SYS_NOMINAL].size(); i++)
