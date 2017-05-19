@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 8
+#define INPUT_DTAGS_START 9
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] csvOUT lumi distr projection rebin_factor name_tag dir dtags";
-if (argc < 7)
+char usage_string[128] = "[--verbose] [--normalize] largebins csvOUT lumi distr projection rebin_factor name_tag dir dtags";
+if (argc < 8)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -38,6 +38,7 @@ if (argc < 7)
 
 gROOT->Reset();
 
+// jet_distrs_origin_fractions_stacked
 unsigned int input_starts = 0;
 bool be_verbose = false;
 bool normalize_MC_stack = false;
@@ -62,17 +63,19 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-TString csvOUT(argv[input_starts + 1]);
+string largebins(argv[input_starts + 1]);
+
+TString csvOUT(argv[input_starts + 2]);
 bool csv_out=false;
 if (csvOUT == TString("T") || csvOUT == TString("Y"))
 	csv_out = true;
 
-double lumi = atof(argv[input_starts + 2]);
-TString distr_selection(argv[input_starts + 3]);
-TString projection(argv[input_starts + 4]);
-Int_t rebin_factor(atoi(argv[input_starts + 5]));
-TString name_tag(argv[input_starts + 6]);
-TString dir(argv[input_starts + 7]);
+double lumi = atof(argv[input_starts + 3]);
+TString distr_selection(argv[input_starts + 4]);
+TString projection(argv[input_starts + 5]);
+Int_t rebin_factor(atoi(argv[input_starts + 6]));
+TString name_tag(argv[input_starts + 7]);
+TString dir(argv[input_starts + 8]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -83,6 +86,8 @@ if (projection != TString("x") && projection != TString("y") && projection != TS
 	return 2;
 	}
 
+cout << largebins  << endl;
+cout << csvOUT  << endl;
 cout << lumi  << endl;
 cout << distr_selection << endl;
 cout << dir   << endl;
@@ -113,8 +118,17 @@ TH1D    *hs_data = NULL;
 
 // different jet origin histos:
 //vector<string> mc_jet_origins = {"_jets_distr_o", "_jets_distr_t", "_jets_distr_b", "_jets_distr_q", "_jets_distr_g"};
-vector<string> mc_jet_origins = {"_jets_distr_q", "_jets_distr_b", "_jets_distr_g", "_jets_distr_o", "_jets_distr_t"};
+//vector<string> mc_jet_origins = {"_jets_distr_q", "_jets_distr_b", "_jets_distr_g", "_jets_distr_o", "_jets_distr_t"};
+vector<string> mc_jet_origins = {"q", "b", "t", "g", "o"};
 vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL};
+
+// just for control:
+for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
+	{
+	string jet_origin = "_jets_distr" + largebins + "_" + mc_jet_origins[origin_n];
+	cout << jet_origin << endl;
+	}
+
 //TH1D    *hs_mc_o = NULL; // "other" objects -- not recognized by partonFlavour
 //TH1D    *hs_mc_t = NULL; // taus -- matched not recognized by partonFlavour and matched to a visible part of tau in GenParticles collection
 //TH1D    *hs_mc_b = NULL; // b
@@ -208,7 +222,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	else
 		for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 			{
-			string jet_origin = mc_jet_origins[origin_n];
+			string jet_origin = "_jets_distr" + largebins + "_" + mc_jet_origins[origin_n];
 			TString distro_name = distr_selection + jet_origin;
 
 			if (!file->GetListOfKeys()->Contains(distro_name))
@@ -459,7 +473,7 @@ if (csv_out)
 	cout << "bin_x";
 	for (int origin_n=0; origin_n<mc_jet_origins.size(); origin_n++)
 		{
-		cout << ",fraction" + mc_jet_origins[origin_n];
+		cout << "," + mc_jet_origins[origin_n];
 		}
 	cout << endl;
 

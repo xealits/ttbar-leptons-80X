@@ -35,13 +35,16 @@ int main (int argc, char *argv[])
 if (argc < 6)
 	{
 	//std::cout << "Usage : " << argv[0] << " lumi distr projection rebin_factor dir dtags" << std::endl;
-	std::cout << "Usage : " << argv[0] << "largebins x|y|z proj_name cont_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
+	std::cout << "Usage : " << argv[0] << "out_csv x|y|z proj_name cont_name distr1 distr2 rebin_factor x_axis_min_range x_axis_max_range filename" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString largebins(argv[1]);
+//TString largebins(argv[1]);
+TString csv(argv[1]);
+bool out_csv = (csv == TString("T") || csv == TString("Y"));
+
 TString proj(argv[2]);
 if (proj != TString("x") && proj != TString("y") && proj != TString("z"))
 	{
@@ -134,6 +137,15 @@ cst->Update();
 cst->Modified();
 
 cst->SaveAs( filename.ReplaceAll(".root","") + "_" + distr1 + "_over_" + distr2 + "_" + proj + ".png" );
+
+if (out_csv)
+	{
+	cout << "bin_x,fakerate" << endl;
+        for (Int_t i=0; i<=h3->GetSize(); i++)
+                {
+                cout << h3->GetBinCenter(i) << ',' << h3->GetBinContent(i) << endl;
+                }
+	}
 
 return 0;
 }

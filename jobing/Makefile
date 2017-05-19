@@ -454,12 +454,13 @@ taujet_distr_plots_SingleMuon: content_name="N tau jets"
 taujet_distr_plots_SingleMuon: fakerate_distr_plots
 
 .PHONY:fakerate_ratio_plots
+fakerate_ratio_plots: csv=f
 fakerate_ratio_plots:
 	test -s ${file}
 	# make stops if a command in the recipe fails...
-	histo_project3toN_ratio_distr x pT     "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0 150   ${file}
-	histo_project3toN_ratio_distr y eta    "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1 -2.5 2.5 ${file}
-	histo_project3toN_ratio_distr z radius "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0   0.3 ${file}
+	histo_project3toN_ratio_distr ${csv} x pT     "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0 150   ${file}
+	histo_project3toN_ratio_distr ${csv} y eta    "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1 -2.5 2.5 ${file}
+	histo_project3toN_ratio_distr ${csv} z radius "fake rate" ${selection}_tau_jets_distr${largebins} ${selection}_jets_distr${largebins} 1  0   0.3 ${file}
 
 .PHONY:jet_fakerate_plots_JetHT
 jet_fakerate_plots_JetHT: file=outdir/${job}/merged-sets/jobsums/Data13TeV_JetHT2016X.root
@@ -613,34 +614,39 @@ jet_origin_distrs_stacked_dileptons:
 
 
 
+jet_origin_fractions_stacked_qcd: largebins=""
 jet_origin_fractions_stacked_qcd:
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTjet_qcd x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTjet_qcd y 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTjet_qcd z 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTjet_qcd x 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTjet_qcd y 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTjet_qcd z 1 QCD outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_JetHT ` 
 
+jet_origin_fractions_stacked_wjets: largebins=""
 jet_origin_fractions_stacked_wjets:
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTmu_wjets x 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTmu_wjets y 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 HLTmu_wjets z 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTmu_wjets x 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTmu_wjets y 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 HLTmu_wjets z 1 WJets outdir/"${job}"/merged-sets/ `cat dtags_"${job}"_SingleMuon ` 
 
 
+jet_origin_fractions_stacked_dileptons: largebins=""
 jet_origin_fractions_stacked_dileptons:
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 mumu_passjets x 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 mumu_passjets y 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 mumu_passjets z 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 elmu_passjets x 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 elmu_passjets y 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 elmu_passjets z 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 mumu_passjets x 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 mumu_passjets y 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 mumu_passjets z 1 mumu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 elmu_passjets x 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 elmu_passjets y 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 elmu_passjets z 1 elmu outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 
+jet_origin_fractions_stacked_control_el: largebins=""
 jet_origin_fractions_stacked_control_el:
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singleel_pretau x 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singleel_pretau y 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singleel_pretau z 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singleel_pretau x 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singleel_pretau y 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singleel_pretau z 1 eltau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 
+jet_origin_fractions_stacked_control_mu: largebins=""
 jet_origin_fractions_stacked_control_mu:
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singlemu_pretau x 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singlemu_pretau y 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
-	jet_distrs_origin_fractions_stacked --normalize ${csv} 0.25 singlemu_pretau z 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singlemu_pretau x 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singlemu_pretau y 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
+	jet_distrs_origin_fractions_stacked ${verbose} --normalize ${largebins} ${csv} 0.25 singlemu_pretau z 1 mutau_pretau outdir/"${job}"/merged-sets/ `cat dtags_"${job}" `
 
 
 
