@@ -334,15 +334,11 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 		else if (dtag.Contains("elelbar")) return std::make_pair("tt_ee", kAzure-9);
 		else if (dtag.Contains("mumubar")) return std::make_pair("tt_mm", kYellow-7);
 		else if (dtag.Contains("aeltu"))
-			{
-			// FIXME: cout << "setting el-tau nickname" << endl;
 			return std::make_pair("tt_{e\\tau}", kOrange+2);
-			}
 		else if (dtag.Contains("amtuu"))
-			{
-			// FIXME: cout << "setting mu-tau nickname" << endl;
 			return std::make_pair("tt_{\\mu\\tau}", kOrange+1);
-			}
+		else if (dtag.Contains("aelmtuu"))
+			return std::make_pair("tt_{\\l\\tau-l}", kOrange+3);
 		else return std::make_pair("tt_{other}", kCyan-5);
 		}
 	else if(dtag.Contains("QCD")) return std::make_pair("qcd", kViolet);
