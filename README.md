@@ -55,9 +55,8 @@ Overall log of actions:
 	# back to src/ for more dependencies
 	#git cms-addpkg DataFormats/PatCandidates
 	
-Or alternatively you can just run ./todo.pl to perform the above installation
-wget https://raw.githubusercontent.com/cherepan/ttbar-leptons-80X/VladimirDev/todo.pl
 
+alternatively you can run ./todo.pl which will install all necessary codes
 
 
 CMSSW/test/arch to PATH for scripts
