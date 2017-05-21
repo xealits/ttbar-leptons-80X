@@ -13,6 +13,11 @@ const double W_qar_br = 0.676;
 const double W_lep_br2 = 0.108*0.108;
 const double W_qar_br2 = 0.676*0.676;
 
+const double br_tau_electron = 0.1785;
+const double br_tau_muon     = 0.1736;
+const double br_tau_lepton   = br_tau_electron + br_tau_muon;
+const double br_tau_hadronic = 1 - br_tau_lepton;
+
 const double ttbar_xsec = 831.76;
 
 std::map<TString, double> xsecs = {
@@ -281,6 +286,7 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg", 80.95}, //70.69/2},
 {"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg", 136.02}, //70.69/2},
 
+/* inclusive tau decays
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
 { "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
@@ -291,6 +297,35 @@ std::map<TString, double> xsecs = {
 { "MC2016_Summer16_TTJets_powheg_mmuu"        , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br * 2},
 { "MC2016_Summer16_TTJets_powheg_qq"          , ttbar_xsec * W_qar_br2 },
+*/
+
+// 2 tau decays
+{ "MC2016_Summer16_TTJets_powheg_aaelmttuuu",  ttbar_xsec * W_lep_br2 *2 * br_tau_muon * br_tau_electron},
+{ "MC2016_Summer16_TTJets_powheg_aaeellttuu",  ttbar_xsec * W_lep_br2    * br_tau_electron * br_tau_electron },
+{ "MC2016_Summer16_TTJets_powheg_aaelttuu"  ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_electron },
+{ "MC2016_Summer16_TTJets_powheg_aammttuuuu",  ttbar_xsec * W_lep_br2    * br_tau_muon * br_tau_muon },
+{ "MC2016_Summer16_TTJets_powheg_aamttuuu"  ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_muon },
+{ "MC2016_Summer16_TTJets_powheg_aattuu"    ,  ttbar_xsec * W_lep_br2    * br_tau_hadronic * br_tau_hadronic},
+
+// leptonic tau decays
+{ "MC2016_Summer16_TTJets_powheg_aelmtuu"   ,  ttbar_xsec * W_lep_br2         * 1 * br_tau_lepton },
+
+{ "MC2016_Summer16_TTJets_powheg_aeelltu"   ,  ttbar_xsec * W_lep_br2         * 1 * br_tau_electron },
+{ "MC2016_Summer16_TTJets_powheg_ammtuuu"   ,  ttbar_xsec * W_lep_br2         * 1 * br_tau_muon },
+
+{ "MC2016_Summer16_TTJets_powheg_aelqtu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_electron },
+{ "MC2016_Summer16_TTJets_powheg_amqtuu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_muon },
+
+// hadronic tau decays
+{ "MC2016_Summer16_TTJets_powheg_aeltu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TTJets_powheg_amtuu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TTJets_powheg_aqtu"      , ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_hadronic},
+{ "MC2016_Summer16_TTJets_powheg_eell"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_elmu"      , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_elq"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TTJets_powheg_mmuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TTJets_powheg_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TTJets_powheg_qq"        , ttbar_xsec * W_qar_br2 }
 
 };
 
@@ -338,7 +373,7 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 		else if (dtag.Contains("amtuu"))
 			return std::make_pair("tt_{\\mu\\tau}", kOrange+1);
 		else if (dtag.Contains("aelmtuu"))
-			return std::make_pair("tt_{\\l\\tau-l}", kOrange+3);
+			return std::make_pair("tt_{l\\tau-l}", kOrange+3);
 		else return std::make_pair("tt_{other}", kCyan-5);
 		}
 	else if(dtag.Contains("QCD")) return std::make_pair("qcd", kViolet);

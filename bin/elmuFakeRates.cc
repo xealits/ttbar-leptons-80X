@@ -352,7 +352,7 @@ string find_W_decay(const reco::Candidate * W, bool debug) {
 				else if (tau_decay_id == 13)
 					return string("taumu");
 				else // hadronic tau -- just tau
-					return string("tau");
+					return string("tauh");
 				}
 			if (d0_id == 11 || d1_id == 11 ) return string("el");
 			if (d0_id == 13 || d1_id == 13 ) return string("mu");

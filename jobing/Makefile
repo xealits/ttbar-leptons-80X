@@ -372,28 +372,20 @@ elmu_fake_rates_jets_distrs:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
 elmu_fake_rates_jets_distrs_all:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt  elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt   elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta  elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt   elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta  elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt  elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt   elmu_passjets_vlooseTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta  elmu_passjets_vlooseTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt    elmu_passjets_looseTaus_jets_distr_pt    1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta   elmu_passjets_looseTaus_jets_distr_eta   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt   elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta  elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt    elmu_passjets_tightTaus_jets_distr_pt    1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta   elmu_passjets_tightTaus_jets_distr_eta   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt   elmu_passjets_vtightTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta  elmu_passjets_vtightTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
-elmu_fake_rates_taus_distrs:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_tau_jets_distr_pt  elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_tau_jets_distr_eta elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_tau_jets_distr_pt   elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_tau_jets_distr_eta  elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+elmu_fake_rates_taus_distrs_medium:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_pt  elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_eta elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_tau_jets_distr_pt   elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_tau_jets_distr_eta  elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_pt  elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_eta elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
 # FAKE RATE
 elmu_fake_rates:
