@@ -69,6 +69,7 @@
 
   <bin name="jet_fakefactor_data"         file="jet_fakefactor_data.cc"></bin>
 
+  <bin name="likelihood_regions"          file="likelihood_regions.cc"></bin>
 
   <bin name="weightflow_table_script"         file="weightflow_table_script.cc"></bin>
   <bin name="weightflow_nicknames_script"     file="weightflow_nicknames_script.cc"></bin>
