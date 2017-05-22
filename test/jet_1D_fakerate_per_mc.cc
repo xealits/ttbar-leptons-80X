@@ -24,15 +24,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 9
+#define INPUT_DTAGS_START 10
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr suffix rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
-if (argc < 8)
+char usage_string[128] = "[--verbose] [--normalize] lumi distr suffix rebin_factor x_axis_min_range x_axis_max_range name_tag distr_name dir dtags";
+if (argc < 10)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -72,7 +72,8 @@ Int_t rebin_factor(atoi(argv[input_starts + 4]));
 double x_axis_min_range = atof(argv[input_starts + 5]);
 double x_axis_max_range = atof(argv[input_starts + 6]);
 TString name_tag(argv[input_starts + 7]);
-TString dir(argv[input_starts + 8]);
+TString distr_name(argv[input_starts + 8]);
+TString dir(argv[input_starts + 9]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi  << endl;
@@ -128,7 +129,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.845, 0.5, 0.99, 0.99);
+TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 
 /*
  * Get each dtag file in the reduced dir,
@@ -279,8 +280,10 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				{
 				//yAxis->GetBinLowEdge(3)
 				double content = histo->GetBinContent(i);
+				double error   = histo->GetBinError(i);
 				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 				histo->SetBinContent(i, content/width);
+				histo->SetBinError(i, error/width);
 				}
 
 			// Scale to MC ratio
@@ -319,8 +322,10 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				{
 				//yAxis->GetBinLowEdge(3)
 				double content = histo->GetBinContent(i);
+				double error   = histo->GetBinError(i);
 				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 				histo->SetBinContent(i, content/width);
+				histo->SetBinError(i, error/width);
 				}
 
 			// Scale to MC ratio
@@ -493,7 +498,7 @@ if (hs_sum != NULL)
 	hs_sum->SetMarkerColorAlpha(0, 0.1);
 	hs_sum->SetMarkerStyle(1);
 	hs_sum->SetMarkerColor(0);
-	//hs_sum->Draw("e2 same"); // the errors on the stack
+	hs_sum->Draw("e2 same"); // the errors on the stack
 	}
 else
 	cout << "NO HS_SUM!!!!!!!!!!!!!!" << endl;
@@ -507,8 +512,8 @@ TString distr = distr_selection + TString((const char*) suffix.c_str());
 
 hs->GetXaxis()->SetTitle(distr);
 cout << "done setting the stack title" << endl;
-hs_data[0]->SetXTitle(distr);
-hs_sum->SetXTitle(distr);
+hs_data[0]->SetXTitle(distr_name);
+hs_sum->SetXTitle(distr_name);
 
 leg->SetBorderSize(0);
 leg->Draw();
@@ -542,7 +547,7 @@ hs_sum_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 	{
 	double mc_content = hs_sum_relative->GetBinContent(i);
-	double mc_error   = 0; //hs_sum_relative->GetBinError(i);
+	double mc_error   = hs_sum_relative->GetBinError(i);
 	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 
 	double data_content = hs_data_relative->GetBinContent(i);
@@ -566,10 +571,10 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRange(0.75, 1.25);
+hs_sum_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
+hs_data_relative->GetYaxis()->SetRange(0.75, 1.25);
+hs_data_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
 
 /*
 if (xlims_set)

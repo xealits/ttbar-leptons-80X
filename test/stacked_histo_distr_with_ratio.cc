@@ -24,15 +24,15 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 10
+#define DTAG_ARGS_START 11
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 10)
+if (argc < 11)
 	{
-	std::cout << "Usage : " << argv[0] << " normalize logy lumi distr distr_name rebin_factor xmin xmax dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " normalize logy lumi distr distr_name yname rebin_factor xmin xmax dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -51,16 +51,18 @@ if (logy == TString("T") || logy == TString("Y"))
 double lumi = atof(argv[3]);
 TString distr(argv[4]);
 TString distr_name(argv[5]);
-Int_t rebin_factor(atoi(argv[6]));
+TString yname(argv[6]);
 
-double xmin = atof(argv[7]);
-double xmax = atof(argv[8]);
+Int_t rebin_factor(atoi(argv[7]));
+
+double xmin = atof(argv[8]);
+double xmax = atof(argv[9]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[9]);
-TString dtag1(argv[10]);
+TString dir(argv[10]);
+TString dtag1(argv[11]);
 
 bool eltau = false, mutau = false;
 if (distr.Contains("singleel"))
@@ -108,6 +110,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	dtags.push_back(dtag);
 	files.push_back(TFile::Open(dir + "/" + dtag + ".root"));
 	//dtags.push_back(5);
+	bool isData = dtag.Contains("Data");
 
 	if (!files.back()->GetListOfKeys()->Contains(distr))
 		{
@@ -119,20 +122,31 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	weightflows.back()->Print();
 
 	TH1D* histo = (TH1D*) files.back()->Get(distr);
-	histo->Rebin(rebin_factor); // should rebin the new histo inplace
+
+	if (!isData)
+		{
+		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
+		histo->Scale(ratio);
+		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+		histo->Print();
+		//histos.back()->SetFillColor(kRed );
+		}
+	//histo->Rebin(rebin_factor); // should rebin the new histo inplace
 	// and normalize per bin-width:
 	for (Int_t i=0; i<=histo->GetSize(); i++)
 		{
 		//yAxis->GetBinLowEdge(3)
 		double content = histo->GetBinContent(i);
+		double error   = histo->GetBinError(i);
 		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 		histo->SetBinContent(i, content/width);
+		histo->SetBinError(i, error/width);
 		}
 
 	histos.push_back(histo);
 
 	histos.back()->Print();
-	if (dtag.Contains("Data"))
+	if (isData)
 		{
 		cout << "summing data-stack" << endl;
 		histos.back()->SetMarkerStyle(9);
@@ -151,12 +165,6 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		}
 	else
 		{
-		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
-		histos.back()->Scale(ratio);
-		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-		histos.back()->Print();
-		//histos.back()->SetFillColor(kRed );
-
 		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
 		TString nick = nick_colour.first;
 		Color_t col = nick_colour.second;
@@ -347,11 +355,18 @@ else
 hs_data->Draw("e p same"); // the data with the errors
 
 // histo->SetTitle("boxtitle;x axis title [unit];y axis title [unit]")
-cout << "setting the stack title" << endl;
+cout << "setting the stack titles " << distr_name << " " << yname << endl;
 hs->GetXaxis()->SetTitle(distr_name);
+hs->GetYaxis()->SetTitle(yname);
 cout << "done setting the stack title" << endl;
 hs_data->SetXTitle(distr_name);
 hs_sum->SetXTitle(distr_name);
+hs_data->SetYTitle(yname);
+hs_sum-> SetYTitle(yname);
+
+hs->     GetYaxis()->SetTitleOffset(1.4);
+hs_data->GetYaxis()->SetTitleOffset(1.4);
+hs_sum-> GetYaxis()->SetTitleOffset(1.4);
 
 leg->SetBorderSize(0);
 leg->Draw();
@@ -372,7 +387,9 @@ TH1D * hs_data_relative = (TH1D*) hs_data->Clone();
 TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
 
 hs_data_relative->SetXTitle("");
-hs_sum_relative->SetXTitle("");
+hs_sum_relative-> SetXTitle("");
+hs_data_relative->SetYTitle("");
+hs_sum_relative-> SetYTitle("");
 
 hs_data_relative->SetMarkerColor(1);
 

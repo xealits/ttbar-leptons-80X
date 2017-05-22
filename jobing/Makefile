@@ -142,11 +142,11 @@ selection_control_histos: logy=f
 selection_control_histos:
 	for h in `cat cur_th1d_histos_pt_eta_energy`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singleel: normalize=f
@@ -154,11 +154,11 @@ selection_control_histos_singleel: logy=f
 selection_control_histos_singleel:
 	for h in `cat cur_th1d_histos_pt_eta_energy_singleel`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_singleel`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_elel: normalize=f
@@ -166,11 +166,11 @@ selection_control_histos_elel: logy=f
 selection_control_histos_elel:
 	for h in `cat cur_th1d_histos_pt_eta_energy_elel`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_elel`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_elmu: normalize=f
@@ -178,11 +178,11 @@ selection_control_histos_elmu: logy=f
 selection_control_histos_elmu:
 	for h in `cat cur_th1d_histos_pt_eta_energy_elmu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_elmu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_mumu: normalize=f
@@ -190,11 +190,11 @@ selection_control_histos_mumu: logy=f
 selection_control_histos_mumu:
 	for h in `cat cur_th1d_histos_pt_eta_energy_mumu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_mumu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singleel_other: normalize=f
@@ -202,7 +202,7 @@ selection_control_histos_singleel_other: logy=f
 selection_control_histos_singleel_other:
 	for h in `cat cur_th1d_histos_other_singleel`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singlemu: normalize=f
@@ -210,11 +210,11 @@ selection_control_histos_singlemu: logy=f
 selection_control_histos_singlemu:
 	for h in `cat cur_th1d_histos_pt_eta_energy_singlemu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 	for h in `cat cur_th1d_histos_other_singlemu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_singlemu_other: normalize=f
@@ -222,7 +222,7 @@ selection_control_histos_singlemu_other: logy=f
 selection_control_histos_singlemu_other:
 	for h in `cat cur_th1d_histos_other_singlemu`;             \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta: normalize=f
@@ -230,7 +230,7 @@ selection_control_histos_eta: logy=f
 selection_control_histos_eta:
 	for h in `cat cur_th1d_histos_eta`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta_singleel: normalize=f
@@ -238,7 +238,7 @@ selection_control_histos_eta_singleel: logy=f
 selection_control_histos_eta_singleel:
 	for h in `cat cur_th1d_histos_eta_singleel`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_eta_singlemu: normalize=f
@@ -246,7 +246,7 @@ selection_control_histos_eta_singlemu: logy=f
 selection_control_histos_eta_singlemu:
 	for h in `cat cur_th1d_histos_eta_singlemu`;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 5 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_pileup: normalize=f
@@ -254,7 +254,7 @@ selection_control_histos_pileup: logy=f
 selection_control_histos_pileup:
 	for h in pileup_passtrig_nGoodPV_rawWeight pileup_passtrig_nGoodPV_weight pileup_singlelepton_nGoodPV_rawWeight pileup_singlelepton_nGoodPV_weight pileup_dilepton_nGoodPV_rawWeight pileup_dilepton_nGoodPV_weight pileup_sel_passos_nGoodPV_rawWeight pileup_sel_passos_nGoodPV_weight pileup_smu_passos_nGoodPV_rawWeight pileup_smu_passos_nGoodPV_weight ;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 0 50 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 0 50 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 selection_control_histos_rho: normalize=f
@@ -265,7 +265,7 @@ selection_control_histos_rho:
 		 rhoCentralNeutral_beforetrig_rawWeight rhoCentralNeutral_beforetrig_weight rhoCentralNeutral_passtrig_rawWeight rhoCentralNeutral_passtrig_weight rhoCentralNeutral_singlelepton_rawWeight rhoCentralNeutral_singlelepton_weight  rhoCentralNeutral_dilepton_rawWeight rhoCentralNeutral_dilepton_weight \
 		 rhoCentralChargedPileUp_beforetrig_rawWeight rhoCentralChargedPileUp_beforetrig_weight rhoCentralChargedPileUp_passtrig_rawWeight rhoCentralChargedPileUp_passtrig_weight rhoCentralChargedPileUp_singlelepton_rawWeight rhoCentralChargedPileUp_singlelepton_weight  rhoCentralChargedPileUp_dilepton_rawWeight rhoCentralChargedPileUp_dilepton_weight ;     \
 	do                                                \
-	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
+	stacked_histo_distr_with_ratio ${normalize} ${logy} ${lumi} $$h $$h " Events/bin " 1 -1 -1 outdir/"${job}"/merged-sets/ `cat dtags_"${job}"`; \
 	done
 
 stacked_fakerate_histos:
@@ -367,38 +367,50 @@ calculate_prejson:
 
 
 # elmu FAKERATES direct distrs
-elmu_fake_rates_jets_distrs:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+elmu_fake_rates_jets_distrs_medium:
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt   " mediumTaus jet p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta  " mediumTaus jet #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
 elmu_fake_rates_jets_distrs_all:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt   elmu_passjets_vlooseTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta  elmu_passjets_vlooseTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt    elmu_passjets_looseTaus_jets_distr_pt    1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta   elmu_passjets_looseTaus_jets_distr_eta   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt   elmu_passjets_mediumTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta  elmu_passjets_mediumTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt    elmu_passjets_tightTaus_jets_distr_pt    1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta   elmu_passjets_tightTaus_jets_distr_eta   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt   elmu_passjets_vtightTaus_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta  elmu_passjets_vtightTaus_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt   " vlooseTaus jet p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta  " vlooseTaus jet #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt    " looseTausp jet p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta   " looseTaus jet #eta "   " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt   " mediumTaus jet p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta  " mediumTaus jet #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt    " tightTaus jet p_{T} "  " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta   " tightTaus jet #eta "   " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt   " vtightTaus jet p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta  " vtightTaus jet #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
 elmu_fake_rates_taus_distrs_medium:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_pt  elmu_passjets_mediumTaus_tau_jets_distr_pt   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_eta elmu_passjets_mediumTaus_tau_jets_distr_eta  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_pt  " mediumTaus tau p_{T} " " Events/bin " 1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_eta " mediumTaus tau #eta "  " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
+elmu_fake_rates_taus_distrs_all:
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_tau_jets_distr_pt   " vlooseTaus tau p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_tau_jets_distr_eta  " vlooseTaus tau #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_tau_jets_distr_pt    " looseTausp tau p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_tau_jets_distr_eta   " looseTaus tau #eta "   " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_pt   " mediumTaus tau p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_tau_jets_distr_eta  " mediumTaus tau #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_tau_jets_distr_pt    " tightTaus tau p_{T} "  " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_tau_jets_distr_eta   " tightTaus tau #eta "   " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_pt   " vtightTaus tau p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_eta  " vtightTaus tau #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
 # FAKE RATE
 elmu_fake_rates:
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 vloose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 vloose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus _pt  1 -1 -1 loose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus _eta 1 -1 -1 loose_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus _pt  1 -1 -1 tight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus _eta 1 -1 -1 tight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 vloose_taus " vlooseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 vloose_taus " vlooseTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _pt  1 -1 -1 loose_taus  " looseTausp jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _eta 1 -1 -1 loose_taus  " looseTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _pt  1 -1 -1 tight_taus  " tightTaus  jet p_{T} "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 tight_taus  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 jet_origins:
 	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
