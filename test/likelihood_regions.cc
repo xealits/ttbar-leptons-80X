@@ -33,39 +33,40 @@ using namespace std;
 
 TH1D* pull_likelihood_regions(TNtuple* ntuple, TString& histo_name)
 	{
-	TH1D* h = new TH1D(histo_name, ";;", 15, 0, 15)
+	TH1D* h = new TH1D(histo_name, ";;", 15, 0, 15);
 	int N;
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 3) ")
-	h->SetBinContent(0,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 4) ")
-	h->SetBinContent(1,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 5) ")
-	h->SetBinContent(2,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets > 5) ")
-	h->SetBinContent(3,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 3) ")
-	h->SetBinContent(4,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 4) ")
-	h->SetBinContent(5,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 5) ")
-	h->SetBinContent(6,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets > 5) ")
-	h->SetBinContent(7,N)                                                                                                                                                           
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 3) ")
-	h->SetBinContent(8,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 4) ")
-	h->SetBinContent(9,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 5) ")
-	h->SetBinContent(10,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets > 5) ")
-	h->SetBinContent(11,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 4) ")
-	h->SetBinContent(12,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 5) ")
-	h->SetBinContent(13,N)
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets > 5) ")
-	h->SetBinContent(14,N)
-	//h->Draw()
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 3) ");
+	h->SetBinContent(0,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 4) ");
+	h->SetBinContent(1,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 5) ");
+	h->SetBinContent(2,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets > 5) ");
+	h->SetBinContent(3,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 3) ");
+	h->SetBinContent(4,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 4) ");
+	h->SetBinContent(5,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 5) ");
+	h->SetBinContent(6,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets > 5) ");
+	h->SetBinContent(7,N);
+
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 3) ");
+	h->SetBinContent(8,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 4) ");
+	h->SetBinContent(9,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 5) ");
+	h->SetBinContent(10,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets > 5) ");
+	h->SetBinContent(11,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 4) ");
+	h->SetBinContent(12,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 5) ");
+	h->SetBinContent(13,N);
+	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets > 5) ");
+	h->SetBinContent(14,N);
+	//h->Draw();
 
 	return h;
 	}
@@ -110,8 +111,8 @@ std::map<TString, TH1D*> nicknamed_mc_histos;
 for (int i = INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
+	TString histo_name = dtag + TString("_regions");
 	if (be_verbose) cout << "processing " << dtag << endl;
-	dtags.push_back(dtag);
 	TString the_file = dir + "/" + dtag + ".root";
 	if (be_verbose) cout << the_file << endl;
 	TFile* file = TFile::Open(the_file);
@@ -129,7 +130,7 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 
 		TNtuple* ntuple = (TNtuple*) file->Get(NTUPLE_NAME);
 
-		TH1D* histo = pull_likelihood_regions(ntuple, dtag + "_regions");
+		TH1D* histo = pull_likelihood_regions(ntuple, histo_name);
 
 		histo->SetMarkerStyle(9);
 
@@ -188,7 +189,7 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 
 		TNtuple* ntuple = (TNtuple*) file->Get(NTUPLE_NAME);
 
-		TH1D* histo = pull_likelihood_regions(ntuple, dtag + "_regions");
+		TH1D* histo = pull_likelihood_regions(ntuple, histo_name);
 
 		// Scale to MC ratio
 		if (be_verbose) histo->Print();
@@ -209,7 +210,8 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		if (nicknamed_mc_histos.find(nick) == nicknamed_mc_histos.end())
 			{
 			nicknamed_mc_histos[nick] = (TH1D*) histo->Clone(); // TODO: should I really change the name here?
-			nicknamed_mc_histos[nick].SetName(nick + "_regions");
+			TString mc_histoname = nick + TString("_regions");
+			nicknamed_mc_histos[nick]->SetName(mc_histoname);
 			}
 		else
 			nicknamed_mc_histos[nick]->Add(histo);
@@ -229,11 +231,13 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	hs->Add(distr, "HIST");
 	}
 
+if (be_verbose) cout << "built MC stack" << endl;
 
 TFile* out_f = TFile::Open (dir + TString("/jobsums/Likelihood_Regions.root"), "CREATE");
+if (be_verbose) cout << "opened output file" << endl;
 data_histo->Write();
 
-for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos->begin(); it != nicknamed_mc_histos->end(); ++it)
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
 	{
 	TString nickname = it->first;
 	TH1D * distr = it->second;
@@ -243,6 +247,8 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos->begin(); it != 
 	}
 
 hs->Write();
+
+if (be_verbose) cout << "wrote objects" << endl;
 
 out_f->Write();
 out_f->Close();
