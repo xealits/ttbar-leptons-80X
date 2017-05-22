@@ -189,6 +189,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
 			if (be_verbose) histo->Print();
 
+			/*
 			// normalize the histo for bin width
 			for (Int_t i=0; i<=histo->GetSize(); i++)
 				{
@@ -197,6 +198,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
 				histo->SetBinContent(i, content/width);
 				}
+			*/
 
 			histo->SetMarkerStyle(9);
 			//histo->SetFillColor(kRed + i);
@@ -275,6 +277,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D* histo = (TH1D*) file->Get(tau_jets_name);
 			if (be_verbose) histo->Print();
 
+			/*
 			// normalize the histo for bin width
 			for (Int_t i=0; i<=histo->GetSize(); i++)
 				{
@@ -285,6 +288,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				histo->SetBinContent(i, content/width);
 				histo->SetBinError(i, error/width);
 				}
+			*/
 
 			// Scale to MC ratio
 			if (be_verbose) histo->Print();
@@ -317,6 +321,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D* histo = (TH1D*) file->Get(jets_name);
 			if (be_verbose) histo->Print();
 
+			/*
 			// normalize the histo for bin width
 			for (Int_t i=0; i<=histo->GetSize(); i++)
 				{
@@ -327,6 +332,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				histo->SetBinContent(i, content/width);
 				histo->SetBinError(i, error/width);
 				}
+			*/
 
 			// Scale to MC ratio
 			if (be_verbose) histo->Print();
@@ -359,16 +365,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 double integral_data = hs_data[1]->Integral();
 double integral_MC_taus  = 0.;
 double integral_MC_jets  = 0.;
+// INCLUSIVE FAKERATE
 cout << "data    integral: " << hs_data[0]->Integral() << " / " << hs_data[1]->Integral() << " = " << hs_data[0]->Integral() / hs_data[1]->Integral() << endl;
 //cout << "MC taus integral = " << integral_MC_taus   << endl;
 cout << "MC jets integral = " << mc_all_jets->Integral() << endl;
 //double ratio = integral_data / integral_MC;
 //cout << "ratio = " << ratio << endl;
-
-// find the fake rate in data:
-hs_data[0]->Sumw2();
-hs_data[0]->SetStats(0);      // No statistics on lower plot
-hs_data[0]->Divide(hs_data[1]);
 
 /*
 if (normalize_MC)
@@ -384,12 +386,9 @@ if (normalize_MC)
 	}
 */
 
-THStack *hs      = new THStack("hs", "");
 
 // go through MC tau_jets nickname map:
 //  1. divide every tau_jets distr by all_jets
-//  2. add it to MC histo stack
-//  3. add it to the legend
 // and build the sum of MC
 TH1D    *hs_sum  = NULL;
 for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_tau_jets.begin(); it != nicknamed_mc_tau_jets.end(); ++it)
@@ -415,6 +414,69 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_tau_jets.begin(); it !=
 		cout << " adding to mc stack" << endl;
 		distr->Print();
 		}
+	}
+
+// INCLUSIVE FAKERATE divide MC taus by mc jets
+cout << "MC integrals: " << hs_sum->Integral() << " / " << mc_all_jets->Integral() << " = " <<  hs_sum->Integral() / mc_all_jets->Integral() << endl;
+hs_sum->Divide(mc_all_jets);
+
+/* no need to normalize in case of fake rate
+ * it's a function, not count of events in bins
+// normalize all histos for bin width:
+// hs_sum      (MC sum of fake taus)
+// mc_all_jets (MC sum of jets)
+// hs_data[0]  (Data fakes)
+// hs_data[1]  (Data jets)
+TH1D* histos_to_scale[4] = {hs_sum, mc_all_jets, hs_data[0], hs_data[1]};
+for (Int_t h=0; h<4; h++)
+	{
+	TH1D* histo = histos_to_scale[h];
+	for (Int_t i=0; i<=histo->GetSize(); i++)
+		{
+		//yAxis->GetBinLowEdge(3)
+		double content = histo->GetBinContent(i);
+		double error   = histo->GetBinError(i);
+		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+		histo->SetBinContent(i, content/width);
+		histo->SetBinError(i, error/width);
+		}
+	}
+*/
+
+// find the fake rate in data:
+hs_data[0]->Sumw2();
+hs_data[0]->SetStats(0);      // No statistics on lower plot
+hs_data[0]->Divide(hs_data[1]);
+
+// build the stack of MC
+// go through MC tau_jets nickname map:
+//  2. add it to MC histo stack
+//  3. add it to the legend
+THStack *hs      = new THStack("hs", "");
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_tau_jets.begin(); it != nicknamed_mc_tau_jets.end(); ++it)
+	{
+	TString nick = it->first;
+	TH1D * distr = it->second;
+
+	if (be_verbose)
+		{
+		cout << nick;
+		cout << " adding to mc stack" << endl;
+		distr->Print();
+		}
+
+	/* no need to scale for binwidth anything
+	// now scale the distr for bin-width
+	for (Int_t i=0; i<=distr->GetSize(); i++)
+		{
+		//yAxis->GetBinLowEdge(3)
+		double content = distr->GetBinContent(i);
+		double error   = distr->GetBinError(i);
+		double width   = distr->GetXaxis()->GetBinUpEdge(i) - distr->GetXaxis()->GetBinLowEdge(i);
+		distr->SetBinContent(i, content/width);
+		distr->SetBinError  (i, error/width);
+		}
+	*/
 
 	distr->Divide(mc_all_jets);
 
@@ -422,9 +484,6 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_tau_jets.begin(); it !=
 	leg->AddEntry(distr, nick, "F");
 	}
 
-// divide MC taus by mc jets
-cout << "MC integrals: " << hs_sum->Integral() << " / " << mc_all_jets->Integral() << " = " <<  hs_sum->Integral() / mc_all_jets->Integral() << endl;
-hs_sum->Divide(mc_all_jets);
 
 //cst->SetFillColor(41);
 //cst->Divide(1,1);
