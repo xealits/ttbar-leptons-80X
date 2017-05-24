@@ -15,6 +15,7 @@
 #include "TROOT.h"
 #include "TNtuple.h"
 #include <Math/VectorUtil.h>
+#include "TPaveText.h"
 
 #include "TStyle.h"
 
@@ -131,7 +132,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		histo->Print();
 		//histos.back()->SetFillColor(kRed );
 		}
-	//histo->Rebin(rebin_factor); // should rebin the new histo inplace
+	if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
 	// and normalize per bin-width:
 	for (Int_t i=0; i<=histo->GetSize(); i++)
 		{
@@ -279,13 +280,9 @@ cout << "MC   sum = " << hs_sum->Integral()  << endl;
 TStyle* m_gStyle = new  TStyle();
 m_gStyle->SetOptStat(111100);
 
-cout << "setting title" << endl;
-
 //hs->GetXaxis()->SetTitle(distr);
 //cst->SetXaxisTile(distr);
 //hs_data->GetXaxis()->SetTitle(distr);
-
-
 //TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
 //h->SetXTitle("x");
 //cst->Update();
@@ -301,6 +298,7 @@ if (xlims_set)
 	}
 
 gStyle->SetOptStat(0); // removes the stats legend-box from all pads
+
 
 TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
 TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
@@ -368,8 +366,25 @@ hs->     GetYaxis()->SetTitleOffset(1.4);
 hs_data->GetYaxis()->SetTitleOffset(1.4);
 hs_sum-> GetYaxis()->SetTitleOffset(1.4);
 
+cout << "setting title" << endl;
+// title for the plot
+TPaveText* left_title = new TPaveText(0.1, 0.9, 0.4, 0.94, "brNDC");
+left_title->AddText("CMS preliminary at 13 TeV");
+left_title->SetTextFont(1);
+left_title->SetFillColor(0);
+cout << "drawing left title" << endl;
+left_title->Draw("same");
+
+TPaveText* right_title = new TPaveText(0.75, 0.9, 0.9, 0.94, "brNDC");
+TString s_title(""); s_title.Form("L = %.1f fb^{-1}", lumi/1000);
+right_title->AddText(s_title);
+right_title->SetTextFont(132);
+right_title->SetFillColor(0);
+cout << "drawing right title" << endl;
+right_title->Draw("same");
+
 leg->SetBorderSize(0);
-leg->Draw();
+leg->Draw("same");
 
 //MC_stack_124->GetXaxis()->SetTitle("#rho");
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
