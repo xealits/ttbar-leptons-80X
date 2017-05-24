@@ -1532,7 +1532,8 @@ ntuple->SetDirectory(0);
 
 // setting up the ntuple interface
 // the object:
-TNtuple ntuple("ntuple", "ntuple with reduced event data"); // -- it's the default name, no need to further #define it for preprocessor
+//TNtuple* ntuple = (TNtuple*) new TNtuple("ntuple", "ntuple with reduced event data"); // -- it's the default name, no need to further #define it for preprocessor
+TNtuple ntuple;
 // all the NT_Name objects, bound to ntuple branches:
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
@@ -2737,11 +2738,18 @@ for(size_t f=0; f<urls.size();++f)
 		// max output of leptons = 2
 		for (int i = 0; i<selLeptons.size() && i<NT_LEPTONS_N; i++)
 			{
-			NT_lep_id_(i)  = selLeptons[i].pdgId();
-			NT_lep_eta_(i) = selLeptons[i].eta();
-			NT_lep_phi_(i) = selLeptons[i].phi();
-			NT_lep_pt_(i)  = selLeptons[i].pt();
-			NT_lep_p_(i)   = selLeptons[i].p();
+			switch(i)
+				{
+				NT_lep(0, selLeptons[i].pdgId(), selLeptons[i].eta(), selLeptons[i].phi(), selLeptons[i].pt(), selLeptons[i].p())
+				NT_lep(1, selLeptons[i].pdgId(), selLeptons[i].eta(), selLeptons[i].phi(), selLeptons[i].pt(), selLeptons[i].p())
+				default: break;
+				}
+
+			//NT_lep_id_(i)  = selLeptons[i].pdgId();
+			//NT_lep_eta_(i) = selLeptons[i].eta();
+			//NT_lep_phi_(i) = selLeptons[i].phi();
+			//NT_lep_pt_(i)  = selLeptons[i].pt();
+			//NT_lep_p_(i)   = selLeptons[i].p();
 			}
 
 		// record "ID of the channel" -- product of lepton IDs
@@ -2814,17 +2822,24 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Tau& tau = selTausNoLep[i];
 
-			NT_tau_id_(i)  = tau.pdgId();
-			NT_tau_eta_(i)  = tau.eta();
-			NT_tau_phi_(i)  = tau.phi();
-			NT_tau_pt_(i)  = tau.pt();
-			NT_tau_p_(i)  = tau.p();
+			//NT_tau_id_(i)  = tau.pdgId();
+			//NT_tau_eta_(i)  = tau.eta();
+			//NT_tau_phi_(i)  = tau.phi();
+			//NT_tau_pt_(i)  = tau.pt();
+			//NT_tau_p_(i)  = tau.p();
 
 			Float_t IDlev = 0;
 			if (tau.tauID(tau_Tight_ID)) IDlev = 3;
 			else if (tau.tauID(tau_ID)) IDlev = 2;
 			else if (tau.tauID(tau_Loose_ID)) IDlev = 1;
-			NT_tau_IDlev_(i) = IDlev;
+			//NT_tau_IDlev_(i) = IDlev;
+
+			switch(i)
+				{
+				NT_tau(0, tau.pdgId(), tau.eta(), tau.phi(), tau.pt(), tau.p(), IDlev)
+				NT_tau(1, tau.pdgId(), tau.eta(), tau.phi(), tau.pt(), tau.p(), IDlev)
+				default: break;
+				}
 
 			// also store for the first tau:
 			if (i==0)
@@ -2861,11 +2876,20 @@ for(size_t f=0; f<urls.size();++f)
 
 				// should I check .hasSecondaryVertex() && isPFTau() to access the secondary vertex covariance?
 				const pat::tau::TauPFEssential::CovMatrix& secVertex_cov_matrix = tau.secondaryVertexCov();
-				for (int r=0; r<3; r++)
-					for (int c=0; c<3; c++)
-						{
-						NT_tau_secondaryVertexCov_(r, c) =  secVertex_cov_matrix(r,c);
-						}
+				//for (int r=0; r<3; r++)
+				//	for (int c=0; c<3; c++)
+				//		{
+				//		NT_tau_secondaryVertexCov_(r, c) =  secVertex_cov_matrix(r,c);
+				//		}
+				NT_tau_secondaryVertexCov_(0, 0) =  secVertex_cov_matrix(0,0);
+				NT_tau_secondaryVertexCov_(0, 1) =  secVertex_cov_matrix(0,1);
+				NT_tau_secondaryVertexCov_(0, 2) =  secVertex_cov_matrix(0,2);
+				NT_tau_secondaryVertexCov_(1, 0) =  secVertex_cov_matrix(1,0);
+				NT_tau_secondaryVertexCov_(1, 1) =  secVertex_cov_matrix(1,1);
+				NT_tau_secondaryVertexCov_(1, 2) =  secVertex_cov_matrix(1,2);
+				NT_tau_secondaryVertexCov_(2, 0) =  secVertex_cov_matrix(2,0);
+				NT_tau_secondaryVertexCov_(2, 1) =  secVertex_cov_matrix(2,1);
+				NT_tau_secondaryVertexCov_(2, 2) =  secVertex_cov_matrix(2,2);
 				}
 			}
 
@@ -2952,15 +2976,25 @@ for(size_t f=0; f<urls.size();++f)
 			pat::Jet& jet = selJetsNoLep[i];
 
 			//jet.bDiscriminator(btagger_label)
-			NT_jet_id_(i)  = jet.pdgId(); // I wonder what this is going to be
-			NT_jet_eta_(i) = jet.eta();
-			NT_jet_phi_(i) = jet.phi();
-			NT_jet_pt_(i)  = jet.pt();
-			NT_jet_p_(i)   = jet.p();
-			NT_jet_rad_(i) = jet_radius(jet);
-			NT_jet_b_discr_(i)  = jet.bDiscriminator(btagger_label);
-			NT_jet_hadronFlavour_(i)  = jet.hadronFlavour();
-			NT_jet_partonFlavour_(i)  = jet.partonFlavour();
+			// marrying C macro and dynamic stuff (actully this should also be generated with macro)
+			switch(i) {
+				NT_jet(0, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				NT_jet(1, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				NT_jet(2, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				NT_jet(3, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				NT_jet(4, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				default: break;
+				}
+
+			//NT_jet_id_(i)  = jet.pdgId(); // I wonder what this is going to be
+			//NT_jet_eta_(i) = jet.eta();
+			//NT_jet_phi_(i) = jet.phi();
+			//NT_jet_pt_(i)  = jet.pt();
+			//NT_jet_p_(i)   = jet.p();
+			//NT_jet_rad_(i) = jet_radius(jet);
+			//NT_jet_b_discr_(i)  = jet.bDiscriminator(btagger_label);
+			//NT_jet_hadronFlavour_(i)  = jet.hadronFlavour();
+			//NT_jet_partonFlavour_(i)  = jet.partonFlavour();
 			}
 
 
@@ -3208,7 +3242,7 @@ for(size_t f=0; f<urls.size();++f)
 				output[i] = output_v[i];
 			*/
 
-			ntuple->Fill();
+			ntuple.Fill();
 			/* no mc decay modes going into separate files -- just keep gen information on the output, then split them in processing
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
 			*/
@@ -3326,9 +3360,10 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 
 // NTuple output (ntuple, NTUPLE)
 TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-ntuple->Write();
-ntuple_output_filename->Write();
-ntuple_output_filename->Close();
+TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
+ntuple.Write();
+ntuple_output->Write();
+ntuple_output->Close();
 
 cout << "done writing" << endl;
 
