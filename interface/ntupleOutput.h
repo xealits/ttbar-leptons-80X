@@ -31,7 +31,9 @@
  *    1) the object name in current namespace is `NT_Name`
  *    2) the branch name in the ntuple is `Name`
  */
-#define OBJECT_in_NTuple(NTuple, Class, Name) Class NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
+#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
+#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
+
 
 //using namespace std;
 
@@ -62,9 +64,9 @@
  * clearing/reseting of the objects for each event -- currently responsibility of the programmer, there is a sketchy macro for this now, it is in development
  */
 
-// default name of the output ntuple
+// default name of the output
 #ifndef OUTNTUPLE
-	#define OUTNTUPLE ntuple
+	#define OUTNTUPLE output_ttree
 #endif
 
 /* This works for only 1 ntuple.
@@ -74,121 +76,120 @@
  * --- taking this
  */
 
-// the interface (all floats, since it is really just TNtuple
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, aMCatNLO_weight);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_w_decay_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_w_p1_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_w_p1_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_w_p2_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_t_w_p2_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_w_decay_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_w_p1_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_w_p1_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_w_p2_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, gen_tb_w_p2_phi);
-
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, NUP_gen); // TODO: add gen info from TTbar
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, nvtx_gen);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, nvtx);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, nvtx_good);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, fixedGridRhoFastjetAll);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, fixedGridRhoFastjetCentral);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, fixedGridRhoFastjetCentralNeutral);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, fixedGridRhoFastjetCentralChargedPileUp);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, HLT_el);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, HLT_mu);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, leps_ID);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, nleps);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, njets);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, nbjets);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, ntaus);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, met_init);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, met_uncorrected);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, met_corrected);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lj_peak_distance);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lj_taumatched_peak_distance);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_decay);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_hasSecondaryVertex);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_hcalEnergy);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_hcalEnergyLeadChargedHadrCand);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_00);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_01);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_02);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_10);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_11);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_12);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_20);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_21);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau_secondaryVertexCov_22);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep0_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep0_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep0_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep0_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep0_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep1_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep1_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep1_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep1_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, lep1_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_rad);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_b_discr);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_hadronFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet0_partonFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_rad);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_b_discr);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_hadronFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet1_partonFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_rad);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_b_discr);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_hadronFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet2_partonFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_rad);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_b_discr);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_hadronFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet3_partonFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_rad);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_b_discr);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_hadronFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, jet4_partonFlavour);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau0_IDlev);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_id);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_eta);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_phi);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_pt);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_p);
-OBJECT_in_NTuple(OUTNTUPLE, Float_t, tau1_IDlev);
+// the interface (all Float_ts, since it is really just TNtuple
+Float_t_in_NTuple(OUTNTUPLE, aMCatNLO_weight);
+Float_t_in_NTuple(OUTNTUPLE, gen_t_pt);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_pt);
+Float_t_in_NTuple(OUTNTUPLE, gen_t_w_decay_id); // = id of lepton (11/13/15, but the sign means which product is lepton: minus=1, plus=2) or 1 for quarks
+Float_t_in_NTuple(OUTNTUPLE, gen_t_w_p1_eta);
+Float_t_in_NTuple(OUTNTUPLE, gen_t_w_p1_phi);
+Float_t_in_NTuple(OUTNTUPLE, gen_t_w_p2_eta);
+Float_t_in_NTuple(OUTNTUPLE, gen_t_w_p2_phi);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_w_decay_id);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_w_p1_eta);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_w_p1_phi);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_w_p2_eta);
+Float_t_in_NTuple(OUTNTUPLE, gen_tb_w_p2_phi);
+Float_t_in_NTuple(OUTNTUPLE, NUP_gen); // TODO: add gen info from TTbar
+Float_t_in_NTuple(OUTNTUPLE, nvtx_gen);
+Float_t_in_NTuple(OUTNTUPLE, nvtx);
+Float_t_in_NTuple(OUTNTUPLE, nvtx_good);
+Float_t_in_NTuple(OUTNTUPLE, fixedGridRhoFastjetAll);
+Float_t_in_NTuple(OUTNTUPLE, fixedGridRhoFastjetCentral);
+Float_t_in_NTuple(OUTNTUPLE, fixedGridRhoFastjetCentralNeutral);
+Float_t_in_NTuple(OUTNTUPLE, fixedGridRhoFastjetCentralChargedPileUp);
+Float_t_in_NTuple(OUTNTUPLE, HLT_el);
+Float_t_in_NTuple(OUTNTUPLE, HLT_mu);
+Float_t_in_NTuple(OUTNTUPLE, leps_ID);
+Float_t_in_NTuple(OUTNTUPLE, nleps);
+Float_t_in_NTuple(OUTNTUPLE, njets);
+Float_t_in_NTuple(OUTNTUPLE, nbjets);
+Float_t_in_NTuple(OUTNTUPLE, ntaus);
+Float_t_in_NTuple(OUTNTUPLE, met_init);
+Float_t_in_NTuple(OUTNTUPLE, met_uncorrected);
+Float_t_in_NTuple(OUTNTUPLE, met_corrected);
+Float_t_in_NTuple(OUTNTUPLE, lj_peak_distance);
+Float_t_in_NTuple(OUTNTUPLE, lj_taumatched_peak_distance);
+Float_t_in_NTuple(OUTNTUPLE, tau_decay);
+Float_t_in_NTuple(OUTNTUPLE, tau_hasSecondaryVertex);
+Float_t_in_NTuple(OUTNTUPLE, tau_hcalEnergy);
+Float_t_in_NTuple(OUTNTUPLE, tau_hcalEnergyLeadChargedHadrCand);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_00);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_01);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_02);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_10);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_11);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_12);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_20);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_21);
+Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_22);
+Float_t_in_NTuple(OUTNTUPLE, lep0_id);
+Float_t_in_NTuple(OUTNTUPLE, lep0_eta);
+Float_t_in_NTuple(OUTNTUPLE, lep0_phi);
+Float_t_in_NTuple(OUTNTUPLE, lep0_pt);
+Float_t_in_NTuple(OUTNTUPLE, lep0_p);
+Float_t_in_NTuple(OUTNTUPLE, lep1_id);
+Float_t_in_NTuple(OUTNTUPLE, lep1_eta);
+Float_t_in_NTuple(OUTNTUPLE, lep1_phi);
+Float_t_in_NTuple(OUTNTUPLE, lep1_pt);
+Float_t_in_NTuple(OUTNTUPLE, lep1_p);
+Float_t_in_NTuple(OUTNTUPLE, jet0_id);
+Float_t_in_NTuple(OUTNTUPLE, jet0_eta);
+Float_t_in_NTuple(OUTNTUPLE, jet0_phi);
+Float_t_in_NTuple(OUTNTUPLE, jet0_pt);
+Float_t_in_NTuple(OUTNTUPLE, jet0_p);
+Float_t_in_NTuple(OUTNTUPLE, jet0_rad);
+Float_t_in_NTuple(OUTNTUPLE, jet0_b_discr);
+Float_t_in_NTuple(OUTNTUPLE, jet0_hadronFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet0_partonFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet1_id);
+Float_t_in_NTuple(OUTNTUPLE, jet1_eta);
+Float_t_in_NTuple(OUTNTUPLE, jet1_phi);
+Float_t_in_NTuple(OUTNTUPLE, jet1_pt);
+Float_t_in_NTuple(OUTNTUPLE, jet1_p);
+Float_t_in_NTuple(OUTNTUPLE, jet1_rad);
+Float_t_in_NTuple(OUTNTUPLE, jet1_b_discr);
+Float_t_in_NTuple(OUTNTUPLE, jet1_hadronFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet1_partonFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet2_id);
+Float_t_in_NTuple(OUTNTUPLE, jet2_eta);
+Float_t_in_NTuple(OUTNTUPLE, jet2_phi);
+Float_t_in_NTuple(OUTNTUPLE, jet2_pt);
+Float_t_in_NTuple(OUTNTUPLE, jet2_p);
+Float_t_in_NTuple(OUTNTUPLE, jet2_rad);
+Float_t_in_NTuple(OUTNTUPLE, jet2_b_discr);
+Float_t_in_NTuple(OUTNTUPLE, jet2_hadronFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet2_partonFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet3_id);
+Float_t_in_NTuple(OUTNTUPLE, jet3_eta);
+Float_t_in_NTuple(OUTNTUPLE, jet3_phi);
+Float_t_in_NTuple(OUTNTUPLE, jet3_pt);
+Float_t_in_NTuple(OUTNTUPLE, jet3_p);
+Float_t_in_NTuple(OUTNTUPLE, jet3_rad);
+Float_t_in_NTuple(OUTNTUPLE, jet3_b_discr);
+Float_t_in_NTuple(OUTNTUPLE, jet3_hadronFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet3_partonFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet4_id);
+Float_t_in_NTuple(OUTNTUPLE, jet4_eta);
+Float_t_in_NTuple(OUTNTUPLE, jet4_phi);
+Float_t_in_NTuple(OUTNTUPLE, jet4_pt);
+Float_t_in_NTuple(OUTNTUPLE, jet4_p);
+Float_t_in_NTuple(OUTNTUPLE, jet4_rad);
+Float_t_in_NTuple(OUTNTUPLE, jet4_b_discr);
+Float_t_in_NTuple(OUTNTUPLE, jet4_hadronFlavour);
+Float_t_in_NTuple(OUTNTUPLE, jet4_partonFlavour);
+Float_t_in_NTuple(OUTNTUPLE, tau0_id);
+Float_t_in_NTuple(OUTNTUPLE, tau0_eta);
+Float_t_in_NTuple(OUTNTUPLE, tau0_phi);
+Float_t_in_NTuple(OUTNTUPLE, tau0_pt);
+Float_t_in_NTuple(OUTNTUPLE, tau0_p);
+Float_t_in_NTuple(OUTNTUPLE, tau0_IDlev);
+Float_t_in_NTuple(OUTNTUPLE, tau1_id);
+Float_t_in_NTuple(OUTNTUPLE, tau1_eta);
+Float_t_in_NTuple(OUTNTUPLE, tau1_phi);
+Float_t_in_NTuple(OUTNTUPLE, tau1_pt);
+Float_t_in_NTuple(OUTNTUPLE, tau1_p);
+Float_t_in_NTuple(OUTNTUPLE, tau1_IDlev);
 
 // convenience:
 #define NT_tau_secondaryVertexCov_(i, j) NT_tau_secondaryVertexCov_ ##i ##j

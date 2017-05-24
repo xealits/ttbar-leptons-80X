@@ -1373,6 +1373,9 @@ std::vector<double> direct_pileup_reweight_up = runProcess.getParameter < std::v
 std::vector<double> direct_pileup_reweight_down = runProcess.getParameter < std::vector < double >>("pileup_reweight_direct_down");
 	
 gROOT->cd ();                 //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
+// to add vectors of stuff (floats etc) use:
+//gROOT->ProcessLine("#include <vector>");
+
 
 // generator token for event Gen weight call:
 //edm::EDGetTokenT<GenEventInfoProduct> generatorToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")));
@@ -1533,7 +1536,10 @@ ntuple->SetDirectory(0);
 // setting up the ntuple interface
 // the object:
 //TNtuple* ntuple = (TNtuple*) new TNtuple("ntuple", "ntuple with reduced event data"); // -- it's the default name, no need to further #define it for preprocessor
-TNtuple ntuple;
+//TNtuple ntuple; // aparently TNtuple doesn't work well with branches
+// at least it is not consistent with how TTree handles them
+// thus -- switching to TTree right now
+TTree output_ttree("reduced_ttree", "TTree with reduced event data"); // -- it's the default name, no further propagation with #define
 // all the NT_Name objects, bound to ntuple branches:
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
@@ -1555,6 +1561,9 @@ double weightflow_control_mu_selection = 0;
 double weightflow_control_elel_selection = 0;
 double weightflow_control_mumu_selection = 0;
 double weightflow_control_elmu_selection = 0;
+
+// for control:
+unsigned int wrote_ntuple_events = 0;
 
 for(size_t f=0; f<urls.size();++f)
 	{
@@ -3242,7 +3251,8 @@ for(size_t f=0; f<urls.size();++f)
 				output[i] = output_v[i];
 			*/
 
-			ntuple.Fill();
+			output_ttree.Fill();
+			wrote_ntuple_events++;
 			/* no mc decay modes going into separate files -- just keep gen information on the output, then split them in processing
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
 			*/
@@ -3361,7 +3371,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 // NTuple output (ntuple, NTUPLE)
 TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
 TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
-ntuple.Write();
+output_ttree.Write();
 ntuple_output->Write();
 ntuple_output->Close();
 
@@ -3379,6 +3389,7 @@ FILE *csv_out;
 csv_out = fopen(((outUrl.ReplaceAll(".root",""))+".job_done").Data(), "w");
 
 fprintf(csv_out, "The job is done!\n\n");
+fprintf(csv_out, "wrote %d reduced events\n\n", wrote_ntuple_events);
 fprintf(csv_out, "# wheightflow control with plain doubles\n");
 fprintf(csv_out, "job_num,channel,weight\n");
 fprintf(csv_out, "%s,weightflow_control_el_selection,%g\n",   job_num.c_str(), weightflow_control_el_selection);
