@@ -98,7 +98,7 @@
 
 #include "UserCode/ttbar-leptons-80X/interface/SystematicShifts.h"
 
-#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+//#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
 using namespace std;
 
@@ -1519,7 +1519,7 @@ cout << "jecDir = "      << jecDir << "\n";
 //const char* ntuple_output_description = "aMCatNLO_weight:gen_t_pt:gen_tb_pt:NUP_gen:nvtx_gen:nvtx:nvtx_good:fixedGridRhoFastjetAll:fixedGridRhoFastjetCentral:fixedGridRhoFastjetCentralNeutral:fixedGridRhoFastjetCentralChargedPileUp:HLT_el:HLT_mu:lep1_id:lep1_eta:lep1_phi:lep1_pt:lep1_p:lep2_id:lep2_eta:lep2_phi:lep2_pt:lep2_p:nleps:leps_ID:jet1_id:jet1_eta:jet1_phi:jet1_pt:jet1_p:jet1_rad:jet1_b_discr:jet1_hadronFlavour:jet1_partonFlavour:jet2_id:jet2_eta:jet2_phi:jet2_pt:jet2_p:jet2_rad:jet2_b_discr:jet2_hadronFlavour:jet2_partonFlavour:jet3_id:jet3_eta:jet3_phi:jet3_pt:jet3_p:jet3_rad:jet3_b_discr:jet3_hadronFlavour:jet3_partonFlavour:jet4_id:jet4_eta:jet4_phi:jet4_pt:jet4_p:jet4_rad:jet4_b_discr:jet4_hadronFlavour:jet4_partonFlavour:jet5_id:jet5_eta:jet5_phi:jet5_pt:jet5_p:jet5_rad:jet5_b_discr:jet5_hadronFlavour:jet5_partonFlavour:njets:nbjets:tau1_id:tau1_eta:tau1_phi:tau1_pt:tau1_p:tau1_IDlev:tau2_id:tau2_eta:tau2_phi:tau2_pt:tau2_p:tau2_IDlev:tau_decay:tau_hasSecondaryVertex:tau_hcalEnergy:tau_hcalEnergyLeadChargedHadrCand:tau_secondaryVertexCov_00:tau_secondaryVertexCov_01:tau_secondaryVertexCov_02:tau_secondaryVertexCov_10:tau_secondaryVertexCov_11:tau_secondaryVertexCov_12:tau_secondaryVertexCov_20:tau_secondaryVertexCov_21:tau_secondaryVertexCov_22:ntaus:met_init:met_uncorrected:met_corrected:lj_peak_distance:lj_taumatched_peak_distance";
 //
 
-TString ntuple_names = return_ntuple_names();
+//TString ntuple_names = return_ntuple_names();
 
 /* ntuple per decay channel is made (the inclusive ttbar is split into decays)
  * they are stored in a map
@@ -1528,7 +1528,14 @@ TNtuple *ntuple = new TNtuple("ntuple","ntuple with reduced event data", ntuple_
 ntuple->SetDirectory(0);
 */
 
-std::map<string, TNtuple*> mc_decay_ntuples;
+//std::map<string, TNtuple*> mc_decay_ntuples;
+
+// setting up the ntuple interface
+// the object:
+TNtuple ntuple("ntuple", "ntuple with reduced event data"); // -- it's the default name, no need to further #define it for preprocessor
+// all the NT_Name objects, bound to ntuple branches:
+#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+
 
 //##############################################
 //########           EVENT LOOP         ########
@@ -1572,7 +1579,7 @@ for(size_t f=0; f<urls.size();++f)
 		// map<TString, vector<Float_t>> NT_leptons;
 		// map<TString, vector<Float_t>> NT_jets;
 		// map<TString, vector<Float_t>> NT_taus;
-		reset_ntuple_output(); // defaults all parameters
+		RESET_NTUPLE_PARAMETERS // defaults all parameters
 
 		Float_t NT_fixedGridRhoFastjetAll = -1; // rho is needed for jet corrections
 		// needed for event preselection:
@@ -1625,7 +1632,7 @@ for(size_t f=0; f<urls.size();++f)
 		// it = 6 for W1Jets, 7 for W2Jets, 8 for W3Jets, 9 for W4Jets (why not >=9?)
 		// WJets have NUP = all those numbers
 		// for W0Jets one takes NUP = 5
-		if (isMC && lheEPHandle.isValid()) NT_common_event["NUP_gen"] = lheEPHandle->hepeup().NUP;
+		if (isMC && lheEPHandle.isValid()) NT_NUP_gen = lheEPHandle->hepeup().NUP;
 
 		// -------------------------- trying to extract what decay was generated here
 		// iEvent.getByLabel("genParticles", genParticles);
@@ -1696,11 +1703,11 @@ for(size_t f=0; f<urls.size();++f)
 							decay_id = - fabs(W_final->daughter(0)->pdgId());
 						else if (fabs(W_final->daughter(1)->pdgId()) == 11 || fabs(W_final->daughter(1)->pdgId()) == 13 || fabs(W_final->daughter(1)->pdgId()) == 15)
 							decay_id = fabs(W_final->daughter(1)->pdgId());
-						NT_common_event["gen_t_w_decay_id"] = decay_id;
-						NT_common_event["gen_t_w_p1_eta"] = W_final->daughter(0)->eta();
-						NT_common_event["gen_t_w_p1_phi"] = W_final->daughter(0)->phi();
-						NT_common_event["gen_t_w_p2_eta"] = W_final->daughter(1)->eta();
-						NT_common_event["gen_t_w_p2_phi"] = W_final->daughter(1)->phi();
+						NT_gen_t_w_decay_id = decay_id;
+						NT_gen_t_w_p1_eta = W_final->daughter(0)->eta();
+						NT_gen_t_w_p1_phi = W_final->daughter(0)->phi();
+						NT_gen_t_w_p2_eta = W_final->daughter(1)->eta();
+						NT_gen_t_w_p2_phi = W_final->daughter(1)->phi();
 					}
 				}
 
@@ -1724,11 +1731,11 @@ for(size_t f=0; f<urls.size();++f)
 							decay_id = - fabs(W_final->daughter(0)->pdgId());
 						else if (fabs(W_final->daughter(1)->pdgId()) == 11 || fabs(W_final->daughter(1)->pdgId()) == 13 || fabs(W_final->daughter(1)->pdgId()) == 15)
 							decay_id = fabs(W_final->daughter(1)->pdgId());
-						NT_common_event["gen_tb_w_decay_id"] = decay_id;
-						NT_common_event["gen_tb_w_p1_eta"] = W_final->daughter(0)->eta();
-						NT_common_event["gen_tb_w_p1_phi"] = W_final->daughter(0)->phi();
-						NT_common_event["gen_tb_w_p2_eta"] = W_final->daughter(1)->eta();
-						NT_common_event["gen_tb_w_p2_phi"] = W_final->daughter(1)->phi();
+						NT_gen_tb_w_decay_id = decay_id;
+						NT_gen_tb_w_p1_eta = W_final->daughter(0)->eta();
+						NT_gen_tb_w_p1_phi = W_final->daughter(0)->phi();
+						NT_gen_tb_w_p2_eta = W_final->daughter(1)->eta();
+						NT_gen_tb_w_p2_phi = W_final->daughter(1)->phi();
 					}
 				}
 			}
@@ -1844,19 +1851,19 @@ for(size_t f=0; f<urls.size();++f)
 		fwlite::Handle<double> rhoHandle;
 		rhoHandle.getByLabel(ev, "fixedGridRhoFastjetAll");
 		if(rhoHandle.isValid() ) NT_fixedGridRhoFastjetAll = *rhoHandle;
-		NT_common_event["fixedGridRhoFastjetAll"] = NT_fixedGridRhoFastjetAll;
+		NT_fixedGridRhoFastjetAll = NT_fixedGridRhoFastjetAll;
 
 		fwlite::Handle<double> rhoCentralHandle;
 		rhoCentralHandle.getByLabel(ev, "fixedGridRhoFastjetCentral");
-		if(rhoCentralHandle.isValid() ) NT_common_event["fixedGridRhoFastjetCentral"] = *rhoCentralHandle;
+		if(rhoCentralHandle.isValid() ) NT_fixedGridRhoFastjetCentral = *rhoCentralHandle;
 
 		fwlite::Handle<double> rhoCentralNeutralHandle;
 		rhoCentralNeutralHandle.getByLabel(ev, "fixedGridRhoFastjetCentralNeutral");
-		if(rhoCentralNeutralHandle.isValid() ) NT_common_event["fixedGridRhoFastjetCentralNeutral"] = *rhoCentralNeutralHandle;
+		if(rhoCentralNeutralHandle.isValid() ) NT_fixedGridRhoFastjetCentralNeutral = *rhoCentralNeutralHandle;
 
 		fwlite::Handle<double> rhoCentralChargedPileUpHandle;
 		rhoCentralChargedPileUpHandle.getByLabel(ev, "fixedGridRhoFastjetCentralChargedPileUp");
-		if(rhoCentralChargedPileUpHandle.isValid() ) NT_common_event["fixedGridRhoFastjetCentralChargedPileUp"] = *rhoCentralChargedPileUpHandle;
+		if(rhoCentralChargedPileUpHandle.isValid() ) NT_fixedGridRhoFastjetCentralChargedPileUp = *rhoCentralChargedPileUpHandle;
 
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHTS, [1, 10]
 
@@ -1903,7 +1910,7 @@ for(size_t f=0; f<urls.size();++f)
 					{ // if it is first t quark
 					if (debug) cout << "found top, pT = " << p.pt() << "\n";
 					found_top = true;
-					NT_common_event["gen_t_pt"] = p.pt();
+					NT_gen_t_pt = p.pt();
 					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
 					if (debug) cout << "now weight_TopPT = " << weight_TopPT << "\n";
 					}
@@ -1912,7 +1919,7 @@ for(size_t f=0; f<urls.size();++f)
 					{ // if it is first anti-t quark
 					if (debug) cout << "found atop, pT = " << p.pt() << "\n";
 					found_atop = true;
-					NT_common_event["gen_tb_pt"] = p.pt();
+					NT_gen_tb_pt = p.pt();
 					weight_TopPT *= TMath::Sqrt(top_pT_SF(p.pt()));
 					if (debug) cout << "now weight_TopPT = " << weight_TopPT << "\n";
 					}
@@ -1992,7 +1999,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				if (debug) cout << "evt is valid, evt->weight() = " << evt->weight() << "\n";
 				weight_Gen = (evt->weight() > 0 ) ? 1. : -1. ;
-				NT_common_event["aMCatNLO_weight"] = evt->weight();
+				NT_aMCatNLO_weight = evt->weight();
 				}
 
 			// FIXME: this is for PDF uncertainties, must reactivate it at some point.
@@ -2061,7 +2068,7 @@ for(size_t f=0; f<urls.size();++f)
 		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
 		if(vtxHandle.isValid() ) vtx = *vtxHandle;
 	        //Float_t nvtx_gen = -1, nvtx = -1, nvtx_good = -1;
-	        NT_common_event["nvtx"] = vtx.size();
+	        NT_nvtx = vtx.size();
 
 		// Clean up vertex collection
 		// it seems utils::isGoodVertex is outdated
@@ -2085,7 +2092,7 @@ for(size_t f=0; f<urls.size();++f)
 				nGoodPV++;
 				}
 			}
-		NT_common_event["nvtx_good"] = nGoodPV;
+		NT_nvtx_good = nGoodPV;
 
 		// ----------------------------------------- Apply pileup reweighting
 		// why don't use nGoodPV for Pile-Up?
@@ -2119,7 +2126,7 @@ for(size_t f=0; f<urls.size();++f)
 			//num_inters = puInfoH->at(0).getTrueNumInteractions(); // in 76 it seems to not work, returns 0 always
 			// Using Pietro's PU number vertices:
 			num_inters = ngenITpu;
-			NT_common_event["nvtx_gen"] = ngenITpu;
+			NT_nvtx_gen = ngenITpu;
 			if (num_inters<100) {
 				weight_PU = direct_pileup_reweight[num_inters];
 				weight_PU_up = direct_pileup_reweight_up[num_inters];
@@ -2481,8 +2488,8 @@ for(size_t f=0; f<urls.size();++f)
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
 		}
 
-		if (eTrigger)  NT_common_event["HLT_el"] = 1;
-		if (muTrigger) NT_common_event["HLT_mu"] = 1;
+		if (eTrigger)  NT_HLT_el = 1;
+		if (muTrigger) NT_HLT_mu = 1;
 
 		// TODO: ----------------------------- HLT efficiency scale factors
 		// one should run it on the fired trigger objects,
@@ -2586,7 +2593,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::MET MET = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		NT_common_event["met_init"] = MET.pt();
+		NT_met_init = MET.pt();
 
 		fill_1d(string("control_met_main_pt"),  200, 0., 200., MET.pt(),  weights_FULL[SYS_NOMINAL]);
 		fill_1d(string("control_met_main_phi"), 200, 0., 200., MET.phi(), weights_FULL[SYS_NOMINAL]);
@@ -2610,7 +2617,7 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
 			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - MET.pt(), weights_FULL[SYS_NOMINAL]);
 			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - MET.phi(), weights_FULL[SYS_NOMINAL]);
-			NT_common_event["met_uncorrected"] = met_uncorrected.pt();
+			NT_met_uncorrected = met_uncorrected.pt();
 			}
 
 		if(debug){
@@ -2719,7 +2726,7 @@ for(size_t f=0; f<urls.size();++f)
 		for(size_t l=0; l<selMuons.size(); ++l)     selLeptons.push_back(patUtils::GenericLepton (selMuons[l]     ));
 		std::sort(selLeptons.begin(), selLeptons.end(), utils::sort_CandidatesByPt);
 
-		NT_common_event["nleps"] = selLeptons.size();
+		NT_nleps = selLeptons.size();
 
 		// to reduce unnecessary stuff
 		if (selLeptons.size() == 0 || selLeptons.size() > 2)
@@ -2728,23 +2735,23 @@ for(size_t f=0; f<urls.size();++f)
 		// there are the NT output leptons
 		// the event will be recorded in NT if there are 1 or 2 clean leptons
 		// max output of leptons = 2
-		for (int i = 0; i<selLeptons.size() && i<NT_leptons["lep_id_"].size(); i++)
+		for (int i = 0; i<selLeptons.size() && i<NT_LEPTONS_N; i++)
 			{
-			NT_leptons["lep_id_" ][i] = selLeptons[i].pdgId();
-			NT_leptons["lep_eta_"][i] = selLeptons[i].eta();
-			NT_leptons["lep_phi_"][i] = selLeptons[i].phi();
-			NT_leptons["lep_pt_" ][i] = selLeptons[i].pt();
-			NT_leptons["lep_p_"  ][i] = selLeptons[i].p();
+			NT_lep_id_(i)  = selLeptons[i].pdgId();
+			NT_lep_eta_(i) = selLeptons[i].eta();
+			NT_lep_phi_(i) = selLeptons[i].phi();
+			NT_lep_pt_(i)  = selLeptons[i].pt();
+			NT_lep_p_(i)   = selLeptons[i].p();
 			}
 
 		// record "ID of the channel" -- product of lepton IDs
 		// if 1 lepton -- just its' ID
-		int NT_leps_ID = 1;
+		NT_leps_ID = 1;
 		for (int i = 0; i<selLeptons.size(); i++)
 			{
 			NT_leps_ID *= selLeptons[i].pdgId();
 			}
-		NT_common_event["leps_ID"] = NT_leps_ID;
+		//NT_leps_ID = NT_leps_ID;
 
 
 		// -------------------- weights for trigger SFs
@@ -2801,23 +2808,23 @@ for(size_t f=0; f<urls.size();++f)
 
 		if(debug) cout << "selected taus now prepare output (might crash due to PF/Calo-Tau difference)" << endl;
 
-		NT_common_event["ntaus"] = selTausNoLep.size();
+		NT_ntaus = selTausNoLep.size();
 		// max taus output is 2
-		for (int i = 0; i<selTausNoLep.size() && i<NT_taus["tau_id_" ].size(); i++)
+		for (int i = 0; i<selTausNoLep.size() && i<NT_TAUS_N; i++)
 			{
 			pat::Tau& tau = selTausNoLep[i];
 
-			NT_taus["tau_id_" ][i]  = tau.pdgId();
-			NT_taus["tau_eta_"][i]  = tau.eta();
-			NT_taus["tau_phi_"][i]  = tau.phi();
-			NT_taus["tau_pt_" ][i]  = tau.pt();
-			NT_taus["tau_p_"  ][i]  = tau.p();
+			NT_tau_id_(i)  = tau.pdgId();
+			NT_tau_eta_(i)  = tau.eta();
+			NT_tau_phi_(i)  = tau.phi();
+			NT_tau_pt_(i)  = tau.pt();
+			NT_tau_p_(i)  = tau.p();
 
 			Float_t IDlev = 0;
 			if (tau.tauID(tau_Tight_ID)) IDlev = 3;
 			else if (tau.tauID(tau_ID)) IDlev = 2;
 			else if (tau.tauID(tau_Loose_ID)) IDlev = 1;
-			NT_taus["tau_IDlev_"][i] = IDlev;
+			NT_tau_IDlev_(i) = IDlev;
 
 			// also store for the first tau:
 			if (i==0)
@@ -2829,10 +2836,10 @@ for(size_t f=0; f<urls.size();++f)
 				// return sum of hcal energies from signal candidates More...
 				// float 	hcalEnergyLeadChargedHadrCand () const
 				// return hcal energy from LeadChargedHadrCand More...
-				NT_leading_tau_decay_info["tau_decay"] = tau.decayMode();
-				NT_leading_tau_decay_info["tau_hasSecondaryVertex"] = tau.hasSecondaryVertex();
-				NT_leading_tau_decay_info["tau_hcalEnergy"] = tau.hcalEnergy();
-				NT_leading_tau_decay_info["tau_hcalEnergyLeadChargedHadrCand"] = tau.hcalEnergyLeadChargedHadrCand();
+				NT_tau_decay = tau.decayMode();
+				NT_tau_hasSecondaryVertex = tau.hasSecondaryVertex();
+				NT_tau_hcalEnergy = tau.hcalEnergy();
+				NT_tau_hcalEnergyLeadChargedHadrCand = tau.hcalEnergyLeadChargedHadrCand();
 
 				// instead of going through tracks
 				// no track impact parameters
@@ -2857,7 +2864,7 @@ for(size_t f=0; f<urls.size();++f)
 				for (int r=0; r<3; r++)
 					for (int c=0; c<3; c++)
 						{
-						NT_leading_tau_secondaryVertexCov[r][c] =  secVertex_cov_matrix(r,c);
+						NT_tau_secondaryVertexCov_(r, c) =  secVertex_cov_matrix(r,c);
 						}
 				}
 			}
@@ -2904,7 +2911,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector MET_corrected = MET.p4() - full_jet_corr;
 		met_corrected = MET_corrected.pt();
-		NT_common_event["met_corrected"] = MET_corrected.pt();
+		NT_met_corrected = MET_corrected.pt();
 
 		pat::JetCollection selJets;
 		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
@@ -2937,23 +2944,23 @@ for(size_t f=0; f<urls.size();++f)
 		// now NT output
 		njets  = selJetsNoLep.size();
 		nbjets = selBJets.size();
-		NT_common_event["njets"]  = selJetsNoLep.size();
-		NT_common_event["nbjets"] = selBJets.size();
+		NT_njets  = selJetsNoLep.size();
+		NT_nbjets = selBJets.size();
 
-		for (int i = 0; i<selJetsNoLep.size() && i<NT_jets["jet_id_"].size(); i++)
+		for (int i = 0; i<selJetsNoLep.size() && i<NT_JETS_N; i++)
 			{
 			pat::Jet& jet = selJetsNoLep[i];
 
 			//jet.bDiscriminator(btagger_label)
-			NT_jets["jet_id_"] [i]  = jet.pdgId(); // I wonder what this is going to be
-			NT_jets["jet_eta_"][i]  = jet.eta();
-			NT_jets["jet_phi_"][i]  = jet.phi();
-			NT_jets["jet_pt_"] [i]  = jet.pt();
-			NT_jets["jet_p_"]  [i]  = jet.p();
-			NT_jets["jet_rad_"][i]  = jet_radius(jet);
-			NT_jets["jet_b_discr_"][i]  = jet.bDiscriminator(btagger_label);
-			NT_jets["jet_hadronFlavour_"][i]  = jet.hadronFlavour();
-			NT_jets["jet_partonFlavour_"][i]  = jet.partonFlavour();
+			NT_jet_id_(i)  = jet.pdgId(); // I wonder what this is going to be
+			NT_jet_eta_(i) = jet.eta();
+			NT_jet_phi_(i) = jet.phi();
+			NT_jet_pt_(i)  = jet.pt();
+			NT_jet_p_(i)   = jet.p();
+			NT_jet_rad_(i) = jet_radius(jet);
+			NT_jet_b_discr_(i)  = jet.bDiscriminator(btagger_label);
+			NT_jet_hadronFlavour_(i)  = jet.hadronFlavour();
+			NT_jet_partonFlavour_(i)  = jet.partonFlavour();
 			}
 
 
@@ -3084,8 +3091,8 @@ for(size_t f=0; f<urls.size();++f)
 			// it can be done downstream
 			// (and it's better to have the W etc for each njet bin etc.. here I have to store only 1 W/top mass -- so I store the closest match)
 			// but for now just a test:
-			Float_t NT_lj_peak_distance = 20000;
-			Float_t NT_lj_taumatched_peak_distance = 20000;
+			NT_lj_peak_distance = 20000;
+			NT_lj_taumatched_peak_distance = 20000;
 			if (selJetsNoLep.size()>=3)
 				{
 				// split jets into 2 cathegories according to their bDiscr >< 0.5: light and b
@@ -3183,8 +3190,6 @@ for(size_t f=0; f<urls.size();++f)
 						}
 					}
 				}
-			NT_common_event["lj_peak_distance"] = NT_lj_peak_distance;
-			NT_common_event["lj_taumatched_peak_distance"] = NT_lj_taumatched_peak_distance;
 
 			if(debug)
 				cout << "calculated the lj peak variables, now all ntuple output is ready" << endl;
@@ -3203,27 +3208,10 @@ for(size_t f=0; f<urls.size();++f)
 				output[i] = output_v[i];
 			*/
 
-			//ntuple->Fill(output);
+			ntuple->Fill();
+			/* no mc decay modes going into separate files -- just keep gen information on the output, then split them in processing
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
-				{
-				if(debug)
-					cout << "filling ntuple " << mc_decay << endl;
-				fill_ntuple(*(mc_decay_ntuples[mc_decay]), debug);
-				}
-			else // create new ntuple and put it into the map
-				{
-				if(debug)
-					cout << "creating new ntuple " << mc_decay << endl;
-
-				TString new_ntuple_name(string("ntuple_") + mc_decay);
-				mc_decay_ntuples[mc_decay] = (TNtuple*) new TNtuple(new_ntuple_name.Data(), "ntuple with reduced event data", ntuple_names.Data());
-				if(debug)
-					cout << "setting SetDirectory(0)" << endl;
-				mc_decay_ntuples[mc_decay]->SetDirectory(0);
-				if(debug)
-					cout << "filling the ntuple" << endl;
-				fill_ntuple(*(mc_decay_ntuples[mc_decay]), debug);
-				}
+			*/
 			}
 
 		// TODO: properly count multichannel?
@@ -3320,6 +3308,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 		//cout << "For channel " << channel << " writing " << controlpoint_name << "\n";
 		}
 
+	/* NTuple output goes into 1 file, the MC channels are handled in processing based on gen info in the output
 	if (debug) cout << "writing [" << channel << "] ntuple" << endl;
 	//ntuple->Write();
 	if (mc_decay_ntuples.find(channel) == mc_decay_ntuples.end())
@@ -3330,9 +3319,16 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 	mc_decay_ntuples[channel]->SetName("ntuple"); // probably I could rename the ntuple as I do for histograms, but it might crash things
 	mc_decay_ntuples[channel]->Write();
 	out_f->Write("ntuple");
+	*/
 
 	out_f->Close();
 	}
+
+// NTuple output (ntuple, NTUPLE)
+TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+ntuple->Write();
+ntuple_output_filename->Write();
+ntuple_output_filename->Close();
 
 cout << "done writing" << endl;
 
