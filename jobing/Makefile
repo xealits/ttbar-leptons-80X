@@ -311,8 +311,7 @@ missing_jobs:
 	done | sed -e 's/job_done/sh/' -e "s;"${job}";"${job}"//FARM/inputs;" > missing_jobs
 	wc -l missing_jobs
 
-resubmit:
-	#missing_jobs
+resubmit: missing_jobs
 	for j in `cat missing_jobs`;                                    \
 	do                                                              \
 	  grep -h $$j outdir/"${job}"//FARM/inputs/*bsub.sh; \

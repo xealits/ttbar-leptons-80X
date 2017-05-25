@@ -26,47 +26,89 @@
 
 #include "TNtuple.h"
 
+
 #define INPUT_DTAGS_START 4
 #define NTUPLE_NAME "ntuple"
 
 using namespace std;
 
-TH1D* pull_likelihood_regions(TNtuple* ntuple, TString& histo_name)
-	{
-	TH1D* h = new TH1D(histo_name, ";;", 15, 0, 15);
-	int N;
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 3) ");
-	h->SetBinContent(0,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 4) ");
-	h->SetBinContent(1,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets == 5) ");
-	h->SetBinContent(2,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets == 1) && (njets > 5) ");
-	h->SetBinContent(3,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 3) ");
-	h->SetBinContent(4,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 4) ");
-	h->SetBinContent(5,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets == 5) ");
-	h->SetBinContent(6,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (nbjets > 1) && (njets > 5) ");
-	h->SetBinContent(7,N);
+double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
+0.884048630953726, 0.964813189764159, 1.07045369167689, 1.12497267309738, 1.17367530613108, 1.20239808206413, 1.20815108390021, 1.20049333094509, 1.18284686347315, 1.14408796655615,
+1.0962284704313, 1.06549162803223, 1.05151011089581, 1.05159666626121, 1.05064452078328, 1.0491726301522, 1.05772537082991, 1.07279673875566, 1.0837536468865, 1.09536667397119,
+1.10934472980173, 1.09375894592864, 1.08263679568271, 1.04289345879947, 0.9851490341672, 0.909983816540809, 0.821346330143864, 0.71704523475871, 0.609800913869359, 0.502935245638477,
+0.405579825620816, 0.309696044611377, 0.228191137503131, 0.163380359253309, 0.113368437957202, 0.0772279997453792, 0.0508111733313502, 0.0319007262683943, 0.0200879459309245, 0.0122753366005436,
+0.00739933885813127, 0.00437426967257811, 0.00260473545284139, 0.00157047254226743, 0.000969500595715493, 0.000733193118123283, 0.000669817107713128, 0.000728548958604492, 0.000934559691182011, 0.00133719688378802,
+0.00186652283903214, 0.00314422244976771, 0.00406954793369611, 0.00467888840511915, 0.00505224284441512, 0.00562827194936864, 0.0055889504870752, 0.00522867039470319, 0.00450752163476433, 0.00395300774604375,
+0.00330577167682956, 0.00308353042577215, 0.00277846504893301, 0.00223943190687725, 0.00196650068765464, 0.00184742734258922, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0};
 
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 3) ");
-	h->SetBinContent(8,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 4) ");
-	h->SetBinContent(9,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets == 5) ");
-	h->SetBinContent(10,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets == 1) && (njets > 5) ");
-	h->SetBinContent(11,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 4) ");
-	h->SetBinContent(12,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets == 5) ");
-	h->SetBinContent(13,N);
-	N = ntuple->Draw("njets", "(met_corrected > 40) && (fabs(leps_ID) == 13) && (lj_peak_distance < 500) && (nbjets > 1) && (njets > 5) ");
-	h->SetBinContent(14,N);
-	//h->Draw();
+TH1D* pull_likelihood_regions(TTree& output_ttree, TString& histo_name, TString& dtag)
+	{
+	// the interface to output_ttree
+	#define NTUPLE_INTERFACE_OPEN
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_v11_3.h"
+
+	bool is_MC = dtag.Contains("MC");
+	bool is_W0Jets = dtag.Contains("W0Jet"); // needed for handling WNJets
+	bool is_aMCatNLO = dtag.Contains("amcatnlo");
+
+	// the histogram with yields in event categories
+	TH1D* h = new TH1D(histo_name, ";;", 15, 0, 15);
+
+	/* Loop through events, find weights, skip stuff, record if they pass to any category
+	 */
+	for (Long64_t i=0; i<output_ttree.GetEntries(); i++)
+	//for (Long64_t i=0; i<10; i++)
+		{
+		output_ttree.GetEntry(i);
+		// test:
+		//cout << NT_NUP_gen << '\t' << NT_aMCatNLO_weight << '\t' << NT_nvtx_gen << '\t' << (int) NT_nvtx_gen << endl;
+
+		int event_category = -1;
+		double weight = 1; // for MC
+
+		// general requirement for all events:
+		if (NT_met_corrected < 40 || fabs(NT_leps_ID) != 13) continue;
+		// the event with taus:
+		if (NT_tau_IDlev_0 != 3. && NT_tau_IDlev_1 != 3.) continue;
+
+		// find basic weight:
+		//  * -1 aMCatNLO & NUP for WJets
+		//  * pileup
+
+		// NUP == 5 for W0Jets
+		if (is_W0Jets && NT_NUP_gen != 5) continue;
+
+		// amcatnlo MC has these weights
+		if (is_aMCatNLO)
+			weight *= (NT_aMCatNLO_weight > 0? 1 : -1);
+
+		// and pile-up:
+		if (is_MC)
+			weight *= pileup_ratio[(int)NT_nvtx_gen];
+
+		// select event categories
+		if ((NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
+		if ((NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
+		if ((NT_nbjets == 1) && (NT_njets == 5)) event_category = 2;
+		if ((NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
+		if ((NT_nbjets > 1)  && (NT_njets == 3)) event_category = 4;
+		if ((NT_nbjets > 1)  && (NT_njets == 4)) event_category = 5;
+		if ((NT_nbjets > 1)  && (NT_njets == 5)) event_category = 6;
+		if ((NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 8;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 9;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 5)) event_category =10;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category =11;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category =12;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category =13;
+		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category =14;
+
+		h->Fill(event_category, weight);
+		}
 
 	return h;
 	}
@@ -117,6 +159,18 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << the_file << endl;
 	TFile* file = TFile::Open(the_file);
 
+	if (!file->GetListOfKeys()->Contains(NTUPLE_NAME))
+		{
+		if (be_verbose) cout << "no " << NTUPLE_NAME << endl;
+		continue;
+		}
+
+	// it's actually TNtuple, which descends from TTree thus should open ok
+	TTree* ntuple = (TTree*) file->Get(NTUPLE_NAME);
+
+	TH1D* histo = pull_likelihood_regions(*ntuple, histo_name, dtag);
+
+
 	if (dtag.Contains("Data"))
 		{
 		if (be_verbose) cout << "summing data-stack" << endl;
@@ -128,9 +182,11 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 			continue;
 			}
 
-		TNtuple* ntuple = (TNtuple*) file->Get(NTUPLE_NAME);
-
-		TH1D* histo = pull_likelihood_regions(ntuple, histo_name);
+		/*
+		// it's actually TNtuple, which descends from TTree thus should open ok
+		TTree* ntuple = (TTree*) file->Get(NTUPLE_NAME);
+		TH1D* histo = pull_likelihood_regions(*ntuple, histo_name);
+		*/
 
 		histo->SetMarkerStyle(9);
 
@@ -151,6 +207,9 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		/* in MC do the same
 		 * but scale the histo by weightflow
 		 */
+
+		// removing QCD from mu-tau selection (suddenly couple events show up in 2 jets or whatever)
+		if (dtag.Contains("QCD")) continue;
 
 		// different weightflow MC normalization in ttbar and jet fake rates (TODO: need to normalize it to bin10 or something everywhere)
 		TH1D * weightflow;
@@ -179,17 +238,6 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		// MC ratio for this dtag:
 		Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
 		if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-
-
-		if (!file->GetListOfKeys()->Contains(NTUPLE_NAME))
-			{
-			if (be_verbose) cout << "no " << NTUPLE_NAME << endl;
-			continue;
-			}
-
-		TNtuple* ntuple = (TNtuple*) file->Get(NTUPLE_NAME);
-
-		TH1D* histo = pull_likelihood_regions(ntuple, histo_name);
 
 		// Scale to MC ratio
 		if (be_verbose) histo->Print();
@@ -233,7 +281,11 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 
 if (be_verbose) cout << "built MC stack" << endl;
 
-TFile* out_f = TFile::Open (dir + TString("/jobsums/Likelihood_Regions.root"), "CREATE");
+// and write everything out:
+// data histo
+// separate MC histos (separated by their nicknames)
+// and the MC stack
+TFile* out_f = TFile::Open (dir + TString("/jobsums/Likelihood_Regions_2_with_taus_without_qcd.root"), "CREATE");
 if (be_verbose) cout << "opened output file" << endl;
 data_histo->Write();
 
