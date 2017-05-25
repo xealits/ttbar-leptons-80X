@@ -1544,6 +1544,8 @@ TTree NT_output_ttree("reduced_ttree", "TTree with reduced event data"); // -- i
 #define NTUPLE_INTERFACE_CREATE
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
+// for record of N events in MC, initial amount and different basic cuts (HLT trigger):
+TH1D* eventflow = (TH1D*) new TH1D("eventflow", ";;", 50, 0, 50);
 
 //##############################################
 //########           EVENT LOOP         ########
@@ -1901,6 +1903,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elmu"), 100, 0, 100, 1, 1);
 		fill_1d(string("eventflow_mumu"), 100, 0, 100, 1, 1);
 
+		eventflow->Fill(1);
+
 		// ---------------------------------- Top pT reeventing
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting<Paste>
 		// find the produced tops,
@@ -1973,6 +1977,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 2, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 2, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 2, 1);
+
+		eventflow->Fill(2);
 
 		// old bit on top pT reweighting:
 		// FIXME: Top pT reweighting to be reactivated as soon as corrections are released
@@ -2069,6 +2075,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 3, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 3, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 3, 1);
+
+		eventflow->Fill(3);
 
 		// ------------------------------- PRIMARY VERTEX
 		// needed for particle selection/event classification later
@@ -2200,6 +2208,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 4, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 4, 1);
 
+		eventflow->Fill(4);
+
 		// -------------------------------------   Basic event selection
 
 		// -------------------------------------------------- FIRST SECTION OF MC WEIGHT is over
@@ -2222,6 +2232,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 10, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 10, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 10, 1);
+
+		eventflow->Fill(10);
 
 
 
@@ -2375,6 +2387,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 11, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 11, 1);
 
+		eventflow->Fill(11);
+
 
 
 		// -------------------------------------------------- Skip bad lumi
@@ -2406,6 +2420,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 12, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 12, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 12, 1);
+
+		eventflow->Fill(12);
 
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
@@ -2533,6 +2549,8 @@ for(size_t f=0; f<urls.size();++f)
 		// increment( string("weightflow_weight_up_passed_trig"), weight_up ); // should not matter
 		// increment( string("weightflow_weight_down_passed_trig"), weight_down ); // should not matter
 
+		eventflow->Fill(13);
+
 		if(debug)
 			{
 			cout << "Set triggers" << endl;
@@ -2555,6 +2573,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elel"), 300, 0, 300, 20, 1);
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 20, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 20, 1);
+
+		eventflow->Fill(20);
 
 		// ------------------------- event physics and the corresponding selection
 
@@ -3042,6 +3062,8 @@ for(size_t f=0; f<urls.size();++f)
 		fill_1d(string("eventflow_elmu"), 300, 0, 300, 30, 1);
 		fill_1d(string("eventflow_mumu"), 300, 0, 300, 30, 1);
 
+		eventflow->Fill(30);
+
 
 		if(debug){
 			cout << "all particle-objects are processed, checking channel selection" << endl;
@@ -3374,6 +3396,8 @@ TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string(
 TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
 NT_output_ttree.Write();
 ntuple_output->Write();
+// also N events at different stages
+eventflow->Write();
 ntuple_output->Close();
 
 cout << "done writing" << endl;
