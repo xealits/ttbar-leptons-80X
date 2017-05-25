@@ -96,3 +96,60 @@ But it is easily extendable.
 
 
 
+
+# NTuple production
+
+The NTuple interface is in `interface/ntupleOutput.h`.
+It is defined with list of macro, which are unpacked by preprocessor in some local namespace of your program
+and attached to a TTree you've provided.
+The comments in the `ntupleOutput.h` describe it better.
+Roughly, you use it like this in your `main`:
+
+	int main()
+	{
+	...
+	TTree NT_output_ttree("reduced_ttree", "TTree with reduced event data");
+	// to create branches in the new TTree:
+	#define NTUPLE_INTERFACE_CREATE
+	// for attaching to existing branches define NTUPLE_INTERFACE_OPEN
+	// unpack the interface
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+
+	// the code of the interface is unpacked
+	// now there are all the NT_branchName variable in the name space
+	// and their pointers are passed to branches
+
+	for (in the loop of events)
+		{
+		RESET_NTUPLE_PARAMETERS // macro defaults all parameters
+		NT_tauID = event[i].taus[0].pdgId();
+		NT_output_ttree.Fille();
+		}
+	}
+
+To add new objects to the interface use this macro:
+
+	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
+
+as in following:
+
+	OBJECT_in_NTuple(OUTNTUPLE, Pat::Tau, tau1);
+
+-- but ROOT needs to "know" the class to be able to add as Branch.
+I have not tested yet which classes pass by default.
+They say to add a class to root you run this:
+
+	gROOT->ProcessLine("#include <vector>")
+
+-- and now you can save vectors of floats/ints etc.
+
+Also, if you add a new object, consider adding it to `RESET_NTUPLE_PARAMETERS`.
+You need to add a command which resets/clears the object for each iteration over events:
+
+	NT_myBranchNameA.clear(); \
+	NT_myBranchNameB.reset();
+
+-- unless you don't need to clear the object on for each event.
+(Uncleared value might get stored into the TTree.)
+
+

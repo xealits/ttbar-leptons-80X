@@ -44,9 +44,9 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
-TH1D* pull_likelihood_regions(TTree& output_ttree, TString& histo_name, TString& dtag)
+TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TString& dtag)
 	{
-	// the interface to output_ttree
+	// the interface to NT_output_ttree
 	#define NTUPLE_INTERFACE_OPEN
 	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_v11_3.h"
 
@@ -59,10 +59,10 @@ TH1D* pull_likelihood_regions(TTree& output_ttree, TString& histo_name, TString&
 
 	/* Loop through events, find weights, skip stuff, record if they pass to any category
 	 */
-	for (Long64_t i=0; i<output_ttree.GetEntries(); i++)
+	for (Long64_t i=0; i<NT_output_ttree.GetEntries(); i++)
 	//for (Long64_t i=0; i<10; i++)
 		{
-		output_ttree.GetEntry(i);
+		NT_output_ttree.GetEntry(i);
 		// test:
 		//cout << NT_NUP_gen << '\t' << NT_aMCatNLO_weight << '\t' << NT_nvtx_gen << '\t' << (int) NT_nvtx_gen << endl;
 

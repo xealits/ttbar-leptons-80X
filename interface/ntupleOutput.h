@@ -2,28 +2,54 @@
 #define NTUPLEOUTPUT_H
 
 /*
- * NTuple is:
- *   bunch of Float_t parameters
- *   and their names for the definition string
+ * Useful info
  *
- * need:
- *   obtain the def string from the ntuple structure
- *   the ntuple contains bunch of the same parameters for different particles (5 jets etc)
- *   initialize an empty ntuple (-1 init values)
- *   reset to an empty ntuple
- *   fill it with stuff
- *   Fill the ntuple with this output
+ * TNtuple is:
+ *   branches of Float_t parameters, named somehow
  *
- * do separate maps (string -> Float_t and string -> N -> Float_t)
- * and then merge them
+ * TTree is:
+ *   branches of simple Float_t, Int_t parameters or complex classes, known to ROOT
+ *   (new classes are given to ROOT by call gROOT->ProcessLine("#include <vector>"))
+ *   the creation method for these 2 types is different,
+ *   also these methods are different from from TNtuple ones (in better way)
+ *
  */
 
+/*
+ * What is wanted:
+ *   keep the output TTree interface (i.e. the definitions of Branches, their classes and names) in 1 file
+ *   easily create or open TTree of this interface in main process
+ *   loop over Entires
+ *   and have full access to all the branches
+ *
+ * To do it:
+ *   there are macro creating this interface
+ *   and the list of them with current definition of the interface is in this file
+ *   there are 2 bunches of macro -- for creating Branches of new TTree or for opening existing one
+ *   which unfold into commands like
+ *      Class_X NT_branchFoo; outputTTreeObject.Branch("branchFoo", "Class_X", &NT_branchFoo);
+ *      or
+ *      Class_X NT_branchFoo; outputTTreeObject.SetBranchAddress("branchFoo", &NT_branchFoo);
+ *
+ * the outputTTreeObject is defined in OUTNTUPLE
+ * the mode of the interface (create or open ttree) is defined with NTUPLE_INTERFACE_CREATE or NTUPLE_INTERFACE_OPEN
+ *
+ * there are also a bunch of convenience macro for handling the TNtuple legacy bunches of Float_t parameters
+ * -- they mostly should go away when propper objects are used
+ *  and there is a macro reseting all the branch parameters -- it's ad-hoc, TODO: do it somehow in more automated, convenient way
+ *
+ * branch object names are prepended with NT_
+ * so a branch named "foo" in the program namespace will have the object named NT_foo
+ *
+ * also default name of the TTree is NT_output_ttree
+ *
+ * there is a usage example in a comment further
+ */
 
-//#include <map>
-//#include <string>
-//
-//#include "TSystem.h"
-//#include "TNtuple.h"
+// default name of the output
+#ifndef OUTNTUPLE
+	#define OUTNTUPLE NT_output_ttree
+#endif
 
 /* macro declaring the object and setting a branch with its' pointer --- all in current, __not_global__ space (in main space)
  *
@@ -31,52 +57,76 @@
  *    1) the object name in current namespace is `NT_Name`
  *    2) the branch name in the ntuple is `Name`
  */
-#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
-#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
+#if defined(NTUPLE_INTERFACE_CREATE)
+	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
+	#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
+	#define Int_t_in_NTuple(NTuple, Name)           Int_t   NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/I")
+#elif defined(NTUPLE_INTERFACE_OPEN)
+	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.SetBranchAddress(#Name, &NT_##Name)
+	#define Float_t_in_NTuple(NTuple, Name)         OBJECT_in_NTuple(NTuple, Float_t, Name)
+	#define Int_t_in_NTuple(NTuple, Name)           OBJECT_in_NTuple(NTuple, Int_t, Name)
+#else
+	error: set ntuple interface mode
+#endif
 
-
-//using namespace std;
 
 /*
- * So, this file ties the interface to our ntuple in the current namespace
+ * this file ties the interface to our ntuple (TTree) in the current namespace
  *
  * Usage
+ * 
+ * actual files using it are:
+ *   bin/ntupleEvents.cc           (creates the TTree, at line 1542 in main)
+ *   test/likelihood_regions.cc    (uses existing TTree, at line 51 in pull_likelihood_regions)
+ *
+ * Roughly the idea is as follows
  *
  * declare your ntuple:
  *
- *     TNtuple output;
- *     // if the name is not `ntuple` (which is assumed here in the interface)
+ *     TTree output("reduced_ttree", "TTree with reduced event data");
+ *     // if the name is not `NT_output_ttree` (which is assumed here in the interface)
  *     // define your name for preprocessor:
  *     #define OUTNTUPLE output
+ *
+ *     // set the mode of the interface to branches (create branches in a new TTree or open branches of existing TTree):
+ *     #define NTUPLE_INTERFACE_CREATE
  * 
  *     // load this interface:
  *     #include "ntupleOutput.h"
  *
  * now you have NT_Name objects in the name space and the ntuple has branches "Name" with pointers to these objects
+ * you can loop over TTree:
+ *
+ *     for (Long64_t i=0; i<NT_output_ttree.GetEntries(); i++)
+ *         {
+ *         NT_output_ttree.GetEntry(i);
+ *         ...
+ *         }
+ *
  * copy objects from event (pseudocode):
  *
  *     NT_foo = events[i]["foo"])
- * 
+ *
+ * or actual example from ntupleEvents:
+ *     NT_aMCatNLO_weight = evt->weight();
+ * or from likelihood_regions:
+ *     if (NT_tau_IDlev_0 != 3. && NT_tau_IDlev_1 != 3.) continue;
+ *     
  * when done fill the ntuple:
  *
  *     output.Fill();
  *
- * clearing/reseting of the objects for each event -- currently responsibility of the programmer, there is a sketchy macro for this now, it is in development
+ * clearing/reseting of the objects for each event -- currently it is responsibility of the programmer
+ * but there is a sketchy macro for this now, it is in development
+ * used as in ntupleEvents:
+ *     RESET_NTUPLE_PARAMETERS // defaults all parameters
+ *
+ * -- with no ;
+ * that's how sketchy it is
+ *
  */
 
-// default name of the output
-#ifndef OUTNTUPLE
-	#define OUTNTUPLE output_ttree
-#endif
-
-/* This works for only 1 ntuple.
- * But not for many in case of different decays of MC (tt).
- * A nice way is to add generation info to the ntuple output and split the decays then later, instead of having different files.
- * It's not large, 1 more int or whatever, and should work fine.
- * --- taking this
- */
-
-// the interface (all Float_ts, since it is really just TNtuple
+// the interface (all Float_ts, compatibility to first runs with TNtuple)
 Float_t_in_NTuple(OUTNTUPLE, aMCatNLO_weight);
 Float_t_in_NTuple(OUTNTUPLE, gen_t_pt);
 Float_t_in_NTuple(OUTNTUPLE, gen_tb_pt);

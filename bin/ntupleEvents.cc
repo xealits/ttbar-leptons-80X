@@ -1539,8 +1539,9 @@ ntuple->SetDirectory(0);
 //TNtuple ntuple; // aparently TNtuple doesn't work well with branches
 // at least it is not consistent with how TTree handles them
 // thus -- switching to TTree right now
-TTree output_ttree("reduced_ttree", "TTree with reduced event data"); // -- it's the default name, no further propagation with #define
+TTree NT_output_ttree("reduced_ttree", "TTree with reduced event data"); // -- it's the default name, no further propagation with #define
 // all the NT_Name objects, bound to ntuple branches:
+#define NTUPLE_INTERFACE_CREATE
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
 
@@ -3251,7 +3252,7 @@ for(size_t f=0; f<urls.size();++f)
 				output[i] = output_v[i];
 			*/
 
-			output_ttree.Fill();
+			NT_output_ttree.Fill();
 			wrote_ntuple_events++;
 			/* no mc decay modes going into separate files -- just keep gen information on the output, then split them in processing
 			if (mc_decay_ntuples.find(mc_decay) != mc_decay_ntuples.end())
@@ -3371,7 +3372,7 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 // NTuple output (ntuple, NTUPLE)
 TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
 TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
-output_ttree.Write();
+NT_output_ttree.Write();
 ntuple_output->Write();
 ntuple_output->Close();
 

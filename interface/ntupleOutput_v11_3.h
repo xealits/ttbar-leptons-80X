@@ -19,12 +19,6 @@
  */
 
 
-//#include <map>
-//#include <string>
-//
-//#include "TSystem.h"
-//#include "TNtuple.h"
-
 /* macro declaring the object and setting a branch with its' pointer --- all in current, __not_global__ space (in main space)
  *
  * Notice the protocol:
@@ -36,16 +30,16 @@
 #if defined(NTUPLE_INTERFACE_CREATE)
 	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
+	#define Int_t_in_NTuple(NTuple, Name)           Int_t   NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/I")
 #elif defined(NTUPLE_INTERFACE_OPEN)
 	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.SetBranchAddress(#Name, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         OBJECT_in_NTuple(NTuple, Float_t, Name)
+	#define Int_t_in_NTuple(NTuple, Name)           OBJECT_in_NTuple(NTuple, Int_t, Name)
 #else
-	error: define ntuple interface mode
+	error: set ntuple interface mode
 #endif
 
 
-
-//using namespace std;
 
 /*
  * So, this file ties the interface to our ntuple in the current namespace
@@ -76,7 +70,7 @@
 
 // default name of the output
 #ifndef OUTNTUPLE
-	#define OUTNTUPLE output_ttree
+	#define OUTNTUPLE NT_output_ttree
 #endif
 
 /* This works for only 1 ntuple.
