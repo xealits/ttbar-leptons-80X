@@ -3430,7 +3430,7 @@ for(size_t f=0; f<urls.size();++f)
 		map<systematic_shift, pat::JetCollection> selJets;
 		for ( const auto s : jetSystematics )
 			{
-			processJets_Kinematics(IDjets[s], /*bool isMC,*/ weights_FULL[SYS_NOMINAL], jet_kino_cuts_pt, jet_kino_cuts_eta, selJets[s], true, debug);
+			processJets_Kinematics(IDjets[s], /*bool isMC,*/ weights_FULL[SYS_NOMINAL], jettaufr_jet_kino_cuts_pt, jettaufr_jet_kino_cuts_eta, selJets[s], true, debug);
 			}
 
 		pat::JetCollection selJets_JetTauFakeRate; // for fake rates in dileptons
@@ -4005,11 +4005,54 @@ for(size_t f=0; f<urls.size();++f)
 					// loose taus for fake-factor method: selLooseTausNoLep
 					/* record fake rates at JER, JES and PU systematics
 					 */
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vlooseTaus"), selJets_JetTauFakeRate_NoLep, selVLooseTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"),  selJets_JetTauFakeRate_NoLep, selLooseTausNoLep,  visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_mediumTaus"), selJets_JetTauFakeRate_NoLep, selMediumTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_tightTaus"),  selJets_JetTauFakeRate_NoLep, selTightTausNoLep,  visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vtightTaus"), selJets_JetTauFakeRate_NoLep, selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					systematic_mets[SYS_NOMINAL]
+					{ // NOMINAL
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vlooseTaus"), selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"),  selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					}
+					{ // PU UP
+					double weight_up = weights_FULL[SYS_PU_UP];
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_vlooseTaus"), selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight_up, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_looseTaus"),  selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight_up, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight_up, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight_up, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight_up, isMC);
+					}
+					{ // PU DOWN
+					double weight_down = weights_FULL[SYS_PU_DOWN];
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_vlooseTaus"), selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight_down, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_looseTaus"),  selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight_down, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight_down, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight_down, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight_down, isMC);
+					}
+					{ // JER UP and DOWN
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_vlooseTaus"), selJetsNoLep[SYS_JER_UP], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_looseTaus"),  selJetsNoLep[SYS_JER_UP], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_mediumTaus"), selJetsNoLep[SYS_JER_UP], selMediumTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_tightTaus"),  selJetsNoLep[SYS_JER_UP], selTightTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_vtightTaus"), selJetsNoLep[SYS_JER_UP], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_DOWN_vlooseTaus"), selJetsNoLep[SYS_JER_DOWN], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_DOWN_looseTaus"),  selJetsNoLep[SYS_JER_DOWN], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_DOWN_mediumTaus"), selJetsNoLep[SYS_JER_DOWN], selMediumTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_DOWN_tightTaus"),  selJetsNoLep[SYS_JER_DOWN], selTightTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_DOWN_vtightTaus"), selJetsNoLep[SYS_JER_DOWN], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					}
+					{ // JES UP and DOWN
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_UP_vlooseTaus"),   selJetsNoLep[SYS_JES_UP], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_UP_looseTaus"),    selJetsNoLep[SYS_JES_UP], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_UP_mediumTaus"),   selJetsNoLep[SYS_JES_UP], selMediumTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_UP_tightTaus"),    selJetsNoLep[SYS_JES_UP], selTightTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_UP_vtightTaus"),   selJetsNoLep[SYS_JES_UP], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_vlooseTaus"), selJetsNoLep[SYS_JES_DOWN], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_looseTaus"),  selJetsNoLep[SYS_JES_DOWN], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_mediumTaus"), selJetsNoLep[SYS_JES_DOWN], selMediumTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_tightTaus"),  selJetsNoLep[SYS_JES_DOWN], selTightTausNoLep,  visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_vtightTaus"), selJetsNoLep[SYS_JES_DOWN], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					}
 
 					// also large bins for (medium) jet fake rate
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
