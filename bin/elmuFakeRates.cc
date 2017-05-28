@@ -4084,7 +4084,6 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_passjets_tau_pt"), 200, 0, 400, selTausNoLep[0].pt(), weight);
 					fill_1d( string("elmu_passjets_jet1_pt"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].pt(), weight);
 					fill_1d( string("elmu_passjets_jet2_pt"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].pt(), weight);
-					fill_1d( string("elmu_passjets_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
 					// fill_1d( string("elmu_passjets_met_pt"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].pt(), weight);
 					fill_1d( string("elmu_passjets_met_pt"), 200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
 
@@ -4094,7 +4093,6 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_passjets_tau_energy"), 200, 0, 400, selTausNoLep[0].energy(), weight);
 					fill_1d( string("elmu_passjets_jet1_energy"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].energy(), weight);
 					fill_1d( string("elmu_passjets_jet2_energy"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].energy(), weight);
-					fill_1d( string("elmu_passjets_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
 					// fill_1d( string("elmu_passjets_met_energy"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].energy(), weight);
 					fill_1d( string("elmu_passjets_met_energy"), 200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
 
@@ -4104,9 +4102,16 @@ for(size_t f=0; f<urls.size();++f)
 					// fill_1d( string("elmu_passjets_tau_eta"), 300, -3, 3, selTausNoLep[0].eta(), weight);
 					fill_1d( string("elmu_passjets_jet1_eta"), 300, -3, 3, selJetsNoLep[SYS_NOMINAL][0].eta(), weight);
 					fill_1d( string("elmu_passjets_jet2_eta"), 300, -3, 3, selJetsNoLep[SYS_NOMINAL][1].eta(), weight);
-					fill_1d( string("elmu_passjets_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
 					// fill_1d( string("elmu_passjets_met_eta"), 300, -3, 3, n_systematic_mets[SYS_NOMINAL].eta(), weight);
 					fill_1d( string("elmu_passjets_met_eta"), 300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
+
+					// the optional b-jets:
+					if (selBJets[SYS_NOMINAL][SYS_NOMINAL].size()>0)
+						{
+						fill_1d( string("elmu_passjets_bjet_pt"), 200, 0, 400,     selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
+						fill_1d( string("elmu_passjets_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
+						fill_1d( string("elmu_passjets_bjet_eta"), 300, -3, 3,     selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
+						}
 					}
 
 				if (passJetSelection && passBtagsSelection)
