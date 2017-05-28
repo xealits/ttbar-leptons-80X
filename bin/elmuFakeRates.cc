@@ -2032,6 +2032,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		// rawWeight is everything but Pile-Up
 		double rawWeight        (1.0);
+		// full NOMINAL weight
+		//double weight        (1.0);
 
 		double HLT_efficiency_sf = 1.0;
 
@@ -2356,6 +2358,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		fill_1d(string("weight_PU"), 200, 0., 2., weight_PU, 1);
 
+		// applying PU weight
 		for ( const auto s : weightSystematics )
 			{
 			if (s == SYS_PU_UP)
@@ -2365,6 +2368,7 @@ for(size_t f=0; f<urls.size();++f)
 			else
 				weights_FULL[s] *= weight_PU;
 			}
+		// not applying for rawWeight
 
 		//weights_FULL[SYS_NOMINAL] *= weight_PU;
 		//weights_FULL[SYS_PU_UP]   *= weight_PU_up;
@@ -2997,6 +3001,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				weights_FULL[s] *= electron_sfs_weight;
 				}
+			rawWeight *= electron_sfs_weight;
 			//weights_FULL[SYS_NOMINAL] *= electron_sfs_weight * el_trig_weight;
 			//weights_FULL[SYS_PU_UP]   *= electron_sfs_weight * el_trig_weight;
 			//weights_FULL[SYS_PU_DOWN] *= electron_sfs_weight * el_trig_weight;
@@ -3087,6 +3092,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				weights_FULL[s] *= muon_sfs_weight;
 				}
+			rawWeight *= muon_sfs_weight;
 			}
 
 		if(debug)
@@ -3169,6 +3175,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				weights_FULL[s] *= lep_trig_weight;
 				}
+			rawWeight *= lep_trig_weight;
 			}
 
 		// ------------------------------------- Propagate lepton energy scale to MET
@@ -3472,7 +3479,7 @@ for(size_t f=0; f<urls.size();++f)
 			}
 
 
-		// --------------------------- B-TAGGED JETS
+		// --------------------------- B-TAGGED JETS BJETS B-JETS
 
 		//int processBJets_BTag(pat::JetCollection& jets, bool isMC, double& weight, double& bTaggingSF_eventWeight, // input
 		//	BTagCalibrationReader& btagCal,
@@ -3505,7 +3512,7 @@ for(size_t f=0; f<urls.size();++f)
 				bool record_btag_processing = jet_sys == SYS_NOMINAL && btag_sys == SYS_NOMINAL;
 				double temp_jet_sys_b_tagging_sf = 1;
 				// TODO: maybe selJetsNoLep are more appropriate here?
-				processBJets_BTag_for_sys(selJetsNoLepNoTau[jet_sys], isMC, weights_FULL[SYS_NOMINAL],
+				processBJets_BTag_for_sys(selJetsNoLep[jet_sys], isMC, weights_FULL[SYS_NOMINAL],
 					// for nominal jets find the btag SF weights
 					// for other jets -- temporary weight
 					(jet_sys == SYS_NOMINAL ? weight_bTaggingSFs[btag_sys] : temp_jet_sys_b_tagging_sf),
@@ -3526,6 +3533,7 @@ for(size_t f=0; f<urls.size();++f)
 			else
 				weights_FULL[s] *= weight_bTaggingSFs[SYS_NOMINAL];
 			}
+		rawWeight *= weight_bTaggingSF[SYS_NOMINAL];
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSFs[SYS_NOMINAL], 1.);
 		fill_1d(string("weight_bTaggingSF_UP"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_UP], 1.);
 		fill_1d(string("weight_bTaggingSF_DOWN"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_DOWN], 1.);
@@ -3770,7 +3778,27 @@ for(size_t f=0; f<urls.size();++f)
 		if (isEMu) // reducing the computation isDoubleE || isDoubleMu || isEMu)
 			{
 			// nominal weight for all the control distr-s
+			// without PU:
+			/*
+			double rawWeight = weights_FULL[SYS_NOMINAL];
+			// apply PU and get the weight with PU
+			for ( const auto s : weightSystematics )
+				{
+				if (s == SYS_PU_UP)
+					weights_FULL[s] *= weight_PU_up;
+				else if (s == SYS_PU_DOWN)
+					weights_FULL[s] *= weight_PU_down;
+				else
+					weights_FULL[s] *= weight_PU;
+				}
+			*/
+			// in principle it spoils the control of the MC integral...
+			// let's do it well...
+
+			// rawWeight should be calculated together with weights_FULL
+			// nominal weight:
 			double weight = weights_FULL[SYS_NOMINAL];
+
 			// vtx.size
 			fill_1d( string("pileup_dilepton_nvtx_rawWeight"), 100, 0, 100, vtx.size(), rawWeight);
 			fill_1d( string("pileup_dilepton_nvtx_weight"),    100, 0, 100, vtx.size(), weight);
@@ -3975,18 +4003,67 @@ for(size_t f=0; f<urls.size();++f)
 				if (passJetSelection)
 					{ // THE ELMU FAKE RATES
 					// loose taus for fake-factor method: selLooseTausNoLep
+					/* record fake rates at JER, JES and PU systematics
+					 */
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vlooseTaus"), selJets_JetTauFakeRate_NoLep, selVLooseTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"), selJets_JetTauFakeRate_NoLep, selLooseTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"),  selJets_JetTauFakeRate_NoLep, selLooseTausNoLep,  visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_mediumTaus"), selJets_JetTauFakeRate_NoLep, selMediumTausNoLep, visible_gen_taus, weight, isMC);
-					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_tightTaus"), selJets_JetTauFakeRate_NoLep, selTightTausNoLep, visible_gen_taus, weight, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_tightTaus"),  selJets_JetTauFakeRate_NoLep, selTightTausNoLep,  visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vtightTaus"), selJets_JetTauFakeRate_NoLep, selVTightTausNoLep, visible_gen_taus, weight, isMC);
 
 					// also large bins for (medium) jet fake rate
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
+					// met
+					fill_1d( string("met_elmu_passjets"),    100, 0, 100, systematic_mets[SYS_NOMINAL], weight);
+
+					// pu distrs
+					fill_1d( string("pileup_elmu_passjets_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
+					fill_1d( string("pileup_elmu_passjets_nGoodPV_weight"),    100, 0, 100, nGoodPV, weight);
+
+					// RHO distributions
+					fill_1d( string("rho_elmu_passjets_rawWeight"), 100, 0, 100, rho, rawWeight);
+					fill_1d( string("rho_elmu_passjets_weight"),    100, 0, 100, rho, weight);
+					fill_1d( string("rhoCentral_elmu_passjets_rawWeight"), 100, 0, 100, rhoCentral, rawWeight);
+					fill_1d( string("rhoCentral_elmu_passjets_weight"),    100, 0, 100, rhoCentral, weight);
+					fill_1d( string("rhoCentralNeutral_elmu_passjets_rawWeight"), 100, 0, 100, rhoCentralNeutral, rawWeight);
+					fill_1d( string("rhoCentralNeutral_elmu_passjets_weight"),    100, 0, 100, rhoCentralNeutral, weight);
+					fill_1d( string("rhoCentralChargedPileUp_elmu_passjets_rawWeight"), 100, 0, 100, rhoCentralChargedPileUp, rawWeight);
+					fill_1d( string("rhoCentralChargedPileUp_elmu_passjets_weight"),    100, 0, 100, rhoCentralChargedPileUp, weight);
+
 					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  1, selLooseTausNoLep.size() * weight);
 					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  2, selTausNoLep.size() * weight);
 					fill_1d(string("elmu_passjets_fakefactor_n_loose_tight_taus"), 5, 0, 5,  3, selTightTausNoLep.size() * weight);
+
+					// pt
+					fill_1d( string("elmu_passjets_lep1_pt"), 200, 0, 400, selLeptons[0].pt(), weight);
+					fill_1d( string("elmu_passjets_lep2_pt"), 200, 0, 400, selLeptons[1].pt(), weight);
+					// fill_1d( string("elmu_passjets_tau_pt"), 200, 0, 400, selTausNoLep[0].pt(), weight);
+					fill_1d( string("elmu_passjets_jet1_pt"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].pt(), weight);
+					fill_1d( string("elmu_passjets_jet2_pt"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].pt(), weight);
+					fill_1d( string("elmu_passjets_bjet_pt"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].pt(), weight);
+					// fill_1d( string("elmu_passjets_met_pt"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].pt(), weight);
+					fill_1d( string("elmu_passjets_met_pt"), 200, 0, 400, systematic_mets[SYS_NOMINAL].pt(), weight);
+
+					// energies
+					fill_1d( string("elmu_passjets_lep1_energy"), 200, 0, 400, selLeptons[0].energy(), weight);
+					fill_1d( string("elmu_passjets_lep2_energy"), 200, 0, 400, selLeptons[1].energy(), weight);
+					// fill_1d( string("elmu_passjets_tau_energy"), 200, 0, 400, selTausNoLep[0].energy(), weight);
+					fill_1d( string("elmu_passjets_jet1_energy"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].energy(), weight);
+					fill_1d( string("elmu_passjets_jet2_energy"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].energy(), weight);
+					fill_1d( string("elmu_passjets_bjet_energy"), 200, 0, 400, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].energy(), weight);
+					// fill_1d( string("elmu_passjets_met_energy"), 200, 0, 400, n_systematic_mets[SYS_NOMINAL].energy(), weight);
+					fill_1d( string("elmu_passjets_met_energy"), 200, 0, 400, systematic_mets[SYS_NOMINAL].energy(), weight);
+
+					//etas:
+					fill_1d( string("elmu_passjets_lep1_eta"), 300, -3, 3, selLeptons[0].eta(), weight);
+					fill_1d( string("elmu_passjets_lep2_eta"), 300, -3, 3, selLeptons[1].eta(), weight);
+					// fill_1d( string("elmu_passjets_tau_eta"), 300, -3, 3, selTausNoLep[0].eta(), weight);
+					fill_1d( string("elmu_passjets_jet1_eta"), 300, -3, 3, selJetsNoLep[SYS_NOMINAL][0].eta(), weight);
+					fill_1d( string("elmu_passjets_jet2_eta"), 300, -3, 3, selJetsNoLep[SYS_NOMINAL][1].eta(), weight);
+					fill_1d( string("elmu_passjets_bjet_eta"), 300, -3, 3, selBJets[SYS_NOMINAL][SYS_NOMINAL][0].eta(), weight);
+					// fill_1d( string("elmu_passjets_met_eta"), 300, -3, 3, n_systematic_mets[SYS_NOMINAL].eta(), weight);
+					fill_1d( string("elmu_passjets_met_eta"), 300, -3, 3, systematic_mets[SYS_NOMINAL].eta(), weight);
 					}
 
 				if (passJetSelection && passBtagsSelection)
