@@ -3533,7 +3533,7 @@ for(size_t f=0; f<urls.size();++f)
 			else
 				weights_FULL[s] *= weight_bTaggingSFs[SYS_NOMINAL];
 			}
-		rawWeight *= weight_bTaggingSF[SYS_NOMINAL];
+		rawWeight *= weight_bTaggingSFs[SYS_NOMINAL];
 		fill_1d(string("weight_bTaggingSF"), 200, 0., 2.,   weight_bTaggingSFs[SYS_NOMINAL], 1.);
 		fill_1d(string("weight_bTaggingSF_UP"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_UP], 1.);
 		fill_1d(string("weight_bTaggingSF_DOWN"), 200, 0., 2.,   weight_bTaggingSFs[SYS_BTAG_DOWN], 1.);
@@ -4005,7 +4005,6 @@ for(size_t f=0; f<urls.size();++f)
 					// loose taus for fake-factor method: selLooseTausNoLep
 					/* record fake rates at JER, JES and PU systematics
 					 */
-					systematic_mets[SYS_NOMINAL]
 					{ // NOMINAL
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vlooseTaus"), selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"),  selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
@@ -4058,7 +4057,8 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 					// met
-					fill_1d( string("met_elmu_passjets"),    100, 0, 100, systematic_mets[SYS_NOMINAL], weight);
+					fill_1d( string("met_elmu_passjets"),    100, 0, 100, systematic_mets[SYS_NOMINAL].pt(), weight);
+					//systematic_mets[SYS_NOMINAL];
 
 					// pu distrs
 					fill_1d( string("pileup_elmu_passjets_nGoodPV_rawWeight"), 100, 0, 100, nGoodPV, rawWeight);
