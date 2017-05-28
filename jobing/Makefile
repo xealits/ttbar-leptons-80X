@@ -4,6 +4,18 @@
 #just in case
 SHELL:=/bin/bash
 
+reduce_ntuples:
+	# job output filenames:
+	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
+	# no need for mc_channel in ntuples
+	#mkdir outdir/${job}/merged-sets
+	echo hadd-ing jobs of jobing/dtags/${dtags} dtags in outdir/${job} to merged-sets/
+	for pair in `cat jobing/dtags/${dtags}`; \
+	do                                           \
+	  echo $$pair - `echo $$pair | cut -d, -f1` _ `echo $$pair | cut -d, -f2` ;               \
+	  hadd outdir/${job}/merged-sets/"`echo $$pair | cut -d, -f1`".root outdir/${job}/"`echo $$pair | cut -d, -f1`"*[0-9].root ; \
+	done
+
 reduce:
 	# job output filenames:
 	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
