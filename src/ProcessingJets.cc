@@ -376,7 +376,6 @@ for(size_t ijet=0; ijet<jets.size(); ijet++)
 
 // The jet corrections
 
-// v6, adding jet corrections and b-tagging
 //LorentzVector full_jet_corr(0., 0., 0., 0.);
 for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	{
@@ -428,6 +427,10 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	// if a jet matches well to a genJet -- it can be just scaled and that's fine
 	// if id doesn't -- one needs to smear it with a randomizer according to the resolution and other stuff
 
+	double jet_resolution = -1;
+	double jer_sf = -1;
+	double jer_sf_up = -1;
+	double jer_sf_down = -1;
 	// here is the matching of the jet:
 	if(isMC)
 		{
@@ -440,8 +443,12 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 		//double jer_sf = jer_sf_pair[0];
 		//double jer_resolution = jer_sf_pair[1]; // TODO: not sure about this -- is the table the same as what their tool returns?
 		// getting it with the tool from files:
-		double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
-		double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
+		jet_resolution = resolution.getResolution({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho}});
+		//jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, m_systematic_variation);
+		jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::NOMINAL);
+		jer_sf_up   = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::UP);
+		jer_sf_down = resolution_sf.getScaleFactor({{JME::Binning::JetEta, jet.eta()}}, Variation::DOWN);
+
 
 		// it's needed to control smearing calculation -- do it in according branches of genJet-matching bellow
 		//fill_1d(string("control_jet_slimmedjet_jet_resolution"), 400, 0., 2., jet_resolution, weight);
@@ -514,6 +521,10 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 				}
 			}
 		}
+	jet.addUserFloat("jet_resolution", jet_resolution);
+	jet.addUserFloat("jer_sf", jer_sf);
+	jet.addUserFloat("jer_sf_up",   jer_sf_up);
+	jet.addUserFloat("jer_sf_down", jer_sf_down);
 
 	// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 	// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.

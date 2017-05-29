@@ -2624,7 +2624,7 @@ for(size_t f=0; f<urls.size();++f)
 		pat::MET MET = mets[0];
 		// LorentzVector met = mets[0].p4 ();
 
-		NT_met_init = MET.pt();
+		NT_met_init = MET.p4();
 
 		fill_1d(string("control_met_main_pt"),  200, 0., 200., MET.pt(),  weights_FULL[SYS_NOMINAL]);
 		fill_1d(string("control_met_main_phi"), 200, 0., 200., MET.phi(), weights_FULL[SYS_NOMINAL]);
@@ -2648,7 +2648,7 @@ for(size_t f=0; f<urls.size();++f)
 			fill_1d(string("control_met_slimmedMETsUncorrected_pt"), 200, 0., 200., met_uncorrected.pt(), weights_FULL[SYS_NOMINAL]);
 			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_pt"), 200, -20., 20., met_uncorrected.pt()  - MET.pt(), weights_FULL[SYS_NOMINAL]);
 			fill_1d(string("control_met_slimmedMETsUncorrected_diff_slimmedMETsMuEGClean_phi"),128, -3.2, 3.2, met_uncorrected.phi() - MET.phi(), weights_FULL[SYS_NOMINAL]);
-			NT_met_uncorrected = met_uncorrected.pt();
+			NT_met_uncorrected = met_uncorrected.p4();
 			}
 
 		if(debug){
@@ -2766,20 +2766,12 @@ for(size_t f=0; f<urls.size();++f)
 		// there are the NT output leptons
 		// the event will be recorded in NT if there are 1 or 2 clean leptons
 		// max output of leptons = 2
-		for (int i = 0; i<selLeptons.size() && i<NT_LEPTONS_N; i++)
+		NT_lep0_id = selLeptons[0].pdgId();
+		NT_lep0_p4 = selLeptons[0].p4();
+		if (selLeptons.size() == 2)
 			{
-			switch(i)
-				{
-				NT_lep(0, selLeptons[i].pdgId(), selLeptons[i].eta(), selLeptons[i].phi(), selLeptons[i].pt(), selLeptons[i].p())
-				NT_lep(1, selLeptons[i].pdgId(), selLeptons[i].eta(), selLeptons[i].phi(), selLeptons[i].pt(), selLeptons[i].p())
-				default: break;
-				}
-
-			//NT_lep_id_(i)  = selLeptons[i].pdgId();
-			//NT_lep_eta_(i) = selLeptons[i].eta();
-			//NT_lep_phi_(i) = selLeptons[i].phi();
-			//NT_lep_pt_(i)  = selLeptons[i].pt();
-			//NT_lep_p_(i)   = selLeptons[i].p();
+			NT_lep1_id = selLeptons[0].pdgId();
+			NT_lep1_p4 = selLeptons[0].p4();
 			}
 
 		// record "ID of the channel" -- product of lepton IDs
@@ -2858,7 +2850,7 @@ for(size_t f=0; f<urls.size();++f)
 			//NT_tau_pt_(i)  = tau.pt();
 			//NT_tau_p_(i)  = tau.p();
 
-			Float_t IDlev = 0;
+			Int_t IDlev = 0;
 			if (tau.tauID(tau_Tight_ID)) IDlev = 3;
 			else if (tau.tauID(tau_ID)) IDlev = 2;
 			else if (tau.tauID(tau_Loose_ID)) IDlev = 1;
@@ -2866,8 +2858,8 @@ for(size_t f=0; f<urls.size();++f)
 
 			switch(i)
 				{
-				NT_tau(0, tau.pdgId(), tau.eta(), tau.phi(), tau.pt(), tau.p(), IDlev)
-				NT_tau(1, tau.pdgId(), tau.eta(), tau.phi(), tau.pt(), tau.p(), IDlev)
+				NT_tau(0, tau, IDlev)
+				NT_tau(1, tau, IDlev)
 				default: break;
 				}
 
@@ -2961,11 +2953,11 @@ for(size_t f=0; f<urls.size();++f)
 		Variation jet_m_systematic_variation = Variation::NOMINAL;
 
 		processJets_CorrectJES_SmearJERnJES_ID_ISO(jets, genJets, isMC, weight, NT_fixedGridRhoFastjetAll, nGoodPV, jesCor, totalJESUnc, 0.4/2,
-			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, with_PU, r3, full_jet_corr, IDjets, true, debug);
+			jet_resolution_in_pt, jet_resolution_sf_per_eta, jet_m_systematic_variation, jetID, jetPUID, /*with_PU*/ false, r3, full_jet_corr, IDjets, true, debug);
 
 		LorentzVector MET_corrected = MET.p4() - full_jet_corr;
 		met_corrected = MET_corrected.pt();
-		NT_met_corrected = MET_corrected.pt();
+		NT_met_corrected = MET_corrected.p4();
 
 		pat::JetCollection selJets;
 		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
@@ -3005,14 +2997,34 @@ for(size_t f=0; f<urls.size();++f)
 			{
 			pat::Jet& jet = selJetsNoLep[i];
 
+			// find dR match to ID jet and gen_jet
+			LorentzVector id_jet_p4(0,0,0,0);
+			for (int j=0; j<IDjets.size(); j++)
+				{
+				if (reco::deltaR(jet, IDjets[j]) < 0.4)
+					{
+					id_jet_p4 = IDjets[j].p4();
+					break;
+					}
+				}
+			LorentzVector gen_jet_p4(0,0,0,0);
+			for (int j=0; j<genJets.size(); j++)
+				{
+				if (reco::deltaR(jet, genJets[j]) < 0.4)
+					{
+					gen_jet_p4 = genJets[j].p4();
+					break;
+					}
+				}
+
 			//jet.bDiscriminator(btagger_label)
 			// marrying C macro and dynamic stuff (actully this should also be generated with macro)
 			switch(i) {
-				NT_jet(0, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
-				NT_jet(1, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
-				NT_jet(2, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
-				NT_jet(3, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
-				NT_jet(4, jet.pdgId(), jet.eta(), jet.phi(), jet.pt(), jet.p(), jet_radius(jet), jet.bDiscriminator(btagger_label), jet.hadronFlavour(), jet.partonFlavour())
+				NT_jet(0, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
+				NT_jet(1, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
+				NT_jet(2, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
+				NT_jet(3, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
+				NT_jet(4, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
 				default: break;
 				}
 
@@ -3138,7 +3150,7 @@ for(size_t f=0; f<urls.size();++f)
 			LorentzVector dileptonSystem = selLeptons[0].p4() + selLeptons[1].p4();
 			pass_dileptons = dileptonSystem.mass() > 20;
 			}
-		bool record_ntuple = (met_corrected > 20) && njets >= 1 && (isSingleMu || isSingleE || pass_dileptons);
+		bool record_ntuple = (met_corrected > 30) && njets >= 1 && (isSingleMu || isSingleE || pass_dileptons);
 		// record if event has 1 or 2 well isolated leptons
 		// MET > 20
 		// and at least 2 jets (maybe record 1-jet events for background later)
