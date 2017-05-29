@@ -262,7 +262,7 @@ NT_jet ##i ##_partonFlavour     = jet.partonFlavour(); \
 break; }
 
 #define NT_tau(i, tau, IDlev) case i: { \
-NT_tau ##i ##_id    = id; \
+NT_tau ##i ##_id    = tau.pdgId(); \
 NT_tau ##i ##_p4    = tau.p4(); \
 NT_tau ##i ##_IDlev = IDlev; \
 break; }
@@ -271,25 +271,25 @@ break; }
 
 // the automatic reset of all parameters for now
 #define RESET_JET(num) \
-jet##num##_id = -1; \
-jet##num##_initial_p4.SetXYZT(0,0,0,0); \
-jet##num##_p4.SetXYZT(0,0,0,0);  \
-jet##num##_uncorrected_p4.SetXYZT(0,0,0,0); \
-jet##num##_matched_genjet_p4.SetXYZT(0,0,0,0); \
-jet##num##_resolution = -1; \
-jet##num##_sf = -1; \
-jet##num##_sf_up = -1; \
-jet##num##_sf_down = -1; \
-jet##num##_rad = -1; \
-jet##num##_pu_discr = -1; \
-jet##num##_b_discr = -1; \
-jet##num##_hadronFlavour = -1; \
-jet##num##_partonFlavour = -1;
+NT_jet##num##_id = -1; \
+NT_jet##num##_initial_p4.SetXYZT(0,0,0,0); \
+NT_jet##num##_p4.SetXYZT(0,0,0,0);  \
+NT_jet##num##_uncorrected_p4.SetXYZT(0,0,0,0); \
+NT_jet##num##_matched_genjet_p4.SetXYZT(0,0,0,0); \
+NT_jet##num##_resolution = -1; \
+NT_jet##num##_sf = -1; \
+NT_jet##num##_sf_up = -1; \
+NT_jet##num##_sf_down = -1; \
+NT_jet##num##_rad = -1; \
+NT_jet##num##_pu_discr = -1; \
+NT_jet##num##_b_discr = -1; \
+NT_jet##num##_hadronFlavour = -1; \
+NT_jet##num##_partonFlavour = -1;
 
 #define RESET_TAU(num) \
-tau##num##_id = -1; \
-tau##num##_p4.SetXYZT(0,0,0,0); \
-tau##num##_IDlev = -1;
+NT_tau##num##_id = -1; \
+NT_tau##num##_p4.SetXYZT(0,0,0,0); \
+NT_tau##num##_IDlev = -1;
 
 #define RESET_NTUPLE_PARAMETERS \
 NT_aMCatNLO_weight = -1; \
@@ -310,9 +310,9 @@ NT_nleps = -1; \
 NT_njets = -1; \
 NT_nbjets = -1; \
 NT_ntaus = -1; \
-NT_met_init = -1; \
-NT_met_uncorrected = -1; \
-NT_met_corrected = -1; \
+NT_met_init.SetXYZT(0,0,0,0); \
+NT_met_uncorrected.SetXYZT(0,0,0,0); \
+NT_met_corrected.SetXYZT(0,0,0,0); \
 NT_lj_peak_distance = -1; \
 NT_lj_taumatched_peak_distance = -1; \
 NT_tau_decay = -1; \

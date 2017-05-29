@@ -2957,7 +2957,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector MET_corrected = MET.p4() - full_jet_corr;
 		met_corrected = MET_corrected.pt();
-		NT_met_corrected = MET_corrected.p4();
+		NT_met_corrected = MET_corrected;
 
 		pat::JetCollection selJets;
 		processJets_Kinematics(IDjets, /*bool isMC,*/ weight, jet_kino_cuts_pt, jet_kino_cuts_eta, selJets, true, debug);
