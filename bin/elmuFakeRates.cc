@@ -4057,7 +4057,7 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs_large_bins(string("elmu_"), string("passjets"), selJets_JetTauFakeRate_NoLep, selTaus_JetTauFakeRate_NoLep, visible_gen_taus, weight, isMC);
 
 					// met
-					fill_1d( string("met_elmu_passjets"),    100, 0, 100, systematic_mets[SYS_NOMINAL].pt(), weight);
+					fill_1d( string("met_elmu_passjets"),    100, 0, 500, systematic_mets[SYS_NOMINAL].pt(), weight);
 					//systematic_mets[SYS_NOMINAL];
 
 					// pu distrs

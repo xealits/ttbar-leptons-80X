@@ -23,8 +23,11 @@ reduce:
 	echo hadd-ing jobs of jobing/dtags/${dtags} dtags in outdir/${job} to merged-sets/
 	for pair in `cat jobing/dtags/${dtags}`; \
 	do                                           \
-	  echo $$pair - `echo $$pair | cut -d, -f1` _ `echo $$pair | cut -d, -f2` ;               \
-	  hadd outdir/${job}/merged-sets/"`echo $$pair | cut -d, -f1`"_`echo $$pair | cut -d, -f2`.root outdir/${job}/"`echo $$pair | cut -d, -f1`"*.`echo $$pair | cut -d, -f2`.root ; \
+	  echo $$pair - `echo $$pair | cut -d, -f1` _ `echo $$pair | cut -d, -f2` ;                                     \
+	  if ls -U outdir/${job}/"`echo $$pair | cut -d, -f1`"*.`echo $$pair | cut -d, -f2`.root 1> /dev/null ;      \
+	  then   \
+	     hadd outdir/${job}/merged-sets/"`echo $$pair | cut -d, -f1`"_`echo $$pair | cut -d, -f2`.root outdir/${job}/"`echo $$pair | cut -d, -f1`"*.`echo $$pair | cut -d, -f2`.root ; \
+	  fi ; \
 	done
 
 #for new job format:
@@ -410,6 +413,24 @@ elmu_fake_rates_taus_distrs_all:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_tau_jets_distr_eta   " tightTaus tau #eta "   " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_pt   " vtightTaus tau p_{T} " " Events/bin "  1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_tau_jets_distr_eta  " vtightTaus tau #eta "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
+elmu_fake_rates_control_plots:
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} met_elmu_passjets   " Missing E_{T} " " Events/bin "  5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_met_pt   " Missing E_{T} " " Events/bin "  5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} pileup_elmu_passjets_nGoodPV_rawWeight  " N vertices "  " Raw Events "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} pileup_elmu_passjets_nGoodPV_weight     " N vertices "  " Weighted Events "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} rho_elmu_passjets_rawWeight     " #rho "  " Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} rho_elmu_passjets_weight        " #rho "  " Weighted Events/bin "   1 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_lep1_pt        " leading lepton p_{T} "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_lep2_pt        " second  lepton p_{T} "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_jet1_pt        " leading jet p_{T} "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_jet2_pt        " second  jet p_{T} "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_lep1_eta        " leading lepton #eta "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_lep2_eta        " second  lepton #eta "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_jet1_eta        " leading jet #eta "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_jet2_eta        " second  jet #eta "  " Events/bin "   5 -1 -1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
+
 
 # FAKE RATE
 elmu_fake_rates:
