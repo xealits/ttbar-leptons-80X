@@ -3150,7 +3150,7 @@ for(size_t f=0; f<urls.size();++f)
 			LorentzVector dileptonSystem = selLeptons[0].p4() + selLeptons[1].p4();
 			pass_dileptons = dileptonSystem.mass() > 20;
 			}
-		bool record_ntuple = (met_corrected > 30) && njets >= 1 && (isSingleMu || isSingleE || pass_dileptons);
+		bool record_ntuple = (met_corrected > 30) && njets >= 2 && (isSingleMu || isSingleE || pass_dileptons);
 		// record if event has 1 or 2 well isolated leptons
 		// MET > 20
 		// and at least 2 jets (maybe record 1-jet events for background later)

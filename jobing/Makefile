@@ -380,6 +380,28 @@ calculate_prejson:
 	mv "${prejson}".json analysis/job-lumis
 	mv "${prejson}".brilcalc.out analysis/job-lumis
 
+cutncount_pretau_selection_control_mu:
+	#control_met_singlemu_pretau_pt_eta
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_met_singlemu_pretau_pt_eta  f " E^{miss}_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_jet_singlemu_pretau_selJetsNoLep_pt_eta  f " jet p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_jet_singlemu_pretau_selJetsNoLep_pt_eta  f " jet #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_lep_singlemu_pretau_selLeptons_pt_eta  f " lepton p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_lep_singlemu_pretau_selLeptons_pt_eta  f " lepton #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_tau_singlemu_pretau_selTausNoLep_pt_eta  f " tau p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_tau_singlemu_pretau_selTausNoLep_pt_eta  f " tau #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} singlemu_pretauselection_njetsNoLep  f " N jets " " Events/bin " 1 3 10 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
+cutncount_pretau_selection_control_el:
+	#control_met_singleel_pretau_pt_eta
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_met_singleel_pretau_pt_eta  f " E^{miss}_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_jet_singleel_pretau_selJetsNoLep_pt_eta  f " jet p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_jet_singleel_pretau_selJetsNoLep_pt_eta  f " jet #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_lep_singleel_pretau_selLeptons_pt_eta  f " lepton p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_lep_singleel_pretau_selLeptons_pt_eta  f " lepton #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} x control_tau_singleel_pretau_selTausNoLep_pt_eta  f " tau p_{T} " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo2d_distr_with_ratio f ${logy} ${lumi} y control_tau_singleel_pretau_selTausNoLep_pt_eta  f " tau #eta " " Events/bin " 2 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi}     singleel_pretauselection_njetsNoLep  f " N jets " " Events/bin " 1 3 10 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
 
 # elmu FAKERATES direct distrs
 elmu_fake_rates_jets_distrs_medium:
