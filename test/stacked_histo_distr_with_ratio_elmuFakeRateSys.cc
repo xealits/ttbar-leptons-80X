@@ -16,6 +16,7 @@
 #include "TNtuple.h"
 #include <Math/VectorUtil.h>
 #include "TPaveText.h"
+#include "TMath.h"
 
 #include "TStyle.h"
 
@@ -102,6 +103,8 @@ std::map<TString, TH1D *> nicknamed_mc_histos;
 THStack *hs      = new THStack("hs", "");
 TH1D    *hs_data = NULL;
 
+vector<TH1D*> hs_mc_sys = {NULL, NULL, NULL, NULL, NULL, NULL};
+
 TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
@@ -116,7 +119,8 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	files.push_back(TFile::Open(dir + "/" + dtag + ".root"));
 	//dtags.push_back(5);
 	bool isData = dtag.Contains("Data");
-	TString distr = (isData? distr_data : distr_mc);
+	//TString distr = (isData? distr_data : distr_mc);
+	TString distr = distr_data;
 
 	if (!files.back()->GetListOfKeys()->Contains(distr))
 		{
@@ -129,9 +133,10 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 
 	TH1D* histo = (TH1D*) files.back()->Get(distr);
 
+	Double_t ratio = 1;
 	if (!isData)
 		{
-		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
+		ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
 		histo->Scale(ratio);
 		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 		histo->Print();
@@ -205,10 +210,63 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		else
 			nicknamed_mc_histos[nick]->Add(histos.back());
 
-		//hs->Add(histos.back(), "HIST");
+		// for MC also add up the systematic histograms
+		// elmu_passjets_mediumTaus_jets_distr_pt  elmu_passjets_PU_UP_mediumTaus_jets_distr_pt
+		TString distr_PU_UP = distr;
+		TString distr_PU_DOWN = distr;
+		TString distr_JER_UP = distr;
+		TString distr_JER_DOWN = distr;
+		TString distr_JES_UP = distr;
+		TString distr_JES_DOWN = distr;
+		distr_PU_UP    .ReplaceAll("_mediumTaus", "_PU_UP_mediumTaus");
+		distr_PU_DOWN  .ReplaceAll("_mediumTaus", "_PU_DOWN_mediumTaus");
+		distr_JER_UP   .ReplaceAll("_mediumTaus", "_JER_UP_mediumTaus");
+		distr_JER_DOWN .ReplaceAll("_mediumTaus", "_JER_DOWN_mediumTaus");
+		distr_JES_UP   .ReplaceAll("_mediumTaus", "_JES_UP_mediumTaus");
+		distr_JES_DOWN .ReplaceAll("_mediumTaus", "_JES_DOWN_mediumTaus");
+		vector<TString*> sys_distrs = { &distr_PU_UP, &distr_PU_DOWN, &distr_JER_UP, &distr_JER_DOWN, &distr_JES_UP, &distr_JES_DOWN };
+
+		for (int i=0; i< sys_distrs.size(); i++)
+			{
+			TString& distr = *sys_distrs[i];
+			cout << "sys:\t" << distr << '\t';
+		        if (!files.back()->GetListOfKeys()->Contains(distr))
+		                {
+		                cout << "no " << distr << endl;
+		                continue;
+				}
+
+			TH1D* histo = (TH1D*) files.back()->Get(distr);
+
+			histo->Scale(ratio);
+			if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+			// and normalize per bin-width:
+			for (Int_t i=0; i<=histo->GetSize(); i++)
+				{
+				//yAxis->GetBinLowEdge(3)
+				double content = histo->GetBinContent(i);
+				double error   = histo->GetBinError(i);
+				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+				histo->SetBinContent(i, content/width);
+				histo->SetBinError(i, error/width);
+				}
+
+			if (hs_mc_sys[i])
+				{
+				cout << "adding" << '\t';
+				hs_mc_sys[i]->Add(histo);
+				cout << "added" << endl;
+				}
+			else
+				{
+				cout << "clonning" << '\t';
+				hs_mc_sys[i] = (TH1D*) histo->Clone();
+				cout << "cloned" << endl;
+				}
+			}
+
 		}
 	}
-
 // build the sum of MC
 // it has to be done before building the stack because ROOT is crap
 // yep, you cannot scale a stack after it's been built
@@ -230,6 +288,67 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	else
 		hs_sum->Add(distr);
 	}
+
+// now hs_sum VS systematics can be done
+TH1D* hs_mc_PU_UP    = hs_mc_sys[0];
+TH1D* hs_mc_PU_DOWN  = hs_mc_sys[1];
+TH1D* hs_mc_JER_UP   = hs_mc_sys[2];
+TH1D* hs_mc_JER_DOWN = hs_mc_sys[3];
+TH1D* hs_mc_JES_UP   = hs_mc_sys[4];
+TH1D* hs_mc_JES_DOWN = hs_mc_sys[5];
+cout << "sys subtraction " << endl;
+hs_sum->Print();
+hs_mc_PU_UP   ->Print();
+hs_mc_PU_DOWN ->Print();
+hs_mc_JES_UP   ->Print();
+hs_mc_JES_DOWN ->Print();
+hs_mc_JER_UP   ->Print();
+hs_mc_JER_DOWN ->Print();
+//hs_mc_PU_UP   ->Add(hs_sum, -1);
+//hs_mc_PU_DOWN ->Add(hs_sum, -1);
+//hs_mc_JER_UP  ->Add(hs_sum, -1);
+//hs_mc_JER_DOWN->Add(hs_sum, -1);
+//hs_mc_JES_UP  ->Add(hs_sum, -1);
+//hs_mc_JES_DOWN->Add(hs_sum, -1);
+TFile* test_f = TFile::Open( dir + "/jobsums/TEST_" + distr_mc + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.root" : ".root"), "RECREATE" );
+
+hs_mc_PU_UP   ->Write();
+hs_mc_PU_DOWN ->Write();
+hs_mc_JER_UP  ->Write();
+hs_mc_JER_DOWN->Write();
+hs_mc_JES_UP  ->Write();
+hs_mc_JES_DOWN->Write();
+
+test_f->Write();
+test_f->Close();
+
+// now set this errors in mc sum
+for (int i=0; i<=hs_sum->GetSize(); i++)
+	{
+	double mc_content = hs_sum->GetBinContent(i);
+	double mc_error   = hs_sum->GetBinError(i);
+
+	double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
+	double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
+	double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
+
+	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES);
+	cout << mc_error << '_' << sys_error << '/' << mc_content << ' ';
+
+	/*
+	if (mc_content > 0)
+		{
+		hs_sum->SetBinContent(i, 1);
+		hs_sum->SetBinError(i, mc_error/mc_content);	
+		}
+	else
+		{
+		hs_sum->SetBinContent(i, 1);
+		hs_sum->SetBinError(i, mc_error);
+		}
+	*/
+	}
+
 
 // scale MC to Data
 double scale = 1.0;

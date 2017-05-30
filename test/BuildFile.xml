@@ -46,7 +46,9 @@
   <bin name="jet_fakerate_separate_origins_full_csv"  file="jet_fakerate_separate_origins_full_csv.cc"></bin>
   <bin name="jet_proportions_per_origins_full_csv"    file="jet_proportions_per_origins_full_csv.cc"></bin>
 
+  <bin name="stacked_histo_distr_with_ratio_elmuFakeRateSys"   file="stacked_histo_distr_with_ratio_elmuFakeRateSys.cc"></bin>
   <bin name="stacked_histo_distr_with_ratio"   file="stacked_histo_distr_with_ratio.cc"></bin>
+
   <bin name="stacked_histo_distr2D"            file="stacked_histo_distr2D.cc"></bin>
   <bin name="stacked_histo_distr2D_with_ratio" file="stacked_histo_distr2D_with_ratio.cc"></bin>
 
