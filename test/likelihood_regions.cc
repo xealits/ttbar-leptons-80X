@@ -48,7 +48,8 @@ TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TStri
 	{
 	// the interface to NT_output_ttree
 	#define NTUPLE_INTERFACE_OPEN
-	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_v11_3.h"
+	//#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_v11_3.h"
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
 	bool is_MC = dtag.Contains("MC");
 	bool is_W0Jets = dtag.Contains("W0Jet"); // needed for handling WNJets
@@ -70,9 +71,9 @@ TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TStri
 		double weight = 1; // for MC
 
 		// general requirement for all events:
-		if (NT_met_corrected < 40 || fabs(NT_leps_ID) != 13) continue;
-		// the event with taus:
-		if (NT_tau_IDlev_0 != 3. && NT_tau_IDlev_1 != 3.) continue;
+		if (NT_met_corrected.pt() < 40 || fabs(NT_leps_ID) != 13) continue;
+		// the event with taus (2 = medium):
+		if (NT_tau_IDlev_0 < 2. && NT_tau_IDlev_1 < 2.) continue;
 
 		// find basic weight:
 		//  * -1 aMCatNLO & NUP for WJets
@@ -90,22 +91,23 @@ TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TStri
 			weight *= pileup_ratio[(int)NT_nvtx_gen];
 
 		// select event categories
-		if ((NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
-		if ((NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
-		if ((NT_nbjets == 1) && (NT_njets == 5)) event_category = 2;
-		if ((NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
-		if ((NT_nbjets > 1)  && (NT_njets == 3)) event_category = 4;
-		if ((NT_nbjets > 1)  && (NT_njets == 4)) event_category = 5;
-		if ((NT_nbjets > 1)  && (NT_njets == 5)) event_category = 6;
-		if ((NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+		const double lj_dist = 500;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 5)) event_category = 2;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 3)) event_category = 4;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category = 5;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category = 6;
+		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
 
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 8;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 9;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets == 5)) event_category =10;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category =11;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category =12;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category =13;
-		if ((NT_lj_peak_distance < 500) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category =14;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 8;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 9;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 5)) event_category =10;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category =11;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category =12;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category =13;
+		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category =14;
 
 		h->Fill(event_category, weight);
 		}
