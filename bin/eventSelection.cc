@@ -3573,8 +3573,8 @@ for(size_t f=0; f<urls.size();++f)
 		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
 		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
 		// FIXME: TESTING new, trigger-less channel assignment
-		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
-		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
+		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions && !isSingleElectronDataset;
+		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions &&  isSingleElectronDataset;
 
 		// TODO: this kind of thing:
 		// if (isSingleMu) fill_pt_e( string("met0_all_leptoncorr_jetcorr_singlemu_pt"), met.pt(), weight);
@@ -3649,9 +3649,11 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: remove tau-selection below?
 			int dilep_ids = selLeptons[0].pdgId() * selLeptons[1].pdgId();
 
-			if (fabs(dilep_ids) == 121 )
+			isDoubleE  = fabs(dilep_ids) == 121 &&  isSingleElectronDataset; // clear luminosity of processed data, scale factors etc and pract. max eff
+			isDoubleMu = fabs(dilep_ids) == 169 && !isSingleElectronDataset;
+			isEMu      = fabs(dilep_ids) == 143 && !isSingleElectronDataset;
+			if (isDoubleE)
 				{
-				isDoubleE = true;
 				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 
@@ -3667,9 +3669,8 @@ for(size_t f=0; f<urls.size();++f)
 
 				//weight *= 1 - (1 - electron_HLTeff_SF1)*(1 - electron_HLTeff_SF2);
 				}
-			else if (fabs(dilep_ids) == 169 )
+			if (isDoubleMu)
 				{
-				isDoubleMu = true;
 				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 
@@ -3685,9 +3686,8 @@ for(size_t f=0; f<urls.size();++f)
 				Double_t muon_HLTeff_SF2 = 1;
 				//weight *= 1 - (1 - muon_HLTeff_SF1)*(1 - muon_HLTeff_SF2);
 				}
-			else
+			if (isEMu)
 				{
-				isEMu = true;
 				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 

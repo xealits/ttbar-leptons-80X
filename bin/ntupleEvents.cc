@@ -2508,11 +2508,21 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		else return 233;
 
-		// if data and SingleElectron dataset and both triggers -- skip event
-		// i.e. SingleElectron + HLT mu are removed
+		/* 
+		 * in order to account for prescaled El lumi certificate the orthoganalization is different
+		 *     each dataset type (singleEle and singleMu) process ElMu HLT combination
+		 *     and orthogonalized by found particles -- 1 isolated electron or 1 isolated muon
+		 *     thus the luminosity is well calculated from json of each data jobs
+		 *     and efficiency is maximum
+		 *
+		 * SingleEl can process only HLT El + anything events, SingleMu + HLT Mu + anything
+		 * -- faster, a bit less efficient, clear how to apply Trigger SF
+		 */
 		if (!debug) {
-			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
+			//if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
+			if (!isMC && ( isSingleElectronDataset && !eTrigger)) continue;  // SingleEl processes only events with HLT El
+			if (!isMC && (!isSingleElectronDataset && !muTrigger)) continue; // SingleMu processes only events with HLT Mu
 		}
 
 		if (eTrigger)  NT_HLT_el = 1;
@@ -3108,8 +3118,8 @@ for(size_t f=0; f<urls.size();++f)
 		// TODO: test if trigger needed here at all
 		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
 		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
-		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions;
-		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions;
+		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions && !isSingleElectronDataset;
+		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions &&  isSingleElectronDataset;
 
 		if(debug){
 			cout << "assigned lepton channel" << endl;
@@ -3121,21 +3131,21 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: remove tau-selection below?
 			int dilep_ids = selLeptons[0].pdgId() * selLeptons[1].pdgId();
 
-			if (fabs(dilep_ids) == 121 )
+			isDoubleE  = fabs(dilep_ids) == 121 &&  isSingleElectronDataset; // clear luminosity of processed data, scale factors etc and pract. max eff
+			isDoubleMu = fabs(dilep_ids) == 169 && !isSingleElectronDataset;
+			isEMu      = fabs(dilep_ids) == 143 && !isSingleElectronDataset;
+			if (isDoubleE)
 				{
-				isDoubleE = true;
 				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 				}
-			else if (fabs(dilep_ids) == 169 )
+			if (isDoubleMu)
 				{
-				isDoubleMu = true;
 				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_doublemu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 				}
-			else
+			if (isEMu)
 				{
-				isEMu = true;
 				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
 				fill_pt_e( string("leptons_emu_2leptons_pt"), selLeptons[1].pt(), weights_FULL[SYS_NOMINAL]);
 				}
