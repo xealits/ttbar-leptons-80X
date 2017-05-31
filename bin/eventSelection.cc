@@ -1501,6 +1501,11 @@ bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
 
 // Prescriptions taken from:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
+// Moriond17
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+// and b-mis-tag SFs for light jets per Run:
+// https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation80XReReco#Data_MC_Scale_Factors_period_dep
+
 
 // new btag calibration
 // TODO: check callibration readers in https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
