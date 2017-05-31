@@ -36,7 +36,7 @@
 
 
 #define INPUT_DTAGS_START 4
-#define NTUPLE_NAME "ntuple"
+#define NTUPLE_NAME "reduced_ttree"
 
 using namespace std;
 
@@ -53,8 +53,11 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0};
 
 
-TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TString& dtag)
+TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TString& dtag)
 	{
+	//cout << "frame pull regions" << endl;
+	//cout << "from ttree" << endl;
+	//NT_output_ttree->Print();
 	// the interface to NT_output_ttree
 	#define NTUPLE_INTERFACE_OPEN
 	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
@@ -66,20 +69,28 @@ TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TStri
 	// the histogram with yields in event categories
 	TH1D* h = new TH1D(histo_name, ";;", 15, 0, 15);
 
+	NT_output_ttree->GetEntry(0);
+
+	//cout << "to the loop" << endl;
 	/* Loop through events, find weights, skip stuff, record if they pass to any category
 	 */
-	for (Long64_t i=0; i<NT_output_ttree.GetEntries(); i++)
+	for (Long64_t i=0; i<2 && i<NT_output_ttree->GetEntries(); i++)
 	//for (Long64_t i=0; i<10; i++)
 		{
-		NT_output_ttree.GetEntry(i);
+		//cout << i;
+		NT_output_ttree->GetEntry(i);
 		// test:
 		//cout << NT_NUP_gen << '\t' << NT_aMCatNLO_weight << '\t' << NT_nvtx_gen << '\t' << (int) NT_nvtx_gen << endl;
+		//cout << "\tgot entry" << endl;
 
 		int event_category = -1;
 		double weight = 1; // for MC
 
+		cout << NT_met_corrected << endl;
+		cout << *NT_met_corrected << endl;
+
 		// general requirement for all events:
-		if (NT_met_corrected.pt() < 40 || fabs(NT_leps_ID) != 13) continue;
+		if (NT_met_corrected->pt() < 40 || fabs(NT_leps_ID) != 13) continue;
 		// the event with taus (2 = medium):
 		if (NT_tau0_IDlev < 2. && NT_tau1_IDlev < 2.) continue;
 
@@ -177,8 +188,11 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 
 	// it's actually TNtuple, which descends from TTree thus should open ok
 	TTree* ntuple = (TTree*) file->Get(NTUPLE_NAME);
+	cout << "ttree pointer " << ntuple << endl;
+	//ntuple->Print();
 
-	TH1D* histo = pull_likelihood_regions(*ntuple, histo_name, dtag);
+	if (be_verbose) cout << "getting the regions" << endl;
+	TH1D* histo = pull_likelihood_regions(ntuple, histo_name, dtag);
 
 
 	if (dtag.Contains("Data"))
@@ -225,7 +239,12 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 		TH1D * weightflow;
 		// actually, only 1 number will be needed:
 		double normal_initial_weight = 0;
-		if (file->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
+		if (file->GetListOfKeys()->Contains("eventflow"))
+			{
+			weightflow = (TH1D*) file->Get("eventflow");
+			normal_initial_weight = weightflow->GetBinContent(11);
+			}
+		else if (file->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
 			{
 			weightflow = (TH1D*) file->Get("weightflow_elel_NOMINAL");
 			normal_initial_weight = weightflow->GetBinContent(11);
