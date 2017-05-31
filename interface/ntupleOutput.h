@@ -58,12 +58,12 @@
  *    2) the branch name in the ntuple is `Name`
  */
 #if defined(NTUPLE_INTERFACE_CREATE)
-	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.Branch(#Name, #Class, &NT_##Name)
+	#define OBJECT_in_NTuple(NTuple, CLASS, Name)   CLASS   NT_##Name; NTuple.Branch(#Name, #CLASS, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
 	#define Int_t_in_NTuple(NTuple, Name)           Int_t   NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/I")
 	#define Bool_t_in_NTuple(NTuple, Name)          Bool_t  NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/O")
 #elif defined(NTUPLE_INTERFACE_OPEN)
-	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.SetBranchAddress(#Name, &NT_##Name)
+	#define OBJECT_in_NTuple(NTuple, CLASS, Name)   CLASS   NT_##Name; NTuple.SetBranchAddress(#Name, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         OBJECT_in_NTuple(NTuple, Float_t, Name)
 	#define Int_t_in_NTuple(NTuple, Name)           OBJECT_in_NTuple(NTuple, Int_t, Name)
 	#define Bool_t_in_NTuple(NTuple, Name)          OBJECT_in_NTuple(NTuple, Bool_t, Name)
@@ -135,6 +135,9 @@
  * MET filters and lumisection certificate are done on the fly at ntuple production
  * lumi passes after MET filters -- to properly account for it in luminosity
  */
+
+// the exact LorentzVector declaration
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 // the interface (all Float_ts, compatibility to first runs with TNtuple)
 Float_t_in_NTuple(OUTNTUPLE, aMCatNLO_weight);

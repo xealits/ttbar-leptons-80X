@@ -1,5 +1,11 @@
 #include <iostream>
 
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
+#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+//#include "TauAnalysis/SVfitStandalone/interface/SVfitStandaloneAlgorithm.h" //for svfit
+
 #include "TSystem.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -15,6 +21,8 @@
 #include "TROOT.h"
 #include "TNtuple.h"
 #include <Math/VectorUtil.h>
+#include "TMath.h"
+#include "Math/GenVector/LorentzVector.h"
 
 #include "TStyle.h"
 
@@ -44,11 +52,11 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
+
 TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TString& dtag)
 	{
 	// the interface to NT_output_ttree
 	#define NTUPLE_INTERFACE_OPEN
-	//#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_v11_3.h"
 	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
 
 	bool is_MC = dtag.Contains("MC");
@@ -73,7 +81,7 @@ TH1D* pull_likelihood_regions(TTree& NT_output_ttree, TString& histo_name, TStri
 		// general requirement for all events:
 		if (NT_met_corrected.pt() < 40 || fabs(NT_leps_ID) != 13) continue;
 		// the event with taus (2 = medium):
-		if (NT_tau_IDlev_0 < 2. && NT_tau_IDlev_1 < 2.) continue;
+		if (NT_tau0_IDlev < 2. && NT_tau1_IDlev < 2.) continue;
 
 		// find basic weight:
 		//  * -1 aMCatNLO & NUP for WJets
