@@ -2652,11 +2652,21 @@ for(size_t f=0; f<urls.size();++f)
 		// SingleMuon-dataset jobs process double-HLT events
 		// SingleElectron-dataset jobs skip them
 
-		// if data and SingleElectron dataset and both triggers -- skip event
-		// i.e. SingleElectron + HLT mu are removed
+		/* if data and SingleElectron dataset and both triggers -- skip event
+		 * i.e. SingleElectron + HLT mu are removed
+		 * --- no, in order to account for prescaled El lumi certificate the orthoganalization is different
+		 *     each dataset type (singleEle and singleMu) process ElMu HLT combination
+		 *     and orthogonalized by found particles -- 1 isolated electron or 1 isolated muon
+		 *     thus the luminosity is well calculated from json of each data jobs
+		 *     and efficiency is maximum
+		 *
+		 * SingleEl can process only HLT El + anything events, SingleMu + HLT Mu + anything
+		 * -- faster, a bit less efficient, clear how to apply Trigger SF
+		 */
 		if (!debug) {
-			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
+			if (!isMC && ( isSingleElectronDataset && !eTrigger)) continue;  // SingleEl processes only events with HLT El
+			if (!isMC && (!isSingleElectronDataset && !muTrigger)) continue; // SingleMu processes only events with HLT Mu
 		}
 
 		// TODO: ----------------------------- HLT efficiency scale factors
