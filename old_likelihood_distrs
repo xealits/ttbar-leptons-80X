@@ -1,0 +1,14 @@
+lumi=34850
+
+stacked_histo_distr_with_ratio f T f f $lumi event_yields same "" event_yields " Events/Cathegory " 1 -1 -1 0 5500 0.5 /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.3_merged-sets/jobsums/yields/ `cat dtags_v11.3_old_mu_noqcd`
+
+stacked_histo_distr_with_ratio f T f f $lumi lj_peak_distance_inclusive same "" lj_peak_distance_inclusive " Events/Cathegory " 1 -1 -1 -1 -1 0.5 /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.3_merged-sets/jobsums/cathegories/lj_peak/ `cat dtags_v11.3_old_mu_noqcd`
+
+for d in met_pt tau_pt lep_pt jet_pt tau_eta lep_eta jet_eta nvtx nvtx_raw rho rho_raw tau_energy_ratio
+do
+    for c in lj_peak 1b3j 1b4j 1b5j 2b3j 2b4j 2b5j
+    do
+    stacked_histo_distr_with_ratio f T f f $lumi $d same _$c $d " Events/bin " 2 -1 -1 -1 -1 0.5 /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.3_merged-sets/jobsums/cathegories/$c/ `cat dtags_v11.3_old_mu_noqcd`
+    done
+done
+

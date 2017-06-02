@@ -1,0 +1,1 @@
+bsub -q 8nh -R "pool>30000" -J old_lik_leps -oo /afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/old_likelihood_job.cout '/afs/cern.ch/work/o/otoldaie/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/old_likelihood_job.sh'
