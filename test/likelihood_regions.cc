@@ -35,9 +35,6 @@
 #include "TNtuple.h"
 
 
-#define INPUT_DTAGS_START 4
-#define NTUPLE_NAME "reduced_ttree"
-
 using namespace std;
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
@@ -53,7 +50,7 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0};
 
 
-TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TString& dtag)
+TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, Long64_t event_prescale, TString& dtag)
 	{
 	//cout << "frame pull regions" << endl;
 	//cout << "from ttree" << endl;
@@ -71,10 +68,12 @@ TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TStri
 
 	NT_output_ttree->GetEntry(0);
 
+	Long64_t n_events = (Long64_t) NT_output_ttree->GetEntries() / event_prescale;
+	Long64_t j = 0;
 	//cout << "to the loop" << endl;
 	/* Loop through events, find weights, skip stuff, record if they pass to any category
 	 */
-	for (Long64_t i=0; i<2 && i<NT_output_ttree->GetEntries(); i++)
+	for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 	//for (Long64_t i=0; i<10; i++)
 		{
 		//cout << i;
@@ -83,14 +82,17 @@ TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TStri
 		//cout << NT_NUP_gen << '\t' << NT_aMCatNLO_weight << '\t' << NT_nvtx_gen << '\t' << (int) NT_nvtx_gen << endl;
 		//cout << "\tgot entry" << endl;
 
+		if (NT_njets==1) continue; // the prescale of large jobs run
+		j++;
+
 		int event_category = -1;
 		double weight = 1; // for MC
 
-		cout << NT_met_corrected << endl;
-		cout << *NT_met_corrected << endl;
+		//cout << NT_met_corrected << endl;
+		//cout << *NT_met_corrected << endl;
 
 		// general requirement for all events:
-		if (NT_met_corrected->pt() < 40 || fabs(NT_leps_ID) != 13) continue;
+		if (NT_met_corrected->pt() < 40 || fabs(NT_leps_ID) != 13 || NT_lep0_id * NT_tau0_id > 0) continue;
 		// the event with taus (2 = medium):
 		if (NT_tau0_IDlev < 2. && NT_tau1_IDlev < 2.) continue;
 
@@ -112,14 +114,16 @@ TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TStri
 		// select event categories
 		const double lj_dist = 500;
 		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 5)) event_category = 2;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 3)) event_category = 4;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category = 5;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category = 6;
-		if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+		else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
+		else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets >= 5)) event_category = 2;
+		//if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
+		else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 3)) event_category = 3;
+		else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category = 4;
+		else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets >= 5)) event_category = 5;
+		//if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+		else if (NT_lj_peak_distance < lj_dist) event_category = 6;
 
+		/*
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 8;
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 9;
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 5)) event_category =10;
@@ -127,18 +131,23 @@ TH1D* pull_likelihood_regions(TTree* NT_output_ttree, TString& histo_name, TStri
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category =12;
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets == 5)) event_category =13;
 		if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category =14;
+		*/
 
 		h->Fill(event_category, weight);
 		}
 
+	cout << "done " << j << " events from " << n_events << " max " << NT_output_ttree->GetEntries() << endl;
 	return h;
 	}
+
+#define INPUT_DTAGS_START 5
+#define NTUPLE_NAME "reduced_ttree"
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "be_verbose lumi dir dtags";
-if (argc < 4)
+char usage_string[128] = "be_verbose lumi event_prescale dir dtags";
+if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -151,8 +160,9 @@ bool be_verbose = false;
 if (verb==TString("T") || verb==TString("Y"))
 	be_verbose = true;
 double lumi = atof(argv[2]);
-TString dir(argv[3]);
-TString dtag1(argv[4]);
+Long64_t event_prescale = atoi(argv[3]);
+TString dir(argv[4]);
+TString dtag1(argv[5]);
 
 cout << be_verbose  << endl;
 cout << lumi  << endl;
@@ -191,8 +201,12 @@ for (int i = INPUT_DTAGS_START; i<argc; i++)
 	cout << "ttree pointer " << ntuple << endl;
 	//ntuple->Print();
 
-	if (be_verbose) cout << "getting the regions" << endl;
-	TH1D* histo = pull_likelihood_regions(ntuple, histo_name, dtag);
+	if (be_verbose)
+		{
+		cout << "getting the regions " << ntuple->GetEntries() << '\t' << event_prescale << '\t' << ntuple->GetEntries() / event_prescale;
+		cout << endl;
+		}
+	TH1D* histo = pull_likelihood_regions(ntuple, histo_name, event_prescale, dtag);
 
 
 	if (dtag.Contains("Data"))
@@ -314,7 +328,7 @@ if (be_verbose) cout << "built MC stack" << endl;
 // data histo
 // separate MC histos (separated by their nicknames)
 // and the MC stack
-TFile* out_f = TFile::Open (dir + TString("/jobsums/Likelihood_Regions_2_with_taus_without_qcd.root"), "CREATE");
+TFile* out_f = TFile::Open (dir + TString("/jobsums/Likelihood_Regions_2_with_taus_without_qcd.root"), "RECREATE");
 if (be_verbose) cout << "opened output file" << endl;
 data_histo->Write();
 

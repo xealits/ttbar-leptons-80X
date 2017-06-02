@@ -10,8 +10,8 @@ using namespace std;
 const double W_lep_br = 0.108;
 const double W_qar_br = 0.676;
 
-const double W_lep_br2 = 0.108*0.108;
-const double W_qar_br2 = 0.676*0.676;
+const double W_lep_br2 = W_lep_br*W_lep_br;
+const double W_qar_br2 = W_qar_br*W_qar_br;
 
 const double br_tau_electron = 0.1785;
 const double br_tau_muon     = 0.1736;
@@ -286,6 +286,9 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg", 80.95}, //70.69/2},
 {"MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg", 136.02}, //70.69/2},
 
+// inclusive sample
+{ "MC2016_Summer16_TTJets_powheg"      , ttbar_xsec },
+
 /* inclusive tau decays
 */
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
@@ -326,6 +329,49 @@ std::map<TString, double> xsecs = {
 { "MC2016_Summer16_TTJets_powheg_qq"        , ttbar_xsec * W_qar_br2 }
 
 };
+
+std::map<TString, double> xsecs_inclusive_tt = {
+/* inclusive tau decays
+*/
+{ "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_amtuu"       , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aqtu"        , ttbar_xsec},
+
+// 2 tau decays
+{ "MC2016_Summer16_TTJets_powheg_aaelmttuuu",  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aaeellttuu",  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aaehlttuu" ,  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aammttuuuu",  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aahmttuuu" ,  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_aahhttuu"  ,  ttbar_xsec},
+
+// 1 tau decays
+// leptonic tau decays
+{ "MC2016_Summer16_TTJets_powheg_aelmtuu"   ,  ttbar_xsec},
+
+{ "MC2016_Summer16_TTJets_powheg_aeelltu"   ,  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_ammtuuu"   ,  ttbar_xsec},
+
+{ "MC2016_Summer16_TTJets_powheg_aelqtu"    ,  ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_amqtuu"    ,  ttbar_xsec},
+
+// hadronic tau decays
+{ "MC2016_Summer16_TTJets_powheg_aehltu"     , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_ahmtuu"     , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_ahqtu"      , ttbar_xsec},
+
+/* no taus, taken care by inclusive tau dtags
+ */
+{ "MC2016_Summer16_TTJets_powheg_eell"      , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_elmu"      , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_elq"       , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_mmuu"      , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_mqu"       , ttbar_xsec},
+{ "MC2016_Summer16_TTJets_powheg_qq"        , ttbar_xsec}
+};
+
+
 
 // nick and colour for dtags
 std::pair<TString, Color_t> dtag_nick_colour_old(TString dtag)

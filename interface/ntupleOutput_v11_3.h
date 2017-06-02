@@ -32,7 +32,7 @@
 	#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
 	#define Int_t_in_NTuple(NTuple, Name)           Int_t   NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/I")
 #elif defined(NTUPLE_INTERFACE_OPEN)
-	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple.SetBranchAddress(#Name, &NT_##Name)
+	#define OBJECT_in_NTuple(NTuple, Class, Name)   Class   NT_##Name; NTuple->SetBranchAddress(#Name, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         OBJECT_in_NTuple(NTuple, Float_t, Name)
 	#define Int_t_in_NTuple(NTuple, Name)           OBJECT_in_NTuple(NTuple, Int_t, Name)
 #else

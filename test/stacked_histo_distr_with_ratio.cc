@@ -25,49 +25,62 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 13
+#define DTAG_ARGS_START 18
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-if (argc < 13)
+if (argc < DTAG_ARGS_START)
 	{
-	std::cout << "Usage : " << argv[0] << " normalize logy lumi distr mc_distr distr_name yname rebin_factor xmin xmax ratio_range dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << "scale_width inclusive_xsec normalize logy lumi distr mc_distr name_suffix distr_name yname rebin_factor xmin xmax ymin ymax ratio_range dir dtags" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString normalize_s(argv[1]);
+TString scaling_width(argv[1]);
+bool scale_width = false;
+if (scaling_width == TString("T") || scaling_width == TString("Y"))
+	scale_width = true;
+
+TString inclusive(argv[2]); // for ntuple output
+bool inclusive_xsec = false;
+if (inclusive == TString("T") || inclusive == TString("Y"))
+	inclusive_xsec = true;
+
+TString normalize_s(argv[3]);
 bool normalize_to_data = false;
 if (normalize_s == TString("T") || normalize_s == TString("Y"))
 	normalize_to_data = true;
 
-TString logy(argv[2]);
+TString logy(argv[4]);
 bool set_logy = false;
 if (logy == TString("T") || logy == TString("Y"))
 	set_logy = true;
 
-double lumi = atof(argv[3]);
-TString distr_data(argv[4]);
-TString distr_mc(argv[5]);
+double lumi = atof(argv[5]);
+TString distr_data(argv[6]);
+TString distr_mc(argv[7]);
 if (distr_mc == TString("f") || distr_mc == TString("same"))
 	distr_mc = distr_data;
-TString distr_name(argv[6]);
-TString yname(argv[7]);
+TString suffix(argv[8]);
+TString distr_name(argv[9]);
+TString yname(argv[10]);
 
-Int_t rebin_factor(atoi(argv[8]));
+Int_t rebin_factor(atoi(argv[11]));
 
-double xmin = atof(argv[9]);
-double xmax = atof(argv[10]);
-double ratio_range = atof(argv[11]);
+double xmin = atof(argv[12]);
+double xmax = atof(argv[13]);
+double y_min = atof(argv[14]);
+double y_max = atof(argv[15]);
+double ratio_range = atof(argv[16]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[12]);
-TString dtag1(argv[13]);
+TString dir(argv[17]);
+TString dtag1(argv[18]);
 
 bool eltau = false, mutau = false;
 if (distr_data.Contains("singleel"))
@@ -111,7 +124,7 @@ TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	cout << "processing " << dtag << endl;
+	//cout << "processing " << dtag << endl;
 	dtags.push_back(dtag);
 	files.push_back(TFile::Open(dir + "/" + dtag + ".root"));
 	//dtags.push_back(5);
@@ -124,34 +137,54 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		continue;
 		}
 
-	weightflows.push_back((TH1D*) files.back()->Get("weightflow_el_NOMINAL"));
-	weightflows.back()->Print();
+	if (files.back()->GetListOfKeys()->Contains("weightflow_el_NOMINAL"))
+		weightflows.push_back((TH1D*) files.back()->Get("weightflow_el_NOMINAL"));
+	else if (files.back()->GetListOfKeys()->Contains("eventflow"))
+		weightflows.push_back((TH1D*) files.back()->Get("eventflow"));
+	else if (files.back()->GetListOfKeys()->Contains("weightflow_elel_NOMINAL"))
+		weightflows.push_back((TH1D*) files.back()->Get("weightflow_elel_NOMINAL"));
+	else
+		{
+		cout << "no weightflow distr" << endl;
+		return 2;
+		}
+	//weightflows.back()->Print();
 
 	TH1D* histo = (TH1D*) files.back()->Get(distr);
 
 	if (!isData)
 		{
-		Double_t ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
+		Double_t ratio = 1;
+		if (inclusive_xsec && dtag.Contains("TTJ"))
+			ratio = lumi * xsecs_inclusive_tt[dtag] / weightflows.back()->GetBinContent(11);
+		else
+			ratio = lumi * xsecs[dtag] / weightflows.back()->GetBinContent(11);
 		histo->Scale(ratio);
-		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-		histo->Print();
+		//cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+		cout << dtag << "\t" << ratio << "\t" << histo->Integral() << endl;
+		//histo->Print();
 		//histos.back()->SetFillColor(kRed );
 		}
 	if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+	//cout << "rebined" << endl;
+
 	// and normalize per bin-width:
-	for (Int_t i=0; i<=histo->GetSize(); i++)
-		{
-		//yAxis->GetBinLowEdge(3)
-		double content = histo->GetBinContent(i);
-		double error   = histo->GetBinError(i);
-		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-		histo->SetBinContent(i, content/width);
-		histo->SetBinError(i, error/width);
-		}
+	if (scale_width)
+		for (Int_t i=0; i<=histo->GetSize(); i++)
+			{
+			//yAxis->GetBinLowEdge(3)
+			double content = histo->GetBinContent(i);
+			double error   = histo->GetBinError(i);
+			double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+			histo->SetBinContent(i, content/width);
+			histo->SetBinError(i, error/width);
+			}
+
+	//cout << "scaled bin widths" << endl;
 
 	histos.push_back(histo);
 
-	histos.back()->Print();
+	//histos.back()->Print();
 	if (isData)
 		{
 		cout << "summing data-stack" << endl;
@@ -254,7 +287,7 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 		distr->Scale(scale);
 		}
 
-	cout << " adding to mc stack" << endl;
+	cout << " adding to mc stack " << distr->GetBinContent(1) << "\t" << distr->GetBinContent(2) << "\t" << distr->GetFillColor() << ":" << kAzure << endl;
 	distr->Print();
 
 	hs->Add(distr, "HIST");
@@ -264,12 +297,14 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	leg->AddEntry(distr, nick, "F");
 	}
 
+cout << "mc sum " << hs_sum->GetBinContent(1) << "\t" << hs_sum->GetBinContent(2) << "\t" << endl;
+
 /* scale the stack and the sum
 */
 // normalize MC sum to Data
 if (normalize_to_data)
 	{
-	cout << "normalizeing MC" << endl;
+	cout << "normalizing MC" << endl;
 	hs_sum->Scale(scale);
 	//hs->Scale(scale); // ROOT is crap, THStack doesn't have Scale method
 	}
@@ -334,6 +369,19 @@ hs_data->GetXaxis()->SetLabelFont(63);
 hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_data->GetYaxis()->SetLabelFont(63);
 hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
+
+/* I don't get how root chooses default values
+ * it constantly screwws everything up
+ */
+if (y_min > 0 && y_max > 0)
+	{
+	hs_data->GetYaxis()->    SetRange(y_min, y_max);
+	hs_data->GetYaxis()->SetRangeUser(y_min, y_max);
+	//hs->GetYaxis()->    SetRange(0, 5500);
+	//hs->GetYaxis()->SetRangeUser(0, 5500);
+	hs_sum->GetYaxis()->    SetRange(y_min, y_max);
+	hs_sum->GetYaxis()->SetRangeUser(y_min, y_max);
+	}
 
 cout << "drawing" << endl;
 
@@ -402,6 +450,7 @@ leg->Draw("same");
 // THE RATIO PLOT
 pad2->cd();
 //cst->cd(2);
+cout << "relative distr" << endl;
 
 TH1D * hs_data_relative = (TH1D*) hs_data->Clone();
 TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
@@ -423,8 +472,11 @@ hs_sum_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_sum_relative->GetYaxis()->SetLabelFont(63);
 hs_sum_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 
+cout << "set labels etc" << endl;
 
-for (int i=0; i<=hs_sum_relative->GetSize(); i++)
+Int_t HS_size = hs_sum_relative->GetSize();
+cout << "histo size " << HS_size << endl;
+for (int i=0; i<=HS_size; i++)
 	{
 	double mc_content = hs_sum_relative->GetBinContent(i);
 	double mc_error   = hs_sum_relative->GetBinError(i);
@@ -433,6 +485,7 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 	double data_content = hs_data_relative->GetBinContent(i);
 	double data_error   = hs_data_relative->GetBinError(i);
 	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+	//cout << "got contents" << endl;
 	if (mc_content > 0)
 		{
 		hs_sum_relative->SetBinContent(i, 1);
@@ -447,7 +500,9 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 		hs_data_relative->SetBinContent(i, 1);
 		hs_data_relative->SetBinError(i, data_error);
 		}
+	//cout << "reset contents, now size is " << hs_sum_relative->GetSize() << " i = " << i << endl;
 	}
+cout << "scaled the distrs" << endl;
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
@@ -467,9 +522,11 @@ if (xlims_set)
 hs_sum_relative->Draw("e2");
 hs_data_relative->Draw("e p same");
 
+cout << "drawn" << endl;
+
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_mc + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
+cst->SaveAs( dir + "/jobsums/" + distr_mc + suffix + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
 return 0;
 }
