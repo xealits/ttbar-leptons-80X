@@ -4019,6 +4019,11 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight_up, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight_up, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_UP_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight_up, isMC);
+
+					fill_1d( string("elmu_passjets_lep1_pt_PU_UP"), 200, 0, 400, selLeptons[0].pt(), weight_up);
+					fill_1d( string("elmu_passjets_lep2_pt_PU_UP"), 200, 0, 400, selLeptons[1].pt(), weight_up);
+					fill_1d( string("elmu_passjets_jet1_pt_PU_UP"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].pt(), weight_up);
+					fill_1d( string("elmu_passjets_jet2_pt_PU_UP"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].pt(), weight_up);
 					}
 					{ // PU DOWN
 					double weight_down = weights_FULL[SYS_PU_DOWN];
@@ -4027,7 +4032,13 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight_down, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight_down, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_PU_DOWN_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight_down, isMC);
+
+					fill_1d( string("elmu_passjets_lep1_pt_PU_DOWN"), 200, 0, 400, selLeptons[0].pt(), weight_down);
+					fill_1d( string("elmu_passjets_lep2_pt_PU_DOWN"), 200, 0, 400, selLeptons[1].pt(), weight_down);
+					fill_1d( string("elmu_passjets_jet1_pt_PU_DOWN"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][0].pt(), weight_down);
+					fill_1d( string("elmu_passjets_jet2_pt_PU_DOWN"), 200, 0, 400, selJetsNoLep[SYS_NOMINAL][1].pt(), weight_down);
 					}
+
 					{ // JER UP and DOWN
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_vlooseTaus"), selJetsNoLep[SYS_JER_UP], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JER_UP_looseTaus"),  selJetsNoLep[SYS_JER_UP], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
@@ -4051,6 +4062,11 @@ for(size_t f=0; f<urls.size();++f)
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_mediumTaus"), selJetsNoLep[SYS_JES_DOWN], selMediumTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_tightTaus"),  selJetsNoLep[SYS_JES_DOWN], selTightTausNoLep,  visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_JES_DOWN_vtightTaus"), selJetsNoLep[SYS_JES_DOWN], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+
+					if (selJetsNoLep[SYS_JES_UP].size() > 0) fill_1d( string("elmu_passjets_jet1_pt_JES_UP"), 200, 0, 400, selJetsNoLep[SYS_JES_UP][0].pt(), weight);
+					if (selJetsNoLep[SYS_JES_UP].size() > 1) fill_1d( string("elmu_passjets_jet2_pt_JES_UP"), 200, 0, 400, selJetsNoLep[SYS_JES_UP][1].pt(), weight);
+					if (selJetsNoLep[SYS_JES_DOWN].size() > 0) fill_1d( string("elmu_passjets_jet1_pt_JES_DOWN"), 200, 0, 400, selJetsNoLep[SYS_JES_DOWN][0].pt(), weight);
+					if (selJetsNoLep[SYS_JES_DOWN].size() > 1) fill_1d( string("elmu_passjets_jet2_pt_JES_DOWN"), 200, 0, 400, selJetsNoLep[SYS_JES_DOWN][1].pt(), weight);
 					}
 
 					// also large bins for (medium) jet fake rate
