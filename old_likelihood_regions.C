@@ -175,6 +175,7 @@ int setup_distrs_for_mc_channel(map<TString, TH1D*>& event_yields_in_cathegories
 		distrs_in_cathegories[mc_channel][cathegories[i]]["lj_peak_distance_inclusive"] = new TH1D(mc_channel + cathegories[i] + "lj_peak_distance_inclusive", ";;", 100, 0, 10000);
 		distrs_in_cathegories[mc_channel][cathegories[i]]["lj_peak_distance"]    = new TH1D(mc_channel + cathegories[i] + "lj_peak_distance", ";;", 100, 0, 10000);
 
+
 		distrs_in_cathegories[mc_channel][cathegories[i]]["tau_energy_ratio"]    = new TH1D(mc_channel + cathegories[i] + "tau_energy_ratio", ";;", 40, 0, 1.2);
 		distrs_in_cathegories[mc_channel][cathegories[i]]["met_pt"] = new TH1D(mc_channel + cathegories[i] + "met_pt", ";;", 40, 40, 200);
 		distrs_in_cathegories[mc_channel][cathegories[i]]["tau_pt"]              = new TH1D(mc_channel + cathegories[i] + "tau_pt", ";;", 100, 0, 200);
@@ -394,12 +395,16 @@ const char *cathegories[nx] = {"1b3j", "1b4j", "1b5j", "1b6j",
 
 vector<TString> cathegories;
 cathegories.push_back("1b3j");
-cathegories.push_back("1b4j");
-cathegories.push_back("1b5j");
+cathegories.push_back("1b4+j");
+//cathegories.push_back("1b5j");
 cathegories.push_back("2b3j");
-cathegories.push_back("2b4j");
-cathegories.push_back("2b5j");
+cathegories.push_back("2b4+j");
+//cathegories.push_back("2b5j");
 cathegories.push_back("lj_peak");
+cathegories.push_back("pretau");
+cathegories.push_back("elmu");
+
+//1b3j  1b4+j  2b3j  2b4+j  elmu  lj_peak  pretau
 
 	/*
 	"lj_1b3j", "lj_1b4j", "lj_1b5j",
@@ -412,6 +417,7 @@ Int_t nx = cathegories.size();
 // everything is per MC decay channel
 map<TString, TH1D*> event_yields_in_cathegories;
 map<TString, map<TString, map<TString, TH1D*>>> distrs_in_cathegories;
+TH2D* lj_peak_masses = (TH2D*) new TH2D("lj_peak_masses", ";;", 50, 0, 150, 50, 0, 250);
 
 //cout << "frame pull cathegories" << endl;
 //cout << "from ttree" << endl;
@@ -430,9 +436,11 @@ NT_output_ttree->GetEntry(0);
 Long64_t n_events = (Long64_t) NT_output_ttree->GetEntries() / event_prescale;
 Long64_t one100th_events = (Long64_t) NT_output_ttree->GetEntries() / 100;
 Long64_t j = 0;
+
 cout << "to the loop" << endl;
 /* Loop through events, find weights, skip stuff, record if they pass to any category
  */
+
 for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 //for (Long64_t i=0; i<10; i++)
 	{
@@ -456,9 +464,12 @@ for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 
 	// general requirement for all events:
 	//if (NT_met_corrected->pt() < 40 || fabs(NT_leps_ID) != 13 || NT_lep0_id * NT_tau0_id > 0 || NT_njets < 3 || NT_nbjets < 1) continue;
-	if (NT_met_corrected < 40 || NT_HLT_mu != 1 || fabs(NT_leps_ID) != 13 || NT_lep_id_0 * NT_tau_id_0 > 0 || NT_njets < 3 || NT_nbjets < 1) continue;
+	bool pass_pre_tau = NT_met_corrected > 40   && NT_HLT_mu == 1 && fabs(NT_leps_ID) == 13 && NT_njets >= 3 && NT_nbjets >= 1;
+	bool pass_elmu    = fabs(NT_leps_ID) == 143 && NT_HLT_mu == 1 && NT_njets >= 2 && NT_nbjets >= 1;
+	if (!pass_pre_tau && !pass_elmu) continue;
 	// the event with taus (2 = medium, 1 = loose):
-	if (NT_tau_IDlev_0 < 1. && NT_tau_IDlev_1 < 1.) continue;
+	bool pass_tau = (NT_tau_IDlev_0 > 1. || NT_tau_IDlev_1 > 1.) && NT_lep_id_0 * NT_tau_id_0 < 0;
+	//if (NT_tau_IDlev_0 < 2. && NT_tau_IDlev_1 < 2.) continue;
 
 	// find basic weight:
 	//  * -1 aMCatNLO & NUP for WJets
@@ -491,7 +502,6 @@ for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 
 	if (is_MC)
 		{
-		weight *= 0.97; // tau ID SF, Medium = 0.97
 		//weight *= 0.98; // average mu trig SF
 		//weight *= 0.97; // average mu ID
 
@@ -603,19 +613,73 @@ for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 	if (is_MC)
 		weight *= pileup_ratio[(int)NT_nvtx_gen];
 
-	// select event categories
-	const double lj_dist = 800;
-	if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
-	else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
-	else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets >= 5)) event_category = 2;
-	//else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
-	else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 3)) event_category = 3;
-	else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets == 4)) event_category = 4;
-	else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets >= 5)) event_category = 5;
-	//else if ((NT_lj_peak_distance > lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+	if (pass_pre_tau)
+		{
+		//cout << "pretau" << endl;
+		event_category = 5;
 
-	// 1 inclusive cathegory for the peak
-	else if (NT_lj_peak_distance < lj_dist && NT_nbjets >= 1 && NT_njets >= 3) event_category = 6;
+		// if mc channel is not present in distrs -- set it up
+		if (event_yields_in_cathegories.find(mc_decay) == event_yields_in_cathegories.end())
+			setup_distrs_for_mc_channel(event_yields_in_cathegories, distrs_in_cathegories, cathegories, mc_decay);
+
+		// the inclusive distr in pre_tau
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["lj_peak_distance_inclusive"]->Fill(NT_lj_peak_distance, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["lj_peak_distance"]->Fill(NT_lj_peak_distance, weight);
+
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["tau_energy_ratio"]->Fill(NT_tau_hcalEnergyLeadChargedHadrCand / NT_tau_hcalEnergy, weight);
+		//distrs_in_cathegories[mc_decay][cathegories[event_category]]["met_transverse_mass"]->Fill(NT_met_corrected->Mt(), weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["met_pt"] ->Fill(NT_met_corrected, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["tau_pt"] ->Fill(NT_tau_pt_0, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["lep_pt"] ->Fill(NT_lep_pt_0, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["jet_pt"] ->Fill(NT_jet_pt_0, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["tau_eta"] ->Fill(NT_tau_eta_0, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["lep_eta"] ->Fill(NT_lep_eta_0, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["jet_eta"] ->Fill(NT_jet_eta_0, weight);
+		//distrs_in_cathegories[mc_decay][cathegories[event_category]]["bjet_pt"]->Fill(NT_tau0_p4->pt(), weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["nvtx"]->Fill(NT_nvtx, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["rho"] ->Fill(NT_fixedGridRhoFastjetAll, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["nvtx_raw"]->Fill(NT_nvtx, weight_without_pu);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["rho_raw"] ->Fill(NT_fixedGridRhoFastjetAll, weight_without_pu);
+
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["weight_muon_sfs"]->Fill(weight_muon_sfs, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["weight_muon_trig"]->Fill(weight_muon_trig, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["weight_btag_sf"] ->Fill(weight_btag_sf, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["weight_without_pu"]->Fill(weight_without_pu, weight);
+		distrs_in_cathegories[mc_decay][cathegories[event_category]]["weight_final"]     ->Fill(weight, weight);
+
+		event_yields_in_cathegories[mc_decay]->Fill(event_category, weight);
+		}
+
+	//cout << "cathegories";
+	// select event categories
+	if (pass_pre_tau && pass_tau)
+		{
+		weight *= 0.97; // tau ID SF, Medium = 0.97
+		weight_without_pu *= 0.97;
+		const double lj_dist = 800;
+		if ((NT_nbjets == 1) && (NT_njets == 3)) event_category = 0;
+		else if ((NT_nbjets == 1) && (NT_njets == 4)) event_category = 1;
+		//else if ((NT_nbjets == 1) && (NT_njets >= 5)) event_category = 2;
+		//else if ( && (NT_nbjets == 1) && (NT_njets > 5) ) event_category = 3;
+		else if ((NT_nbjets > 1)  && (NT_njets == 3)) event_category = 2;
+		else if ((NT_nbjets > 1)  && (NT_njets == 4)) event_category = 3;
+		//else if ((NT_nbjets > 1)  && (NT_njets >= 5)) event_category = 5;
+		//else if ( && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category = 7;
+		//else continue;
+		// 1 inclusive cathegory for the peak
+		else if (NT_lj_peak_distance < lj_dist) event_category = 4;
+		else continue;
+		// the inclusive distr will go to 1 event cathegory
+		}
+	else if (pass_elmu)
+		event_category = 6;
+	else
+		continue;
+
+	//cout << '\t' << event_category << endl;
+
+	//lj_peak_masses->Fill(W_mass, T_mass);
+
 	/*
 	else if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 3)) event_category = 6;
 	else if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets == 1) && (NT_njets == 4)) event_category = 7;
@@ -625,14 +689,14 @@ for (Long64_t i=0; j<n_events && i<NT_output_ttree->GetEntries(); i++)
 	else if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets >= 5)) event_category =10;
 	//else if ((NT_lj_peak_distance < lj_dist) && (NT_nbjets > 1)  && (NT_njets > 5) ) event_category =14;
 	*/
-	else continue;
 
 	// if mc channel is not present in distrs -- set it up
 	if (event_yields_in_cathegories.find(mc_decay) == event_yields_in_cathegories.end())
 		setup_distrs_for_mc_channel(event_yields_in_cathegories, distrs_in_cathegories, cathegories, mc_decay);
 
-	// the inclusive distr will go to 1 event cathegory
-	distrs_in_cathegories[mc_decay][cathegories[6]]["lj_peak_distance_inclusive"]->Fill(NT_lj_peak_distance, weight);
+	//cout << "filling" << endl;
+	if (pass_tau)
+		distrs_in_cathegories[mc_decay][cathegories[4]]["lj_peak_distance_inclusive"]->Fill(NT_lj_peak_distance, weight);
 	distrs_in_cathegories[mc_decay][cathegories[event_category]]["lj_peak_distance"]->Fill(NT_lj_peak_distance, weight);
 
 	distrs_in_cathegories[mc_decay][cathegories[event_category]]["tau_energy_ratio"]->Fill(NT_tau_hcalEnergyLeadChargedHadrCand / NT_tau_hcalEnergy, weight);

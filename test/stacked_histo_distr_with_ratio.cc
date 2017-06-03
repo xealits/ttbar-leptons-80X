@@ -25,15 +25,16 @@
 
 #include "dtag_xsecs.h"
 
-#define DTAG_ARGS_START 18
+#define DTAG_ARGS_START 22
 using namespace std;
+
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
 if (argc < DTAG_ARGS_START)
 	{
-	std::cout << "Usage : " << argv[0] << "scale_width inclusive_xsec normalize logy lumi distr mc_distr name_suffix distr_name yname rebin_factor xmin xmax ymin ymax ratio_range dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << "scale_width inclusive_xsec normalize csv_out logy lumi distr mc_distr name_suffix distr_name yname rebin_factor xmin xmax ymin ymax ratio_range dir zero_bin zero_bin2 x_leg dtags" << std::endl;
 	exit (0);
 	}
 
@@ -54,33 +55,41 @@ bool normalize_to_data = false;
 if (normalize_s == TString("T") || normalize_s == TString("Y"))
 	normalize_to_data = true;
 
-TString logy(argv[4]);
+TString csv_s(argv[4]);
+bool csv_out = false;
+if (csv_s == TString("T") || csv_s == TString("Y"))
+	csv_out = true;
+
+TString logy(argv[5]);
 bool set_logy = false;
 if (logy == TString("T") || logy == TString("Y"))
 	set_logy = true;
 
-double lumi = atof(argv[5]);
-TString distr_data(argv[6]);
-TString distr_mc(argv[7]);
+double lumi = atof(argv[6]);
+TString distr_data(argv[7]);
+TString distr_mc(argv[8]);
 if (distr_mc == TString("f") || distr_mc == TString("same"))
 	distr_mc = distr_data;
-TString suffix(argv[8]);
-TString distr_name(argv[9]);
-TString yname(argv[10]);
+TString suffix(argv[9]);
+TString distr_name(argv[10]);
+TString yname(argv[11]);
 
-Int_t rebin_factor(atoi(argv[11]));
+Int_t rebin_factor(atoi(argv[12]));
 
-double xmin = atof(argv[12]);
-double xmax = atof(argv[13]);
-double y_min = atof(argv[14]);
-double y_max = atof(argv[15]);
-double ratio_range = atof(argv[16]);
+double xmin = atof(argv[13]);
+double xmax = atof(argv[14]);
+double y_min = atof(argv[15]);
+double y_max = atof(argv[16]);
+double ratio_range = atof(argv[17]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[17]);
-TString dtag1(argv[18]);
+TString dir(argv[18]);
+int zero_bin = atoi(argv[19]);
+int zero_bin2 = atoi(argv[20]);
+double x_leg = atof(argv[21]);
+TString dtag1(argv[22]);
 
 bool eltau = false, mutau = false;
 if (distr_data.Contains("singleel"))
@@ -94,6 +103,7 @@ cout << lumi  << endl;
 cout << distr_data << endl;
 cout << rebin_factor << endl;
 cout << xmin << ' ' << xmax << endl;
+cout << "Y: " << y_min << ' ' << y_max << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
 
@@ -119,7 +129,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
+TLegend* leg = new TLegend(x_leg + 0.2, 0.7, x_leg + 0.39, 0.89);
 
 for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
@@ -151,6 +161,17 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	//weightflows.back()->Print();
 
 	TH1D* histo = (TH1D*) files.back()->Get(distr);
+
+	if (zero_bin>0)
+		{
+		cout << "setting to zero " << zero_bin << " " << histo->GetBinCenter(zero_bin) << endl;
+		histo->SetBinContent(zero_bin, 0);
+		}
+	if (zero_bin2>0)
+		{
+		cout << "setting to zero " << zero_bin2 << " " << histo->GetBinCenter(zero_bin2) << endl;
+		histo->SetBinContent(zero_bin2, 0);
+		}
 
 	if (!isData)
 		{
@@ -299,6 +320,48 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 
 cout << "mc sum " << hs_sum->GetBinContent(1) << "\t" << hs_sum->GetBinContent(2) << "\t" << endl;
 
+vector<TString> cathegories;
+cathegories.push_back("1b3j");
+cathegories.push_back("1b4+j");
+//cathegories.push_back("1b5j");
+cathegories.push_back("2b3j");
+cathegories.push_back("2b4+j");
+//cathegories.push_back("2b5j");
+cathegories.push_back("lj_peak");
+cathegories.push_back("pretau");
+cathegories.push_back("elmu");
+
+if (csv_out)
+	{
+	cout << "csv of distrs for the fit:" << endl;
+
+	cout << "data";
+	for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+		{
+		TString nick = it->first;
+		cout << ',' << nick;
+		}
+	cout << endl;
+
+	// loop bins
+	for (int i=1; i<hs_data->GetSize(); i++)
+		{
+		cout << hs_data->GetBinContent(i);
+		if (hs_data->GetSize() == 9)
+			{
+			hs_data->GetXaxis()->SetBinLabel(i, cathegories[i-1]);
+			}
+
+		for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != nicknamed_mc_histos.end(); ++it)
+			{
+			TString nick = it->first;
+			TH1D * distr = it->second;
+			cout << ',' << distr->GetBinContent(i);
+			}
+		cout << endl;
+		}
+	}
+
 /* scale the stack and the sum
 */
 // normalize MC sum to Data
@@ -373,8 +436,9 @@ hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 /* I don't get how root chooses default values
  * it constantly screwws everything up
  */
-if (y_min > 0 && y_max > 0)
+if (y_min > -1 && y_max > -1)
 	{
+	cout << "setting Y range " << y_min << " " << y_max << endl;
 	hs_data->GetYaxis()->    SetRange(y_min, y_max);
 	hs_data->GetYaxis()->SetRangeUser(y_min, y_max);
 	//hs->GetYaxis()->    SetRange(0, 5500);
