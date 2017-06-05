@@ -218,12 +218,11 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		TString distr_JER_DOWN = distr;
 		TString distr_JES_UP = distr;
 		TString distr_JES_DOWN = distr;
-		distr_PU_UP    .ReplaceAll("_mediumTaus", "_PU_UP_mediumTaus");
-		distr_PU_DOWN  .ReplaceAll("_mediumTaus", "_PU_DOWN_mediumTaus");
-		distr_JER_UP   .ReplaceAll("_mediumTaus", "_JER_UP_mediumTaus");
-		distr_JER_DOWN .ReplaceAll("_mediumTaus", "_JER_DOWN_mediumTaus");
-		distr_JES_UP   .ReplaceAll("_mediumTaus", "_JES_UP_mediumTaus");
-		distr_JES_DOWN .ReplaceAll("_mediumTaus", "_JES_DOWN_mediumTaus");
+		distr_PU_UP    .ReplaceAll("_vtightTaus", "_PU_UP_vtightTaus"); distr_PU_DOWN  .ReplaceAll("_vtightTaus", "_PU_DOWN_vtightTaus"); distr_JER_UP   .ReplaceAll("_vtightTaus", "_JER_UP_vtightTaus"); distr_JER_DOWN .ReplaceAll("_vtightTaus", "_JER_DOWN_vtightTaus"); distr_JES_UP   .ReplaceAll("_vtightTaus", "_JES_UP_vtightTaus"); distr_JES_DOWN .ReplaceAll("_vtightTaus", "_JES_DOWN_vtightTaus");
+		distr_PU_UP    .ReplaceAll("_tightTaus", "_PU_UP_tightTaus"); distr_PU_DOWN  .ReplaceAll("_tightTaus", "_PU_DOWN_tightTaus"); distr_JER_UP   .ReplaceAll("_tightTaus", "_JER_UP_tightTaus"); distr_JER_DOWN .ReplaceAll("_tightTaus", "_JER_DOWN_tightTaus"); distr_JES_UP   .ReplaceAll("_tightTaus", "_JES_UP_tightTaus"); distr_JES_DOWN .ReplaceAll("_tightTaus", "_JES_DOWN_tightTaus");
+		distr_PU_UP    .ReplaceAll("_mediumTaus", "_PU_UP_mediumTaus"); distr_PU_DOWN  .ReplaceAll("_mediumTaus", "_PU_DOWN_mediumTaus"); distr_JER_UP   .ReplaceAll("_mediumTaus", "_JER_UP_mediumTaus"); distr_JER_DOWN .ReplaceAll("_mediumTaus", "_JER_DOWN_mediumTaus"); distr_JES_UP   .ReplaceAll("_mediumTaus", "_JES_UP_mediumTaus"); distr_JES_DOWN .ReplaceAll("_mediumTaus", "_JES_DOWN_mediumTaus");
+		distr_PU_UP    .ReplaceAll("_looseTaus", "_PU_UP_looseTaus"); distr_PU_DOWN  .ReplaceAll("_looseTaus", "_PU_DOWN_looseTaus"); distr_JER_UP   .ReplaceAll("_looseTaus", "_JER_UP_looseTaus"); distr_JER_DOWN .ReplaceAll("_looseTaus", "_JER_DOWN_looseTaus"); distr_JES_UP   .ReplaceAll("_looseTaus", "_JES_UP_looseTaus"); distr_JES_DOWN .ReplaceAll("_looseTaus", "_JES_DOWN_looseTaus");
+		distr_PU_UP    .ReplaceAll("_vlooseTaus", "_PU_UP_vlooseTaus"); distr_PU_DOWN  .ReplaceAll("_vlooseTaus", "_PU_DOWN_vlooseTaus"); distr_JER_UP   .ReplaceAll("_vlooseTaus", "_JER_UP_vlooseTaus"); distr_JER_DOWN .ReplaceAll("_vlooseTaus", "_JER_DOWN_vlooseTaus"); distr_JES_UP   .ReplaceAll("_vlooseTaus", "_JES_UP_vlooseTaus"); distr_JES_DOWN .ReplaceAll("_vlooseTaus", "_JES_DOWN_vlooseTaus");
 		vector<TString*> sys_distrs = { &distr_PU_UP, &distr_PU_DOWN, &distr_JER_UP, &distr_JER_DOWN, &distr_JES_UP, &distr_JES_DOWN };
 
 		for (int i=0; i< sys_distrs.size(); i++)
@@ -328,25 +327,24 @@ for (int i=0; i<=hs_sum->GetSize(); i++)
 	double mc_content = hs_sum->GetBinContent(i);
 	double mc_error   = hs_sum->GetBinError(i);
 
+	double mc_PU_UP  = hs_mc_PU_UP ->GetBinContent(i);
+	double mc_JER_UP = hs_mc_JER_UP->GetBinContent(i);
+	double mc_JES_UP = hs_mc_JES_UP->GetBinContent(i);
+
+	double mc_PU_DOWN  = hs_mc_PU_DOWN ->GetBinContent(i);
+	double mc_JER_DOWN = hs_mc_JER_DOWN->GetBinContent(i);
+	double mc_JES_DOWN = hs_mc_JES_DOWN->GetBinContent(i);
+
 	double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
 	double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
 	double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
 
-	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES);
-	cout << mc_error << '_' << sys_error << '/' << mc_content << ' ';
+	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
+	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
+	//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
+	//cout << mc_error << '_' << sys_error << ") ";
 
-	/*
-	if (mc_content > 0)
-		{
-		hs_sum->SetBinContent(i, 1);
-		hs_sum->SetBinError(i, mc_error/mc_content);	
-		}
-	else
-		{
-		hs_sum->SetBinContent(i, 1);
-		hs_sum->SetBinError(i, mc_error);
-		}
-	*/
+	hs_sum->SetBinError(i, sys_error);	
 	}
 
 
