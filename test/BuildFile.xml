@@ -31,6 +31,8 @@
   <bin name="stacked_histo_project3to1_distr"  file="stacked_histo_project3to1_distr.cc"></bin>
   <bin name="stacked_histo_distr"              file="stacked_histo_distr.cc"></bin>
 
+  <bin name="ntuple_distr"              file="ntuple_distr.cc"></bin>
+
   <bin name="jet_distrs_stacked_per_origin"    file="jet_distrs_stacked_per_origin.cc"></bin>
   <bin name="jet_distrs_per_origin_overlayed"  file="jet_distrs_per_origin_overlayed.cc"></bin>
   <bin name="jet_fakerate_per_origin"          file="jet_fakerate_per_origin.cc"></bin>
