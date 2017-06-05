@@ -55,6 +55,7 @@
 
   <bin name="jet_fakerate_sf_mc_to_data" file="jet_fakerate_sf_mc_to_data.cc"></bin>
   <bin name="jet_1D_fakerate_per_mc"     file="jet_1D_fakerate_per_mc.cc"></bin>
+  <bin name="jet_1D_fakerate_per_mc_SYS" file="jet_1D_fakerate_per_mc_SYS.cc"></bin>
 
   <bin name="jet_fakerate_measurements"          file="jet_fakerate_measurements.cc"></bin>
   <bin name="jet_origins"          file="jet_origins.cc"></bin>

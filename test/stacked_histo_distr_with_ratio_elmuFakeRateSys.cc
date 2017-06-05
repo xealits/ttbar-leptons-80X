@@ -343,6 +343,7 @@ for (int i=0; i<=hs_sum->GetSize(); i++)
 	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
 	//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
 	//cout << mc_error << '_' << sys_error << ") ";
+	cout << " (" << sys_PU << ',' << sys_JER << ',' << sys_JES << ' ' << mc_error << ") ";
 
 	hs_sum->SetBinError(i, sys_error);	
 	}
@@ -586,7 +587,7 @@ hs_data_relative->Draw("e p same");
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_mc + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
+cst->SaveAs( dir + "/jobsums/" + distr_mc + "_SYS" + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
 return 0;
 }
