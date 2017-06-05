@@ -202,8 +202,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (isData)
 		output_ttree->Draw(distr + ">>h" + range, distr_condition);
 	else
+		{
 		// add weights for MC
-		output_ttree->Draw(distr + ">>h" + range, "(pu_weight(nvtx_gen))*(aMCatNLO_weight > 0? 1 : 0)* (" + distr_condition + ")");
+		TString weight_cond("(pu_weight(nvtx_gen))*");
+		if (dtag.Contains("amcatnlo"))
+			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
+		output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + ")");
+		}
 	TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
 	// hack to merge HLTmu & HLTjetmu
