@@ -25,7 +25,7 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 10
+#define INPUT_DTAGS_START 11
 #define NT_OUTPUT_TTREE_NAME "reduced_ttree"
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
@@ -44,12 +44,37 @@ double pu_weight(Int_t nvtx) {
    return pileup_ratio[nvtx];
 }
 
+int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D** mc_sum, TString& nick, TH1D* histo, bool be_verbose) {
+	//std::map<TString, TH1D *> nicknamed_mc_distrs;
+	if (nicknamed_mc_distrs.find(nick) == nicknamed_mc_distrs.end())
+		nicknamed_mc_distrs[nick] = (TH1D*) histo->Clone();
+		//nicknamed_mc_distrs[nick] = new TH1D(nick, "");
+	else
+		nicknamed_mc_distrs[nick]->Add(histo);
+
+	if (be_verbose) cout << "summing mc,";
+	// and add to the sum:
+	if (*mc_sum == NULL)
+		{
+		if (be_verbose) cout << " clone,";
+		(*mc_sum) = (TH1D*) histo->Clone();
+		}
+	else
+		{
+		if (be_verbose) cout << " sum,";
+		(*mc_sum)->Add(histo);
+		}
+	if (be_verbose) cout << " done." << endl;
+
+	return 0;
+}
+
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] unstack lumi distr distr_cond range out_name distr_name dir dtags";
+char usage_string[128] = " [--verbose] [--normalize] with_PU_weight unstack lumi distr distr_cond range out_name distr_name dir dtags";
 if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
@@ -83,28 +108,38 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
+bool with_PU_weight = false;
+TString set_PU(argv[input_starts + 1]);
+if (set_PU == TString("T") || set_PU == TString("Y"))
+	{
+	with_PU_weight = true;
+	cout << "with PU weight" << endl;
+	}
+else
+	cout << "NO PU weight!" << endl;
+
 bool set_logy = false;
-TString logy_inp(argv[input_starts + 1]);
+TString logy_inp(argv[input_starts + 2]);
 if (logy_inp == TString("T") || logy_inp == TString("Y"))
 	{
 	set_logy = true;
 	}
 
 bool unstack = false;
-TString unstack_inp(argv[input_starts + 2]);
+TString unstack_inp(argv[input_starts + 3]);
 if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	{
 	unstack = true;
 	}
 
-double lumi = atof(argv[input_starts + 3]);
-TString distr(argv[input_starts + 4]);
-TString distr_condition(argv[input_starts + 5]);
-TString range(argv[input_starts + 6]);
-string out_name(argv[input_starts + 7]);
+double lumi = atof(argv[input_starts + 4]);
+TString distr(argv[input_starts + 5]);
+TString distr_condition(argv[input_starts + 6]);
+TString range(argv[input_starts + 7]);
+string out_name(argv[input_starts + 8]);
 
-TString distr_name(argv[input_starts + 8]);
-TString dir(argv[input_starts + 9]);
+TString distr_name(argv[input_starts + 9]);
+TString dir(argv[input_starts + 10]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi  << endl;
@@ -200,55 +235,22 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
+		{
 		output_ttree->Draw(distr + ">>h" + range, distr_condition);
-	else
-		{
-		// add weights for MC
-		TString weight_cond("(pu_weight(nvtx_gen))*");
-		if (dtag.Contains("amcatnlo"))
-			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
-		output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + ")");
-		}
-	TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
-	// hack to merge HLTmu & HLTjetmu
-	if (be_verbose) cout << "got histogram, scaling to lumi, adding to stack" << endl;
-
-	Double_t ratio = 1;
-	if (!isData)
-		{
-		TH1D* weightflow = NULL;
-		if (file->GetListOfKeys()->Contains("eventflow"))
+		//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+		// and normalize per bin-width:
+		for (Int_t i=0; i<=histo->GetSize(); i++)
 			{
-			weightflow = (TH1D*) file->Get("eventflow");
+			//yAxis->GetBinLowEdge(3)
+			double content = histo->GetBinContent(i);
+			double error   = histo->GetBinError(i);
+			double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+			histo->SetBinContent(i, content/width);
+			histo->SetBinError(i, error/width);
 			}
-		else if (file->GetListOfKeys()->Contains("weightflow_el_NOMINAL"))
-			{
-			weightflow = (TH1D*) file->Get("weightflow_el_NOMINAL");
-			}
-		else {
-			cout << "NO WEIGHTFLOW: " << dtag << endl;
-			}
-		ratio = lumi * xsecs[dtag] / weightflow->GetBinContent(11);
-		histo->Scale(ratio);
-		cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-		if (be_verbose) histo->Print();
-		}
-	//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
-	// and normalize per bin-width:
-	for (Int_t i=0; i<=histo->GetSize(); i++)
-		{
-		//yAxis->GetBinLowEdge(3)
-		double content = histo->GetBinContent(i);
-		double error   = histo->GetBinError(i);
-		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-		histo->SetBinContent(i, content/width);
-		histo->SetBinError(i, error/width);
-		}
 
-	if (be_verbose) histo->Print();
-	if (isData)
-		{
 		if (be_verbose) cout << "summing data-stack" << endl;
 		histo->SetMarkerStyle(9);
 
@@ -265,44 +267,125 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		}
 	else
 		{
-		if (be_verbose) cout << "summing mc-stack" << endl;
-		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
-		TString nick = nick_colour.first;
-		Color_t col = nick_colour.second;
+		// MC lumi ratio
+		Double_t ratio = 1;
 
-		if (!unstack)
+		TH1D* weightflow = NULL;
+		if (file->GetListOfKeys()->Contains("eventflow"))
 			{
-			histo->SetFillColor( col );
-			histo->SetMarkerStyle(20);
-			histo->SetLineStyle(0);
-			histo->SetMarkerColor(i);
+			weightflow = (TH1D*) file->Get("eventflow");
+			}
+		else if (file->GetListOfKeys()->Contains("weightflow_el_NOMINAL"))
+			{
+			weightflow = (TH1D*) file->Get("weightflow_el_NOMINAL");
+			}
+		else {
+			cout << "NO WEIGHTFLOW: " << dtag << endl;
+			}
+		ratio = lumi * xsecs[dtag] / weightflow->GetBinContent(11);
+
+		// add weights for MC
+		TString weight_cond("");
+		if (with_PU_weight) weight_cond = "(pu_weight(nvtx_gen))*";
+		if (dtag.Contains("amcatnlo"))
+			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
+
+		// draw distribution
+		// in case of inclusive samples (like TTbar) several distributions are drawn -- for each sub-channel
+		// thus the loop
+		//map<TString, TH1D*> histos;
+		map<TString, TString> histo_conditions;
+
+		if (! dtag.Contains("TT"))
+			{
+			TString nick = dtag_nick(dtag);
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
+			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + ")");
+			//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+			//histos[nick] = histo;
 			}
 		else
 			{
-			histo->SetLineColor(col);
-			histo->SetLineStyle(1);
+			cout << "TT channels" << endl;
+			TString nick("tt_{other}");
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+
+			nick = "tt_em";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
+
+			nick = "tt_{\\mu\\tau}";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
+			//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+			//histos[nick] = histo;
+
+			nick = "tt_{e\\tau}";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")");
+			//histo = (TH1D*) output_ttree->GetHistogram();
+			//histos[nick] = histo;
+
+			nick = "tt_lj";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
+			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")");
+			//histo = (TH1D*) output_ttree->GetHistogram();
+			//histos[nick] = histo;
 			}
 
-		//std::map<TString, TH1D *> nicknamed_mc_distrs;
-		if (nicknamed_mc_distrs.find(nick) == nicknamed_mc_distrs.end())
-			nicknamed_mc_distrs[nick] = (TH1D*) histo->Clone();
-			//nicknamed_mc_distrs[nick] = new TH1D(nick, "");
-		else
-			nicknamed_mc_distrs[nick]->Add(histo);
+		// scaled and store each histo in the pack
+		Int_t sub_channel = 0;
+		for (std::map<TString, TString>::iterator it = histo_conditions.begin(); it != histo_conditions.end(); ++it, sub_channel++)
+			{
+			TString nick = it->first;
+			TString cond = it->second;
+			//TH1D* histo = it->second;
+			TString distr_name_for_drawing = ""; // FUCK ROOOT THESE FUNCTIONS ARE AWESOMELY USELESS
+			distr_name_for_drawing.Form("h_%d", sub_channel);
+			//if (be_verbose) cout << TString("h_") + sub_channel << endl;
+			output_ttree->Draw(distr + TString(">>") + distr_name_for_drawing + range, cond);
+			TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
-		if (be_verbose) cout << "summing mc,";
-		// and add to the sum:
-		if (mc_sum == NULL)
-			{
-			if (be_verbose) cout << " clone,";
-			mc_sum = (TH1D*) histo->Clone();
+			// hack to merge HLTmu & HLTjetmu
+			if (be_verbose) cout << "got histogram " << nick << " scaling to lumi, adding to stack" << endl;
+			if (be_verbose) histo->Print();
+
+			histo->Scale(ratio);
+			cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+			if (be_verbose) histo->Print();
+
+			//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+			// and normalize per bin-width:
+			for (Int_t i=0; i<=histo->GetSize(); i++)
+				{
+				//yAxis->GetBinLowEdge(3)
+				double content = histo->GetBinContent(i);
+				double error   = histo->GetBinError(i);
+				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+				histo->SetBinContent(i, content/width);
+				histo->SetBinError(i, error/width);
+				}
+
+			if (be_verbose) cout << "summing mc-stack" << endl;
+			Color_t col  = nick_colour(nick);
+			//TString nick = nick_colour.first;
+			//Color_t col = nick_colour.second;
+
+			if (!unstack)
+				{
+				histo->SetFillColor( col );
+				histo->SetMarkerStyle(20);
+				histo->SetLineStyle(0);
+				histo->SetMarkerColor(i);
+				}
+			else
+				{
+				histo->SetLineColor(col);
+				histo->SetLineStyle(1);
+				}
+
+			//int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D* mc_sum, TString& nick, TH1D* histo, be_verbose)
+			add_nicknamed_mc_histo(nicknamed_mc_distrs, &mc_sum, nick, histo, be_verbose);
 			}
-		else
-			{
-			if (be_verbose) cout << " sum,";
-			mc_sum->Add(histo);
-			}
-		if (be_verbose) cout << " done." << endl;
 		}
 
 	if (be_verbose) cout << "processed dtag" << endl;

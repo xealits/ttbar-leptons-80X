@@ -424,6 +424,56 @@ std::pair<TString, Color_t> dtag_nick_colour(TString dtag)
 	else return std::make_pair("other", kBlack);
 	}
 
+// nick and colour for dtags
+TString dtag_nick(TString dtag)
+	{
+	if (dtag.Contains("Data")) return "data";
+	else if(dtag.Contains("DYJets")) return "dyjets";
+	else if(dtag.Contains("W0Jets") ||dtag.Contains("W4Jets") ||dtag.Contains("W1Jets") ||dtag.Contains("W2Jets") ||dtag.Contains("W3Jets") ||dtag.Contains("WJets") ) return "w-jets";
+	else if(dtag.Contains("WW") ||dtag.Contains("WZ") ||dtag.Contains("ZZ")) return "dibosons";
+	else if(dtag.Contains("Single") || dtag.Contains("schannel") ||dtag.Contains("tchannel")) return "single top";
+	else if(dtag.Contains("TT"))
+		{
+		if (dtag.Contains("qqbar")) return "tt_jj";
+		else if (dtag.Contains("elq") || dtag.Contains("mqu") || dtag.Contains("elqbar") || dtag.Contains("qelbar") ||dtag.Contains("muqbar") || dtag.Contains("qmubar") || dtag.Contains("tauqbar") || dtag.Contains("qtaubar")) return "tt_lj";
+		else if (dtag.Contains("elmu") || dtag.Contains("elmubar") || dtag.Contains("muelbar")) return "tt_em";
+		else if (dtag.Contains("elelbar")) return "tt_ee";
+		else if (dtag.Contains("mumubar")) return "tt_mm";
+		else if (dtag.Contains("aeltu"))
+			return "tt_{e\\tau}";
+		else if (dtag.Contains("amtuu"))
+			return "tt_{\\mu\\tau}";
+		else if (dtag.Contains("aelmtuu"))
+			return "tt_{l\\tau-l}";
+		else return "tt_{other}";
+		}
+	else if(dtag.Contains("QCD")) return "qcd";
+	else return "other";
+	}
+
+// nick and colour for nicks
+Color_t nick_colour(TString nick)
+	{
+	if (nick.Contains("data")) return kWhite;
+	else if(nick.Contains("dyjets")) return kGray;
+	else if(nick.Contains("w-jets")) return kRed+1;
+	else if(nick.Contains("dibosons")) return kCyan;
+	else if(nick.Contains("single top")) return kAzure;
+
+	else if (nick.Contains("tt_jj")) return kGreen+4;
+	else if (nick.Contains("tt_lj")) return kGreen+3;
+	else if (nick.Contains("tt_em")) return kGreen-9;
+	else if (nick.Contains("tt_ee")) return kAzure-9;
+	else if (nick.Contains("tt_mm")) return kYellow-7;
+	else if (nick.Contains("tt_{e\\tau}")) return kOrange+2;
+	else if (nick.Contains("tt_{\\mu\\tau}")) return kOrange+1;
+	else if (nick.Contains("tt_{l\\tau-l}"))  return kOrange+3;
+	else if (nick.Contains("tt_{other}"))     return kCyan-5;
+
+	else if(nick.Contains("qcd")) return kViolet;
+	else return kBlack;
+	}
+
 /* Include it to colors somehow, to preserve inclusiveness of ttbar in jet fake rates scripts
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },
 { "MC2016_Summer16_TTJets_powheg_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
