@@ -166,6 +166,8 @@ runProcess = cms.PSet(
     pileup_reweight_direct      = pileup2016_direct2,
     pileup_reweight_direct_down = pileup2016_direct2_down,
     pileup_reweight_direct_up   = pileup2016_direct2_up,
+
+    on_screen_prompt = cms.bool(False),
     debug = cms.bool(False),
     debug_len = cms.int32(100),
     lumisToProcess = LumiList.LumiList(filename = theLumiMask).getVLuminosityBlockRange(),

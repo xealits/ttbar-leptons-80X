@@ -944,6 +944,7 @@ TRandom3 *r3 = new TRandom3();
 // configure the process
 const edm::ParameterSet & runProcess = edm::readPSetsFrom (argv[1])->getParameter < edm::ParameterSet > ("runProcess");
 
+bool on_screen_prompt = runProcess.getParameter<bool>  ("on_screen_prompt");
 bool debug           = runProcess.getParameter<bool>  ("debug");
 int debug_len        = runProcess.getParameter<int>  ("debug_len");
 bool runSystematics  = runProcess.getParameter<bool>  ("runSystematics");
@@ -1802,13 +1803,15 @@ for(size_t f=0; f<urls.size();++f)
 
 		iev++;
 		totalEntries++;
-		/*
-		if (iev % treeStep == 0)
+
+		if (on_screen_prompt)
 			{
-			printf (".");
-			if(!debug) fflush (stdout); // Otherwise debug messages are flushed
+			if (iev % treeStep == 0)
+				{
+				printf (".");
+				if(!debug) fflush (stdout); // Otherwise debug messages are flushed
+				}
 			}
-		*/
 
 		edm::EventBase const & myEvent = ev;
 

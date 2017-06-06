@@ -111,10 +111,28 @@ for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 	// add leading track Pt as userFloat
 	//reco::TrackRef pat::Tau::leadTrack	(		)	const
 	reco::TrackRef lead_track = tau.leadTrack();
-	if (lead_track->outerOk())
-		tau.addUserFloat("leading_track_pt", lead_track->outerPt());
+	if (lead_track.isNonnull())
+		{
+		// have to do separate if here!
+		if (lead_track->outerOk())
+			tau.addUserFloat("leading_track_pt", lead_track->outerPt());
+		else
+			tau.addUserFloat("leading_track_pt", -1);
+		}
 	else
 		tau.addUserFloat("leading_track_pt", -1);
+	// also add these
+	// leadChargedHadrCand(), leadNeutralCand(), leadCand(), 
+	// they should always be present in MINIAOD taus
+
+	tau.addUserFloat("leadChargedHadrCand_pt", tau.leadChargedHadrCand().isNonnull() ? tau.leadChargedHadrCand()->pt() : -1);
+	tau.addUserFloat("leadNeutralCand_pt",     tau.leadNeutralCand().isNonnull() ? tau.leadNeutralCand()->pt() : -1);
+	tau.addUserFloat("leadCand_pt",            tau.leadCand().isNonnull() ? tau.leadCand()->pt() : -1);
+	/*
+	tau.addUserFloat("leadChargedHadrCand_pt", -1);
+	tau.addUserFloat("leadNeutralCand_pt", -1);
+	tau.addUserFloat("leadCand_pt", -1);
+	*/
 
 	selTaus.push_back(tau);
 	if (record)
