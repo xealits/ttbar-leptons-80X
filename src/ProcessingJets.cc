@@ -414,6 +414,17 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	//jesCor->setNPV(nGoodPV); // not used in PU Jet ID example, shouldn't matter
 	float jes_correction = jesCor->getCorrection();
 	jet.setP4(rawJet*jes_correction);
+	//LorentzVector jesCorJet = (rawJet*jes_correction);
+	jet.addUserFloat("jes_correction", jes_correction);
+
+	// jet energy scale has uncertainty
+	totalJESUnc->setJetEta(jet.eta());
+	totalJESUnc->setJetPt(jet.pt()); // should be the corrected jet pt
+	float relShift = fabs(totalJESUnc->getUncertainty(true));
+	jet.addUserFloat("jes_correction_relShift", relShift);
+	// use it with rawJet*jes_correction*(1 +- relShift)
+	// since all these corrections are multiplication of p4
+	// I can do this shift whenever I want
 
 	fill_1d(string("control_jet_slimmedjet_jescorrection"), 400, 0., 2., jes_correction, weight);
 
@@ -431,6 +442,8 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	double jer_sf = -1;
 	double jer_sf_up = -1;
 	double jer_sf_down = -1;
+	// and the final factors from these SFs
+	double jer_factor = -1, jer_factor_up = -1, jer_factor_down = -1;
 	// here is the matching of the jet:
 	if(isMC)
 		{
@@ -490,15 +503,17 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 			// using the local smear:
 			//std::vector<double> JER_smearing_factor = smearJER(jet.pt(),jet.eta(),genjetpt);
 			//double jer_smearing = JER_smearing_factor[0];
-			double jer_smearing = TMath::Max(0., 1. + (jer_sf - 1) * dPt / jet.pt());
-			jet.setP4(jet.p4()*jer_smearing); // same as scaleEnergy in the Jet POG example
+			jer_factor = TMath::Max(0., 1. + (jer_sf - 1) * dPt / jet.pt());
+			jer_factor_up   = TMath::Max(0., 1. + (jer_sf_up   - 1) * dPt / jet.pt());
+			jer_factor_down = TMath::Max(0., 1. + (jer_sf_down - 1) * dPt / jet.pt());
+			jet.setP4(jet.p4()*jer_factor); // same as scaleEnergy in the Jet POG example
 			// but they also do MIN_ENERGY thing
 			// which is static constexpr const double MIN_JET_ENERGY = 1e-2;
-			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_scaling"), 400, 0., 2., jer_smearing, weight);
+			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_scaling"), 100, 0., 2., jer_factor, weight);
 
 			if (record)
 				{
-				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_scaling_done"), 200, 0., 400., 100, -4., 4., jet.pt(), jet.eta(), weight);
+				fill_2d(string("control_jet_slimmedjet_mc_jerSmearing_scaling_done"), 50, 0., 400., 50, -4., 4., jet.pt(), jet.eta(), weight);
 				}
 			}
 		else
@@ -510,9 +525,15 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 			//double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
 			//double smearFactor = 1 + r3->Gaus(0, sigma);
 			// this is the twiki:
-			double smearFactor = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+			double smearFactor      = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf*jer_sf - 1.));
+			double smearFactor_up   = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf_up*jer_sf_up - 1.));
+			double smearFactor_down = 1. + r3->Gaus(0, jet_resolution) * std::sqrt(TMath::Max(0., jer_sf_down*jer_sf_down - 1.));
+			jer_factor = TMath::Max(0., smearFactor);
+			jer_factor_up   = TMath::Max(0., smearFactor_up);
+			jer_factor_down = TMath::Max(0., smearFactor_down);
+
 			// multiplying a Gaussian should = to multiplying the sigma
-			jet.setP4(jet.p4()*TMath::Max(0., smearFactor));
+			jet.setP4(jet.p4()*jer_factor);
 			fill_1d(string("control_jet_slimmedjet_mc_jerSmearing_stochastic_smearing"), 400, 0., 2., smearFactor, weight);
 
 			if (record)
@@ -525,6 +546,9 @@ for(size_t ijet=0; ijet<selJets.size(); ijet++)
 	jet.addUserFloat("jer_sf", jer_sf);
 	jet.addUserFloat("jer_sf_up",   jer_sf_up);
 	jet.addUserFloat("jer_sf_down", jer_sf_down);
+	jet.addUserFloat("jer_factor", jer_factor);
+	jet.addUserFloat("jer_factor_up", jer_factor_up);
+	jet.addUserFloat("jer_factor_down", jer_factor_down);
 
 	// FIXME: this is not to be re-set. Check that this is a desired non-feature.
 	// i.e. check that the uncorrectedJet remains the same even when the corrected momentum is changed by this routine.
