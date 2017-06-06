@@ -23,9 +23,13 @@
 #include <string>
 #include <vector>
 
+#include <fstream>
+
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 11
+#define INPUT_DTAGS_START 12
+const char usage_string[128] = " [--verbose] [--normalize] with_PU_weight unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+
 #define NT_OUTPUT_TTREE_NAME "reduced_ttree"
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
@@ -40,9 +44,18 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
+/*
 double pu_weight(Int_t nvtx) {
    return pileup_ratio[nvtx];
 }
+*/
+
+bool is_file_exist(const char *fileName)
+{
+    std::ifstream infile(fileName);
+    return infile.good();
+}
+
 
 int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D** mc_sum, TString& nick, TH1D* histo, bool be_verbose) {
 	//std::map<TString, TH1D *> nicknamed_mc_distrs;
@@ -74,7 +87,6 @@ using namespace std;
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = " [--verbose] [--normalize] with_PU_weight unstack lumi distr distr_cond range out_name distr_name dir dtags";
 if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
@@ -83,6 +95,9 @@ if (argc < INPUT_DTAGS_START)
 
 gROOT->Reset();
 gROOT->ProcessLine(".L pu_weight.C+");
+// load shared library with the wrapper for b-tag SF
+// tmp/slc6_amd64_gcc530/src/UserCode/ttbar-leptons-80X/src/UserCodettbar-leptons-80X/libUserCodettbar-leptons-80X.so
+gSystem->Load("libUserCodettbar-leptons-80X.so");
 
 unsigned int input_starts = 0;
 bool be_verbose = false;
@@ -132,17 +147,19 @@ if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	unstack = true;
 	}
 
-double lumi = atof(argv[input_starts + 4]);
-TString distr(argv[input_starts + 5]);
-TString distr_condition(argv[input_starts + 6]);
-TString range(argv[input_starts + 7]);
-string out_name(argv[input_starts + 8]);
+double lumi_bcdef = atof(argv[input_starts + 4]);
+double lumi_gh    = atof(argv[input_starts + 5]);
+double lumi = lumi_bcdef + lumi_gh;
+TString distr(argv[input_starts + 6]);
+TString distr_condition(argv[input_starts + 7]);
+TString range(argv[input_starts + 8]);
+string out_name(argv[input_starts + 9]);
 
-TString distr_name(argv[input_starts + 9]);
-TString dir(argv[input_starts + 10]);
+TString distr_name(argv[input_starts + 10]);
+TString dir(argv[input_starts + 11]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
-cout << lumi  << endl;
+cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
 cout << distr << endl;
 cout << range << endl;
 cout << dir   << endl;
@@ -211,8 +228,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "processing " << dtag << endl;
 	TString the_file = dir + "/" + dtag + ".root";
 	if (be_verbose) cout << the_file << endl;
+	if (!is_file_exist(the_file.Data()))
+		{
+		cout << "file " << the_file << "doesn't exist" << endl;
+		continue;
+		}
+
 	TFile* file = TFile::Open(the_file);
-	//dtags.push_back(5);
 
 	bool isData = dtag.Contains("Data");
 
@@ -289,12 +311,25 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_PU_weight) weight_cond = "(pu_weight(nvtx_gen))*";
 		if (dtag.Contains("amcatnlo"))
 			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
+		// lepton SF
+		TString lepton_SF_call("");
+		lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+		weight_cond += lepton_SF_call;
+
+		TString lepton_trig_SF_call("");
+		lepton_trig_SF_call.Form("(lepton_muon_trig_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+		weight_cond += lepton_trig_SF_call;
+
+		// btag SF
+		//b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP);
 
 		// draw distribution
 		// in case of inclusive samples (like TTbar) several distributions are drawn -- for each sub-channel
 		// thus the loop
 		//map<TString, TH1D*> histos;
 		map<TString, TString> histo_conditions;
+
+		if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
 
 		if (! dtag.Contains("TT"))
 			{
