@@ -108,6 +108,14 @@ for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
 	// --------- Tau Kinematics
 	if (tau.pt() < pt_cut || fabs (tau.eta()) > eta_cut) continue;
 
+	// add leading track Pt as userFloat
+	//reco::TrackRef pat::Tau::leadTrack	(		)	const
+	reco::TrackRef lead_track = tau.leadTrack();
+	if (lead_track->outerOk())
+		tau.addUserFloat("leading_track_pt", lead_track->outerPt());
+	else
+		tau.addUserFloat("leading_track_pt", -1);
+
 	selTaus.push_back(tau);
 	if (record)
 		{

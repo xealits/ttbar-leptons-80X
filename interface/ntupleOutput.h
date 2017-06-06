@@ -230,7 +230,8 @@ JET_OUTPUT(4)
 #define TAU_OUTPUT(num) \
 Int_t_in_NTuple(OUTNTUPLE, tau##num##_id); \
 OBJECT_in_NTuple(OUTNTUPLE, LorentzVector, tau##num##_p4); \
-Int_t_in_NTuple(OUTNTUPLE, tau##num##_IDlev);
+Int_t_in_NTuple(OUTNTUPLE, tau##num##_IDlev); \
+Float_t_in_NTuple(OUTNTUPLE, tau##num##_leading_track_pt);
 
 TAU_OUTPUT(0)
 TAU_OUTPUT(1)
@@ -245,13 +246,13 @@ TAU_OUTPUT(1)
 // this should be static, no run-time i
 // but it's in the loops now...
 // thus making the case for now
-#define NT_lep(i, id, eta, phi, pt, p) case i: { \
-NT_lep ##i ##_id   = id;  \
-NT_lep ##i ##_eta  = eta; \
-NT_lep ##i ##_phi  = phi; \
-NT_lep ##i ##_pt   = pt;  \
-NT_lep ##i ##_p    = p;   \
-break; }
+//#define NT_lep(i, id, eta, phi, pt, p) case i: { \
+//NT_lep ##i ##_id   = id;  \
+//NT_lep ##i ##_eta  = eta; \
+//NT_lep ##i ##_phi  = phi; \
+//NT_lep ##i ##_pt   = pt;  \
+//NT_lep ##i ##_p    = p;   \
+//break; }
 
 #define NT_jet(i, jet, id_jet_p4, matched_genjet_p4, jet_radius_func, btagger_label) case i: { \
 NT_jet ##i ##_id                = jet.pdgId(); \
@@ -279,6 +280,7 @@ break; }
 NT_tau ##i ##_id    = tau.pdgId(); \
 NT_tau ##i ##_p4    = tau.p4(); \
 NT_tau ##i ##_IDlev = IDlev; \
+NT_tau ##i ##_leading_track_pt = tau.userFloat("leading_track_pt"); \
 break; }
 
 
@@ -308,7 +310,8 @@ NT_jet##num##_partonFlavour = -1;
 #define RESET_TAU(num) \
 NT_tau##num##_id = -1; \
 NT_tau##num##_p4.SetXYZT(0,0,0,0); \
-NT_tau##num##_IDlev = -1;
+NT_tau##num##_IDlev = -1; \
+NT_tau##num##_leading_track_pt = -1;
 
 #define RESET_NTUPLE_PARAMETERS \
 NT_aMCatNLO_weight = -1; \
