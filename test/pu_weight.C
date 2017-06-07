@@ -5,8 +5,13 @@
 #include "TH2D.h"
 #include "TH2F.h"
 #include "TGraphAsymmErrors.h"
+#include "TMath.h"
+#include <Math/VectorUtil.h>
 
 #include "UserCode/ttbar-leptons-80X/interface/wrapper.h"
+
+// the exact LorentzVector declaration
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
 0.884048630953726, 0.964813189764159, 1.07045369167689, 1.12497267309738, 1.17367530613108, 1.20239808206413, 1.20815108390021, 1.20049333094509, 1.18284686347315, 1.14408796655615,
@@ -143,4 +148,9 @@ double lepton_muon_trig_SF(Float_t abs_eta, Float_t pt, double SingleMuon_data_b
 	return 1 - no_mu_trig;
 	}
 	//weight *= weight_muon_trig;
+
+double transverse_mass(LorentzVector v1, LorentzVector v2)
+	{
+	return sqrt(2*v1.pt()*v2.pt()*(1 - cos(v1.phi() - v2.phi())));
+	}
 

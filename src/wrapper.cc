@@ -159,116 +159,105 @@ static double calc_btag_sf_weight(BTagCalibrationReader& btagCal, struct bTaggin
 	return jet_weight_factor;
 	}
 
-double b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP)
+// these are members of our object file
+static std::string bTaggingEfficiencies_filename;
+static TFile* bTaggingEfficiencies_file;
+static TString backup_b_eff_distr;
+static TH2F* bTaggingEfficiencies_b_alljet   ;
+static TH2F* bTaggingEfficiencies_b_tagged   ;
+static TH2F* bTaggingEfficiencies_c_alljet   ;
+static TH2F* bTaggingEfficiencies_c_tagged   ;
+static TH2F* bTaggingEfficiencies_udsg_alljet;
+static TH2F* bTaggingEfficiencies_udsg_tagged;
+static struct bTaggingEfficiencyHistograms bEffs;
+static BTagCalibration* btagCalib;
+static BTagCalibrationReader* btagCal;
+
+void set_bSFs_for_dtag(TString dtag)
 	{
-	static std::string bTaggingEfficiencies_filename;
-	static TFile* bTaggingEfficiencies_file;
-	static TString backup_b_eff_distr;
-	static TH2F* bTaggingEfficiencies_b_alljet   ;
-	static TH2F* bTaggingEfficiencies_b_tagged   ;
-	static TH2F* bTaggingEfficiencies_c_alljet   ;
-	static TH2F* bTaggingEfficiencies_c_tagged   ;
-	static TH2F* bTaggingEfficiencies_udsg_alljet;
-	static TH2F* bTaggingEfficiencies_udsg_tagged;
-	static struct bTaggingEfficiencyHistograms bEffs;
-	static BTagCalibration* btagCalib;
-	static BTagCalibrationReader* btagCal;
+	// read-in and setup all the b-tagging crap
 
-	static bool ready = false;
-	if (!ready)
+	//TString bTaggingEfficiencies_filename   = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+	//gSystem->ExpandPathName(bTaggingEfficiencies_filename);
+	bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+	bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.c_str());
+
+	//cout << "b-tagging eff-s, filename: " << bTaggingEfficiencies_filename << endl;
+
+	backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph";
+
+	//TString dtag("foo");
+	// ( ? : ) would look too much here
+	if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_b_hadronFlavour_candidates_tagged"))
 		{
-		// read-in and setup all the b-tagging crap
-
-		//TString bTaggingEfficiencies_filename   = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-		//gSystem->ExpandPathName(bTaggingEfficiencies_filename);
-		bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-		bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.c_str());
-
-		//cout << "b-tagging eff-s, filename: " << bTaggingEfficiencies_filename << endl;
-
-		backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph";
-
-		TString dtag("foo");
-		// ( ? : ) would look too much here
-		/*
-		if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_b_hadronFlavour_candidates_tagged"))
-			{
-			bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates");
-			bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates_tagged");
-			}
-		else
-			{
-			bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
-			bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
-			}
-		if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_c_hadronFlavour_candidates_tagged"))
-			{
-			bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates");
-			bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates_tagged");
-			}
-		else
-			{
-			bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
-			bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
-			}
-		if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"))
-			{
-			bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates");
-			bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged");
-			}
-		else
-			{
-			bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
-			bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
-			}
-		*/
-
-
-
-		//bTaggingEfficiencies_b_alljet   ;
-		//bTaggingEfficiencies_b_tagged   ;
-		//bTaggingEfficiencies_c_alljet   ;
-		//bTaggingEfficiencies_c_tagged   ;
-		//bTaggingEfficiencies_udsg_alljet;
-		//bTaggingEfficiencies_udsg_tagged;
-
+		bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates");
+		bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates_tagged");
+		}
+	else
+		{
 		bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
 		bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
+		}
+	if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_c_hadronFlavour_candidates_tagged"))
+		{
+		bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates");
+		bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates_tagged");
+		}
+	else
+		{
 		bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
 		bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
+		}
+	if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"))
+		{
+		bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates");
+		bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged");
+		}
+	else
+		{
 		bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
 		bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
-
-		bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
-		bEffs.b_tagged    = bTaggingEfficiencies_b_tagged   ;
-		bEffs.c_alljet    = bTaggingEfficiencies_c_alljet   ;
-		bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
-		bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
-		bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
-
-		// need to open btagCal in this environment
-
-		btagCalib = new BTagCalibration("CSVv2", std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
-		//BTagCalibration* btagCalib; // ("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
-		btagCal = new BTagCalibrationReader(BTagEntry::OP_MEDIUM,  // operating point
-		// BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
-					     "central",             // central sys type
-					     {"up", "down"});      // other sys types
-
-		btagCal->load(*btagCalib,              // calibration instance
-			BTagEntry::FLAV_B,      // btag flavour
-		//            "comb");              // they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
-			"mujets");                //
-		btagCal->load(*btagCalib,              // calibration instance
-			BTagEntry::FLAV_C,      // btag flavour
-			"mujets");               // measurement type
-		btagCal->load(*btagCalib,              // calibration instance
-			BTagEntry::FLAV_UDSG,   // btag flavour
-			"incl");                // measurement type
-
-		ready = true;
 		}
 
+	/*
+	bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
+	bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
+	bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
+	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
+	*/
+
+	bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
+	bEffs.b_tagged    = bTaggingEfficiencies_b_tagged   ;
+	bEffs.c_alljet    = bTaggingEfficiencies_c_alljet   ;
+	bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
+	bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
+	bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
+
+	// need to open btagCal in this environment
+
+	btagCalib = new BTagCalibration("CSVv2", std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
+	//BTagCalibration* btagCalib; // ("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
+	btagCal = new BTagCalibrationReader(BTagEntry::OP_MEDIUM,  // operating point
+	// BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
+				     "central",             // central sys type
+				     {"up", "down"});      // other sys types
+
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_B,      // btag flavour
+	//            "comb");              // they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
+		"mujets");                //
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_C,      // btag flavour
+		"mujets");               // measurement type
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_UDSG,   // btag flavour
+		"incl");                // measurement type
+	}
+
+double b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP)
+	{
 	double weight_btag_sf = 1;
 
 	//FLoat_t b_discriminator = NT_jet_b_discr_0;

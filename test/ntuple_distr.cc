@@ -82,8 +82,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 14
-const char usage_string[256] = " [--verbose] [--normalize] tau_ID_SF with_b_SF with_PU_weight unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+#define INPUT_DTAGS_START 16
+const char usage_string[256] = " [--verbose] [--normalize] tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -99,6 +99,7 @@ gROOT->ProcessLine(".L pu_weight.C+");
 // load shared library with the wrapper for b-tag SF
 // tmp/slc6_amd64_gcc530/src/UserCode/ttbar-leptons-80X/src/UserCodettbar-leptons-80X/libUserCodettbar-leptons-80X.so
 gSystem->Load("libUserCodettbar-leptons-80X.so");
+//gROOT->ProcessLine("#include <vector>");
 
 unsigned int input_starts = 0;
 bool be_verbose = false;
@@ -136,8 +137,28 @@ if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 else
 	cout << "NO b SF weight!" << endl;
 
+bool with_lep_SF = false;
+TString set_lep_SF(argv[input_starts + 3]);
+if (set_lep_SF == TString("T") || set_lep_SF == TString("Y"))
+	{
+	with_lep_SF = true;
+	cout << "with lep SF weight" << endl;
+	}
+else
+	cout << "NO lep SF weight!" << endl;
+
+bool with_lep_trig_SF = false;
+TString set_lep_trig_SF(argv[input_starts + 4]);
+if (set_lep_trig_SF == TString("T") || set_lep_trig_SF == TString("Y"))
+	{
+	with_lep_trig_SF = true;
+	cout << "with lep trig SF weight" << endl;
+	}
+else
+	cout << "NO lep trig SF weight!" << endl;
+
 bool with_PU_weight = false;
-TString set_PU(argv[input_starts + 3]);
+TString set_PU(argv[input_starts + 5]);
 if (set_PU == TString("T") || set_PU == TString("Y"))
 	{
 	with_PU_weight = true;
@@ -147,29 +168,29 @@ else
 	cout << "NO PU weight!" << endl;
 
 bool set_logy = false;
-TString logy_inp(argv[input_starts + 4]);
+TString logy_inp(argv[input_starts + 6]);
 if (logy_inp == TString("T") || logy_inp == TString("Y"))
 	{
 	set_logy = true;
 	}
 
 bool unstack = false;
-TString unstack_inp(argv[input_starts + 5]);
+TString unstack_inp(argv[input_starts + 7]);
 if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	{
 	unstack = true;
 	}
 
-double lumi_bcdef = atof(argv[input_starts + 6]);
-double lumi_gh    = atof(argv[input_starts + 7]);
+double lumi_bcdef = atof(argv[input_starts + 8]);
+double lumi_gh    = atof(argv[input_starts + 9]);
 double lumi = lumi_bcdef + lumi_gh;
-TString distr(argv[input_starts + 8]);
-TString distr_condition(argv[input_starts + 9]);
-TString range(argv[input_starts + 10]);
-string out_name(argv[input_starts + 11]);
+TString distr(argv[input_starts + 10]);
+TString distr_condition(argv[input_starts + 11]);
+TString range(argv[input_starts + 12]);
+string out_name(argv[input_starts + 13]);
 
-TString distr_name(argv[input_starts + 12]);
-TString dir(argv[input_starts + 13]);
+TString distr_name(argv[input_starts + 14]);
+TString dir(argv[input_starts + 15]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
@@ -321,31 +342,46 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 		// add weights for MC
 		TString weight_cond("");
-		if (with_PU_weight) weight_cond = "(pu_weight(nvtx_gen))*";
+		if (with_PU_weight)
+			{
+			weight_cond = "(pu_weight(nvtx_gen))*";
+			// PU integral:
+			weight_cond += "0.986*";
+			}
+
 		if (dtag.Contains("amcatnlo"))
 			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
-		// lepton SF
-		TString lepton_SF_call("");
-		lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
-		weight_cond += lepton_SF_call;
 
-		TString lepton_trig_SF_call("");
-		lepton_trig_SF_call.Form("(lepton_muon_trig_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
-		weight_cond += lepton_trig_SF_call;
+		// lepton SF
+		if (with_lep_SF)
+			{
+			TString lepton_SF_call("");
+			lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+			weight_cond += lepton_SF_call;
+			}
+
+		if (with_lep_trig_SF)
+			{
+			TString lepton_trig_SF_call("");
+			lepton_trig_SF_call.Form("(lepton_muon_trig_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+			weight_cond += lepton_trig_SF_call;
+			}
 
 		// btag SF
 		//b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP);
-		TString b_SF_call("(b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.87))*");
-		b_SF_call += "(b_taggin_SF(jet1_p4.pt(), jet1_p4.eta(), jet1_b_discr, jet1_hadronFlavour, 0.87))*";
-		b_SF_call += "(b_taggin_SF(jet2_p4.pt(), jet2_p4.eta(), jet2_b_discr, jet2_hadronFlavour, 0.87))*";
-		b_SF_call += "(b_taggin_SF(jet3_p4.pt(), jet3_p4.eta(), jet3_b_discr, jet3_hadronFlavour, 0.87))*";
-		b_SF_call += "(b_taggin_SF(jet4_p4.pt(), jet4_p4.eta(), jet4_b_discr, jet4_hadronFlavour, 0.87))*";
-
 		if (with_b_SF)
+			{
+			// first initialize b SF distrs for this dtag:
+			TString init_bSF_call = "set_bSFs_for_dtag(\"" + dtag + "\");";
+			cout << "init b SFs with: " << init_bSF_call << endl;
+			gROOT->ProcessLine(init_bSF_call);
+			TString b_SF_call("(b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.8484))*");
+			b_SF_call += "(b_taggin_SF(jet1_p4.pt(), jet1_p4.eta(), jet1_b_discr, jet1_hadronFlavour, 0.8484))*";
+			b_SF_call += "(b_taggin_SF(jet2_p4.pt(), jet2_p4.eta(), jet2_b_discr, jet2_hadronFlavour, 0.8484))*";
+			b_SF_call += "(b_taggin_SF(jet3_p4.pt(), jet3_p4.eta(), jet3_b_discr, jet3_hadronFlavour, 0.8484))*";
+			b_SF_call += "(b_taggin_SF(jet4_p4.pt(), jet4_p4.eta(), jet4_b_discr, jet4_hadronFlavour, 0.8484))*";
 			weight_cond += b_SF_call;
-
-		// PU integral:
-		weight_cond += "0.986*";
+			}
 
 		// Tau ID SF
 		if (tau_ID_SF > 0)
@@ -355,6 +391,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			weight_cond += tau_ID_SF_call;
 			}
 			
+		// NUP cut for W0Jets
+		if (dtag.Contains("W0Jet"))
+			distr_condition += "&& NUP_gen < 6";
 
 		// draw distribution
 		// in case of inclusive samples (like TTbar) several distributions are drawn -- for each sub-channel
@@ -376,10 +415,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			{
 			cout << "TT channels" << endl;
 			TString nick("tt_{other}");
-			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 
-			nick = "tt_em";
-			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
+			//nick = "tt_em";
+			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 
 			nick = "tt_{\\mu\\tau}";
 			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
@@ -387,11 +427,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 			//histos[nick] = histo;
 
-			nick = "tt_{e\\tau}";
-			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
-			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")");
-			//histo = (TH1D*) output_ttree->GetHistogram();
-			//histos[nick] = histo;
+			//nick = "tt_{e\\tau}";
+			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
 
 			nick = "tt_lj";
 			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
@@ -531,6 +568,30 @@ for (Int_t h=0; h<4; h++)
 	}
 */
 
+// ---- Write the separate distributions to file
+//TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + ".root", "RECREATE");
+//cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
+
+hs_data->Write();
+hs_data->SetName(TString("data"));
+f_out->Write(TString("data"));
+
+hs_sum->Write();
+hs_sum->SetName(TString("mc_sum"));
+f_out->Write(TString("mc_sum"));
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+	{
+	TString nick = it->first;
+	TH1D * distr = it->second;
+	distr->SetName(nick);
+	distr->Write();
+	f_out->Write(nick);
+	}
+
+f_out->Close();
+
+
 hs_data->Sumw2();
 hs_data->SetStats(0);      // No statistics on lower plot
 
@@ -667,6 +728,8 @@ hs_sum->SetXTitle(distr_name);
 
 leg->SetBorderSize(0);
 leg->Draw();
+
+
 
 // THE RATIO PLOT
 pad2->cd();
