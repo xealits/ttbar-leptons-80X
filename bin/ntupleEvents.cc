@@ -2522,14 +2522,17 @@ for(size_t f=0; f<urls.size();++f)
 		 * -- faster, a bit less efficient, clear how to apply Trigger SF
 		 */
 		if (!debug) {
-			//if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue;
+			if (!isMC && isSingleElectronDataset && eTrigger && muTrigger) continue; // the way to orthogonalize two datasets
 			if (!(eTrigger || muTrigger)) continue;   //ONLY RUN ON THE EVENTS THAT PASS OUR TRIGGERS
-			if (!isMC && ( isSingleElectronDataset && !eTrigger)) continue;  // SingleEl processes only events with HLT El
-			if (!isMC && (!isSingleElectronDataset && !muTrigger)) continue; // SingleMu processes only events with HLT Mu
+			//if (!isMC && ( isSingleElectronDataset && !eTrigger)) continue;  // SingleEl processes only events with HLT El
+			//if (!isMC && (!isSingleElectronDataset && !muTrigger)) continue; // SingleMu processes only events with HLT Mu
 		}
 
-		if (eTrigger)  NT_HLT_el = 1;
-		if (muTrigger) NT_HLT_mu = 1;
+		if (eTrigger)  NT_HLT_el = true;
+		if (muTrigger) NT_HLT_mu = true;
+
+		if (debug)
+			cout << "passed el/mu trig\t" << eTrigger << '(' << NT_HLT_el << ')' << '\t' << muTrigger << '(' << NT_HLT_mu << ')' << endl;
 
 		// TODO: ----------------------------- HLT efficiency scale factors
 		// one should run it on the fired trigger objects,
@@ -3121,8 +3124,11 @@ for(size_t f=0; f<urls.size();++f)
 		// TODO: test if trigger needed here at all
 		//isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && muTrigger && clean_lep_conditions;
 		//isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && eTrigger  && clean_lep_conditions;
-		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions && !isSingleElectronDataset;
-		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions &&  isSingleElectronDataset;
+		// no dataset requirements for passing selection
+		// only HLT and particles -- the same in data and MC
+		// -- it adds about 1 percent at the final selection in data
+		isSingleMu = selMuons.size() == 1 && selElectrons.size() == 0 && clean_lep_conditions; // && !isSingleElectronDataset;
+		isSingleE  = selMuons.size() == 0 && selElectrons.size() == 1 && clean_lep_conditions; // &&  isSingleElectronDataset;
 
 		if(debug){
 			cout << "assigned lepton channel" << endl;
@@ -3134,9 +3140,9 @@ for(size_t f=0; f<urls.size();++f)
 			// TODO: remove tau-selection below?
 			int dilep_ids = selLeptons[0].pdgId() * selLeptons[1].pdgId();
 
-			isDoubleE  = fabs(dilep_ids) == 121 &&  isSingleElectronDataset; // clear luminosity of processed data, scale factors etc and pract. max eff
-			isDoubleMu = fabs(dilep_ids) == 169 && !isSingleElectronDataset;
-			isEMu      = fabs(dilep_ids) == 143 && !isSingleElectronDataset;
+			isDoubleE  = fabs(dilep_ids) == 121; // &&  isSingleElectronDataset; // clear luminosity of processed data, scale factors etc and pract. max eff
+			isDoubleMu = fabs(dilep_ids) == 169; // && !isSingleElectronDataset;
+			isEMu      = fabs(dilep_ids) == 143; // && !isSingleElectronDataset;
 			if (isDoubleE)
 				{
 				fill_pt_e( string("leptons_doublee_2leptons_pt"), selLeptons[0].pt(), weights_FULL[SYS_NOMINAL]);
@@ -3171,7 +3177,9 @@ for(size_t f=0; f<urls.size();++f)
 		if (record_ntuple)
 			{
 			if(debug)
+				{
 				cout << "recording the event" << endl;
+				}
 			// it seems NTuple doesn't have a method Fill(NN) for NN inputs...
 			// or for a vector...
 			// it can Fill Float_t[] pointer

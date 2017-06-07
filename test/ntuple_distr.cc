@@ -185,7 +185,7 @@ double lumi_bcdef = atof(argv[input_starts + 8]);
 double lumi_gh    = atof(argv[input_starts + 9]);
 double lumi = lumi_bcdef + lumi_gh;
 TString distr(argv[input_starts + 10]);
-TString distr_condition(argv[input_starts + 11]);
+TString distr_condition_init(argv[input_starts + 11]);
 TString range(argv[input_starts + 12]);
 string out_name(argv[input_starts + 13]);
 
@@ -292,7 +292,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
 		{
-		output_ttree->Draw(distr + ">>h" + range, distr_condition);
+		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
 		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
 		//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
@@ -325,6 +325,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		{
 		// MC lumi ratio
 		Double_t ratio = 1;
+		TString distr_condition = distr_condition_init;
 
 		TH1D* weightflow = NULL;
 		if (file->GetListOfKeys()->Contains("eventflow"))
