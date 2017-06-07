@@ -27,9 +27,6 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 12
-const char usage_string[128] = " [--verbose] [--normalize] with_PU_weight unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
-
 #define NT_OUTPUT_TTREE_NAME "reduced_ttree"
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
@@ -84,6 +81,10 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 
 using namespace std;
 
+
+#define INPUT_DTAGS_START 14
+const char usage_string[256] = " [--verbose] [--normalize] tau_ID_SF with_b_SF with_PU_weight unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
@@ -123,8 +124,20 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
+float tau_ID_SF = atof(argv[input_starts + 1]);
+
+bool with_b_SF = false;
+TString set_b_SF(argv[input_starts + 2]);
+if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
+	{
+	with_b_SF = true;
+	cout << "with b SF weight" << endl;
+	}
+else
+	cout << "NO b SF weight!" << endl;
+
 bool with_PU_weight = false;
-TString set_PU(argv[input_starts + 1]);
+TString set_PU(argv[input_starts + 3]);
 if (set_PU == TString("T") || set_PU == TString("Y"))
 	{
 	with_PU_weight = true;
@@ -134,29 +147,29 @@ else
 	cout << "NO PU weight!" << endl;
 
 bool set_logy = false;
-TString logy_inp(argv[input_starts + 2]);
+TString logy_inp(argv[input_starts + 4]);
 if (logy_inp == TString("T") || logy_inp == TString("Y"))
 	{
 	set_logy = true;
 	}
 
 bool unstack = false;
-TString unstack_inp(argv[input_starts + 3]);
+TString unstack_inp(argv[input_starts + 5]);
 if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	{
 	unstack = true;
 	}
 
-double lumi_bcdef = atof(argv[input_starts + 4]);
-double lumi_gh    = atof(argv[input_starts + 5]);
+double lumi_bcdef = atof(argv[input_starts + 6]);
+double lumi_gh    = atof(argv[input_starts + 7]);
 double lumi = lumi_bcdef + lumi_gh;
-TString distr(argv[input_starts + 6]);
-TString distr_condition(argv[input_starts + 7]);
-TString range(argv[input_starts + 8]);
-string out_name(argv[input_starts + 9]);
+TString distr(argv[input_starts + 8]);
+TString distr_condition(argv[input_starts + 9]);
+TString range(argv[input_starts + 10]);
+string out_name(argv[input_starts + 11]);
 
-TString distr_name(argv[input_starts + 10]);
-TString dir(argv[input_starts + 11]);
+TString distr_name(argv[input_starts + 12]);
+TString dir(argv[input_starts + 13]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
@@ -322,6 +335,26 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 		// btag SF
 		//b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP);
+		TString b_SF_call("(b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.87))*");
+		b_SF_call += "(b_taggin_SF(jet1_p4.pt(), jet1_p4.eta(), jet1_b_discr, jet1_hadronFlavour, 0.87))*";
+		b_SF_call += "(b_taggin_SF(jet2_p4.pt(), jet2_p4.eta(), jet2_b_discr, jet2_hadronFlavour, 0.87))*";
+		b_SF_call += "(b_taggin_SF(jet3_p4.pt(), jet3_p4.eta(), jet3_b_discr, jet3_hadronFlavour, 0.87))*";
+		b_SF_call += "(b_taggin_SF(jet4_p4.pt(), jet4_p4.eta(), jet4_b_discr, jet4_hadronFlavour, 0.87))*";
+
+		if (with_b_SF)
+			weight_cond += b_SF_call;
+
+		// PU integral:
+		weight_cond += "0.986*";
+
+		// Tau ID SF
+		if (tau_ID_SF > 0)
+			{
+			TString tau_ID_SF_call("");
+			tau_ID_SF_call.Form("%f*", tau_ID_SF);
+			weight_cond += tau_ID_SF_call;
+			}
+			
 
 		// draw distribution
 		// in case of inclusive samples (like TTbar) several distributions are drawn -- for each sub-channel
