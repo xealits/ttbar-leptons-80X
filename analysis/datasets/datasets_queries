@@ -87,6 +87,7 @@ das_client --limit=0 --query="dataset=/ZZ*/RunIISummer16MiniAODv2*/MINIAODSIM"
 das_client --limit=0 --query="dataset=/ST_*/RunIISummer16MiniAODv2*/MINIAODSIM" 
 das_client --limit=0 --query="dataset=/QCD_*Enriched*/RunIISummer16MiniAODv2*/MINIAODSIM" 
 das_client --limit=0 --query="dataset=/QCD*HT*/RunIISummer16MiniAODv2*/MINIAODSIM"
+das_client --limit=0 --query="dataset=/EWK*/RunIISummer16MiniAODv2*/MINIAODSIM"
 } | tee allHLT_datasets
 
 

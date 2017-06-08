@@ -156,12 +156,14 @@ std::map<TString, double> xsecs = {
 { "MC2016_reHLT_TTJets_powheg_mqu"         , ttbar_xsec * W_lep_br*W_qar_br },
 { "MC2016_reHLT_TTJets_powheg_qq"          , ttbar_xsec * W_qar_br2 },
 
+// mcm xsecs
 {"MC2016_noHLT_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_noHLT_W1Jets_madgraph", 9493},
 {"MC2016_noHLT_W2Jets_madgraph", 3120},
 {"MC2016_noHLT_W3Jets_madgrapg", 942.3},
 {"MC2016_noHLT_W3Jets_madgraph", 942.3},
 {"MC2016_noHLT_W4Jets_madgraph", 524.2},
+
 {"MC2016_reHLT_WJets_amcatnlo", 61526.7},
 {"MC2016_reHLT_DYJetsToLL_10to50_amcatnlo", 18610},
 {"MC2016_reHLT_DYJetsToLL_50toInf_amcatnlo", 6025.2},
@@ -185,6 +187,8 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_QCD_HT-1500-2000",  120.4},
 {"MC2016_noHLT_QCD_HT-2000-Inf",  25.25},
 
+// mcm xsecs
+{"MC2016_Summer16_W0Jets_amcatnlo_full", 61526.7},
 {"MC2016_Summer16_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_Summer16_W1Jets_madgraph", 9493},
 {"MC2016_Summer16_W2Jets_madgraph", 3120},
@@ -192,6 +196,13 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_W3Jets_madgraph", 942.3},
 {"MC2016_Summer16_W4Jets_madgraph", 524.2},
 {"MC2016_Summer16_WJets_amcatnlo", 61526.7},
+
+// xsecs computed from inclusive set divided by NUP
+{"MC2016_Summer16_fixedXsec_W0Jets_amcatnlo",  1355.7  },
+{"MC2016_Summer16_fixedXsec_W1Jets_madgraph",  4769.65 },
+{"MC2016_Summer16_fixedXsec_W2Jets_madgraph", 36689.6  },
+{"MC2016_Summer16_fixedXsec_W3Jets_madgraph", 18711.7  },
+{"MC2016_Summer16_fixedXsec_W4Jets_madgraph",   524.2  }, // left the same
 
 {"MC2016_Summer16_WJets_HT70to100_madgraph"    , 1319 },
 {"MC2016_Summer16_WJets_HT100to200_madgraph"   , 1345 },

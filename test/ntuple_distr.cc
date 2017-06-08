@@ -132,6 +132,7 @@ TString set_b_SF(argv[input_starts + 2]);
 if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 	{
 	with_b_SF = true;
+	gROOT->ProcessLine("set_bSF_calibrators()");
 	cout << "with b SF weight" << endl;
 	}
 else
@@ -373,7 +374,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_b_SF)
 			{
 			// first initialize b SF distrs for this dtag:
-			TString init_bSF_call = "set_bSFs_for_dtag(\"" + dtag + "\");";
+			TString init_bSF_call = "set_bSF_effs_for_dtag(\"" + dtag + "\");";
 			cout << "init b SFs with: " << init_bSF_call << endl;
 			gROOT->ProcessLine(init_bSF_call);
 			TString b_SF_call("(b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.8484))*");
@@ -606,6 +607,9 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != n
 	TString nick = it->first;
 	TH1D * distr = it->second;
 
+	if (nick == TString("qcd")) continue;
+	// add qcd the last one
+
 	if (be_verbose)
 		{
 		cout << nick;
@@ -628,6 +632,14 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != n
 
 	hs->Add(distr, "HIST");
 	leg->AddEntry(distr, nick, "F");
+	}
+
+// mabe make (if qcd) later
+if (nicknamed_mc_distrs.find(TString("qcd")) != nicknamed_mc_distrs.end())
+	{
+	cout << "adding qcd to mc stack" << endl;
+	hs->Add(nicknamed_mc_distrs["qcd"], "HIST");
+	leg->AddEntry(nicknamed_mc_distrs["qcd"], "qcd", "F");
 	}
 
 

@@ -173,14 +173,36 @@ static struct bTaggingEfficiencyHistograms bEffs;
 static BTagCalibration* btagCalib;
 static BTagCalibrationReader* btagCal;
 
-void set_bSFs_for_dtag(TString dtag)
+void set_bSF_calibrators()
+	{
+	bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+	bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.c_str());
+
+	btagCalib = new BTagCalibration("CSVv2", std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
+	//BTagCalibration* btagCalib; // ("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
+	btagCal = new BTagCalibrationReader(BTagEntry::OP_MEDIUM,  // operating point
+	// BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
+				     "central",             // central sys type
+				     {"up", "down"});      // other sys types
+
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_B,      // btag flavour
+	//            "comb");              // they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
+		"mujets");                //
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_C,      // btag flavour
+		"mujets");               // measurement type
+	btagCal->load(*btagCalib,              // calibration instance
+		BTagEntry::FLAV_UDSG,   // btag flavour
+		"incl");                // measurement type
+	}
+
+void set_bSF_effs_for_dtag(TString dtag)
 	{
 	// read-in and setup all the b-tagging crap
 
 	//TString bTaggingEfficiencies_filename   = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
 	//gSystem->ExpandPathName(bTaggingEfficiencies_filename);
-	bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-	bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.c_str());
 
 	//cout << "b-tagging eff-s, filename: " << bTaggingEfficiencies_filename << endl;
 
@@ -234,26 +256,6 @@ void set_bSFs_for_dtag(TString dtag)
 	bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
 	bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
 	bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
-
-	// need to open btagCal in this environment
-
-	btagCalib = new BTagCalibration("CSVv2", std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
-	//BTagCalibration* btagCalib; // ("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
-	btagCal = new BTagCalibrationReader(BTagEntry::OP_MEDIUM,  // operating point
-	// BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
-				     "central",             // central sys type
-				     {"up", "down"});      // other sys types
-
-	btagCal->load(*btagCalib,              // calibration instance
-		BTagEntry::FLAV_B,      // btag flavour
-	//            "comb");              // they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
-		"mujets");                //
-	btagCal->load(*btagCalib,              // calibration instance
-		BTagEntry::FLAV_C,      // btag flavour
-		"mujets");               // measurement type
-	btagCal->load(*btagCalib,              // calibration instance
-		BTagEntry::FLAV_UDSG,   // btag flavour
-		"incl");                // measurement type
 	}
 
 double b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP)

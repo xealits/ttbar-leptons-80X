@@ -1540,6 +1540,8 @@ ntuple->SetDirectory(0);
 //TNtuple ntuple; // aparently TNtuple doesn't work well with branches
 // at least it is not consistent with how TTree handles them
 // thus -- switching to TTree right now
+TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+TFile* ntuple_output = new TFile(ntuple_output_filename, "CREATE");
 TTree NT_output_ttree("reduced_ttree", "TTree with reduced event data"); // -- it's the default name, no further propagation with #define
 // all the NT_Name objects, bound to ntuple branches:
 #define NTUPLE_INTERFACE_CREATE
@@ -3330,8 +3332,6 @@ for(size_t f=0; f<urls.size();++f)
 
 printf("Done processing the job of files\n");
 
-printf("End of (file loop) the job.\n");
-
 // Controls distributions of processed particles
 
 
@@ -3347,6 +3347,18 @@ printf ("Results save in %s\n", outUrl.Data());
 
 
 // CONTROL DISTRS, ROOT OUTPUT
+
+
+// NTuple output (ntuple, NTUPLE)
+//TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+//TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
+NT_output_ttree.Write();
+ntuple_output->Write();
+// also N events at different stages
+eventflow->Write();
+ntuple_output->Write();
+ntuple_output->Close();
+
 
 for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_control.begin(); it != th1d_distr_maps_control.end(); ++it)
 	{
@@ -3423,15 +3435,6 @@ for(std::map<string, std::map<string, TH1D>>::iterator it = th1d_distr_maps_cont
 
 	out_f->Close();
 	}
-
-// NTuple output (ntuple, NTUPLE)
-TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
-NT_output_ttree.Write();
-ntuple_output->Write();
-// also N events at different stages
-eventflow->Write();
-ntuple_output->Close();
 
 cout << "done writing" << endl;
 

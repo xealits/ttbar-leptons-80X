@@ -2,7 +2,7 @@
 from job_handling import fetch_n_store_dset, fetch_dset_presence
 import os
 import argparse
-import json
+import json, yaml
 import logging
 
 
@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(
     )
 
 parser.add_argument("dsets_dir",   help="the local directory for dsets files info")
-parser.add_argument("dsets",       help="the filename (relational path) of the dsets json with dtag-dset targets for jobs")
+parser.add_argument("dsets",       help="the filename (relational path) of the dsets yaml or json with dtag-dset targets for jobs")
 parser.add_argument("--all",       help="update presence of a dset and its' files",
         action = "store_true")
 
@@ -45,14 +45,27 @@ os.environ["X509_USER_PROXY"] = os.path.abspath(proxy_file)
 
 logging.info("Proxy is ready.")
 
-# load the dsets from the json file
-with open(args.dsets) as d_f:
-    dsets = json.load(d_f)
-
 storing_action = fetch_n_store_dset if args.all else fetch_dset_presence
 
-logging.info("To local directory %s" % args.dsets_dir)
-for dset in [d['dset'] for dset_group in dsets['proc'] for d in dset_group['data']]:
-    logging.info("Storing dset %s" % dset)
-    storing_action(args.dsets_dir, dset)
+if ".json" in args.dsets:
+    # load the dsets from the json file
+    with open(args.dsets) as d_f:
+        dsets = json.load(d_f)
+
+    logging.info("To local directory %s" % args.dsets_dir)
+    for dset in [d['dset'] for dset_group in dsets['proc'] for d in dset_group['data']]:
+        logging.info("Storing dset %s" % dset)
+        storing_action(args.dsets_dir, dset)
+
+else:
+    # load yaml file
+    # which has different structure
+    with open(args.dsets) as d_f:
+        dsets = yaml.load(d_f)
+
+    logging.info("To local directory %s" % args.dsets_dir)
+    #for dset in [d['dset'] for dset_group in dsets['proc'] for d in dset_group['data']]:
+    for dset in [d for dset_group in dsets for d in dset_group['dsets']]:
+        logging.info("Storing dset %s" % dset)
+        storing_action(args.dsets_dir, dset)
 
