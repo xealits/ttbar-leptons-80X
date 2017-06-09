@@ -2741,11 +2741,16 @@ for(size_t f=0; f<urls.size();++f)
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, NT_fixedGridRhoFastjetAll, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
 			30., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
+		for (int i=0; i<selElectrons.size(); i++) 
+			{
+			pat::Electron& el = selElectrons[i];
+			el.addUserFloat("dxy", fabs(el.gsfTrack()->dxy(goodPV.position())));
+			el.addUserFloat("dz",  fabs(el.gsfTrack()->dz(goodPV.position())));
+			}
+
 		if(debug){
 			cout << "processed electrons" << endl;
 			}
-
-
 
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
@@ -2763,6 +2768,13 @@ for(size_t f=0; f<urls.size();++f)
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weights_FULL[SYS_NOMINAL], patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
 			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
+
+		for (int i=0; i<selMuons.size(); i++) 
+			{
+			pat::Muon& mu = selMuons[i];
+			mu.addUserFloat("dxy", fabs(mu.muonBestTrack()->dxy(goodPV.position())));
+			mu.addUserFloat("dz",  fabs(mu.muonBestTrack()->dz (goodPV.position())));
+			}
 
 		if(debug){
 			cout << "processed muons" << endl;
@@ -2786,10 +2798,16 @@ for(size_t f=0; f<urls.size();++f)
 		// max output of leptons = 2
 		NT_lep0_id = selLeptons[0].pdgId();
 		NT_lep0_p4 = selLeptons[0].p4();
+		NT_lep0_dxy = selLeptons[0].userFloat("dxy");
+		NT_lep0_dz  = selLeptons[0].userFloat("dz");
+		NT_lep0_relIso  = relIso(selLeptons[0], NT_fixedGridRhoFastjetAll);
 		if (selLeptons.size() == 2)
 			{
-			NT_lep1_id = selLeptons[0].pdgId();
-			NT_lep1_p4 = selLeptons[0].p4();
+			NT_lep1_id = selLeptons[1].pdgId();
+			NT_lep1_p4 = selLeptons[1].p4();
+			NT_lep1_dxy = selLeptons[1].userFloat("dxy");
+			NT_lep1_dz  = selLeptons[1].userFloat("dz");
+			NT_lep1_relIso  = relIso(selLeptons[1], NT_fixedGridRhoFastjetAll);
 			}
 
 		// record "ID of the channel" -- product of lepton IDs
