@@ -325,7 +325,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	else
 		{
 		// MC lumi ratio
-		Double_t ratio = 1;
+		Double_t ratio = 1, xsec = 1;
 		TString distr_condition = distr_condition_init;
 
 		TH1D* weightflow = NULL;
@@ -340,7 +340,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		else {
 			cout << "NO WEIGHTFLOW: " << dtag << endl;
 			}
-		ratio = lumi * xsecs[dtag] / weightflow->GetBinContent(11);
+		xsec = xsecs[dtag];
+		ratio = lumi * xsec / weightflow->GetBinContent(11);
 
 		// add weights for MC
 		TString weight_cond("");
@@ -456,8 +457,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			if (be_verbose) cout << "got histogram " << nick << " scaling to lumi, adding to stack" << endl;
 			if (be_verbose) histo->Print();
 
+			cout << "scaling and adding a stack histo " << dtag << " xsec = " << xsec << " ratio = " << ratio << " norm = " << histo->Integral() / weightflow->GetBinContent(11) << endl;
 			histo->Scale(ratio);
-			cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 			if (be_verbose) histo->Print();
 
 			//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace

@@ -1540,8 +1540,6 @@ ntuple->SetDirectory(0);
 //TNtuple ntuple; // aparently TNtuple doesn't work well with branches
 // at least it is not consistent with how TTree handles them
 // thus -- switching to TTree right now
-TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-TFile* ntuple_output = new TFile(ntuple_output_filename, "CREATE");
 TTree NT_output_ttree("reduced_ttree", "TTree with reduced event data"); // -- it's the default name, no further propagation with #define
 // all the NT_Name objects, bound to ntuple branches:
 #define NTUPLE_INTERFACE_CREATE
@@ -2741,12 +2739,14 @@ for(size_t f=0; f<urls.size();++f)
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, NT_fixedGridRhoFastjetAll, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
 			30., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
 
+		/*
 		for (int i=0; i<selElectrons.size(); i++) 
 			{
 			pat::Electron& el = selElectrons[i];
 			el.addUserFloat("dxy", fabs(el.gsfTrack()->dxy(goodPV.position())));
 			el.addUserFloat("dz",  fabs(el.gsfTrack()->dz(goodPV.position())));
 			}
+		*/
 
 		if(debug){
 			cout << "processed electrons" << endl;
@@ -2769,12 +2769,13 @@ for(size_t f=0; f<urls.size();++f)
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weights_FULL[SYS_NOMINAL], patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
 			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
 
+		/*
 		for (int i=0; i<selMuons.size(); i++) 
 			{
-			pat::Muon& mu = selMuons[i];
-			mu.addUserFloat("dxy", fabs(mu.muonBestTrack()->dxy(goodPV.position())));
-			mu.addUserFloat("dz",  fabs(mu.muonBestTrack()->dz (goodPV.position())));
+			selMuons[i].addUserFloat("dxy", fabs(selMuons[i].muonBestTrack()->dxy(goodPV.position())));
+			selMuons[i].addUserFloat("dz",  fabs(selMuons[i].muonBestTrack()->dz (goodPV.position())));
 			}
+		*/
 
 		if(debug){
 			cout << "processed muons" << endl;
@@ -2798,16 +2799,52 @@ for(size_t f=0; f<urls.size();++f)
 		// max output of leptons = 2
 		NT_lep0_id = selLeptons[0].pdgId();
 		NT_lep0_p4 = selLeptons[0].p4();
-		NT_lep0_dxy = selLeptons[0].userFloat("dxy");
-		NT_lep0_dz  = selLeptons[0].userFloat("dz");
 		NT_lep0_relIso  = relIso(selLeptons[0], NT_fixedGridRhoFastjetAll);
+		//if (debug) cout << "lep0 pdgId " << selLeptons[0].pdgId() << endl;
+		// save dxy and dz -- they are obtained differently for electron and muon
+		{
+		Float_t dxy = -1, dz = -1;
+		if (selLeptons[0].pdgId() == 13 || selLeptons[0].pdgId() == -13)
+			{
+			dxy = fabs(selLeptons[0].mu.muonBestTrack()->dxy(goodPV.position()));
+			dz  = fabs(selLeptons[0].mu.muonBestTrack()->dz (goodPV.position()));
+			NT_lep0_dB = selLeptons[0].mu.dB();
+			}
+		else // electron
+			{
+			dxy = fabs(selLeptons[0].el.gsfTrack()->dxy(goodPV.position()));
+			dz  = fabs(selLeptons[0].el.gsfTrack()->dz (goodPV.position()));
+			NT_lep0_dB = selLeptons[0].el.dB();
+			}
+		if (debug) cout << "lep0 pdgId, dxy, dz " << selLeptons[0].pdgId() << " " << dxy << " " << dz << endl;
+		NT_lep0_dxy = dxy;
+		NT_lep0_dz  = dz;
+		}
+
 		if (selLeptons.size() == 2)
 			{
+			Float_t dxy = -1, dz = -1;
 			NT_lep1_id = selLeptons[1].pdgId();
 			NT_lep1_p4 = selLeptons[1].p4();
-			NT_lep1_dxy = selLeptons[1].userFloat("dxy");
-			NT_lep1_dz  = selLeptons[1].userFloat("dz");
+			if (debug) cout << "lep1 pdgId " << selLeptons[1].pdgId() << endl;
+			//NT_lep1_dxy = selLeptons[1].userFloat("dxy");
+			//NT_lep1_dz  = selLeptons[1].userFloat("dz");
 			NT_lep1_relIso  = relIso(selLeptons[1], NT_fixedGridRhoFastjetAll);
+			if (selLeptons[1].pdgId() == 13 || selLeptons[1].pdgId() == -13)
+				{
+				dxy = fabs(selLeptons[1].mu.muonBestTrack()->dxy(goodPV.position()));
+				dz  = fabs(selLeptons[1].mu.muonBestTrack()->dz (goodPV.position()));
+				NT_lep1_dB = selLeptons[1].mu.dB();
+				}
+			else // electron
+				{
+				dxy = fabs(selLeptons[1].el.gsfTrack()->dxy(goodPV.position()));
+				dz  = fabs(selLeptons[1].el.gsfTrack()->dz (goodPV.position()));
+				NT_lep1_dB = selLeptons[1].el.dB();
+				}
+			NT_lep1_dxy = dxy;
+			NT_lep1_dz  = dz;
+			if (debug) cout << "lep1 pdgId, dxy, dz " << selLeptons[0].pdgId() << " " << dxy << " " << dz << endl;
 			}
 
 		// record "ID of the channel" -- product of lepton IDs
@@ -3366,14 +3403,20 @@ printf ("Results save in %s\n", outUrl.Data());
 
 // CONTROL DISTRS, ROOT OUTPUT
 
-
 // NTuple output (ntuple, NTUPLE)
+// I have to do it at the end of the run to save only full job output
+TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+TFile* ntuple_output = new TFile(ntuple_output_filename, "CREATE");
+ntuple_output->cd();
+
+NT_output_ttree.SetDirectory(ntuple_output);
+eventflow->SetDirectory(ntuple_output);
 //TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
 //TFile* ntuple_output = TFile::Open(ntuple_output_filename, "CREATE");
-NT_output_ttree.Write();
-ntuple_output->Write();
+//NT_output_ttree.Write(); // no need to do it when I SetDirectory to the output file on it
+//ntuple_output->Write();
 // also N events at different stages
-eventflow->Write();
+//eventflow->Write();
 ntuple_output->Write();
 ntuple_output->Close();
 

@@ -200,11 +200,13 @@ OBJECT_in_NTuple(OUTNTUPLE, LorentzVector, lep0_p4);
 Float_t_in_NTuple(OUTNTUPLE, lep0_dxy);
 Float_t_in_NTuple(OUTNTUPLE, lep0_dz);
 Float_t_in_NTuple(OUTNTUPLE, lep0_relIso);
+Float_t_in_NTuple(OUTNTUPLE, lep0_dB);
 Int_t_in_NTuple(OUTNTUPLE, lep1_id);
 OBJECT_in_NTuple(OUTNTUPLE, LorentzVector, lep1_p4);
 Float_t_in_NTuple(OUTNTUPLE, lep1_dxy);
 Float_t_in_NTuple(OUTNTUPLE, lep1_dz);
 Float_t_in_NTuple(OUTNTUPLE, lep1_relIso);
+Float_t_in_NTuple(OUTNTUPLE, lep1_dB);
 
 #define JET_OUTPUT(num) \
 Int_t_in_NTuple(OUTNTUPLE, jet##num##_id); \
@@ -370,11 +372,13 @@ NT_lep0_p4.SetXYZT(0, 0, 0, 0); \
 NT_lep0_dxy = -1; \
 NT_lep0_dz  = -1; \
 NT_lep0_relIso  = -1; \
+NT_lep0_dB  = -1; \
 NT_lep1_id = -1; \
 NT_lep1_p4.SetXYZT(0, 0, 0, 0); \
 NT_lep1_dxy = -1; \
 NT_lep1_dz  = -1; \
 NT_lep1_relIso  = -1; \
+NT_lep1_dB  = -1; \
 RESET_JET(0) \
 RESET_JET(1) \
 RESET_JET(2) \
