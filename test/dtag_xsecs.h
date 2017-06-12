@@ -191,20 +191,22 @@ std::map<TString, double> xsecs = {
 {"MC2016_Summer16_WJets_amcatnlo", 61526.7},
 {"MC2016_Summer16_W0Jets_amcatnlo_full", 61526.7},
 {"MC2016_Summer16_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
-{"MC2016_Summer16_WJets_madgraph", 50690},
 {"MC2016_Summer16_WJets_madgraph_075", 50690 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_Summer16_W0Jets_madgraph", 50690 - 9493 - 3120 - 942.3 - 524.2},
-{"MC2016_Summer16_W1Jets_madgraph", 9493},
-{"MC2016_Summer16_W2Jets_madgraph", 3120},
-{"MC2016_Summer16_W3Jets_madgrapg", 942.3},
-{"MC2016_Summer16_W3Jets_madgraph", 942.3},
-{"MC2016_Summer16_W4Jets_madgraph", 524.2},
 
 {"MC2016_Summer16_WJets_madgraph_perc", 37713.4 },
 {"MC2016_Summer16_W1Jets_madgraph_perc", 8921.44},
 {"MC2016_Summer16_W2Jets_madgraph_perc", 2838.64},
 {"MC2016_Summer16_W3Jets_madgraph_perc",  861.73},
 {"MC2016_Summer16_W4Jets_madgraph_perc",  354.83},
+
+// since _perc ~ worked doing this way
+// no NUP, but reduced xsec
+{"MC2016_Summer16_WJets_madgraph", 50690 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_W1Jets_madgraph", 9493},
+{"MC2016_Summer16_W2Jets_madgraph", 3120},
+{"MC2016_Summer16_W3Jets_madgraph", 942.3},
+{"MC2016_Summer16_W4Jets_madgraph", 524.2},
 
 // m-i-t scales
 {"MC2016_Summer16_mScale_WJets_full_madgraph",  61526},
