@@ -82,8 +82,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 16
-const char usage_string[256] = " [--verbose] [--normalize] tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+#define INPUT_DTAGS_START 17
+const char usage_string[256] = " [--verbose] [--normalize] sig tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -125,10 +125,16 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-float tau_ID_SF = atof(argv[input_starts + 1]);
+TString sig(argv[input_starts + 1]);
+if (sig != TString("el") && sig != TString("mu"))
+	{
+	cout << "not supported tt signal channel: " << sig << endl;
+	}
+
+float tau_ID_SF = atof(argv[input_starts + 2]);
 
 bool with_b_SF = false;
-TString set_b_SF(argv[input_starts + 2]);
+TString set_b_SF(argv[input_starts + 3]);
 if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 	{
 	with_b_SF = true;
@@ -139,7 +145,7 @@ else
 	cout << "NO b SF weight!" << endl;
 
 bool with_lep_SF = false;
-TString set_lep_SF(argv[input_starts + 3]);
+TString set_lep_SF(argv[input_starts + 4]);
 if (set_lep_SF == TString("T") || set_lep_SF == TString("Y"))
 	{
 	with_lep_SF = true;
@@ -149,7 +155,7 @@ else
 	cout << "NO lep SF weight!" << endl;
 
 bool with_lep_trig_SF = false;
-TString set_lep_trig_SF(argv[input_starts + 4]);
+TString set_lep_trig_SF(argv[input_starts + 5]);
 if (set_lep_trig_SF == TString("T") || set_lep_trig_SF == TString("Y"))
 	{
 	with_lep_trig_SF = true;
@@ -159,7 +165,7 @@ else
 	cout << "NO lep trig SF weight!" << endl;
 
 bool with_PU_weight = false;
-TString set_PU(argv[input_starts + 5]);
+TString set_PU(argv[input_starts + 6]);
 if (set_PU == TString("T") || set_PU == TString("Y"))
 	{
 	with_PU_weight = true;
@@ -169,29 +175,29 @@ else
 	cout << "NO PU weight!" << endl;
 
 bool set_logy = false;
-TString logy_inp(argv[input_starts + 6]);
+TString logy_inp(argv[input_starts + 7]);
 if (logy_inp == TString("T") || logy_inp == TString("Y"))
 	{
 	set_logy = true;
 	}
 
 bool unstack = false;
-TString unstack_inp(argv[input_starts + 7]);
+TString unstack_inp(argv[input_starts + 8]);
 if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	{
 	unstack = true;
 	}
 
-double lumi_bcdef = atof(argv[input_starts + 8]);
-double lumi_gh    = atof(argv[input_starts + 9]);
+double lumi_bcdef = atof(argv[input_starts + 9]);
+double lumi_gh    = atof(argv[input_starts + 10]);
 double lumi = lumi_bcdef + lumi_gh;
-TString distr(argv[input_starts + 10]);
-TString distr_condition_init(argv[input_starts + 11]);
-TString range(argv[input_starts + 12]);
-string out_name(argv[input_starts + 13]);
+TString distr(argv[input_starts + 11]);
+TString distr_condition_init(argv[input_starts + 12]);
+TString range(argv[input_starts + 13]);
+string out_name(argv[input_starts + 14]);
 
-TString distr_name(argv[input_starts + 14]);
-TString dir(argv[input_starts + 15]);
+TString distr_name(argv[input_starts + 15]);
+TString dir(argv[input_starts + 16]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
@@ -356,14 +362,14 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
 
 		// lepton SF
-		if (with_lep_SF)
+		if (with_lep_SF && sig == TString("mu"))
 			{
 			TString lepton_SF_call("");
 			lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 			weight_cond += lepton_SF_call;
 			}
 
-		if (with_lep_trig_SF)
+		if (with_lep_trig_SF && sig == TString("mu"))
 			{
 			TString lepton_trig_SF_call("");
 			lepton_trig_SF_call.Form("(lepton_muon_trig_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
@@ -416,22 +422,33 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			}
 		else
 			{
-			cout << "TT channels" << endl;
-			TString nick("tt_{other}");
-			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+			TString nick;
+			if (sig == TString("mu"))
+				{
+				cout << "TT channels" << endl;
+				nick = "tt_{other}";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 
-			//nick = "tt_em";
-			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
+				//nick = "tt_em";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 
-			nick = "tt_{\\mu\\tau}";
-			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
-			//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
-			//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
-			//histos[nick] = histo;
+				nick = "tt_{\\mu\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+				//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
+				//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+				//histos[nick] = histo;
+				}
+			if (sig == TString("el"))
+				{
+				cout << "TT channels" << endl;
+				nick = "tt_{other}";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 
-			//nick = "tt_{e\\tau}";
-			//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+				nick = "tt_{e\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+				}
 
 			nick = "tt_lj";
 			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";

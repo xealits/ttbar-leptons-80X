@@ -1023,4 +1023,28 @@ overlay_fakerates_test:
 
 
 
+ntuple_distrs_el:
+	ntuple_distr --verbose el -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 " ${range} sel-el_sel1lep3jets_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose el -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && njets > 2 " ${range} sel-el_sel1lep3jets_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose el -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 " ${range} sel-el_sel1lep3jets40met_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose el -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 " ${range} sel-el_sel1lep3jets40met1b_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose el 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 " ${range} sel-el_sel1lep3jets40met1b1t_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose el 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && tau0_id * lep0_id < 0 " ${range} sel-el_sel1lep3jets40met1b1tOS_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+
+ntuple_distrs_mu:
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 " ${range} sel-mu_sel1lep3jets_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 " ${range} sel-mu_sel1lep3jets_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 " ${range} sel-mu_sel1lep3jets40met_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 " ${range} sel-mu_sel1lep3jets40met1b_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 " ${range} sel-mu_sel1lep3jets40met1b1t_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && tau0_id * lep0_id < 0 " ${range} sel-mu_sel1lep3jets40met1b1tOS_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+
+
+ntuple_distrs_mu_from3jets:
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 " ${range} sel-mu_sel1lep3jets_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 " ${range} sel-mu_sel1lep3jets40met_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu -1 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 " ${range} sel-mu_sel1lep3jets40met1b_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 " ${range} sel-mu_sel1lep3jets40met1b1t_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && tau0_id * lep0_id < 0 " ${range} sel-mu_sel1lep3jets40met1b1tOS_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
+
 
