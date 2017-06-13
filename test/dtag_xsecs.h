@@ -188,8 +188,8 @@ std::map<TString, double> xsecs = {
 {"MC2016_noHLT_QCD_HT-2000-Inf",    25.25},
 
 // mcm xsecs
-{"MC2016_Summer16_WJets_amcatnlo", 61526.7},
-{"MC2016_Summer16_W0Jets_amcatnlo_full", 61526.7},
+{"MC2016_Summer16_WJets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_WJets_amcatnlo_full", 61526.7},
 {"MC2016_Summer16_W0Jets_amcatnlo", 61526.7 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_Summer16_WJets_madgraph_075", 50690 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_Summer16_W0Jets_madgraph", 50690 - 9493 - 3120 - 942.3 - 524.2},

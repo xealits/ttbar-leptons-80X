@@ -130,7 +130,7 @@ double lepton_muon_SF(Float_t abs_eta, Float_t pt, double SingleMuon_data_bcdef_
 
 // MUON Trigger
 //double lepton_muon_trigger_SF ()
-double lepton_muon_trig_SF(Float_t abs_eta, Float_t pt, double SingleMuon_data_bcdef_fraction, double SingleMuon_data_gh_fraction)
+double lepton_muon_trigger_SF(Float_t abs_eta, Float_t pt, double SingleMuon_data_bcdef_fraction, double SingleMuon_data_gh_fraction)
 	{
 	double no_mu_trig = 1;
 	//double mu_trig_weight = 1;
@@ -148,6 +148,96 @@ double lepton_muon_trig_SF(Float_t abs_eta, Float_t pt, double SingleMuon_data_b
 	return 1 - no_mu_trig;
 	}
 	//weight *= weight_muon_trig;
+
+
+/* ---------------------------------------------------
+ * now, electrons have
+ *      track(reconstruction) efficiency, which is recommended per eta of muon now (however there should be something about N vertices too..
+ *      and ID sf
+ *      also trigger
+ *
+ * the trig eff for dilepton case is: apply negative of it for both leptons
+ */
+//cout << "unpacking electron eff SFs" << endl;
+TString electron_effs_dirname = "analysis/electron-effs/";
+
+TFile* electron_effs_tracking_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronReconstructionSF_egammaEffi.txt_EGM2D.root").Data() );
+TH2D* electron_effs_tracking_all_histo = (TH2D*) electron_effs_tracking_all_file->Get("EGamma_SF2D");
+//cout << "Y tracking (reconstruction)" << endl;
+
+// for the selected electrons, Tight ID
+// not for Veto
+TFile* electron_effs_id_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronID_TightCutBased_egammaEffi.txt_EGM2D.root").Data() );
+TH2D* electron_effs_id_all_histo = (TH2D*) electron_effs_id_all_file->Get("EGamma_SF2D");
+//cout << "Y id" << endl;
+
+//analysis/electron-effs/2016_03Feb_TriggerSF_Run2016All_v1.root
+TFile* electron_effs_trg_all_file = TFile::Open((electron_effs_dirname + "/2016_03Feb_TriggerSF_Run2016All_v1.root").Data() );
+TH2D* electron_effs_trg_all_histo = (TH2D*) electron_effs_trg_all_file->Get("Ele27_WPTight_Gsf");
+//cout << "Y trigger" << endl;
+
+// --- these SFs will be applied to the selected leptons independently
+
+
+double lepton_electron_SF(Float_t eta, Float_t pt)
+	{
+	double weight_reco, weight_id;
+
+	// here X axis is eta, Y axis is pt
+	// X is from -2.5 to 2.5 -- our eta is up to 2.4, should be ok
+	//double bin_x = (pt < electron_effs_tracking_all_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
+	double bin_x = eta;
+	double bin_y = (pt < electron_effs_tracking_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_tracking_all_histo->GetYaxis()->GetXmax() - 1);
+	weight_reco = electron_effs_tracking_all_histo->GetBinContent (electron_effs_tracking_all_histo->FindBin(bin_x, bin_y));
+
+	//bin_x = eta;
+	bin_y = (pt < electron_effs_id_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_id_all_histo->GetYaxis()->GetXmax() - 1);
+	weight_id = electron_effs_id_all_histo->GetBinContent (electron_effs_id_all_histo->FindBin(bin_x, bin_y));
+
+	return weight_reco * weight_id;
+	}
+
+
+double lepton_electron_trigger_SF(Float_t eta, Float_t pt)
+	{
+	//double no_ele_trig = 1;
+	// (calculate it the inverse-probbility way)
+	// no, just return the SF, assume 1-lepton case
+        //pat::Electron& el = selElectrons[i];
+	//double eta = el.superCluster()->position().eta();
+	//double pt = el.pt();
+	// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
+	double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
+	double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
+	return electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
+	//el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
+	//fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
+	}
+
+
+
+double top_pT_SF(double x)
+	{
+	// the SF function is SF(x)=exp(a+bx)
+	// where x is pT of the top quark (at generation?)
+	// sqrt(s) 	channel     	a     	b
+	// 7 TeV 	all combined 	0.199 	-0.00166
+	// 7 TeV 	l+jets      	0.174 	-0.00137
+	// 7 TeV 	dilepton    	0.222 	-0.00197
+	// 8 TeV 	all combined 	0.156 	-0.00137
+	// 8 TeV 	l+jets       	0.159 	-0.00141
+	// 8 TeV 	dilepton     	0.148 	-0.00129
+	// 13 TeV	all combined	0.0615	-0.0005
+	// -- taking all combined 13 TeV
+	double a = 0.0615;
+	double b = -0.0005;
+	return exp(a + b*x);
+	}
+
+double ttbar_pT_SF(double t_pt, double tbar_pt)
+	{
+	return sqrt(top_pT_SF(t_pt) * top_pT_SF(tbar_pt));
+	}
 
 double transverse_mass(LorentzVector v1, LorentzVector v2)
 	{

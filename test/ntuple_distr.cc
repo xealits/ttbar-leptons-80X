@@ -82,8 +82,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 17
-const char usage_string[256] = " [--verbose] [--normalize] sig tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+#define INPUT_DTAGS_START 18
+const char usage_string[256] = " [--verbose] [--normalize] sig tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -125,16 +125,20 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-TString sig(argv[input_starts + 1]);
+int i = 1;
+
+cout << i << ' ';
+TString sig(argv[input_starts + i++]);
 if (sig != TString("el") && sig != TString("mu"))
 	{
 	cout << "not supported tt signal channel: " << sig << endl;
 	}
 
-float tau_ID_SF = atof(argv[input_starts + 2]);
+float tau_ID_SF = atof(argv[input_starts + i++]);
 
 bool with_b_SF = false;
-TString set_b_SF(argv[input_starts + 3]);
+TString set_b_SF(argv[input_starts + i++]);
+cout << i << ' ';
 if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 	{
 	with_b_SF = true;
@@ -144,8 +148,20 @@ if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 else
 	cout << "NO b SF weight!" << endl;
 
+bool with_Top_PT = false;
+TString set_top_pt(argv[input_starts + i++]);
+cout << i << ' ';
+if (set_top_pt == TString("T") || set_top_pt == TString("Y"))
+	{
+	with_Top_PT = true;
+	cout << "with Top pT SF weight in TTbar MC" << endl;
+	}
+else
+	cout << "NO Top pT SF weight!" << endl;
+
 bool with_lep_SF = false;
-TString set_lep_SF(argv[input_starts + 4]);
+TString set_lep_SF(argv[input_starts + i++]);
+cout << i << ' ';
 if (set_lep_SF == TString("T") || set_lep_SF == TString("Y"))
 	{
 	with_lep_SF = true;
@@ -155,7 +171,8 @@ else
 	cout << "NO lep SF weight!" << endl;
 
 bool with_lep_trig_SF = false;
-TString set_lep_trig_SF(argv[input_starts + 5]);
+TString set_lep_trig_SF(argv[input_starts + i++]);
+cout << i << ' ';
 if (set_lep_trig_SF == TString("T") || set_lep_trig_SF == TString("Y"))
 	{
 	with_lep_trig_SF = true;
@@ -165,7 +182,8 @@ else
 	cout << "NO lep trig SF weight!" << endl;
 
 bool with_PU_weight = false;
-TString set_PU(argv[input_starts + 6]);
+TString set_PU(argv[input_starts + i++]);
+cout << i << ' ';
 if (set_PU == TString("T") || set_PU == TString("Y"))
 	{
 	with_PU_weight = true;
@@ -175,29 +193,29 @@ else
 	cout << "NO PU weight!" << endl;
 
 bool set_logy = false;
-TString logy_inp(argv[input_starts + 7]);
+TString logy_inp(argv[input_starts + i++]);
 if (logy_inp == TString("T") || logy_inp == TString("Y"))
 	{
 	set_logy = true;
 	}
 
 bool unstack = false;
-TString unstack_inp(argv[input_starts + 8]);
+TString unstack_inp(argv[input_starts + i++]);
 if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	{
 	unstack = true;
 	}
 
-double lumi_bcdef = atof(argv[input_starts + 9]);
-double lumi_gh    = atof(argv[input_starts + 10]);
+double lumi_bcdef = atof(argv[input_starts + i++]);
+double lumi_gh    = atof(argv[input_starts + i++]);
 double lumi = lumi_bcdef + lumi_gh;
-TString distr(argv[input_starts + 11]);
-TString distr_condition_init(argv[input_starts + 12]);
-TString range(argv[input_starts + 13]);
-string out_name(argv[input_starts + 14]);
+TString distr(argv[input_starts + i++]);
+TString distr_condition_init(argv[input_starts + i++]);
+TString range(argv[input_starts + i++]);
+string out_name(argv[input_starts + i++]);
 
-TString distr_name(argv[input_starts + 15]);
-TString dir(argv[input_starts + 16]);
+TString distr_name(argv[input_starts + i++]);
+TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
@@ -362,17 +380,31 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
 
 		// lepton SF
-		if (with_lep_SF && sig == TString("mu"))
+		if (with_lep_SF)
 			{
 			TString lepton_SF_call("");
-			lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+			if (sig == TString("mu"))
+				{
+				lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+				}
+			else // assume single-electron as only alternative
+				{
+				lepton_SF_call.Form("(lepton_electron_SF(lep0_p4.eta(), lep0_p4.pt()))*");
+				}
 			weight_cond += lepton_SF_call;
 			}
 
-		if (with_lep_trig_SF && sig == TString("mu"))
+		if (with_lep_trig_SF)
 			{
 			TString lepton_trig_SF_call("");
-			lepton_trig_SF_call.Form("(lepton_muon_trig_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+			if (sig == TString("mu"))
+				{
+				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+				}
+			else
+				{
+				lepton_trig_SF_call.Form("(lepton_electron_trigger_SF(lep0_p4.eta(), lep0_p4.pt()))*");
+				}
 			weight_cond += lepton_trig_SF_call;
 			}
 
@@ -410,8 +442,6 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		//map<TString, TH1D*> histos;
 		map<TString, TString> histo_conditions;
 
-		if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
-
 		if (! dtag.Contains("TT"))
 			{
 			TString nick = dtag_nick(dtag);
@@ -422,6 +452,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			}
 		else
 			{
+			if (with_Top_PT)
+				{
+				weight_cond += "(ttbar_pT_SF(gen_t_pt, gen_tb_pt))*";
+				}
+
 			TString nick;
 			if (sig == TString("mu"))
 				{
@@ -456,6 +491,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			//histo = (TH1D*) output_ttree->GetHistogram();
 			//histos[nick] = histo;
 			}
+
+		if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
 
 		// scaled and store each histo in the pack
 		Int_t sub_channel = 0;
@@ -521,9 +558,9 @@ double integral_MC_taus  = 0.;
 double integral_MC_jets  = 0.;
 // INCLUSIVE event yield
 cout << "------------------ inclusive event yield ------------------" << endl;
-cout << "data    integral: " << integral_data << endl;
+cout << "data integral: " << integral_data << endl;
 //cout << "MC taus integral = " << integral_MC_taus   << endl;
-cout << "MC jets integral = " << mc_sum->Integral() << endl;
+cout << "MC   integral = " << mc_sum->Integral() << endl;
 //double ratio = integral_data / integral_MC;
 //cout << "ratio = " << ratio << endl;
 
@@ -614,6 +651,26 @@ f_out->Close();
 
 hs_data->Sumw2();
 hs_data->SetStats(0);      // No statistics on lower plot
+
+/*
+ * I'm having weird issue with statistical errors rising when PU weight is applied.
+ * It doesn't happen in particular MC that I checked manualy (WJets).
+ * So printing errors of all channels to see where it comes from.
+ */
+cout << "histo errors" << endl;
+for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+	{
+	TString nick = it->first;
+	TH1D * distr = it->second;
+
+	cout << nick << endl;
+	for (int i=0; i<distr->GetSize(); i++)
+		{
+		cout << '\t' << distr->GetBinError(i) ;
+		}
+	cout << endl;
+	}
+cout << "------------------------------ errors" << endl;
 
 // build the stack of MC
 // go through MC tau_jets nickname map:
@@ -815,10 +872,10 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.75, 1.25);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
-hs_data_relative->GetYaxis()->SetRange(0.75, 1.25);
-hs_data_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
+hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
+hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
 
 /*
 if (xlims_set)
