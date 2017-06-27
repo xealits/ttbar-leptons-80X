@@ -4,6 +4,7 @@
 #include "TFile.h"
 #include "TH2D.h"
 #include "TH2F.h"
+#include "TH3D.h"
 #include "TGraphAsymmErrors.h"
 #include "TMath.h"
 #include <Math/VectorUtil.h>
@@ -243,4 +244,114 @@ double transverse_mass(LorentzVector v1, LorentzVector v2)
 	{
 	return sqrt(2*v1.pt()*v2.pt()*(1 - cos(v1.phi() - v2.phi())));
 	}
+
+
+/*
+ * Fake Rates
+ * TH-s and application
+ */
+
+/*
+ * Usage:
+ *
+ * jetToTauFakeRate(tau_fake_rate1_jets_histo_q, tau_fake_rate1_taus_histo_q, jet.pt(), jet.eta(), jet_rad, debug)
+ *
+ */
+double jetToTauFakeRate(TH3D * tau_fake_rate_jets_histo1, TH3D * tau_fake_rate_taus_histo1, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
+	// are identical TH3F histograms
+	// Int_t TH1::FindBin 	( 	Double_t  	x,
+	//	Double_t  	y = 0,
+	//	Double_t  	z = 0 
+	// )
+	// virtual Double_t TH3::GetBinContent 	( 	Int_t  	bin	) 	const
+
+	Int_t global_bin_id = tau_fake_rate_jets_histo1->FindBin(jet_pt, jet_eta, jet_radius);
+
+	Double_t jets_rate1 = tau_fake_rate_jets_histo1->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate_taus_histo1->GetBinContent(global_bin_id);
+
+	Double_t fakerate = (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1);
+
+	/*
+	if (debug)
+		{
+		cout << jet_pt << " " << jet_eta << " " << jet_radius << " : " << global_bin_id << " : ";
+		cout << taus_rate1 << "/" << jets_rate1 << endl;
+		}
+	*/
+
+	return fakerate;
+	}
+
+
+/*
+ * dataDriven_tauFakeRates1 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates1_tauMVA.root'
+ * dataDriven_tauFakeRates2 :          '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates2_tauMVA.root'
+ * dataDriven_tauFakeRates_dileptons : '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/jet_to_tau_fakerates_dileptons_tauMVA.root'
+ */
+TString fakerates_dirname = "jobing/configs/";
+TFile * tau_fake_rate1_file = TFile::Open((fakerates_dirname + "jet_to_tau_fakerates1_tauMVA.root").Data());
+TFile * tau_fake_rate2_file = TFile::Open((fakerates_dirname + "jet_to_tau_fakerates2_tauMVA.root").Data());
+TFile * tau_fake_rate_file_dileptons = TFile::Open((fakerates_dirname + "jet_to_tau_fakerates_dileptons_tauMVA.root").Data());
+//cout << "fake rate QCD file: " << tau_fake_rate1_file << endl;
+
+TH3D * tau_fake_rate1_jets_histo_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
+TH3D * tau_fake_rate1_taus_histo_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
+
+// rate2 = file2 = SingleMuon data file
+TH3D * tau_fake_rate2_jets_histo_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
+TH3D * tau_fake_rate2_taus_histo_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
+
+// dilepton fake rates
+TH3D * tau_fake_rate_jets_histo_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate_jets_histo_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate_jets_histo_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr_large_bins");
+
+double jetToTauFakeRate_qcd(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	Int_t global_bin_id = tau_fake_rate1_jets_histo_q->FindBin(jet_pt, jet_eta, jet_radius);
+	Double_t jets_rate1 = tau_fake_rate1_jets_histo_q->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate1_taus_histo_q->GetBinContent(global_bin_id);
+	Double_t fakerate = (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1);
+	return fakerate;
+	}
+
+double jetToTauFakeRate_wjets(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	Int_t global_bin_id = tau_fake_rate2_jets_histo_w->FindBin(jet_pt, jet_eta, jet_radius);
+	Double_t jets_rate1 = tau_fake_rate2_jets_histo_w->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate2_taus_histo_w->GetBinContent(global_bin_id);
+	Double_t fakerate = (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1);
+	return fakerate;
+	}
+
+double jetToTauFakeRate_mumu(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	Int_t global_bin_id = tau_fake_rate_jets_histo_mumu->FindBin(jet_pt, jet_eta, jet_radius);
+	Double_t jets_rate1 = tau_fake_rate_jets_histo_mumu->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate_taus_histo_mumu->GetBinContent(global_bin_id);
+	Double_t fakerate = (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1);
+	return fakerate;
+	}
+
+double jetToTauFakeRate_elmu(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	Int_t global_bin_id = tau_fake_rate_jets_histo_elmu->FindBin(jet_pt, jet_eta, jet_radius);
+	Double_t jets_rate1 = tau_fake_rate_jets_histo_elmu->GetBinContent(global_bin_id);
+	Double_t taus_rate1 = tau_fake_rate_taus_histo_elmu->GetBinContent(global_bin_id);
+	Double_t fakerate = (jets_rate1 < 1 ? 0 : taus_rate1/jets_rate1);
+	return fakerate;
+	}
+
+Int_t elmu_FindBin(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+	{
+	Int_t global_bin_id = tau_fake_rate_jets_histo_elmu->FindBin(jet_pt, jet_eta, jet_radius);
+	return global_bin_id;
+	}
+
 

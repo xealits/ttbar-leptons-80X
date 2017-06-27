@@ -18,6 +18,7 @@
 #include "TMath.h"
 
 #include "TStyle.h"
+#include "TPaveText.h"
 
 #include <map>
 #include <string>
@@ -82,8 +83,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 18
-const char usage_string[256] = " [--verbose] [--normalize] sig tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name dir dtags";
+#define INPUT_DTAGS_START 20
+const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -133,6 +134,8 @@ if (sig != TString("el") && sig != TString("mu"))
 	{
 	cout << "not supported tt signal channel: " << sig << endl;
 	}
+
+float global_scale = atof(argv[input_starts + i++]);
 
 float tau_ID_SF = atof(argv[input_starts + i++]);
 
@@ -215,6 +218,7 @@ TString range(argv[input_starts + i++]);
 string out_name(argv[input_starts + i++]);
 
 TString distr_name(argv[input_starts + i++]);
+TString Y_name(argv[input_starts + i++]);
 TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
@@ -284,7 +288,7 @@ TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
 	TString dtag(argv[i]);
-	if (be_verbose) cout << "processing " << dtag << endl;
+	if (be_verbose) cout << "processing " << dtag << ' ';
 	TString the_file = dir + "/" + dtag + ".root";
 	if (be_verbose) cout << the_file << endl;
 	if (!is_file_exist(the_file.Data()))
@@ -310,7 +314,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	TTree* output_ttree = (TTree*) file->Get(NT_OUTPUT_TTREE_NAME); // hardcoded output name
-	if (be_verbose) cout << "got ttree, drawing:" << endl;
+	//if (be_verbose) cout << "got ttree, drawing:" << endl;
 
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
@@ -319,6 +323,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		{
 		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
 		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+		if (be_verbose) cout << histo->Integral();
 
 		//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
 		// and normalize per bin-width:
@@ -332,17 +337,17 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->SetBinError(i, error/width);
 			}
 
-		if (be_verbose) cout << "summing data-stack" << endl;
+		if (be_verbose) cout << " summing data-stack " << histo->Integral();
 		histo->SetMarkerStyle(9);
 
 		if (hs_data == NULL)
 			{
-			if (be_verbose) cout << "creating data histo" << endl;
+			if (be_verbose) cout << " creating data histo" << endl;
 			hs_data = (TH1D*) histo->Clone();
 			}
 		else
 			{
-			if (be_verbose) cout << "add histo to data histo" << endl;
+			if (be_verbose) cout << " add histo to data histo" << endl;
 			hs_data->Add(histo);
 			}
 		}
@@ -508,7 +513,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
 			// hack to merge HLTmu & HLTjetmu
-			if (be_verbose) cout << "got histogram " << nick << " scaling to lumi, adding to stack" << endl;
+			if (be_verbose) cout << dtag << ' ' << nick << '\t' << histo->Integral() << '\t' << weightflow->GetBinContent(11) << endl;
 			if (be_verbose) histo->Print();
 
 			cout << "scaling and adding a stack histo " << dtag << " xsec = " << xsec << " ratio = " << ratio << " norm = " << histo->Integral() / weightflow->GetBinContent(11) << endl;
@@ -527,7 +532,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				histo->SetBinError(i, error/width);
 				}
 
-			if (be_verbose) cout << "summing mc-stack" << endl;
+			if (be_verbose) cout << "summing mc-stack " << histo->Integral() << endl;
 			Color_t col  = nick_colour(nick);
 			//TString nick = nick_colour.first;
 			//Color_t col = nick_colour.second;
@@ -550,7 +555,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			}
 		}
 
-	if (be_verbose) cout << "processed dtag" << endl;
+	//if (be_verbose) cout << "processed dtag" << endl;
 	}
 
 double integral_data = hs_data->Integral();
@@ -624,6 +629,20 @@ for (Int_t h=0; h<4; h++)
 		}
 	}
 */
+
+/*
+ * Do normalize for comparison with cut-n-count
+ */
+if (global_scale > 0)
+	{
+	Double_t scale = global_scale*integral_data/hs_sum->Integral();
+	hs_sum->Scale(scale);
+	for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+		{
+		TH1D * distr = it->second;
+		distr->Scale(scale);
+		}
+	}
 
 // ---- Write the separate distributions to file
 //TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
@@ -710,12 +729,15 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != n
 	}
 
 // mabe make (if qcd) later
+cout << "adding qcd to mc stack" << endl;
 if (nicknamed_mc_distrs.find(TString("qcd")) != nicknamed_mc_distrs.end())
 	{
-	cout << "adding qcd to mc stack" << endl;
+	nicknamed_mc_distrs["qcd"]->Print();
 	hs->Add(nicknamed_mc_distrs["qcd"], "HIST");
 	leg->AddEntry(nicknamed_mc_distrs["qcd"], "qcd", "F");
 	}
+else
+	cout << "no qcd" << endl;
 
 
 //cst->SetFillColor(41);
@@ -804,15 +826,30 @@ else
 
 hs_data->Draw("e p same"); // the data with the errors
 
-// histo->SetTitle("boxtitle;x axis title [unit];y axis title [unit]")
-cout << "setting the stack title" << endl;
-
-//TString distr_out = distr + TString((const char*) suffix.c_str());
-
-//hs->GetXaxis()->SetTitle(distr);
-cout << "done setting the stack title" << endl;
+cout << "setting the titles" << endl;
 hs_data->SetXTitle(distr_name);
-hs_sum->SetXTitle(distr_name);
+hs_sum-> SetXTitle(distr_name);
+hs_data->SetYTitle(Y_name);
+hs_sum-> SetYTitle(Y_name);
+hs_data->SetTitle("");
+hs_sum-> SetTitle("");
+
+cout << "setting title" << endl;
+// title for the plot
+TPaveText* left_title = new TPaveText(0.1, 0.9, 0.4, 0.94, "brNDC");
+left_title->AddText("CMS preliminary at 13 TeV");
+left_title->SetTextFont(1);
+left_title->SetFillColor(0);
+cout << "drawing left title" << endl;
+left_title->Draw("same");
+
+TPaveText* right_title = new TPaveText(0.75, 0.9, 0.9, 0.94, "brNDC");
+TString s_title(""); s_title.Form("L = %.1f fb^{-1}", lumi/1000);
+right_title->AddText(s_title);
+right_title->SetTextFont(132);
+right_title->SetFillColor(0);
+cout << "drawing right title" << endl;
+right_title->Draw("same");
 
 leg->SetBorderSize(0);
 leg->Draw();
@@ -830,7 +867,9 @@ hs_data_relative->Print();
 hs_sum_relative->Print();
 
 hs_data_relative->SetXTitle("");
-hs_sum_relative->SetXTitle("");
+hs_sum_relative-> SetXTitle("");
+hs_data_relative->SetYTitle("");
+hs_sum_relative-> SetYTitle("");
 
 hs_data_relative->SetMarkerColor(1);
 

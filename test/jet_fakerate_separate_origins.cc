@@ -381,6 +381,8 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	// calculate fake rate
 	// the origin tau jets / all jets (of all origins)
 	//distr->Divide(hs_mc_all_jets);
+	cout << mc_jet_origin_ths[origin_n] << '\t' << distr->Integral() << '\t' << mc_jet_origin_ths[n_jet_origins + origin_n] << '\t';
+	cout << distr->Integral() / mc_jet_origin_ths[n_jet_origins + origin_n]->Integral() << endl;
 	distr->Divide(mc_jet_origin_ths[n_jet_origins + origin_n]);
 	//mc_jet_origin_ths[origin_n]->Divide(mc_jet_origin_ths[n_jet_origins + origin_n]);
 

@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 9
+#define INPUT_DTAGS_START 11
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
-if (argc < 8)
+char usage_string[256] = "[--verbose] [--normalize] set_logy lumi distr projection rebin_factor max_y x_axis_min_range x_axis_max_range name_tag dir dtags";
+if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -62,15 +62,20 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-double lumi = atof(argv[input_starts + 1]);
-TString distr_selection(argv[input_starts + 2]);
-TString projection(argv[input_starts + 3]);
-Int_t rebin_factor(atoi(argv[input_starts + 4]));
+int i = 1;
 
-double x_axis_min_range = atof(argv[input_starts + 5]);
-double x_axis_max_range = atof(argv[input_starts + 6]);
-TString name_tag(argv[input_starts + 7]);
-TString dir(argv[input_starts + 8]);
+TString i_set_logy(argv[input_starts + i++]);
+bool set_logy = i_set_logy == TString("T") || i_set_logy == TString("Y");
+double lumi = atof(argv[input_starts + i++]);
+TString distr_selection(argv[input_starts + i++]);
+TString projection(argv[input_starts + i++]);
+Int_t rebin_factor(atoi(argv[input_starts + i++]));
+
+double max_y = atof(argv[input_starts + i++]);
+double x_axis_min_range = atof(argv[input_starts + i++]);
+double x_axis_max_range = atof(argv[input_starts + i++]);
+TString name_tag(argv[input_starts + i++]);
+TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -108,6 +113,7 @@ std::vector < TH1D * > weightflows;
 // per-dtag for now..
 
 TH1D* hs_data[2] = {NULL, NULL};
+TH3D* hs_data_3D[2] = {NULL, NULL};
 
 // different jet origin histos:
 unsigned int n_jet_origins = 5;
@@ -116,6 +122,10 @@ vector<string> mc_jet_origins = {"_tau_jets_distr_o", "_tau_jets_distr_t", "_tau
 //HLTjetmu_qcd_tau_jets_distr_q
 vector<TH1D*> mc_jet_origin_ths = {NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL};
+
+vector<TH3D*> mc_jet_origin_ths_3D = {NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL};
+
 //TH1D    *hs_mc_o = NULL; // "other" objects -- not recognized by partonFlavour
 //TH1D    *hs_mc_t = NULL; // taus -- matched not recognized by partonFlavour and matched to a visible part of tau in GenParticles collection
 //TH1D    *hs_mc_b = NULL; // b
@@ -184,6 +194,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			// get the histogram's projection
 			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
+			TH3D* histo3D = (TH3D*) file->Get(distro_name);
 			//histos.push_back();
 			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
 			if (be_verbose) histo->Print();
@@ -203,12 +214,14 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			if (hs_data[i] == NULL)
 				{
 				if (be_verbose) cout << "creating data histo" << endl;
+				hs_data_3D[i] = (TH3D*) histo3D->Clone();
 				hs_data[i] = (TH1D*) histo->Clone();
 				if (be_verbose) cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
 			else
 				{
 				if (be_verbose) cout << "add histo to data histo" << endl;
+				hs_data_3D[i]->Add(histo3D);
 				hs_data[i]->Add(histo);
 				if (be_verbose) cout <<  "Float control: data" << i << '\t' << histo->Integral() << '\t' << hs_data[i]->Integral() << endl;
 				}
@@ -228,7 +241,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				}
 
 			// get the histogram's projection
-			TH1D* histo = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
+			TH3D* histo3D = ((TH3D*) file->Get(distro_name));
+			TH1D* histo   = (TH1D*) ((TH3D*) file->Get(distro_name))->Project3D(projection);
 			//histos.push_back();
 			//histos.back()->Rebin(rebin_factor); // should rebin the new histo inplace
 			if (be_verbose) histo->Print();
@@ -278,6 +292,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
 			if (be_verbose) cout << "x-sec/weight/ratio\t" << xsecs[dtag] << "\t" << normal_initial_weight << "\t" << ratio << endl;
 			histo->Scale(ratio);
+			histo3D->Scale(ratio);
 			if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
 			if (be_verbose) histo->Print();
 			//histo->SetFillColor(kRed );
@@ -294,8 +309,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			//histo->SetLineWidth(3);
 			//histo->SetLineColor(1 + (origin_n<4? origin_n : origin_n+1 ));
 			//histo->SetMarkerColor(1 + origin_n);
-			histo->SetMarkerColor(origin_n!=0? origin_n : 6);
-			histo->SetFillColor(origin_n);
+			histo->SetMarkerColor(origin_n!=0? origin_n : 14);
+			histo->SetFillColor(origin_n!=0? origin_n : 14);
 
 			// add the histo to an origin histo
 			// or clone, if the origin hiso is not initialized already
@@ -305,11 +320,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				//cout << "" << hs_data[i]->Integral() << "\t" << histo->Integral() << endl;
 
 				mc_jet_origin_ths[origin_n]->Add(histo);
+				mc_jet_origin_ths_3D[origin_n]->Add(histo3D);
 				if (be_verbose) cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
 				}
 			else
 				{
 				mc_jet_origin_ths[origin_n] = (TH1D*) histo->Clone();
+				mc_jet_origin_ths_3D[origin_n] = (TH3D*) histo3D->Clone();
 				if (be_verbose) cout << "Float control: " << mc_jet_origins[origin_n] << "\t" << histo->Integral() << '\t' << mc_jet_origin_ths[origin_n]->Integral() << endl;
 				}
 			}
@@ -391,7 +408,7 @@ for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 
 	// and add the histogram to the stack and record about it to the legend
 	//hs->Add(distr, "HIST");
-	//leg->AddEntry(distr, TString(mc_jet_origins[origin_n]), "F");
+	leg->AddEntry(distr, TString(mc_jet_origins[origin_n]), "F");
 	// rebin here, if needed
 	}
 
@@ -416,43 +433,6 @@ cout << "drawing" << endl;
 
 //hs_data->Draw("e"); // to draw it _over_ MC
 
-/*
-mc_jet_origin_ths[0]->SetLineStyle(1);
-mc_jet_origin_ths[0]->Draw("hist");
-for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
-	{
-	mc_jet_origin_ths[origin_n]->SetLineStyle(1);
-	mc_jet_origin_ths[origin_n]->Draw("same hist");
-	}
-*/
-
-/*
-hs_data[0]->GetYaxis()->SetRange(0.0001, 1);
-hs_data[0]->GetYaxis()->SetRangeUser(0.0001, 1);
-hs_data[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-hs_data[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
-
-hs->GetYaxis()->SetRange(0.0001, 1);
-hs->GetYaxis()->SetRangeUser(0.0001, 1);
-hs->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-hs->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
-*/
-
-//mc_jet_origin_ths[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-//mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
-//h3->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
-//h3->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
-
-//mc_jet_origin_ths[0]->GetYaxis()->SetRange(0.0001, 1);
-//mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0.0001, 1);
-//h3->GetYaxis()->SetRange(0.0001, 1); // ranges from analysis note CMS AN-2012/489
-//h3->GetYaxis()->SetRangeUser(0.0001, 1); // ranges from analysis note CMS AN-2012/489
-
-bool set_logy = true; // in case it becomes main argument
-
-//if (projection == string("x") || projection == string("z"))
-	//set_logy = true;
-
 if (set_logy)
 	cst->SetLogy();
 
@@ -462,7 +442,6 @@ hs->Draw("same"); // draw the stack
 hs_data[0]->Draw("e same p"); // to overlay MC
 */
 
-//leg->Draw();
 
 //MC_stack_124->GetXaxis()->SetTitle("#rho");
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
@@ -475,17 +454,32 @@ hs_data[0]->Draw("e same p"); // to overlay MC
 
 //cst->Modified();
 
-mc_jet_origin_ths[0]->GetYaxis()->SetRange(0.00001, 1);
-mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0.00001, 1);
+
+cout << "inclusive fake rate in data " << hs_data_3D[0]->Integral() << '\t' << hs_data_3D[1]->Integral();
+cout << '\t' << hs_data_3D[0]->Integral() / hs_data_3D[1]->Integral() << endl;
+
+mc_jet_origin_ths[0]->GetYaxis()->SetRange(0.00001, (set_logy? 1 : max_y));
+mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0.00001, (set_logy? 1 : max_y));
+mc_jet_origin_ths[0]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
+
 mc_jet_origin_ths[0]->Draw();
 // Draw each origin and save it
 for (int origin_n=1; origin_n<n_jet_origins; origin_n++)
 	{
 	TH1D* distr = mc_jet_origin_ths[origin_n];
-	distr->GetYaxis()->SetRange(0.00001, 1);
-	distr->GetYaxis()->SetRangeUser(0.00001, 1);
+	cout << "fakerate " << mc_jet_origins[origin_n] << '\t';
+	cout << mc_jet_origin_ths_3D[origin_n]->Integral() << '\t' << mc_jet_origin_ths_3D[n_jet_origins + origin_n]->Integral() << '\t';
+	cout << mc_jet_origin_ths_3D[origin_n]->Integral() / mc_jet_origin_ths_3D[n_jet_origins + origin_n]->Integral() << endl;
+
+	distr->GetYaxis()->SetRange(0.00001, (set_logy? 1 : max_y));
+	distr->GetYaxis()->SetRangeUser(0.00001, (set_logy? 1 : max_y));
+	mc_jet_origin_ths[origin_n]->GetXaxis()->SetRange(x_axis_min_range, x_axis_max_range);
+	mc_jet_origin_ths[origin_n]->GetXaxis()->SetRangeUser(x_axis_min_range, x_axis_max_range);
 	distr->Draw("same");
 	}
+leg->Draw();
+
 cst->SaveAs( dir + "/jobsums/" + distr_selection + "_OriginFakeRatesSeparatelyOverlayed_" + projection + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 return 0;

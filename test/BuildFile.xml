@@ -36,12 +36,15 @@
   <bin name="jet_distrs_stacked_per_origin"    file="jet_distrs_stacked_per_origin.cc"></bin>
   <bin name="jet_distrs_per_origin_overlayed"  file="jet_distrs_per_origin_overlayed.cc"></bin>
   <bin name="jet_fakerate_per_origin"          file="jet_fakerate_per_origin.cc"></bin>
+  <bin name="jet_fakes_per_origin"             file="jet_fakes_per_origin.cc"></bin>
   <bin name="jet_fakerate_per_mc"              file="jet_fakerate_per_mc.cc"></bin>
   <bin name="jet_fakerate_separate_origins"    file="jet_fakerate_separate_origins.cc"></bin>
   <bin name="jet_fakerate_separate_origins_overlayed"  file="jet_fakerate_separate_origins_overlayed.cc"></bin>
   <bin name="jet_2D_distrs_per_origin_separate"        file="jet_2D_distrs_per_origin_separate.cc"></bin>
   <bin name="jet_distrs_origin_fractions_stacked"      file="jet_distrs_origin_fractions_stacked.cc"></bin>
   <bin name="jet_fakerate_fractions_per_origin"        file="jet_fakerate_fractions_per_origin.cc"></bin>
+
+  <bin name="csv_jet_distrs_origin_fractions"        file="csv_jet_distrs_origin_fractions.cc"></bin>
 
   <bin name="jet_fakerate_separate_origins_csv"  file="jet_fakerate_separate_origins_csv.cc"></bin>
   <bin name="jet_proportions_per_origins_csv"    file="jet_proportions_per_origins_csv.cc"></bin>
@@ -77,7 +80,7 @@
 
   <bin name="likelihood_regions"          file="likelihood_regions.cc"></bin>
 
-  <bin name="weightflow_table_script"         file="weightflow_table_script.cc"></bin>
+  <bin name="weightflow_table"         file="weightflow_table.cc"></bin>
   <bin name="weightflow_nicknames_script"     file="weightflow_nicknames_script.cc"></bin>
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->

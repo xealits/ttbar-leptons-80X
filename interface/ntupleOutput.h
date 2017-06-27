@@ -254,17 +254,6 @@ TAU_OUTPUT(1)
 #define NT_JETS_N 5
 #define NT_TAUS_N 2
 
-// this should be static, no run-time i
-// but it's in the loops now...
-// thus making the case for now
-//#define NT_lep(i, id, eta, phi, pt, p) case i: { \
-//NT_lep ##i ##_id   = id;  \
-//NT_lep ##i ##_eta  = eta; \
-//NT_lep ##i ##_phi  = phi; \
-//NT_lep ##i ##_pt   = pt;  \
-//NT_lep ##i ##_p    = p;   \
-//break; }
-
 #define NT_jet(i, jet, id_jet_p4, matched_genjet_p4, jet_radius_func, btagger_label) case i: { \
 NT_jet ##i ##_id                = jet.pdgId(); \
 NT_jet ##i ##_initial_p4        = id_jet_p4; \

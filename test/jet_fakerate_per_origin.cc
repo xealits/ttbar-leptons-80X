@@ -22,14 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 11
+#define INPUT_DTAGS_START 12
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] large logy lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
+char usage_string[256] = " [--verbose] [--normalize] no_tau large logy lumi distr projection rebin_factor x_axis_min_range x_axis_max_range name_tag dir dtags";
+
 if (argc < 10)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
@@ -62,17 +63,20 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-TString large(argv[input_starts + 1]);
-TString set_logy(argv[input_starts + 2]);
-double lumi = atof(argv[input_starts + 3]);
-TString distr_selection(argv[input_starts + 4]);
-TString projection(argv[input_starts + 5]);
-Int_t rebin_factor(atoi(argv[input_starts + 6]));
+int i = 1;
 
-double x_axis_min_range = atof(argv[input_starts + 7]);
-double x_axis_max_range = atof(argv[input_starts + 8]);
-TString name_tag(argv[input_starts + 9]);
-TString dir(argv[input_starts + 10]);
+TString no_tau(argv[input_starts + i++]);
+TString large(argv[input_starts + i++]);
+TString set_logy(argv[input_starts + i++]);
+double lumi = atof(argv[input_starts + i++]);
+TString distr_selection(argv[input_starts + i++]);
+TString projection(argv[input_starts + i++]);
+Int_t rebin_factor(atoi(argv[input_starts + i++]));
+
+double x_axis_min_range = atof(argv[input_starts + i++]);
+double x_axis_max_range = atof(argv[input_starts + i++]);
+TString name_tag(argv[input_starts + i++]);
+TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -409,6 +413,12 @@ THStack *hs      = new THStack("hs", "");
 // and divide tau_jets / jets
 for (int origin_n=0; origin_n<n_jet_origins; origin_n++)
 	{
+	// skip tau fake rate if requested
+	if (no_tau == TString("T") && mc_jet_origins[origin_n] == string("_tau_jets_distr_t"))
+		{
+		cout << mc_jet_origins[origin_n] << '\t' << "skipped" << endl;
+		continue;
+		}
 	TH1D* distr = mc_jet_origin_ths[origin_n];
 	// calculate fake rate
 	// the origin tau jets / all jets (of all origins)

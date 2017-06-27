@@ -344,3 +344,16 @@ jet_mc_fakerates_dilep_lumi
 
 jet_1D_fakerate_per_mc 35614.903 elmu_passjets_mediumTaus _pt 1 -1 -1 medium_taus outdir/t2.0/merged-sets/ `cat dtags_t2.0`
 
+
+root -l -q 'test/csv_3d_histo.C("outdir/v10.9/merged-sets/jobsums/Data13TeV_SingleElectron2016X.root", "singleel_pretau_jets_distr_large_bins")' > v10.9_SingleElectronX_singleel_pretau_jets_distr_large_bins.csv
+
+csv_jet_distrs_origin_fractions --normalize _large_bins _large_bins 0.25 HLTjet_qcd x 1 QCD outdir/j7.3_tauMVA/merged-sets/ `cat dtags_j7.3_tauMVA_JetHT ` >> j7.3_tauMVA_JetHT_HLTjet_qcd_fractions3d.csv
+csv_jet_distrs_origin_fractions --normalize _large_bins _large_bins 0.25 HLTmu_wjets x 1 WJets outdir/j7.3_tauMVA/merged-sets/ `cat dtags_j7.3_tauMVA_SingleMuon ` >> j7.3_tauMVA_JetHT_HLTmu_wjets_fractions3d.csv
+
+jets from ntuples:
+
+root [3] ((TTreePlayer*)(reduced_ttree->GetPlayer()))->SetScanRedirect(true);
+root [4] TTree* T = reduced_ttree
+root [5] ((TTreePlayer*)(T->GetPlayer()))->SetScanFileName("ntupleout_sel-mu_1l3j40met1b_jets-kino.csv");
+root [6] reduced_ttree->Scan("jet0_p4.pt():jet0_p4.eta():jet0_rad", "HLT_mu && abs(leps_ID) == 13 && njets > 2 && nbjets>0 && met_corrected.pt() > 40 ")
+

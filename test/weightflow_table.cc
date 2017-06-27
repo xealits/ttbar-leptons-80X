@@ -91,6 +91,12 @@ TH1D* hs_mc_sum   = NULL;
 int         our_selection_bins[] = {1 + 1, 2 + 1, 3 + 1, 4 + 1, 10 + 1, 11 + 1, 12 + 1, 13 + 1, 20 + 1, 30 + 1,    31 + 1, 32 + 1, 34 + 1, 38 + 1, 46 + 1, 62 + 1};
 std::vector<string> our_selection_names = {"ini", "top", "gen", "PUw", "sec1", "METf", "Lumi", "Trig", "sec2", "sec3",    "s", "sj", "sjm", "sjmb", "sjmbt", "sjmbto"};
 
+if (be_verbose)
+	{
+	for (int i=0; i<our_selection_names.size(); i++)
+		cout << our_selection_bins[i] << '\t' << our_selection_names[i] << endl;
+	}
+
 cout << "dtag,ratio" ;
 for (int i=0; i<our_selection_names.size(); i++)
 	cout << "," << our_selection_names[i];
@@ -192,9 +198,13 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		Double_t ratio = lumi * xsecs[dtag] / normal_initial_weight;
 		if (be_verbose) cout << "x-sec/weight/ratio\t" << xsecs[dtag] << "\t" << normal_initial_weight << "\t" << ratio << endl;
 		//if (weight_MC)
-		histo->Scale(ratio);
-		if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
-		if (be_verbose) histo->Print();
+
+		if (lumi > 0)
+			{
+			histo->Scale(ratio);
+			if (be_verbose) cout << "scaling and adding a stack histo " << dtag << " ratio = " << ratio << endl;
+			if (be_verbose) histo->Print();
+			}
 
 		// print the dtag line
 		cout << dtag << "," << ratio ;

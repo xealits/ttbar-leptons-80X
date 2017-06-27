@@ -22,15 +22,15 @@
 
 #include "dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 9
+#define INPUT_DTAGS_START 10
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] largebins csvOUT lumi distr projection rebin_factor name_tag dir dtags";
-if (argc < 8)
+char usage_string[128] = " [--verbose] [--normalize] unstack largebins csvOUT lumi distr projection rebin_factor name_tag dir dtags";
+if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -63,19 +63,29 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC_stack) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-string largebins(argv[input_starts + 1]);
+int i = 1;
 
-TString csvOUT(argv[input_starts + 2]);
+TString to_unstack(argv[input_starts + i++]);
+bool unstack=false;
+if (to_unstack == TString("T") || to_unstack == TString("Y"))
+	{
+	cout << "unstacking!" << endl;
+	unstack = true;
+	}
+
+string largebins(argv[input_starts + i++]);
+
+TString csvOUT(argv[input_starts + i++]);
 bool csv_out=false;
 if (csvOUT == TString("T") || csvOUT == TString("Y"))
 	csv_out = true;
 
-double lumi = atof(argv[input_starts + 3]);
-TString distr_selection(argv[input_starts + 4]);
-TString projection(argv[input_starts + 5]);
-Int_t rebin_factor(atoi(argv[input_starts + 6]));
-TString name_tag(argv[input_starts + 7]);
-TString dir(argv[input_starts + 8]);
+double lumi = atof(argv[input_starts + i++]);
+TString distr_selection(argv[input_starts + i++]);
+TString projection(argv[input_starts + i++]);
+Int_t rebin_factor(atoi(argv[input_starts + i++]));
+TString name_tag(argv[input_starts + i++]);
+TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 if (projection != TString("x") && projection != TString("y") && projection != TString("z"))
@@ -86,12 +96,12 @@ if (projection != TString("x") && projection != TString("y") && projection != TS
 	return 2;
 	}
 
-cout << largebins  << endl;
-cout << csvOUT  << endl;
-cout << lumi  << endl;
-cout << distr_selection << endl;
-cout << dir   << endl;
-cout << dtag1 << endl;
+cout << "largebins " << largebins  << endl;
+cout << "CSV OUT " << csvOUT  << endl;
+cout << "lumi " << lumi  << endl;
+cout << "distr " << distr_selection << endl;
+cout << "dir " << dir   << endl;
+cout << "first dtag " << dtag1 << endl;
 
 
 std::vector < TString > dtags;
@@ -294,8 +304,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			histo->SetMarkerStyle(20);
 			histo->SetLineStyle(0);
-			histo->SetMarkerColor(origin_n);
-			histo->SetFillColor(origin_n);
+			histo->SetMarkerColor((origin_n != 0 ? origin_n : 14));
+			histo->SetFillColor((origin_n != 0 ? origin_n : 14));
 
 			// add the histo to an origin histo
 			// or clone, if the origin hiso is not initialized already
@@ -439,7 +449,50 @@ cout << "drawing" << endl;
 
 //hs_data->Draw("e p");
 //hs->Draw("same");
-hs->Draw();
+if (!unstack)
+	hs->Draw();
+else
+	{// loop and overay histos
+	cout << 0 << " " << mc_jet_origins[0];
+	if (mc_jet_origin_ths[0])
+		{
+		mc_jet_origin_ths[0]->GetYaxis()->SetRange(0, 1);
+		mc_jet_origin_ths[0]->GetYaxis()->SetRangeUser(0, 1);
+		if (projection == TString("z"))
+			{
+			mc_jet_origin_ths[0]->GetXaxis()->SetRange(0, 0.4);
+			mc_jet_origin_ths[0]->GetXaxis()->SetRangeUser(0, 0.4);
+			}
+		mc_jet_origin_ths[0]->Draw("p");
+		cout << " done" << endl;
+		}
+	else
+		{
+		cout << " NONE" << endl;
+		}
+	for (int origin_n=1; origin_n<mc_jet_origins.size(); origin_n++)
+		{
+		//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+		//mc_jet_origin_ths[origin_n]->Print();
+		cout << origin_n << " " << mc_jet_origins[origin_n];
+		if (mc_jet_origin_ths[origin_n])
+			{
+			mc_jet_origin_ths[origin_n]->GetYaxis()->SetRange(0, 1);
+			mc_jet_origin_ths[origin_n]->GetYaxis()->SetRangeUser(0, 1);
+			if (projection == TString("z"))
+				{
+				mc_jet_origin_ths[origin_n]->GetXaxis()->SetRange(0, 0.4);
+				mc_jet_origin_ths[origin_n]->GetXaxis()->SetRangeUser(0, 0.4);
+				}
+			mc_jet_origin_ths[origin_n]->Draw("same p");
+			cout << " done" << endl;
+			}
+		else
+			{
+			cout << " NONE" << endl;
+			}
+		}
+	}
 //hs_data->Draw("e p same"); // to draw it _over_ MC
 
 bool set_logy = false;
@@ -456,16 +509,51 @@ leg->Draw();
 //mcrelunc929->GetYaxis()->SetTitle("Data/#Sigma MC");
 
 
-hs->GetXaxis()->SetTitle(distr_selection);
-hs_data->SetXTitle(distr_selection);
+if (!unstack)
+	{
+	hs->GetXaxis()->SetTitle(distr_selection);
+	hs_data->SetXTitle(distr_selection);
 
-cst->Modified();
+	cst->Modified();
+	}
 
-TString output_file = dir + "/jobsums/" + distr_selection + "_OriginFractionsStacked_" + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "");
+TString output_file = dir + "/jobsums/" + distr_selection + (unstack? "_OriginFractionsUnstacked_" : "_OriginFractionsStacked_") + projection + "_" + name_tag + (normalize_MC_stack ? "_normalized" : "") + (set_logy? "_logy" : "");
 
 cst->SaveAs( output_file + ".png" );
 
+TFile* out_file = TFile::Open(output_file + ".root", "RECREATE");
 //TFile* out_file = TFile::Open(output_file + ".root");
+if (unstack)
+	{// loop and overay histos
+	cout << 0 << " " << mc_jet_origins[0];
+	if (mc_jet_origin_ths[0])
+		{
+		mc_jet_origin_ths[0]->Write();
+		cout << " done" << endl;
+		}
+	else
+		{
+		cout << " NONE" << endl;
+		}
+	for (int origin_n=1; origin_n<mc_jet_origins.size(); origin_n++)
+		{
+		//cout << mc_jet_origins[origin_n] << "  integral = " << mc_jet_origin_ths[origin_n]->Integral() << endl;
+		//mc_jet_origin_ths[origin_n]->Print();
+		cout << origin_n << " " << mc_jet_origins[origin_n];
+		if (mc_jet_origin_ths[origin_n])
+			{
+			mc_jet_origin_ths[origin_n]->Write();
+			cout << " done" << endl;
+			}
+		else
+			{
+			cout << " NONE" << endl;
+			}
+		}
+}
+out_file->Write();
+out_file->Close();
+
 if (csv_out)
 	{
 	// normalized bins to the sum of all jets (to get the fraction of the origin in each bin)

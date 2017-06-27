@@ -25,8 +25,9 @@
 #include <vector>
 
 #include "dtag_xsecs.h"
+#include "elmu_fakerates_dtag_xsecs.h"
 
-#define DTAG_ARGS_START 13
+#define DTAG_ARGS_START 16
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
@@ -34,41 +35,48 @@ int main (int argc, char *argv[])
 {
 if (argc < 13)
 	{
-	std::cout << "Usage : " << argv[0] << " normalize logy lumi distr mc_distr distr_name yname rebin_factor xmin xmax ratio_range dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " wPU wJER wJES normalize logy lumi distr mc_distr distr_name yname rebin_factor xmin xmax ratio_range dir dtags" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString normalize_s(argv[1]);
+unsigned int i = 1;
+
+bool add_sys_pu  = (TString(argv[i++]) == TString("T"));
+bool add_sys_jer = (TString(argv[i++]) == TString("T"));
+bool add_sys_jes = (TString(argv[i++]) == TString("T"));
+
+
+TString normalize_s(argv[i++]);
 bool normalize_to_data = false;
 if (normalize_s == TString("T") || normalize_s == TString("Y"))
 	normalize_to_data = true;
 
-TString logy(argv[2]);
+TString logy(argv[i++]);
 bool set_logy = false;
 if (logy == TString("T") || logy == TString("Y"))
 	set_logy = true;
 
-double lumi = atof(argv[3]);
-TString distr_data(argv[4]);
-TString distr_mc(argv[5]);
+double lumi = atof(argv[i++]);
+TString distr_data(argv[i++]);
+TString distr_mc(argv[i++]);
 if (distr_mc == TString("f") || distr_mc == TString("same"))
 	distr_mc = distr_data;
-TString distr_name(argv[6]);
-TString yname(argv[7]);
+TString distr_name(argv[i++]);
+TString yname(argv[i++]);
 
-Int_t rebin_factor(atoi(argv[8]));
+Int_t rebin_factor(atoi(argv[i++]));
 
-double xmin = atof(argv[9]);
-double xmax = atof(argv[10]);
-double ratio_range = atof(argv[11]);
+double xmin = atof(argv[i++]);
+double xmax = atof(argv[i++]);
+double ratio_range = atof(argv[i++]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[12]);
-TString dtag1(argv[13]);
+TString dir(argv[i++]);
+TString dtag1(argv[i++]);
 
 bool eltau = false, mutau = false;
 if (distr_data.Contains("singleel"))
@@ -109,7 +117,9 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
+//TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
+//TLegend* leg = new TLegend(0.75, 0.12, 0.9, 0.45);
+TLegend* leg = new TLegend(0.75, 0.6, 0.9, 0.89);
 
 for (int i = DTAG_ARGS_START; i<argc; i++)
 	{
@@ -176,7 +186,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 		}
 	else
 		{
-		std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
+		std::pair<TString, Color_t> nick_colour = dtag_nick_colour_elmufakerates_reduced(dtag);
 		TString nick = nick_colour.first;
 		Color_t col = nick_colour.second;
 
@@ -335,9 +345,12 @@ for (int i=0; i<=hs_sum->GetSize(); i++)
 	double mc_JER_DOWN = hs_mc_JER_DOWN->GetBinContent(i);
 	double mc_JES_DOWN = hs_mc_JES_DOWN->GetBinContent(i);
 
-	double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
-	double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
-	double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
+	//double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
+	//double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
+	//double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
+	double sys_PU   = (add_sys_pu  ? (abs(mc_PU_UP  - mc_content) + abs(mc_PU_DOWN  - mc_content))/2 : 0);
+	double sys_JER  = (add_sys_jer ? (abs(mc_JER_UP - mc_content) + abs(mc_JER_DOWN - mc_content))/2 : 0);
+	double sys_JES  = (add_sys_jes ? (abs(mc_JES_UP - mc_content) + abs(mc_JES_DOWN - mc_content))/2 : 0);
 
 	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
 	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
@@ -587,7 +600,7 @@ hs_data_relative->Draw("e p same");
 
 cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_mc + "_SYS" + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
+cst->SaveAs( dir + "/jobsums/" + distr_mc + "_SYS" + (add_sys_pu ? "_wPU" : "") + (add_sys_jes ? "_wJES" : "") + (add_sys_jer ? "_wJER" : "") + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.png" : ".png") );
 
 return 0;
 }
