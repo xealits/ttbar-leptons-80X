@@ -404,14 +404,14 @@ struct JobDef
 //std::map<string, TH1D*> th1d_distr_control;
 
 
-//jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo, TH3F * tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]))
+//jetToTauFakeRate(TH3D * tau_fake_rate_jets_histo, TH3D * tau_fake_rate_taus_histo, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]))
 //jetToTauFakeRate(tau_fake_rate_jets_histo1, tau_fake_rate_taus_histo1, tau_fake_rate_jets_histo2, tau_fake_rate_taus_histo2, tau_fake_rate_histo1_fraction, selJetsNoLep[n].pt(), selJetsNoLep[n].eta(), jet_radius(selJetsNoLep[n]));
-//jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
-// later tau_fake_rate_histo1_fraction can be a TH3F histogram with fractions per pt, eta, radius
-double jetToTauFakeRate_vanila(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, TH3F * tau_fake_rate_jets_histo2, TH3F * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+//jetToTauFakeRate(TH3D * tau_fake_rate_jets_histo1, TH3D * tau_fake_rate_taus_histo1, TH3D * tau_fake_rate_jets_histo2, TH3D * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius)
+// later tau_fake_rate_histo1_fraction can be a TH3D histogram with fractions per pt, eta, radius
+double jetToTauFakeRate_vanila(TH3D * tau_fake_rate_jets_histo1, TH3D * tau_fake_rate_taus_histo1, TH3D * tau_fake_rate_jets_histo2, TH3D * tau_fake_rate_taus_histo2, Double_t tau_fake_rate_histo1_fraction, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
 	{
 	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
-	// are identical TH3F histograms
+	// are identical TH3D histograms
 	// Int_t TH1::FindBin 	( 	Double_t  	x,
 	//	Double_t  	y = 0,
 	//	Double_t  	z = 0 
@@ -445,10 +445,10 @@ double jetToTauFakeRate_vanila(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake
 
 
 
-double jetToTauFakeRate(TH3F * tau_fake_rate_jets_histo1, TH3F * tau_fake_rate_taus_histo1, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
+double jetToTauFakeRate(TH3D * tau_fake_rate_jets_histo1, TH3D * tau_fake_rate_taus_histo1, Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool debug)
 	{
 	// the tau_fake_rate_jets_histo and tau_fake_rate_taus_histo
-	// are identical TH3F histograms
+	// are identical TH3D histograms
 	// Int_t TH1::FindBin 	( 	Double_t  	x,
 	//	Double_t  	y = 0,
 	//	Double_t  	z = 0 
@@ -1264,23 +1264,23 @@ Double_t tau_fake_rate_histo1_fraction = runProcess.getParameter < Double_t > ("
 // LARGE BINS for normal/vanila rates
 // TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
 // rate1 = file1 = JetHT data file
-TH3F * tau_fake_rate1_jets_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
-TH3F * tau_fake_rate1_taus_histo_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate1_jets_histo_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr_large_bins");
+TH3D * tau_fake_rate1_taus_histo_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr_large_bins");
 
 cout << "fake rate QCD histogram: " << tau_fake_rate1_jets_histo_q << endl;
 tau_fake_rate1_jets_histo_q->Print();
 
 // rate2 = file2 = SingleMuon data file
-TH3F * tau_fake_rate2_jets_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
-TH3F * tau_fake_rate2_taus_histo_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate2_jets_histo_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr_large_bins");
+TH3D * tau_fake_rate2_taus_histo_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr_large_bins");
 
 // dilepton fake rates
-TH3F * tau_fake_rate_jets_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr_large_bins");
-TH3F * tau_fake_rate_jets_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr_large_bins");
-TH3F * tau_fake_rate_jets_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr_large_bins");
-TH3F * tau_fake_rate_taus_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate_jets_histo_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate_jets_histo_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr_large_bins");
+TH3D * tau_fake_rate_jets_histo_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr_large_bins");
+TH3D * tau_fake_rate_taus_histo_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr_large_bins");
 
 
 
@@ -1289,28 +1289,28 @@ TH3F * tau_fake_rate_taus_histo_elel = (TH3F *) tau_fake_rate_file_dileptons->Ge
 
 // TODO: so the two fakerates are done 2ce -- two files and each file has qcd and wjets jistos
 // rate1 = file1 = JetHT data file
-TH3F * tau_fake_rate1_jets_histoPROJECTIONS_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr");
-TH3F * tau_fake_rate1_taus_histoPROJECTIONS_q = (TH3F *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr");
-TH3F * tau_fake_rate1_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_jets_distr");
-TH3F * tau_fake_rate1_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate1_file->Get("HLTmu_qcd_tau_jets_distr");
+TH3D * tau_fake_rate1_jets_histoPROJECTIONS_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_jets_distr");
+TH3D * tau_fake_rate1_taus_histoPROJECTIONS_q = (TH3D *) tau_fake_rate1_file->Get("HLTjet_qcd_tau_jets_distr");
+TH3D * tau_fake_rate1_jets_histoPROJECTIONS_w = (TH3D *) tau_fake_rate1_file->Get("HLTmu_qcd_jets_distr");
+TH3D * tau_fake_rate1_taus_histoPROJECTIONS_w = (TH3D *) tau_fake_rate1_file->Get("HLTmu_qcd_tau_jets_distr");
 
 
 // rate2 = file2 = SingleMuon data file
-TH3F * tau_fake_rate2_jets_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_jets_distr");
-TH3F * tau_fake_rate2_taus_histoPROJECTIONS_q = (TH3F *) tau_fake_rate2_file->Get("HLTmu_qcd_tau_jets_distr");
-TH3F * tau_fake_rate2_jets_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr");
-TH3F * tau_fake_rate2_taus_histoPROJECTIONS_w = (TH3F *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr");
+TH3D * tau_fake_rate2_jets_histoPROJECTIONS_q = (TH3D *) tau_fake_rate2_file->Get("HLTmu_qcd_jets_distr");
+TH3D * tau_fake_rate2_taus_histoPROJECTIONS_q = (TH3D *) tau_fake_rate2_file->Get("HLTmu_qcd_tau_jets_distr");
+TH3D * tau_fake_rate2_jets_histoPROJECTIONS_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_jets_distr");
+TH3D * tau_fake_rate2_taus_histoPROJECTIONS_w = (TH3D *) tau_fake_rate2_file->Get("HLTmu_wjets_tau_jets_distr");
 
 
 
 
 // dilepton fake rates
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_elmu = (TH3F *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_mumu = (TH3F *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr");
-TH3F * tau_fake_rate_jets_histoPROJECTIONS_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr");
-TH3F * tau_fake_rate_taus_histoPROJECTIONS_elel = (TH3F *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr");
+TH3D * tau_fake_rate_jets_histoPROJECTIONS_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_jets_distr");
+TH3D * tau_fake_rate_taus_histoPROJECTIONS_elmu = (TH3D *) tau_fake_rate_file_dileptons->Get("elmu_passjets_tau_jets_distr");
+TH3D * tau_fake_rate_jets_histoPROJECTIONS_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_jets_distr");
+TH3D * tau_fake_rate_taus_histoPROJECTIONS_mumu = (TH3D *) tau_fake_rate_file_dileptons->Get("mumu_passjets_tau_jets_distr");
+TH3D * tau_fake_rate_jets_histoPROJECTIONS_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_jets_distr");
+TH3D * tau_fake_rate_taus_histoPROJECTIONS_elel = (TH3D *) tau_fake_rate_file_dileptons->Get("elel_passjets_tau_jets_distr");
 
 cout << "averages of fake rate distrs" << endl << "X,Y,Z projections" << endl;
 
@@ -1527,45 +1527,45 @@ TFile* bTaggingEfficiencies_file = TFile::Open(bTaggingEfficiencies_filename.Dat
 
 cout << "b-tagging eff-s, filename: " << bTaggingEfficiencies_filename << endl;
 
-TH2F* bTaggingEfficiencies_b_alljet   ;
-TH2F* bTaggingEfficiencies_b_tagged   ;
-TH2F* bTaggingEfficiencies_c_alljet   ;
-TH2F* bTaggingEfficiencies_c_tagged   ;
-TH2F* bTaggingEfficiencies_udsg_alljet;
-TH2F* bTaggingEfficiencies_udsg_tagged;
+TH2D* bTaggingEfficiencies_b_alljet   ;
+TH2D* bTaggingEfficiencies_b_tagged   ;
+TH2D* bTaggingEfficiencies_c_alljet   ;
+TH2D* bTaggingEfficiencies_c_tagged   ;
+TH2D* bTaggingEfficiencies_udsg_alljet;
+TH2D* bTaggingEfficiencies_udsg_tagged;
 
 TString backup_b_eff_distr("MC2016_Summer16_DYJetsToLL_50toInf_madgraph");
 
 // ( ? : ) would look too much here
 if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_b_hadronFlavour_candidates_tagged"))
 	{
-	bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates");
-	bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_b_alljet    = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates");
+	bTaggingEfficiencies_b_tagged    = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_b_hadronFlavour_candidates_tagged");
 	}
 else
 	{
-	bTaggingEfficiencies_b_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
-	bTaggingEfficiencies_b_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_b_alljet    = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates");
+	bTaggingEfficiencies_b_tagged    = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged");
 	}
 if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_c_hadronFlavour_candidates_tagged"))
 	{
-	bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates");
-	bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_c_alljet    = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates");
+	bTaggingEfficiencies_c_tagged    = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_c_hadronFlavour_candidates_tagged");
 	}
 else
 	{
-	bTaggingEfficiencies_c_alljet    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
-	bTaggingEfficiencies_c_tagged    = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_c_alljet    = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates");
+	bTaggingEfficiencies_c_tagged    = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged");
 	}
 if (bTaggingEfficiencies_file->GetListOfKeys()->Contains(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"))
 	{
-	bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates");
-	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_udsg_alljet = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates");
+	bTaggingEfficiencies_udsg_tagged = (TH2D*) bTaggingEfficiencies_file->Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged");
 	}
 else
 	{
-	bTaggingEfficiencies_udsg_alljet = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
-	bTaggingEfficiencies_udsg_tagged = (TH2F*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
+	bTaggingEfficiencies_udsg_alljet = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates");
+	bTaggingEfficiencies_udsg_tagged = (TH2D*) bTaggingEfficiencies_file->Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged");
 	}
 
 struct bTaggingEfficiencyHistograms bEffs;

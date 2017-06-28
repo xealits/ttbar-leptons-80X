@@ -14,12 +14,12 @@
 using namespace std;
 
 struct bTaggingEfficiencyHistograms {
-	TH2F* b_alljet   ;
-	TH2F* b_tagged   ;
-	TH2F* c_alljet   ;
-	TH2F* c_tagged   ;
-	TH2F* udsg_alljet;
-	TH2F* udsg_tagged;
+	TH2D* b_alljet   ;
+	TH2D* b_tagged   ;
+	TH2D* c_alljet   ;
+	TH2D* c_tagged   ;
+	TH2D* udsg_alljet;
+	TH2D* udsg_tagged;
 	};
 
 double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta);

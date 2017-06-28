@@ -477,6 +477,47 @@ int fill_btag_efficiency(string control_point_name, Double_t pt, Double_t eta, D
 
 
 
+/*
+       reco::CandidatePtrVector signalCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector signalChargedHadrCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector signalNeutrHadrCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector signalGammaCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector isolationCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector isolationChargedHadrCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector isolationNeutrHadrCands() const;
+       /// return the PFCandidates if available (reference or embedded), or the PackedPFCandidate on miniAOD 
+       /// note that the vector is returned by value.
+       reco::CandidatePtrVector isolationGammaCands() const;
+
+* how to use this crap:
+*     for(edm::PtrVector<reco::Candidate>::const_iterator iterjet = jets.begin(); iterjet != jets.end(); ++iterjet) {
+*     edm::Ptr<reco::Candidate> iJet = *iterjet;
+*
+* from:
+* https://github.com/ahlinist/cmssw/blob/master/HiggsAnalysis/HeavyChHiggsToTauNu/src/JetTauInvMass.cc
+*/
+
+double energy_sum_of_candidates(const reco::CandidatePtrVector& candidates)
+	{
+	double energy_sum = 0;
+	for (int i=0; i<candidates.size(); i++)
+		{
+		energy_sum += candidates[i]->energy();
+		}
+	return energy_sum;
+	}
 
 int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::JetCollection & selJets, pat::TauCollection & selTaus, vector<LorentzVector>& visible_gen_taus, double event_weight, bool isMC)
 	{
@@ -577,6 +618,16 @@ int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::Jet
 				// fill_pt_pt(string control_point_name, double pt1, double pt2, double event_weight)
 				//fill_pt_pt(channel + selection + ("_tau_taujet_pts"), jet.pt(), selTaus[itau].pt(), event_weight);
 				fill_2d(channel + selection + ("_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTaus[itau].pt(), event_weight);
+
+                                fill_1d(channel + selection + "_tau_signalCands",               200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalChargedHadrCands",    200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalChargedHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalGammaCands",          200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalGammaCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationCands",            200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationChargedHadrCands", 200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationChargedHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationNeutrHadrCands",   200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationGammaCands",       200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationGammaCands()), event_weight);
+				//fill_1d(channel + selection + "", 200, 0, 100, energy_sum_of_candidates(selTaus[itau].));
 
 				// N tau-jets
 				//increment( channel + selection + ("_selection_ntaujet"), event_weight );
