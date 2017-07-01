@@ -357,3 +357,5 @@ root [4] TTree* T = reduced_ttree
 root [5] ((TTreePlayer*)(T->GetPlayer()))->SetScanFileName("ntupleout_sel-mu_1l3j40met1b_jets-kino.csv");
 root [6] reduced_ttree->Scan("jet0_p4.pt():jet0_p4.eta():jet0_rad", "HLT_mu && abs(leps_ID) == 13 && njets > 2 && nbjets>0 && met_corrected.pt() > 40 ")
 
+sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))
+

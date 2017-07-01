@@ -42,10 +42,235 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
+// the exact LorentzVector declaration
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+
 /*
 double pu_weight(Int_t nvtx) {
    return pileup_ratio[nvtx];
 }
+*/
+
+const double far_mass = 100000;
+
+double closest_t_mass(
+	Int_t jet0_id, Float_t jet0_b_discr, LorentzVector* jet0_p4, 
+	Int_t jet1_id, Float_t jet1_b_discr, LorentzVector* jet1_p4, 
+	Int_t jet2_id, Float_t jet2_b_discr, LorentzVector* jet2_p4, 
+	Int_t jet3_id, Float_t jet3_b_discr, LorentzVector* jet3_p4, 
+	Int_t jet4_id, Float_t jet4_b_discr, LorentzVector* jet4_p4
+	)
+	{
+	//return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	std::vector<LorentzVector> light_jets, heavy_jets;
+
+	Float_t b_threshold = 0.8484;
+
+	if (jet0_id >=0)
+		{
+		if (jet0_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet0_p4->X(), jet0_p4->Y(), jet0_p4->Z(), jet0_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet0_p4->X(), jet0_p4->Y(), jet0_p4->Z(), jet0_p4->T()));
+		}
+	if (jet1_id >=0)
+		{
+		if (jet1_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet1_p4->X(), jet1_p4->Y(), jet1_p4->Z(), jet1_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet1_p4->X(), jet1_p4->Y(), jet1_p4->Z(), jet1_p4->T()));
+		}
+	if (jet2_id >=0)
+		{
+		if (jet2_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet2_p4->X(), jet2_p4->Y(), jet2_p4->Z(), jet2_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet2_p4->X(), jet2_p4->Y(), jet2_p4->Z(), jet2_p4->T()));
+		}
+	if (jet3_id >=0)
+		{
+		if (jet3_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet3_p4->X(), jet3_p4->Y(), jet3_p4->Z(), jet3_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet3_p4->X(), jet3_p4->Y(), jet3_p4->Z(), jet3_p4->T()));
+		}
+	if (jet4_id >=0)
+		{
+		if (jet4_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet4_p4->X(), jet4_p4->Y(), jet4_p4->Z(), jet4_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet4_p4->X(), jet4_p4->Y(), jet4_p4->Z(), jet4_p4->T()));
+		}
+
+	// at least 1 heavy jet and 2 light
+	if (!(heavy_jets.size()>0 && light_jets.size()>1)) return far_mass;
+
+	double closest_W_mass = far_mass;
+	double smallest_W_mass_distance = 999999;
+	double closest_T_mass = far_mass;
+	double smallest_T_mass_distance = 999999;
+
+	LorentzVector W(0,0,0,0);
+	for (unsigned int i=0; i<light_jets.size()-1; i++)
+		for (unsigned int u=i+1; u<light_jets.size(); u++)
+			{
+			W = light_jets[i] + light_jets[u];
+			double W_mass_dist = ( 80 - W.mass());
+			if (W_mass_dist < smallest_W_mass_distance)
+				{
+				smallest_W_mass_distance = W_mass_dist;
+				closest_W_mass = W.mass();
+				}
+			}
+
+	for (unsigned int j=0; j<heavy_jets.size()-1; j++)
+		{
+		LorentzVector T = W + heavy_jets[j];
+		double T_mass_dist = (170 - T.mass());
+		if (T_mass_dist < smallest_T_mass_distance)
+			{
+			smallest_T_mass_distance = T_mass_dist;
+			closest_T_mass = T.mass();
+			}
+		}
+
+	if (closest_T_mass > far_mass) closest_T_mass = far_mass;
+	return closest_T_mass;
+	}
+
+
+
+
+
+double closest_w_mass(
+	Int_t jet0_id, Float_t jet0_b_discr, LorentzVector* jet0_p4, 
+	Int_t jet1_id, Float_t jet1_b_discr, LorentzVector* jet1_p4, 
+	Int_t jet2_id, Float_t jet2_b_discr, LorentzVector* jet2_p4, 
+	Int_t jet3_id, Float_t jet3_b_discr, LorentzVector* jet3_p4, 
+	Int_t jet4_id, Float_t jet4_b_discr, LorentzVector* jet4_p4
+	)
+	{
+	//return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	std::vector<LorentzVector*> light_jets, heavy_jets;
+
+	Float_t b_threshold = 0.8484;
+
+	if (jet0_id >=0)
+		{
+		if (jet0_b_discr < b_threshold) light_jets.push_back(jet0_p4);
+		}
+	if (jet1_id >=0)
+		{
+		if (jet1_b_discr < b_threshold) light_jets.push_back(jet1_p4);
+		}
+	if (jet2_id >=0)
+		{
+		if (jet2_b_discr < b_threshold) light_jets.push_back(jet2_p4);
+		}
+	if (jet3_id >=0)
+		{
+		if (jet3_b_discr < b_threshold) light_jets.push_back(jet3_p4);
+		}
+	if (jet4_id >=0)
+		{
+		if (jet4_b_discr < b_threshold) light_jets.push_back(jet4_p4);
+		}
+
+	// at 2 light jets
+	if (!(light_jets.size()>1)) return far_mass;
+
+	double closest_W_mass = far_mass;
+	double smallest_W_mass_distance = 999999;
+
+	LorentzVector W(0,0,0,0);
+	for (unsigned int i=0; i<light_jets.size()-1; i++)
+		for (unsigned int u=i+1; u<light_jets.size(); u++)
+			{
+			W = *light_jets[i] + *light_jets[u];
+			double W_mass_dist = (80 - W.mass());
+			if (W_mass_dist < smallest_W_mass_distance)
+				{
+				smallest_W_mass_distance = W_mass_dist;
+				closest_W_mass = W.mass();
+				}
+			}
+
+	if (closest_W_mass > far_mass) closest_W_mass = far_mass;
+	return closest_W_mass;
+	}
+
+//void deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, double mu_channel, int distr)
+void deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, bool aMCatNLO, bool mu_channel, int distr, int tt_sig, bool with_tau)
+	{
+	#define NTUPLE_INTERFACE_OPEN
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+
+	cout << "to the loop! " << NT_output_ttree->GetEntries() << endl;
+	for (long i = 0; i<NT_output_ttree->GetEntries(); i++)
+		{
+		NT_output_ttree->GetEntry(i);
+		bool pass = true;
+		if (mu_channel) pass &= NT_HLT_mu && abs(NT_leps_ID) == 13 ;
+		else            pass &= NT_HLT_el && abs(NT_leps_ID) == 11 ;
+		pass &= abs(NT_lep0_p4->eta()) < 2.4 && NT_lep0_dxy < 0.01 && NT_lep0_dz < 0.02 && NT_njets > 2 && NT_met_corrected->pt() > 40 && NT_nbjets > 0;
+		if (with_tau) pass &= NT_tau0_IDlev > 1;
+		//if (tt_sig > 0) // than it is ttbar
+		switch (tt_sig) {
+			case 1: // the signal
+				pass &= (abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) == (mu_channel? 13*15 : 11*15));
+				break;
+			case 2: // lj
+				pass &= (abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) == (mu_channel? 13*1 : 11*1));
+				break;
+			case 3: // the rest
+				pass &= ((abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) != (mu_channel? 13*1 : 11*1)) && (abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) != (mu_channel? 13*15 : 11*15)));
+				break;
+		}
+			//{
+			//if (tt_sig) // than select signal
+			//else // select the rest
+			//}
+		if (!pass) continue;
+
+		double weight = 1;
+		if (isMC)
+			{
+			weight *= pileup_ratio[NT_nvtx];
+			//weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
+			if (aMCatNLO) weight *= (NT_aMCatNLO_weight > 0? 1 : -1);
+			}
+
+		double var = 0;
+		switch (distr) {
+		case 0: var = closest_w_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+			NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+			break;
+		case 1: var = closest_t_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+			NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+			break;
+		case 3:
+			double w_mass = closest_w_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+				NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+			double t_mass = closest_t_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+				NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+			double t0_mass = 170, w0_mass = 80;
+			var = TMath::Sqrt((t_mass - t0_mass)*(t_mass - t0_mass) + (w_mass - w0_mass)*(w_mass - w0_mass));
+			break;
+		}
+		histo->Fill(var, weight);
+		}
+	}
+
+/*
+bool cutfilename_1el3j40met1b1t()
+	{
+	return HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1;
+	}
+
+bool cutfilename_1mu3j40met1b1t()
+	{
+	return HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1;
+	}
 */
 
 bool is_file_exist(const char *fileName)
@@ -83,8 +308,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 20
-const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
+#define INPUT_DTAGS_START 24
+const char usage_string[512] = " [--verbose] [--normalize] with_tau distr_number sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range_N range_MIN range_MAX out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -128,17 +353,22 @@ cout << "options are taken from " << input_starts << endl;
 
 int i = 1;
 
+bool with_tau = TString(argv[input_starts + i++]) == TString("T");
+cout << i << " adding tau selection " << with_tau << endl;
+
+int distr_number = atoi(argv[input_starts + i++]);
+
 cout << i << ' ';
 TString sig(argv[input_starts + i++]);
-if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu"))
+if (sig != TString("el") && sig != TString("mu"))
 	{
 	cout << "not supported tt signal channel: " << sig << endl;
 	}
+cout << "sig = " << sig << endl;
 
 float global_scale = atof(argv[input_starts + i++]);
 
 float tau_ID_SF = atof(argv[input_starts + i++]);
-cout << i << " tau ID SF " << tau_ID_SF << endl;
 
 bool with_b_SF = false;
 TString set_b_SF(argv[input_starts + i++]);
@@ -215,7 +445,11 @@ double lumi_gh    = atof(argv[input_starts + i++]);
 double lumi = lumi_bcdef + lumi_gh;
 TString distr(argv[input_starts + i++]);
 TString distr_condition_init(argv[input_starts + i++]);
-TString range(argv[input_starts + i++]);
+
+unsigned int range_N   = atof(argv[input_starts + i++]);
+double range_MIN = atof(argv[input_starts + i++]);
+double range_MAX = atof(argv[input_starts + i++]);
+
 string out_name(argv[input_starts + i++]);
 
 TString distr_name(argv[input_starts + i++]);
@@ -225,7 +459,7 @@ TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
 cout << distr << endl;
-cout << range << endl;
+cout << range_N << ' ' << range_MIN << ' ' << range_MAX << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
 
@@ -279,6 +513,8 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 
+bool inclusive_TT = true ;
+bool in_proxy   = true;
 /*
  * Get each dtag file in the reduced dir,
  * open the histogram, project it, rebin the projection,
@@ -315,17 +551,27 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	TTree* output_ttree = (TTree*) file->Get(NT_OUTPUT_TTREE_NAME); // hardcoded output name
-	//if (be_verbose) cout << "got ttree, drawing:" << endl;
+	if (be_verbose) cout << "got ttree, drawing:" << endl;
 
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
 		{
-		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
-		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+		TString draw_command = distr + (in_proxy? "" : ">>h");
+		TString condition_command = distr_condition_init;
+		cout << "output_ttree->Draw(" << draw_command << ", " << condition_command << ");" << endl;
+		TH1D* histo = new TH1D("h_d", ";;", range_N, range_MIN, range_MAX);
+		//bool deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, double mu_channel)
+		deep_distribution(histo, output_ttree, false, false, (sig == TString("mu")), distr_number, -1, with_tau);
+
+		//output_ttree->Draw(draw_command, condition_command);
+		if (be_verbose) cout << "done drawing, getting the histogram" << endl;
+		//if (in_proxy) histo = (TH1D*) gROOT->FindObject("htemp");
+		//else          histo = (TH1D*) output_ttree->GetHistogram();
 		if (be_verbose) cout << histo->Integral();
 
+		/*
 		//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
 		// and normalize per bin-width:
 		for (Int_t i=0; i<=histo->GetSize(); i++)
@@ -337,6 +583,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->SetBinContent(i, content/width);
 			histo->SetBinError(i, error/width);
 			}
+		*/
 
 		if (be_verbose) cout << " summing data-stack " << histo->Integral();
 		histo->SetMarkerStyle(9);
@@ -373,6 +620,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		xsec = xsecs[dtag];
 		ratio = lumi * xsec / weightflow->GetBinContent(11);
 
+		/*
 		// add weights for MC
 		TString weight_cond("");
 		if (with_PU_weight)
@@ -389,7 +637,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_SF)
 			{
 			TString lepton_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu"))
 				{
 				lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -403,7 +651,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_trig_SF)
 			{
 			TString lepton_trig_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu"))
 				{
 				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -447,7 +695,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		// thus the loop
 		//map<TString, TH1D*> histos;
 		map<TString, TString> histo_conditions;
+		*/
 
+		/*
 		if (! dtag.Contains("TT"))
 			{
 			TString nick = dtag_nick(dtag);
@@ -465,65 +715,98 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			TString nick;
 
-			if (sig == TString("elmu"))
+			if (!inclusive_TT)
+			{
+			if (sig == TString("mu"))
 				{
+				cout << "TT channels" << endl;
 				nick = "tt_{other}";
 				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
-				}
-			else
-				{
-				if (sig == TString("mu"))
-					{
-					cout << "TT channels" << endl;
-					nick = "tt_{other}";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 
-					//nick = "tt_em";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
+				//nick = "tt_em";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 
-					nick = "tt_{\\mu\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
-					//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
-					//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
-					//histos[nick] = histo;
-					}
-				if (sig == TString("el"))
-					{
-					cout << "TT channels" << endl;
-					nick = "tt_{other}";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-
-					nick = "tt_{e\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
-					}
-
-				nick = "tt_lj";
-				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
-				//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")");
-				//histo = (TH1D*) output_ttree->GetHistogram();
+				nick = "tt_{\\mu\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+				//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
+				//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 				//histos[nick] = histo;
 				}
+			if (sig == TString("el"))
+				{
+				cout << "TT channels" << endl;
+				nick = "tt_{other}";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+
+				nick = "tt_{e\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+				}
+
+			nick = "tt_lj";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
+			}
+			else
+				{
+				nick = "tt";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
+				}
+			}
+		*/
+
+		//if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
+
+		//TString distr_name_for_drawing = ""; // FUCK ROOOT THESE FUNCTIONS ARE AWESOMELY USELESS
+		//distr_name_for_drawing.Form("h_%s", nick);
+		vector<TString> nicks;
+		vector<TH1D*> histos;
+
+		if (! dtag.Contains("TT"))
+			{
+			TString nick = dtag_nick(dtag);
+			TString distr_name_for_drawing = "h_" + nick;
+			TH1D* histo = new TH1D(distr_name_for_drawing, ";;", range_N, range_MIN, range_MAX);
+			deep_distribution(histo, output_ttree, true, (dtag.Contains("amcatnlo")), (sig == TString("mu")), distr_number, -1, with_tau);
+			nicks.push_back(nick);
+			histos.push_back(histo);
+			}
+		else
+			{
+			TString nick = (sig==TString("mu") ? "tt_{\\mu\\tau}" : "tt_{el\\tau}");
+			TString distr_name_for_drawing = "h_" + nick;
+			TH1D* histo = new TH1D(distr_name_for_drawing, ";;", range_N, range_MIN, range_MAX);
+			deep_distribution(histo, output_ttree, true, (dtag.Contains("amcatnlo")), (sig == TString("mu")), distr_number, 1, with_tau);
+			//histos[nick] = histo;
+			nicks.push_back(nick);
+			histos.push_back(histo);
+
+			nick = "tt_lj";
+			distr_name_for_drawing = "h_" + nick;
+			histo = new TH1D(distr_name_for_drawing, ";;", range_N, range_MIN, range_MAX);
+			deep_distribution(histo, output_ttree, true, (dtag.Contains("amcatnlo")), (sig == TString("mu")), distr_number, 2, with_tau);
+			//histos[nick] = histo;
+			nicks.push_back(nick);
+			histos.push_back(histo);
+
+			//TString nick = dtag_nick(dtag);
+			//nick = dtag_nick(dtag);
+			nick = "tt_{other}";
+			distr_name_for_drawing = "h_" + nick;
+			histo = new TH1D(distr_name_for_drawing, ";;", range_N, range_MIN, range_MAX);
+			deep_distribution(histo, output_ttree, true, (dtag.Contains("amcatnlo")), (sig == TString("mu")), distr_number, 3, with_tau);
+			//histos[nick] = histo;
+			nicks.push_back(nick);
+			histos.push_back(histo);
 			}
 
-		if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
 
-		// scaled and store each histo in the pack
-		Int_t sub_channel = 0;
-		for (std::map<TString, TString>::iterator it = histo_conditions.begin(); it != histo_conditions.end(); ++it, sub_channel++)
+		//for (std::map<TString, TH1D*>::iterator it = histos.begin(); it != histos.end(); ++it)
+		for (int i=0; i<nicks.size(); ++i)
 			{
-			TString nick = it->first;
-			TString cond = it->second;
-			//TH1D* histo = it->second;
-			TString distr_name_for_drawing = ""; // FUCK ROOOT THESE FUNCTIONS ARE AWESOMELY USELESS
-			distr_name_for_drawing.Form("h_%d", sub_channel);
-			//if (be_verbose) cout << TString("h_") + sub_channel << endl;
-			output_ttree->Draw(distr + TString(">>") + distr_name_for_drawing + range, cond);
-			TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+			TString nick = nicks[i];
+			TH1D* histo = histos[i];
 
-			// hack to merge HLTmu & HLTjetmu
 			if (be_verbose) cout << dtag << ' ' << nick << '\t' << histo->Integral() << '\t' << weightflow->GetBinContent(11) << endl;
 			if (be_verbose) histo->Print();
 
@@ -531,17 +814,19 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->Scale(ratio);
 			if (be_verbose) histo->Print();
 
-			//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
-			// and normalize per bin-width:
-			for (Int_t i=0; i<=histo->GetSize(); i++)
-				{
-				//yAxis->GetBinLowEdge(3)
-				double content = histo->GetBinContent(i);
-				double error   = histo->GetBinError(i);
-				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-				histo->SetBinContent(i, content/width);
-				histo->SetBinError(i, error/width);
-				}
+			/*
+				//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+				// and normalize per bin-width:
+				for (Int_t i=0; i<=histo->GetSize(); i++)
+					{
+					//yAxis->GetBinLowEdge(3)
+					double content = histo->GetBinContent(i);
+					double error   = histo->GetBinError(i);
+					double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+					histo->SetBinContent(i, content/width);
+					histo->SetBinError(i, error/width);
+					}
+			*/
 
 			if (be_verbose) cout << "summing mc-stack " << histo->Integral() << endl;
 			Color_t col  = nick_colour(nick);
@@ -943,7 +1228,7 @@ hs_data_relative->Draw("e p same");
 
 //cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistrDeepDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
 
 return 0;
 }

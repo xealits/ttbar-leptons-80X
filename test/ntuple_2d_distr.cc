@@ -42,10 +42,210 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
+// the exact LorentzVector declaration
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+
 /*
 double pu_weight(Int_t nvtx) {
    return pileup_ratio[nvtx];
 }
+*/
+
+double closest_t_mass(
+	Int_t jet0_id, Float_t jet0_b_discr, LorentzVector* jet0_p4, 
+	Int_t jet1_id, Float_t jet1_b_discr, LorentzVector* jet1_p4, 
+	Int_t jet2_id, Float_t jet2_b_discr, LorentzVector* jet2_p4, 
+	Int_t jet3_id, Float_t jet3_b_discr, LorentzVector* jet3_p4, 
+	Int_t jet4_id, Float_t jet4_b_discr, LorentzVector* jet4_p4
+	)
+	{
+	//return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	std::vector<LorentzVector> light_jets, heavy_jets;
+
+	Float_t b_threshold = 0.8484;
+
+	if (jet0_id >=0)
+		{
+		if (jet0_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet0_p4->X(), jet0_p4->Y(), jet0_p4->Z(), jet0_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet0_p4->X(), jet0_p4->Y(), jet0_p4->Z(), jet0_p4->T()));
+		}
+	if (jet1_id >=0)
+		{
+		if (jet1_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet1_p4->X(), jet1_p4->Y(), jet1_p4->Z(), jet1_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet1_p4->X(), jet1_p4->Y(), jet1_p4->Z(), jet1_p4->T()));
+		}
+	if (jet2_id >=0)
+		{
+		if (jet2_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet2_p4->X(), jet2_p4->Y(), jet2_p4->Z(), jet2_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet2_p4->X(), jet2_p4->Y(), jet2_p4->Z(), jet2_p4->T()));
+		}
+	if (jet3_id >=0)
+		{
+		if (jet3_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet3_p4->X(), jet3_p4->Y(), jet3_p4->Z(), jet3_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet3_p4->X(), jet3_p4->Y(), jet3_p4->Z(), jet3_p4->T()));
+		}
+	if (jet4_id >=0)
+		{
+		if (jet4_b_discr < b_threshold)
+			light_jets.push_back(LorentzVector(jet4_p4->X(), jet4_p4->Y(), jet4_p4->Z(), jet4_p4->T()));
+		else
+			heavy_jets.push_back(LorentzVector(jet4_p4->X(), jet4_p4->Y(), jet4_p4->Z(), jet4_p4->T()));
+		}
+
+	// at least 1 heavy jet and 2 light
+	if (!(heavy_jets.size()>0 && light_jets.size()>1)) return 0;
+
+	double closest_W_mass = 0;
+	double smallest_W_mass_distance = 999999;
+	double closest_T_mass = 0;
+	double smallest_T_mass_distance = 999999;
+
+	LorentzVector W(0,0,0,0);
+	for (unsigned int i=0; i<light_jets.size()-1; i++)
+		for (unsigned int u=i+1; u<light_jets.size(); u++)
+			{
+			W = light_jets[i] + light_jets[u];
+			double W_mass_dist = ( 80 - W.mass());
+			if (W_mass_dist < smallest_W_mass_distance)
+				{
+				smallest_W_mass_distance = W_mass_dist;
+				closest_W_mass = W.mass();
+				}
+			}
+
+	for (unsigned int j=0; j<heavy_jets.size()-1; j++)
+		{
+		LorentzVector T = W + heavy_jets[j];
+		double T_mass_dist = (170 - T.mass());
+		if (T_mass_dist < smallest_T_mass_distance)
+			{
+			smallest_T_mass_distance = T_mass_dist;
+			closest_T_mass = T.mass();
+			}
+		}
+
+	if (closest_T_mass > 1000) closest_T_mass = 1000;
+	return closest_T_mass;
+	}
+
+
+
+
+
+double closest_w_mass(
+	Int_t jet0_id, Float_t jet0_b_discr, LorentzVector* jet0_p4, 
+	Int_t jet1_id, Float_t jet1_b_discr, LorentzVector* jet1_p4, 
+	Int_t jet2_id, Float_t jet2_b_discr, LorentzVector* jet2_p4, 
+	Int_t jet3_id, Float_t jet3_b_discr, LorentzVector* jet3_p4, 
+	Int_t jet4_id, Float_t jet4_b_discr, LorentzVector* jet4_p4
+	)
+	{
+	//return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	std::vector<LorentzVector*> light_jets, heavy_jets;
+
+	Float_t b_threshold = 0.8484;
+
+	if (jet0_id >=0)
+		{
+		if (jet0_b_discr < b_threshold) light_jets.push_back(jet0_p4);
+		}
+	if (jet1_id >=0)
+		{
+		if (jet1_b_discr < b_threshold) light_jets.push_back(jet1_p4);
+		}
+	if (jet2_id >=0)
+		{
+		if (jet2_b_discr < b_threshold) light_jets.push_back(jet2_p4);
+		}
+	if (jet3_id >=0)
+		{
+		if (jet3_b_discr < b_threshold) light_jets.push_back(jet3_p4);
+		}
+	if (jet4_id >=0)
+		{
+		if (jet4_b_discr < b_threshold) light_jets.push_back(jet4_p4);
+		}
+
+	// at 2 light jets
+	if (!(light_jets.size()>1)) return 0;
+
+	double closest_W_mass = 0;
+	double smallest_W_mass_distance = 999999;
+
+	LorentzVector W(0,0,0,0);
+	for (unsigned int i=0; i<light_jets.size()-1; i++)
+		for (unsigned int u=i+1; u<light_jets.size(); u++)
+			{
+			W = *light_jets[i] + *light_jets[u];
+			double W_mass_dist = (80 - W.mass());
+			if (W_mass_dist < smallest_W_mass_distance)
+				{
+				smallest_W_mass_distance = W_mass_dist;
+				closest_W_mass = W.mass();
+				}
+			}
+
+	if (closest_W_mass > 1000) closest_W_mass = 1000;
+	return closest_W_mass;
+	}
+
+void deep_distribution(TH2D* histo, TTree* NT_output_ttree, bool isMC, double mu_channel, int distr, bool tt_sig, int sig_id)
+	{
+	#define NTUPLE_INTERFACE_OPEN
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+
+	cout << "to the loop! " << NT_output_ttree->GetEntries() << endl;
+	for (long i = 0; i<NT_output_ttree->GetEntries(); i++)
+		{
+		NT_output_ttree->GetEntry(i);
+		bool pass = true;
+		if (mu_channel) pass &= NT_HLT_mu && abs(NT_leps_ID) == 13 ;
+		else            pass &= NT_HLT_el && abs(NT_leps_ID) == 11 ;
+		pass &= abs(NT_lep0_p4->eta()) < 2.4 && NT_lep0_dxy < 0.01 && NT_lep0_dz < 0.02 && NT_njets > 2 && NT_met_corrected->pt() > 40 && NT_nbjets > 0;
+		if (sig_id > 0) // than it is ttbar (weird, yep)
+			{
+			if (tt_sig) // than select signal
+				pass &= (abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) == sig_id);
+			else // select the rest
+				pass &= (abs(NT_gen_t_w_decay_id * NT_gen_tb_w_decay_id) != sig_id);
+			}
+		//else // not ttbar
+		//	{
+		//	}
+		if (!pass) continue;
+
+		double weight = 1;
+		if (isMC)
+			{
+			weight *= pileup_ratio[NT_nvtx];
+			}
+
+		double var1 = closest_w_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+			NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+		double var2 = closest_t_mass(NT_jet0_id, NT_jet0_b_discr, NT_jet0_p4, NT_jet1_id, NT_jet1_b_discr, NT_jet1_p4,
+			NT_jet2_id, NT_jet2_b_discr, NT_jet2_p4, NT_jet3_id, NT_jet3_b_discr, NT_jet3_p4, NT_jet4_id, NT_jet4_b_discr, NT_jet4_p4);
+		histo->Fill(var1, var2, weight);
+		}
+	}
+
+/*
+bool cutfilename_1el3j40met1b1t()
+	{
+	return HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1;
+	}
+
+bool cutfilename_1mu3j40met1b1t()
+	{
+	return HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1;
+	}
 */
 
 bool is_file_exist(const char *fileName)
@@ -55,11 +255,11 @@ bool is_file_exist(const char *fileName)
 }
 
 
-int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D** mc_sum, TString& nick, TH1D* histo, bool be_verbose) {
+int add_nicknamed_mc_histo(std::map<TString, TH2D *>& nicknamed_mc_distrs, TH2D** mc_sum, TString& nick, TH2D* histo, bool be_verbose) {
 	//std::map<TString, TH1D *> nicknamed_mc_distrs;
 	if (nicknamed_mc_distrs.find(nick) == nicknamed_mc_distrs.end())
-		nicknamed_mc_distrs[nick] = (TH1D*) histo->Clone();
-		//nicknamed_mc_distrs[nick] = new TH1D(nick, "");
+		nicknamed_mc_distrs[nick] = (TH2D*) histo->Clone();
+		//nicknamed_mc_distrs[nick] = new TH2D(nick, "");
 	else
 		nicknamed_mc_distrs[nick]->Add(histo);
 
@@ -68,7 +268,9 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 	if (*mc_sum == NULL)
 		{
 		if (be_verbose) cout << " clone,";
-		(*mc_sum) = (TH1D*) histo->Clone();
+		//(*mc_sum) = (TH2D*) histo->Clone();
+		(*mc_sum) = new TH2D("mc_sum", ";;", 50, 1, 300, 50, 1, 500);
+		//mc_sum->SetName("mc_sum");
 		}
 	else
 		{
@@ -83,8 +285,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 20
-const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
+#define INPUT_DTAGS_START 21
+const char usage_string[256] = " [--verbose] [--normalize] distr_number sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -128,9 +330,11 @@ cout << "options are taken from " << input_starts << endl;
 
 int i = 1;
 
+int distr_number = atoi(argv[input_starts + i++]);
+
 cout << i << ' ';
 TString sig(argv[input_starts + i++]);
-if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu"))
+if (sig != TString("el") && sig != TString("mu"))
 	{
 	cout << "not supported tt signal channel: " << sig << endl;
 	}
@@ -138,7 +342,6 @@ if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu"))
 float global_scale = atof(argv[input_starts + i++]);
 
 float tau_ID_SF = atof(argv[input_starts + i++]);
-cout << i << " tau ID SF " << tau_ID_SF << endl;
 
 bool with_b_SF = false;
 TString set_b_SF(argv[input_starts + i++]);
@@ -255,12 +458,12 @@ struct tau_jets {
 };
 */ // nope
 
-std::map<TString, TH1D*> nicknamed_mc_distrs;
-TH1D* mc_sum = NULL;
+std::map<TString, TH2D*> nicknamed_mc_distrs;
+TH2D* mc_sum = NULL;
 
 //THStack *hs = new THStack("hs","Stacked 1D histograms");
 THStack *hs      = new THStack("hs", "");
-TH1D    *hs_data = NULL;
+TH2D    *hs_data = NULL;
 
 /*
 // different jet origin histos:
@@ -279,6 +482,8 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
 
+bool inclusive_TT = true ;
+bool in_proxy   = true;
 /*
  * Get each dtag file in the reduced dir,
  * open the histogram, project it, rebin the projection,
@@ -315,17 +520,27 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	TTree* output_ttree = (TTree*) file->Get(NT_OUTPUT_TTREE_NAME); // hardcoded output name
-	//if (be_verbose) cout << "got ttree, drawing:" << endl;
+	if (be_verbose) cout << "got ttree, drawing:" << endl;
 
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
 		{
-		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
-		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
+		TString draw_command = distr + (in_proxy? "" : ">>h");
+		TString condition_command = distr_condition_init;
+		cout << "output_ttree->Draw(" << draw_command << ", " << condition_command << ");" << endl;
+		TH2D* histo = new TH2D("h_d", ";;", 50, 1, 300, 50, 1, 500);
+		//bool deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, double mu_channel)
+		deep_distribution(histo, output_ttree, false, (sig == TString("mu")), distr_number, false, -1);
+
+		//output_ttree->Draw(draw_command, condition_command);
+		if (be_verbose) cout << "done drawing, getting the histogram" << endl;
+		//if (in_proxy) histo = (TH1D*) gROOT->FindObject("htemp");
+		//else          histo = (TH1D*) output_ttree->GetHistogram();
 		if (be_verbose) cout << histo->Integral();
 
+		/*
 		//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
 		// and normalize per bin-width:
 		for (Int_t i=0; i<=histo->GetSize(); i++)
@@ -337,6 +552,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->SetBinContent(i, content/width);
 			histo->SetBinError(i, error/width);
 			}
+		*/
 
 		if (be_verbose) cout << " summing data-stack " << histo->Integral();
 		histo->SetMarkerStyle(9);
@@ -344,7 +560,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (hs_data == NULL)
 			{
 			if (be_verbose) cout << " creating data histo" << endl;
-			hs_data = (TH1D*) histo->Clone();
+			hs_data = (TH2D*) histo->Clone();
 			}
 		else
 			{
@@ -373,6 +589,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		xsec = xsecs[dtag];
 		ratio = lumi * xsec / weightflow->GetBinContent(11);
 
+		/*
 		// add weights for MC
 		TString weight_cond("");
 		if (with_PU_weight)
@@ -389,7 +606,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_SF)
 			{
 			TString lepton_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu"))
 				{
 				lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -403,7 +620,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_trig_SF)
 			{
 			TString lepton_trig_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu"))
 				{
 				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -441,13 +658,40 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		// NUP cut for W0Jets
 		if (dtag.Contains("W0Jet"))
 			distr_condition += "&& NUP_gen < 6";
+		*/
 
 		// draw distribution
 		// in case of inclusive samples (like TTbar) several distributions are drawn -- for each sub-channel
 		// thus the loop
-		//map<TString, TH1D*> histos;
-		map<TString, TString> histo_conditions;
+		map<TString, TH2D*> histos;
+		//map<TString, TString> histo_conditions;
 
+
+		TString nick("");// = dtag_nick(dtag);
+		if (! dtag.Contains("TT"))
+			{
+			nick = dtag_nick(dtag);
+			TString distr_name_for_drawing = "h_" + nick;
+			TH2D* histo = new TH2D(distr_name_for_drawing, ";;", 50, 1, 300, 50, 1, 500);
+			deep_distribution(histo, output_ttree, true, (sig == TString("mu")), distr_number, false, -1);
+			histos[nick] = histo;
+			}
+		else
+			{
+			nick = "tt_{other}";
+			TString distr_name_for_drawing = "h_" + nick;
+			TH2D* histo = new TH2D(distr_name_for_drawing, ";;", 50, 1, 300, 50, 1, 500);
+			deep_distribution(histo, output_ttree, true, (sig == TString("mu")), distr_number, false, (sig == TString("mu") ? 13*15 : 11*15));
+			histos[nick] = histo;
+
+			nick = (sig==TString("mu") ? "tt_{\\mu\\tau}" : "tt_{e\\tau}");
+			distr_name_for_drawing = "h_" + nick;
+			histo = new TH2D(distr_name_for_drawing, ";;", 50, 1, 300, 50, 1, 500);
+			deep_distribution(histo, output_ttree, true, (sig == TString("mu")), distr_number, true, (sig == TString("mu") ? 13*15 : 11*15));
+			histos[nick] = histo;
+			}
+
+		/*
 		if (! dtag.Contains("TT"))
 			{
 			TString nick = dtag_nick(dtag);
@@ -465,65 +709,54 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			TString nick;
 
-			if (sig == TString("elmu"))
+			if (!inclusive_TT)
+			{
+			if (sig == TString("mu"))
 				{
+				cout << "TT channels" << endl;
 				nick = "tt_{other}";
 				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
-				}
-			else
-				{
-				if (sig == TString("mu"))
-					{
-					cout << "TT channels" << endl;
-					nick = "tt_{other}";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 
-					//nick = "tt_em";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
+				//nick = "tt_em";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 
-					nick = "tt_{\\mu\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
-					//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
-					//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
-					//histos[nick] = histo;
-					}
-				if (sig == TString("el"))
-					{
-					cout << "TT channels" << endl;
-					nick = "tt_{other}";
-					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-
-					nick = "tt_{e\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
-					}
-
-				nick = "tt_lj";
-				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
-				//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")");
-				//histo = (TH1D*) output_ttree->GetHistogram();
+				nick = "tt_{\\mu\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+				//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
+				//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 				//histos[nick] = histo;
 				}
+			if (sig == TString("el"))
+				{
+				cout << "TT channels" << endl;
+				nick = "tt_{other}";
+				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+
+				nick = "tt_{e\\tau}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+				}
+
+			nick = "tt_lj";
+			histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) <= 1*15" + ")";
 			}
+			else
+				{
+				nick = "tt";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
+				}
+			}
+		*/
 
-		if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
+		//if (be_verbose) cout << distr << '\t' << weight_cond << '\t' << distr_condition << endl;
+		//TString distr_name_for_drawing = ""; // FUCK ROOOT THESE FUNCTIONS ARE AWESOMELY USELESS
+		//distr_name_for_drawing.Form("h_%s", nick);
 
-		// scaled and store each histo in the pack
-		Int_t sub_channel = 0;
-		for (std::map<TString, TString>::iterator it = histo_conditions.begin(); it != histo_conditions.end(); ++it, sub_channel++)
+		for (std::map<TString, TH2D*>::iterator it = histos.begin(); it != histos.end(); ++it)
 			{
 			TString nick = it->first;
-			TString cond = it->second;
-			//TH1D* histo = it->second;
-			TString distr_name_for_drawing = ""; // FUCK ROOOT THESE FUNCTIONS ARE AWESOMELY USELESS
-			distr_name_for_drawing.Form("h_%d", sub_channel);
-			//if (be_verbose) cout << TString("h_") + sub_channel << endl;
-			output_ttree->Draw(distr + TString(">>") + distr_name_for_drawing + range, cond);
-			TH1D* histo = (TH1D*) output_ttree->GetHistogram();
-
-			// hack to merge HLTmu & HLTjetmu
+			TH2D* histo = it->second;
 			if (be_verbose) cout << dtag << ' ' << nick << '\t' << histo->Integral() << '\t' << weightflow->GetBinContent(11) << endl;
 			if (be_verbose) histo->Print();
 
@@ -531,17 +764,19 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			histo->Scale(ratio);
 			if (be_verbose) histo->Print();
 
-			//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
-			// and normalize per bin-width:
-			for (Int_t i=0; i<=histo->GetSize(); i++)
-				{
-				//yAxis->GetBinLowEdge(3)
-				double content = histo->GetBinContent(i);
-				double error   = histo->GetBinError(i);
-				double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-				histo->SetBinContent(i, content/width);
-				histo->SetBinError(i, error/width);
-				}
+			/*
+				//if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+				// and normalize per bin-width:
+				for (Int_t i=0; i<=histo->GetSize(); i++)
+					{
+					//yAxis->GetBinLowEdge(3)
+					double content = histo->GetBinContent(i);
+					double error   = histo->GetBinError(i);
+					double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+					histo->SetBinContent(i, content/width);
+					histo->SetBinError(i, error/width);
+					}
+			*/
 
 			if (be_verbose) cout << "summing mc-stack " << histo->Integral() << endl;
 			Color_t col  = nick_colour(nick);
@@ -581,6 +816,7 @@ cout << "MC   integral = " << mc_sum->Integral() << endl;
 //cout << "ratio = " << ratio << endl;
 
 
+/*
 // go through MC tau_jets nickname map:
 //  1. divide every tau_jets distr by all_jets
 // and build the sum of MC
@@ -611,39 +847,15 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != n
 	}
 // now this summ is not needed, since it's computed in the loop
 // leaving it for control
+*/
+// no stacks, no drawing, just save them to file
 cout << "compare" << endl;
-hs_sum->Print();
 mc_sum->Print();
 
-hs_sum = mc_sum;
 cout << "switched to the second one" << endl;
-
-/* no need to normalize in case of fake rate
- * it's a function, not count of events in bins
-// normalize all histos for bin width:
-// hs_sum      (MC sum of fake taus)
-// mc_all_jets (MC sum of jets)
-// hs_data[0]  (Data fakes)
-// hs_data[1]  (Data jets)
-TH1D* histos_to_scale[4] = {hs_sum, mc_all_jets, hs_data[0], hs_data[1]};
-for (Int_t h=0; h<4; h++)
-	{
-	TH1D* histo = histos_to_scale[h];
-	for (Int_t i=0; i<=histo->GetSize(); i++)
-		{
-		//yAxis->GetBinLowEdge(3)
-		double content = histo->GetBinContent(i);
-		double error   = histo->GetBinError(i);
-		double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-		histo->SetBinContent(i, content/width);
-		histo->SetBinError(i, error/width);
-		}
-	}
-*/
 
 /*
  * Do normalize for comparison with cut-n-count
- */
 if (global_scale > 0)
 	{
 	Double_t scale = global_scale*integral_data/hs_sum->Integral();
@@ -654,296 +866,30 @@ if (global_scale > 0)
 		distr->Scale(scale);
 		}
 	}
+ */
 
 // ---- Write the separate distributions to file
 //TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + ".root", "RECREATE");
+TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr2D_" + out_name + ".root", "RECREATE");
 //cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
 
 hs_data->Write();
 hs_data->SetName(TString("data"));
 f_out->Write(TString("data"));
 
-hs_sum->Write();
-hs_sum->SetName(TString("mc_sum"));
+mc_sum->Write();
+mc_sum->SetName(TString("mc_sum"));
 f_out->Write(TString("mc_sum"));
-for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+for(std::map<TString, TH2D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
 	{
 	TString nick = it->first;
-	TH1D * distr = it->second;
+	TH2D * distr = it->second;
 	distr->SetName(nick);
 	distr->Write();
 	f_out->Write(nick);
 	}
 
 f_out->Close();
-
-
-hs_data->Sumw2();
-hs_data->SetStats(0);      // No statistics on lower plot
-
-/*
- * I'm having weird issue with statistical errors rising when PU weight is applied.
- * It doesn't happen in particular MC that I checked manualy (WJets).
- * So printing errors of all channels to see where it comes from.
- */
-cout << "histo errors" << endl;
-for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
-	{
-	TString nick = it->first;
-	TH1D * distr = it->second;
-
-	cout << nick << endl;
-	for (int i=0; i<distr->GetSize(); i++)
-		{
-		cout << '\t' << distr->GetBinError(i) ;
-		}
-	cout << endl;
-	}
-cout << "------------------------------ errors" << endl;
-
-// build the stack of MC
-// go through MC tau_jets nickname map:
-//  2. add it to MC histo stack
-//  3. add it to the legend
-//THStack *hs      = new THStack("hs", "");
-for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
-	{
-	TString nick = it->first;
-	TH1D * distr = it->second;
-
-	if (nick == TString("qcd")) continue;
-	// add qcd the last one
-
-	if (be_verbose)
-		{
-		cout << nick;
-		cout << " adding to mc stack" << endl;
-		distr->Print();
-		}
-
-	/* no need to scale for binwidth anything
-	// now scale the distr for bin-width
-	for (Int_t i=0; i<=distr->GetSize(); i++)
-		{
-		//yAxis->GetBinLowEdge(3)
-		double content = distr->GetBinContent(i);
-		double error   = distr->GetBinError(i);
-		double width   = distr->GetXaxis()->GetBinUpEdge(i) - distr->GetXaxis()->GetBinLowEdge(i);
-		distr->SetBinContent(i, content/width);
-		distr->SetBinError  (i, error/width);
-		}
-	*/
-
-	hs->Add(distr, "HIST");
-	leg->AddEntry(distr, nick, "F");
-	}
-
-// mabe make (if qcd) later
-cout << "adding qcd to mc stack" << endl;
-if (nicknamed_mc_distrs.find(TString("qcd")) != nicknamed_mc_distrs.end())
-	{
-	nicknamed_mc_distrs["qcd"]->Print();
-	hs->Add(nicknamed_mc_distrs["qcd"], "HIST");
-	leg->AddEntry(nicknamed_mc_distrs["qcd"], "qcd", "F");
-	}
-else
-	cout << "no qcd" << endl;
-
-
-//cst->SetFillColor(41);
-//cst->Divide(1,1);
-// in top left pad, draw the stack with defaults
-//cst->cd(1);
-
-cout << "setting title" << endl;
-
-//hs->GetXaxis()->SetTitle(distr);
-//cst->SetXaxisTile(distr);
-//hs_data->GetXaxis()->SetTitle(distr);
-
-if (unstack)
-	{
-	hs_data->Scale(1/hs_data->Integral());
-	hs_sum-> Scale(1/hs_sum->Integral());
-	for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
-		{
-		TString nick = it->first;
-		TH1D * distr = it->second;
-
-		distr->Scale(1/distr->Integral());
-		}
-	}
-
-TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
-h->SetXTitle("x");
-//cst->Update();
-//cst->Modified();
-
-gStyle->SetOptStat(0); // removes the stats legend-box from all pads
-
-TPad *pad1 = new TPad("pad1","This is pad1", 0., 0.2, 1., 1.);
-TPad *pad2 = new TPad("pad2","This is pad2", 0., 0.,  1., 0.2);
-//pad1->SetFillColor(11);
-//pad2->SetFillColor(11);
-
-
-if (set_logy)
-	{
-	cout << "setting logy" << endl;
-	pad1->SetLogy();
-	//gPad->SetLogy();
-	}
-
-pad1->Draw();
-pad2->Draw();
-
-pad1->cd();
-
-hs_data->GetXaxis()->SetLabelFont(63);
-hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_data->GetYaxis()->SetLabelFont(63);
-hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
-
-if (be_verbose) cout << "drawing the distr-s" << endl;
-
-hs_data->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
-
-if (!unstack)
-	{
-	hs->Draw("same"); // the stack
-	if (hs_sum != NULL)
-		{
-		hs_sum->Print();
-		hs_sum->SetFillStyle(3004);
-		hs_sum->SetFillColor(1);
-		hs_sum->SetMarkerColorAlpha(0, 0.1);
-		hs_sum->SetMarkerStyle(1);
-		hs_sum->SetMarkerColor(0);
-		hs_sum->Draw("e2 same"); // the errors on the stack
-		}
-	else
-		cout << "NO HS_SUM!!!!!!!!!!!!!!" << endl;
-	}
-else
-	{
-	for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
-		{
-		TString nick = it->first;
-		TH1D * distr = it->second;
-		distr->Draw("Lhist same");
-		}
-	}
-
-hs_data->Draw("e p same"); // the data with the errors
-
-cout << "setting the titles" << endl;
-hs_data->SetXTitle(distr_name);
-hs_sum-> SetXTitle(distr_name);
-hs_data->SetYTitle(Y_name);
-hs_sum-> SetYTitle(Y_name);
-hs_data->SetTitle("");
-hs_sum-> SetTitle("");
-
-cout << "setting title" << endl;
-// title for the plot
-TPaveText* left_title = new TPaveText(0.1, 0.9, 0.4, 0.94, "brNDC");
-left_title->AddText("CMS preliminary at 13 TeV");
-left_title->SetTextFont(1);
-left_title->SetFillColor(0);
-cout << "drawing left title" << endl;
-left_title->Draw("same");
-
-TPaveText* right_title = new TPaveText(0.75, 0.9, 0.9, 0.94, "brNDC");
-TString s_title(""); s_title.Form("L = %.1f fb^{-1}", lumi/1000);
-right_title->AddText(s_title);
-right_title->SetTextFont(132);
-right_title->SetFillColor(0);
-cout << "drawing right title" << endl;
-right_title->Draw("same");
-
-leg->SetBorderSize(0);
-leg->Draw();
-
-
-
-// THE RATIO PLOT
-pad2->cd();
-//cst->cd(2);
-
-TH1D * hs_data_relative = (TH1D*) hs_data->Clone();
-TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
-
-hs_data_relative->Print();
-hs_sum_relative->Print();
-
-hs_data_relative->SetXTitle("");
-hs_sum_relative-> SetXTitle("");
-hs_data_relative->SetYTitle("");
-hs_sum_relative-> SetYTitle("");
-
-hs_data_relative->SetMarkerColor(1);
-
-// to have the same font size on both pads:
-hs_data_relative->GetXaxis()->SetLabelFont(63);
-hs_data_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_data_relative->GetYaxis()->SetLabelFont(63);
-hs_data_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_sum_relative->GetXaxis()->SetLabelFont(63);
-hs_sum_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_sum_relative->GetYaxis()->SetLabelFont(63);
-hs_sum_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
-
-
-for (int i=0; i<=hs_sum_relative->GetSize(); i++)
-	{
-	double mc_content = hs_sum_relative->GetBinContent(i);
-	double mc_error   = hs_sum_relative->GetBinError(i);
-	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-
-	double data_content = hs_data_relative->GetBinContent(i);
-	double data_error   = hs_data_relative->GetBinError(i);
-	//double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
-	if (mc_content > 0)
-		{
-		hs_sum_relative->SetBinContent(i, 1);
-		hs_sum_relative->SetBinError(i, mc_error/mc_content);	
-		hs_data_relative->SetBinContent(i, data_content/mc_content);
-		hs_data_relative->SetBinError(i, data_error/mc_content);
-		}
-	else
-		{
-		hs_sum_relative->SetBinContent(i, 1);
-		hs_sum_relative->SetBinError(i, mc_error);
-		hs_data_relative->SetBinContent(i, 1);
-		hs_data_relative->SetBinError(i, data_error);
-		}
-	}
-
-hs_sum_relative->SetStats(false);
-hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
-
-/*
-if (xlims_set)
-	{
-	hs_sum_relative->GetXaxis()->SetRange(xmin, xmax);
-	hs_sum_relative->GetXaxis()->SetRangeUser(xmin, xmax);
-	//hs_data_relative->GetXaxis()->SetRange(xmin, xmax);
-	//hs_data_relative->GetXaxis()->SetRangeUser(xmin, xmax);
-	}
-*/
-
-hs_sum_relative->Draw("e2");
-hs_data_relative->Draw("e p same");
-
-
-//cst->Modified();
-
-cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
 
 return 0;
 }

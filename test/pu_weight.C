@@ -355,3 +355,80 @@ Int_t elmu_FindBin(Double_t jet_pt, Double_t jet_eta, Double_t jet_radius, bool 
 	}
 
 
+
+
+
+/*
+ * Likelihood distrs:
+ *    njets with/without PU
+ *    lj peak
+ *
+ */
+
+int njets_over_pu(double jet0_pu_discr, double jet1_pu_discr, double jet2_pu_discr, double jet3_pu_discr, double jet4_pu_discr, double pu_threshold)
+	{
+	return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	}
+
+
+/*
+ * bloody root: the TTree->Draw("parameterfile", "conditionfile") works in interpreter, but not in compiled script
+closest_w_mass(jet0_id, jet0_b_discr, jet0_p4.X(), jet0_p4.Y(), jet0_p4.Z(), jet0_p4.T(), jet1_id, jet1_b_discr, jet1_p4.X(), jet1_p4.Y(), jet1_p4.Z(), jet1_p4.T(), jet2_id, jet2_b_discr, jet2_p4.X(), jet2_p4.Y(), jet2_p4.Z(), jet2_p4.T(), jet3_id, jet3_b_discr, jet3_p4.X(), jet3_p4.Y(), jet3_p4.Z(), jet3_p4.T(), jet4_id, jet4_b_discr, jet4_p4.X(), jet4_p4.Y(), jet4_p4.Z(), jet4_p4.T())
+
+ */
+double closest_w_mass(
+	Int_t jet0_id, Float_t jet0_b_discr, Float_t jet0_X, Float_t jet0_Y, Float_t jet0_Z, Float_t jet0_T, 
+	Int_t jet1_id, Float_t jet1_b_discr, Float_t jet1_X, Float_t jet1_Y, Float_t jet1_Z, Float_t jet1_T, 
+	Int_t jet2_id, Float_t jet2_b_discr, Float_t jet2_X, Float_t jet2_Y, Float_t jet2_Z, Float_t jet2_T, 
+	Int_t jet3_id, Float_t jet3_b_discr, Float_t jet3_X, Float_t jet3_Y, Float_t jet3_Z, Float_t jet3_T, 
+	Int_t jet4_id, Float_t jet4_b_discr, Float_t jet4_X, Float_t jet4_Y, Float_t jet4_Z, Float_t jet4_T
+	)
+	{
+	//return (jet0_pu_discr > pu_threshold ?1:0) + (jet1_pu_discr > pu_threshold ?1:0) + (jet2_pu_discr > pu_threshold ?1:0) + (jet3_pu_discr > pu_threshold ?1:0) + (jet4_pu_discr > pu_threshold ?1:0);
+	std::vector<LorentzVector> light_jets, heavy_jets;
+
+	Float_t b_threshold = 0.8484;
+
+	if (jet0_id >=0)
+		{
+		if (jet0_b_discr < b_threshold) light_jets.push_back(LorentzVector(jet0_X, jet0_Y, jet0_Z, jet0_T));
+		}
+	if (jet1_id >=0)
+		{
+		if (jet1_b_discr < b_threshold) light_jets.push_back(LorentzVector(jet1_X, jet1_Y, jet1_Z, jet1_T));
+		}
+	if (jet2_id >=0)
+		{
+		if (jet2_b_discr < b_threshold) light_jets.push_back(LorentzVector(jet2_X, jet2_Y, jet2_Z, jet2_T));
+		}
+	if (jet3_id >=0)
+		{
+		if (jet3_b_discr < b_threshold) light_jets.push_back(LorentzVector(jet3_X, jet3_Y, jet3_Z, jet3_T));
+		}
+	if (jet4_id >=0)
+		{
+		if (jet4_b_discr < b_threshold) light_jets.push_back(LorentzVector(jet4_X, jet4_Y, jet4_Z, jet4_T));
+		}
+
+	// at 2 light jets
+	if (!(light_jets.size()>1)) return 0;
+
+	double closest_W_mass = 0;
+	double smallest_W_mass_distance = 999999;
+
+	LorentzVector W(0,0,0,0);
+	for (unsigned int i=0; i<light_jets.size()-1; i++)
+		for (unsigned int u=i+1; u<light_jets.size(); u++)
+			{
+			W = light_jets[i] + light_jets[u];
+			double W_mass_dist = ( 80 - W.mass());
+			if (W_mass_dist < smallest_W_mass_distance)
+				{
+				smallest_W_mass_distance = W_mass_dist;
+				closest_W_mass = W.mass();
+				}
+			}
+
+	if (closest_W_mass > 160) closest_W_mass = 160;
+	return closest_W_mass;
+	}
