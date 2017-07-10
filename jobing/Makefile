@@ -1193,4 +1193,56 @@ ntuple_distrs_mu_from3jets:
 	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 " ${range} sel-mu_sel1lep3jets40met1b1t_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
 	ntuple_distr --verbose mu 0.97 ${bSF} T T T f f ${lumi_bcdef} ${lumi_gh} ${distr} "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && tau0_id * lep0_id < 0 " ${range} sel-mu_sel1lep3jets40met1b1tOS_${file_suffix} ${distr_X} outdir/${job}/merged-sets/ `cat dtags_${job}`
 
+ntuple_likelihood_mu_ouLJ3j: bSF=T
+ntuple_likelihood_mu_ouLJ3j: scale=1.036
+ntuple_likelihood_mu_ouLJ3j: sys_shift=""
+ntuple_likelihood_mu_ouLJ3j: tau_ES=
+ntuple_likelihood_mu_ouLJ3j:
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets ==3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-3j-Scale-${scale}_WaMC_${sys_shift} " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+
+ntuple_likelihood_mu_ouLJ4j: bSF=T
+ntuple_likelihood_mu_ouLJ4j: scale=1.036
+ntuple_likelihood_mu_ouLJ4j: sys_shift=""
+ntuple_likelihood_mu_ouLJ4j: tau_ES=
+ntuple_likelihood_mu_ouLJ4j:
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-4j-Scale-${scale}_WaMC_${sys_shift} " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+
+ntuple_likelihood_mu: bSF=T
+ntuple_likelihood_mu: scale=1.036
+ntuple_likelihood_mu: sys_shift=""
+ntuple_likelihood_mu: tau_ES=
+ntuple_likelihood_mu:
+	# in-lj
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance > 0 && lj_peak_distance < 1600)  ${tau_ES}" "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_inLJ-Scale-${scale}_WaMC " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+	# out 3j
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets ==3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-3j-Scale-${scale}_WaMC " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+	# out 4j
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-4j-Scale-${scale}_WaMC " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+	# pre-tau
+	# in-lj
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance > 0 && lj_peak_distance < 1600)  ${tau_ES}" "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_inLJ-Scale-${scale}_WaMC_pretau " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+	# out 3j
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets ==3 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-3j-Scale-${scale}_WaMC_pretau " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+	# out 4j
+	ntuple_distr --verbose mu ${scale} -1 ${bSF} T T T ${sys_shift} f f 19094 16079 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_mu && abs(leps_ID) == 13 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 3 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-mu_sel1lep3jets40met1b1t_mu-MET-MT_outLJ-4j-Scale-${scale}_WaMC_pretau " #mu MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_mu_WaMC`
+
+ntuple_likelihood_el: bSF=T
+ntuple_likelihood_el: scale=0.983
+ntuple_likelihood_el: sys_shift=""
+ntuple_likelihood_el: tau_ES=
+ntuple_likelihood_el:
+	# in-lj
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance > 0 && lj_peak_distance < 1600) ${tau_ES}" "(25,0,250)"  likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_inLJ-Scale-${scale}_WaMC     " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+	# out 3j
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets ==3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES}" "(25,0,250)" likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_outLJ-3j-Scale-${scale}_WaMC " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+	# out 4j
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 3 && met_corrected.pt() > 40 && nbjets > 0 && tau0_IDlev > 1 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES}" "(25,0,250)" likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_outLJ-4j-Scale-${scale}_WaMC " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+	# pre-tau
+	# in-lj
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance > 0 && lj_peak_distance < 1600)  ${tau_ES}" "(25,0,250)"  likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_inLJ-Scale-${scale}_WaMC_pretau     " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+	# out 3j
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets ==3 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_outLJ-3j-Scale-${scale}_WaMC_pretau " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+	# out 4j
+	ntuple_distr --verbose el ${scale} -1 ${bSF} T T T ${sys_shift} f f 19102 12210 "sqrt(2*lep0_p4.pt()*met_corrected.pt() * (1 - cos(lep0_p4.phi() - met_corrected.phi())))" "HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 3 && met_corrected.pt() > 40 && nbjets > 0 && (lj_peak_distance < 0 || lj_peak_distance >= 1600) ${tau_ES} " "(25,0,250)" likelihood_sel-el_sel1lep3jets40met1b1t_el-MET-MT_outLJ-4j-Scale-${scale}_WaMC_pretau " #el MET M_{T} " " Events " /eos/user/o/otoldaie/ttbar-leptons-80X_data/v11.8_merged-sets/ `cat dtags_v11.8_el_WaMC`
+
 

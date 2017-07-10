@@ -11,6 +11,8 @@
 
 #include "UserCode/ttbar-leptons-80X/interface/wrapper.h"
 
+const double b_Medium_WP = 0.8484;
+
 // the exact LorentzVector declaration
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
@@ -26,8 +28,41 @@ double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.206299605077
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0};
 
-double pu_weight(Int_t nvtx) {
-   return pileup_ratio[nvtx];
+double pileup_ratio_up[] = {0, 0.351377216124927, 0.717199649125846, 1.14121536968772, 0.84885826611733, 1.00700929402897, 1.03428595270903, 0.717444379696992, 0.344078389355127, 0.499570875027422,
+0.606614916257104, 0.632584599390169, 0.731450949466174, 0.827511723989754, 0.910682115553867, 0.960170981598162, 0.988896170761361, 1.02468865580207, 1.05296667126403, 1.05112033565679,
+1.0269129153969, 1.00548641752714, 0.998316130432865, 1.01492587998551, 1.03753749807849, 1.05742218946485, 1.08503978097083, 1.12134132247053, 1.15585339474274, 1.19214399856171,
+1.23308400947467, 1.24528804633732, 1.26786364716917, 1.26101551498967, 1.23297806722714, 1.18042533075471, 1.10534683838101, 1.00275591661645, 0.889094305531985, 0.768791254270252,
+0.655054015673457, 0.533361034358457, 0.423095146361996, 0.329177839117034, 0.250352385505809, 0.188377378855567, 0.137852651411779, 0.0968577167707531, 0.0686240187247059, 0.0473889635126706,
+0.0323695027438475, 0.0216752397914914, 0.0145119352923332, 0.00961177893634792, 0.00615582219138384, 0.00430085627914427, 0.00305735512896403, 0.00223567790438986, 0.00189369737638594, 0.00199585978316291,
+0.00236236592656064, 0.00372472999463276, 0.00474687312579969, 0.00549508151576102, 0.00603023110946686, 0.0068545111910253, 0.00695838760530896, 0.00666224781277046, 0.00588243140681038, 0.00528714370892014,
+0.00453424615273565, 0.00433985030329723, 0.00401493171035719, 0.00332436608713241, 0.00300063798808221, 0.00289925128977536, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0 };
+
+double pileup_ratio_down[] = {0, 0.37361294640242, 1.1627791004568, 1.26890787896295, 1.10266790442705, 1.23456697093644, 1.26278991594152, 0.909648777562084, 0.759569490571151, 1.09035651921682,
+1.34530547603283, 1.48713160105, 1.52535976889483, 1.49730550773404, 1.49792998045778, 1.49767851097519, 1.44431045398336, 1.3681909492045, 1.29912252494785, 1.2274279217797,
+1.16525969099909, 1.12531044676724, 1.09094501417685, 1.06405434433422, 1.03997120824565, 1.0185716022098, 1.00560949501652, 0.997570939806059, 0.985543761409897, 0.972557804582185,
+0.957832827239337, 0.9139572640153, 0.872252387173971, 0.808388185417578, 0.733817960498049, 0.650440963845892, 0.561688505024782, 0.466564380334112, 0.374428618658619, 0.28845274688129,
+0.214909665968644, 0.149991974352384, 0.100014138338029, 0.0642260884603397, 0.0396553405911344, 0.0238687936736627, 0.0137921542898078, 0.00756854010632403, 0.00415483516246187, 0.00221776872027937,
+0.00118249725637452, 0.000641889697310868, 0.000383647166012176, 0.000273637590071334, 0.000242902582071058, 0.000291239677209452, 0.000394091114279828, 0.000542541231466254, 0.000771067920964491, 0.00113596447675107,
+0.00158061353194779, 0.00261959852500539, 0.00331800452823827, 0.00372426930370732, 0.00392086545082614, 0.00425479965493548, 0.00411256966391362, 0.00374240422174387, 0.00313603438166934, 0.00267155793176928,
+0.00216878198028599, 0.00196249821290853, 0.00171433839159669, 0.00133866519755926, 0.00113810604240254, 0.00103447940224886, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0 };
+
+
+double pu_weight(Int_t nvtx, int pu_shift) {
+	switch (pu_shift) {
+		case 0:
+			return pileup_ratio[nvtx];
+		case -1:
+			return pileup_ratio_down[nvtx];
+		case 1:
+			return pileup_ratio_up[nvtx];
+	}
+	return pileup_ratio[nvtx];
 }
 
 namespace MyNamespace {
@@ -432,3 +467,65 @@ double closest_w_mass(
 	if (closest_W_mass > 160) closest_W_mass = 160;
 	return closest_W_mass;
 	}
+
+/*
+bool pass_jet_met_b_requirement_jes(int njets_theshold, double met_threshold, int nbjets_theshold, int sys_shift,
+	int njets, int nbjets,
+	// jets should pass pt 30, met -- 40, bjets -- medium WP
+	Float_t jet0_b_discr, Float_t jet0_pt, Float_t jet0_phi, Float_t jet0_jes_correction_relShift,
+	Float_t jet1_b_discr, Float_t jet1_pt, Float_t jet1_phi, Float_t jet1_jes_correction_relShift,
+	Float_t jet2_b_discr, Float_t jet2_pt, Float_t jet2_phi, Float_t jet2_jes_correction_relShift,
+	Float_t jet3_b_discr, Float_t jet3_pt, Float_t jet3_phi, Float_t jet3_jes_correction_relShift,
+	Float_t jet4_b_discr, Float_t jet4_pt, Float_t jet4_phi, Float_t jet4_jes_correction_relShift,
+	Float_t met_pt, Float_t met_phi)
+{
+TVector3 met(0,0,0);
+met.SetPtEtaPhi(met_pt, 0, met_phi);
+TVector3 jet0(0,0,0);
+TVector3 jet1(0,0,0);
+TVector3 jet2(0,0,0);
+TVector3 jet3(0,0,0);
+TVector3 jet4(0,0,0);
+jet0.SetPtEtaPhi(jet0_pt,0,jet0_phi);
+jet1.SetPtEtaPhi(jet1_pt,0,jet1_phi);
+jet2.SetPtEtaPhi(jet2_pt,0,jet2_phi);
+jet3.SetPtEtaPhi(jet3_pt,0,jet3_phi);
+jet4.SetPtEtaPhi(jet4_pt,0,jet4_phi);
+
+//int n_top_jets = (jet0.pt() > 30) + (jet1.pt() > 30) + (jet2.pt() > 30) + (jet3.pt() > 30) + (jet4.pt() > 30);
+// they all are > 30 now
+
+TVector3 jet_sum = jet0 + jet1 + jet2 + jet3 + jet4;
+TVector3 jet_sum_new(0,0,0);
+
+if (sys_shift != 0)
+	{
+	switch(sys_shift) {
+		case 1: // UP
+			jet0 *= (1+jet0_jes_correction_relShift);
+			jet1 *= (1+jet1_jes_correction_relShift);
+			jet2 *= (1+jet2_jes_correction_relShift);
+			jet3 *= (1+jet3_jes_correction_relShift);
+			jet4 *= (1+jet4_jes_correction_relShift);
+			break;
+		case 2:
+			jet0 *= (1-jet0_jes_correction_relShift);
+			jet1 *= (1-jet1_jes_correction_relShift);
+			jet2 *= (1-jet2_jes_correction_relShift);
+			jet3 *= (1-jet3_jes_correction_relShift);
+			jet4 *= (1-jet4_jes_correction_relShift);
+			break;
+	}
+
+	// calculate new njets
+	int n_top_jets_new = (jet0.pt() > 30) + (jet1.pt() > 30) + (jet2.pt() > 30) + (jet3.pt() > 30) + (jet4.pt() > 30);
+
+	jet_sum_new = jet0 + jet1 + jet2 + jet3 + jet4;
+	// propagate to met
+	met += jet_sum - jet_sum_new;
+	}
+
+return njets > njets_theshold && nbjets > nbjets_theshold && met.pt() > met_threshold;
+}
+*/
+

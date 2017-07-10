@@ -84,7 +84,7 @@ using namespace std;
 
 
 #define INPUT_DTAGS_START 20
-const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_top_pt with_lep_SF with_lep_trig_SF with_PU_weight set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
+const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight SYS_shift set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -152,6 +152,7 @@ if (set_b_SF == TString("T") || set_b_SF == TString("Y"))
 else
 	cout << "NO b SF weight!" << endl;
 
+/*
 bool with_Top_PT = false;
 TString set_top_pt(argv[input_starts + i++]);
 cout << i << ' ';
@@ -162,6 +163,7 @@ if (set_top_pt == TString("T") || set_top_pt == TString("Y"))
 	}
 else
 	cout << "NO Top pT SF weight!" << endl;
+*/
 
 bool with_lep_SF = false;
 TString set_lep_SF(argv[input_starts + i++]);
@@ -195,6 +197,15 @@ if (set_PU == TString("T") || set_PU == TString("Y"))
 	}
 else
 	cout << "NO PU weight!" << endl;
+
+TString SYS_shift(argv[input_starts + i++]);
+cout << "SYS shift " << SYS_shift << endl;
+
+TString pu_shift("0");
+if (SYS_shift == TString("PU_UP"))
+	pu_shift = "1";
+else if (SYS_shift == TString("PU_DOWN"))
+	pu_shift = "-1";
 
 bool set_logy = false;
 TString logy_inp(argv[input_starts + i++]);
@@ -315,13 +326,14 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	TTree* output_ttree = (TTree*) file->Get(NT_OUTPUT_TTREE_NAME); // hardcoded output name
-	//if (be_verbose) cout << "got ttree, drawing:" << endl;
+	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;
 
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
 		{
+		if (be_verbose) cout << "command: " << distr + ">>h" + range << '\t' << distr_condition_init << endl;
 		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
 		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 		if (be_verbose) cout << histo->Integral();
@@ -377,7 +389,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		TString weight_cond("");
 		if (with_PU_weight)
 			{
-			weight_cond = "(pu_weight(nvtx_gen))*";
+			weight_cond = "(pu_weight(nvtx_gen, " + pu_shift + "))*";
 			// PU integral:
 			weight_cond += "0.986*";
 			}
@@ -458,7 +470,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			}
 		else
 			{
-			if (with_Top_PT)
+			if (SYS_shift == "TOP_PT")
 				{
 				weight_cond += "(ttbar_pT_SF(gen_t_pt, gen_tb_pt))*";
 				}
@@ -657,7 +669,7 @@ if (global_scale > 0)
 
 // ---- Write the separate distributions to file
 //TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + ".root", "RECREATE");
+TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + (SYS_shift != TString("") ? "_" + SYS_shift : "") + ".root", "RECREATE");
 //cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
 
 hs_data->Write();
@@ -943,7 +955,7 @@ hs_data_relative->Draw("e p same");
 
 //cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
+cst->SaveAs( dir + "/jobsums/QuickNtupleDistr_" + out_name + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
 
 return 0;
 }

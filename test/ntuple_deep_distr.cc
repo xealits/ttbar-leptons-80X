@@ -203,7 +203,11 @@ double closest_w_mass(
 void deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, bool aMCatNLO, bool mu_channel, int distr, int tt_sig, bool with_tau)
 	{
 	#define NTUPLE_INTERFACE_OPEN
-	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+	//#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput.h"
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_common.h"
+	#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_jets.h"
+	//#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_taus.h"
+	Int_t_in_NTuple(OUTNTUPLE, tau0_IDlev);
 
 	cout << "to the loop! " << NT_output_ttree->GetEntries() << endl;
 	for (long i = 0; i<NT_output_ttree->GetEntries(); i++)
@@ -212,7 +216,9 @@ void deep_distribution(TH1D* histo, TTree* NT_output_ttree, bool isMC, bool aMCa
 		bool pass = true;
 		if (mu_channel) pass &= NT_HLT_mu && abs(NT_leps_ID) == 13 ;
 		else            pass &= NT_HLT_el && abs(NT_leps_ID) == 11 ;
-		pass &= abs(NT_lep0_p4->eta()) < 2.4 && NT_lep0_dxy < 0.01 && NT_lep0_dz < 0.02 && NT_njets > 2 && NT_met_corrected->pt() > 40 && NT_nbjets > 0;
+		//pass &= abs(NT_lep0_p4->eta()) < 2.4 && NT_lep0_dxy < 0.01 && NT_lep0_dz < 0.02 && NT_njets > 2 && NT_met_corrected->pt() > 40 && NT_nbjets > 0;
+		// simplified lepton selection:
+		pass &= NT_njets > 2 && NT_met_corrected->pt() > 40 && NT_nbjets > 0;
 		if (with_tau) pass &= NT_tau0_IDlev > 1;
 		//if (tt_sig > 0) // than it is ttbar
 		switch (tt_sig) {
