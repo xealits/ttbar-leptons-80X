@@ -87,6 +87,7 @@
 #include <string>
 
 #include "UserCode/ttbar-leptons-80X/interface/recordFuncs.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingMuons.h"
 
 using namespace std;
 
@@ -1114,10 +1115,42 @@ for(size_t f=0; f<urls.size();++f)
 		edm::EventBase const & myEvent = ev;
 		//edm::Event const & edm_event = myEvent;
 
+		if(debug) { cout << "extracting the HLT" << endl; }
+
+		// TriggerResults --------------------
 		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
+		if(debug && tr.isValid()) { cout << "success!" << endl; }
 
 		if (!tr.isValid())
+			{
+			cout << "extracting the HLT2" << endl;
 			tr = ev.triggerResultsByName ("HLT2"); // Spring16 reHLT MCs
+			if (!tr.isValid ()){
+				cout << "Trigger HLT2 is not valid, exiting" << endl;
+				return false;
+				}
+			}
+
+		// TriggerNames for TriggerObjects --------------------
+		// get TriggerNames (needed to "unpack" the trigger path names of TriggerObject
+		edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+		edm::InputTag * trigResultsTag;
+		//edm::TriggerResults trigger_results = ev.triggerResults ("HLT");
+
+		if(debug) { cout << "extracting trignames" << endl; }
+		if (tr.isValid ()){
+			//cout << "Trigger HLT2 is not valid, trying HLT" << endl;
+			//tr = ev.triggerResultsByName ("HLT");
+			trigResultsTag = new edm::InputTag("TriggerResults","","HLT"); //make sure have correct process on MC
+			}
+		else
+			{
+			trigResultsTag = new edm::InputTag("TriggerResults","","HLT2"); //make sure have correct process on MC
+			}
+
+
+		ev.getByLabel(*trigResultsTag, trigResults);
+		const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
 
 		if(debug)
 			{ // TODO: make a separate executable
@@ -1127,6 +1160,189 @@ for(size_t f=0; f<urls.size();++f)
 			for(edm::TriggerNames::Strings::const_iterator trnames = tr.triggerNames().begin(); trnames!=tr.triggerNames().end(); ++trnames, ++i) cout << i << "\t" << *trnames << endl;
 			cout << "----------- End of trigger list ----------" << endl;
 			//return 0;
+			}
+
+		/* And print out the trigger objects for SingleMuon HLT
+		 *  MC   HLT_IsoMu24_v4 and HLT_IsoTkMu24_v4
+		 *  Data HLT_IsoMu24_v* and HLT_IsoTkMu24_v*
+		 *
+		 *  from https://cmssdt.cern.ch/lxr/source/DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h?v=CMSSW_8_1_0
+		 *  info
+		 *
+		 *  0036       /// Vector of labels of all HLT filters or names od L1 conditions the trigger objects has been used in
+		 *  0037       std::vector< std::string > filterLabels_;
+		 *  0038       /// Vector of names of all HLT paths or L1 algorithms the trigger objects has been used in
+		 *  0039       std::vector< std::string > pathNames_;  
+		 *  0040       std::vector< uint16_t >    pathIndices_; 
+		 *  0041 
+		 *  0042       /// Vector alligned with 'pathNames_' of boolean indicating the usage of the trigger object
+		 *  0043       /// An element is true, if the corresponding path succeeded and the trigger object was used in the last filter (HLT)
+		 *  0044       /// or the corresponding algorithm succeeded as well as the corresponding condition (L1).
+		 *  0045       /// The vector is empty for data (size 0), if the according information is not available.
+		 *  0046       std::vector< bool > pathLastFilterAccepted_;
+		 *  0047       /// Vector alligned with 'pathNames_' of boolean indicating the usage of the trigger object
+		 *  0048       /// An element is true, if the corresponding path succeeded and the trigger object was used in an L3 filter (HLT only)
+		 *  0049       /// The vector is empty for data (size 0), if the according information is not available.
+		 *  0050       std::vector< bool > pathL3FilterAccepted_;
+		 *
+		 * and
+		 *
+		 * 0099       /// Methods
+		 * 0100 
+		 * 0101       /// Adds a new HLT filter label
+		 * 0102       void addFilterLabel( const std::string & filterLabel ) { addFilterOrCondition( filterLabel ); };
+		 * 0103       /// Adds a new L1 condition name
+		 * 0104       void addConditionName( const std::string & conditionName ) { addFilterOrCondition( conditionName ); };
+		 * 0105       /// Adds a new HLT path name
+		 * 0106       void addPathName( const std::string & pathName, bool pathLastFilterAccepted = true, bool pathL3FilterAccepted = true ) { addPathOrAlgorithm( pathName, pathLastFilterAccepted, pathL3FilterAccepted ); };
+		 * 0107       /// Adds a new L1 algorithm name
+		 * 0108       void addAlgorithmName( const std::string & algorithmName, bool algoCondAccepted = true ) { addPathOrAlgorithm( algorithmName, algoCondAccepted, false ); };
+		 *
+		 * 0109       /// Gets all HLT filter labels
+		 * 0110       const std::vector< std::string > & filterLabels() const { return filtersOrConditions(); };
+		 * 0111       /// Gets all L1 condition names
+		 * 0112       const std::vector< std::string > & conditionNames() const { return filtersOrConditions(); };
+		 * 0113       /// Gets all HLT path names
+		 * 0114       std::vector< std::string > pathNames( bool pathLastFilterAccepted = false, bool pathL3FilterAccepted = true ) const { return pathsOrAlgorithms( pathLastFilterAccepted, pathL3FilterAccepted ); };
+		 * 0115       /// Gets all L1 algorithm names
+		 * 0116       std::vector< std::string > algorithmNames( bool algoCondAccepted = true ) const { return pathsOrAlgorithms( algoCondAccepted, false ); };
+		 *
+		 * 0117       /// Gets the pat::TriggerObject (parent class)
+		 * 0118       TriggerObject triggerObject();
+		 * 0119       /// Checks, if a certain HLT filter label is assigned
+		 * 0120       bool hasFilterLabel( const std::string & filterLabel ) const { return hasFilterOrCondition( filterLabel ); };
+		 * 0121       /// Checks, if a certain L1 condition name is assigned
+		 * 0122       bool hasConditionName( const std::string & conditionName ) const { return hasFilterOrCondition( conditionName ); };
+		 * 0123       /// Checks, if a certain HLT path name is assigned
+		 * 0124       bool hasPathName( const std::string & pathName, bool pathLastFilterAccepted = false, bool pathL3FilterAccepted = true ) const { return hasPathOrAlgorithm( pathName, pathLastFilterAccepted, pathL3FilterAccepted ); };
+		 * 0125       /// Checks, if a certain L1 algorithm name is assigned
+		 * 0126       bool hasAlgorithmName( const std::string & algorithmName, bool algoCondAccepted = true ) const { return hasPathOrAlgorithm( algorithmName, algoCondAccepted, false ); };
+		 * 0127       /// Checks, if a certain label of original collection is assigned (method overrides)
+		 * 0128       virtual bool hasCollection( const std::string & collName ) const;
+		 * 0129       virtual bool hasCollection( const edm::InputTag & collName ) const { return hasCollection( collName.encode() ); };
+		 * 0130       /// Checks, if the usage indicator vector has been filled
+		 * 0131       bool hasPathLastFilterAccepted() const { return hasLastFilter(); };
+		 * 0132       bool hasAlgoCondAccepted() const { return hasLastFilter(); };
+		 * 0133       bool hasPathL3FilterAccepted() const { return hasL3Filter(); };
+		 *
+		 * -- so trigger object has: filterLabels, algorithmNames, conditionName, pathName
+		 */
+		if(debug)
+			{
+			cout << "Printing SingleMuon HLT trigger objects" << endl;
+			// print all HLT pathNames of all HLT trigger objects
+			fwlite::Handle<vector<pat::TriggerObjectStandAlone>> triggerObjectsHandle;
+			triggerObjectsHandle.getByLabel( ev, "selectedPatTrigger" );
+			if (!triggerObjectsHandle.isValid())
+				{
+				cout << "!triggerObjectsHandle.isValid()" << endl;
+				}
+			vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+
+			cout << "phi, eta, pt of trigger object, pathNames and labelNames" << endl;
+			for (size_t i = 0; i < trig_objs.size(); i++)
+				{
+				pat::TriggerObjectStandAlone& obj = trig_objs[i];
+				cout << i << ',' << obj.phi() << ',' << obj.eta() << ',' << obj.pt();
+				obj.unpackPathNames(trigNames); // trigNamse are initialized above
+				cout << endl << "pathNames:" << obj.pathNames().size();
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+					{
+					cout << ';' << obj.pathNames()[h];
+					}
+				cout << endl << "filterLabels:" << obj.filterLabels().size();
+				for (unsigned h = 0; h < obj.filterLabels().size(); ++h)
+					{
+					cout << ';' << obj.filterLabels()[h];
+					}
+				cout << endl << "conditionNames:" << obj.conditionNames().size();
+				for (unsigned h = 0; h < obj.conditionNames().size(); ++h)
+					{
+					cout << ';' << obj.conditionNames()[h];
+					}
+				cout << endl << "algorithmNames:" << obj.algorithmNames().size();
+				for (unsigned h = 0; h < obj.algorithmNames().size(); ++h)
+					{
+					cout << ';' << obj.algorithmNames()[h];
+					}
+				cout << endl;
+				}
+
+			/*
+			// select only our_hlt_trigger_objects
+			std::vector<pat::TriggerObjectStandAlone> our_hlt_trigger_objects;
+			for (size_t i = 0; i < trig_objs.size(); i++)
+				{
+				pat::TriggerObjectStandAlone& obj = trig_objs[i];
+				obj.unpackPathNames(trigNames); // TODO: initialize trigNames
+
+				bool is_our_hlt = false;
+				for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+					{
+					// so the one of pathNames of the object should match
+					// HLT_IsoMu24_v or HLT_IsoTkMu24_v
+					is_our_hlt |= (obj.pathNames()[h].find("HLT_IsoMu24_v") != std::string::npos);
+					is_our_hlt |= (obj.pathNames()[h].find("HLT_IsoTkMu24_v") != std::string::npos);
+					}
+
+				if (is_our_hlt)
+					our_hlt_trigger_objects.push_back(obj);
+				}
+			 */
+			}
+
+		// ------------------------------------- let's print out the muons
+
+		pat::MuonCollection muons;
+		fwlite::Handle<pat::MuonCollection> muonsHandle;
+		muonsHandle.getByLabel(ev, "slimmedMuons");
+		if(muonsHandle.isValid() ) muons = *muonsHandle;
+
+		// ------------------------------- count N good verteces
+		// needed for particle selection/event classification later
+		// and pile-up control-distribution for data
+		reco::VertexCollection vtx;
+		reco::Vertex goodPV;
+		unsigned int nGoodPV(0);
+		fwlite::Handle<reco::VertexCollection> vtxHandle;
+		vtxHandle.getByLabel(ev, "offlineSlimmedPrimaryVertices");
+		if(vtxHandle.isValid() ) vtx = *vtxHandle;
+		// Clean up vertex collection
+		for(size_t ivtx=0; ivtx<vtx.size(); ++ivtx)
+			{
+			if(utils::isGoodVertex(vtx[ivtx]))
+				{
+				if(nGoodPV==0) goodPV=vtx[ivtx];
+				nGoodPV++;
+				}
+			}
+
+		double weight = 1;
+
+		// ---------------------------------- MUONS SELECTION
+		LorentzVector muDiff(0., 0., 0., 0.);
+		pat::MuonCollection selMuons;
+		unsigned int nVetoMu(0);
+		// unsigned int count_idiso_muons = 0;
+		/*
+		 * int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV,            // input
+		 *         patUtils::llvvMuonId::MuonId mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,       // config/cuts
+		 *         patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
+		 *         double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+		 *         pat::MuonCOllection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,       //output
+		 *         bool record, bool debug) // more output
+		 */
+		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
+			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
+
+		if(debug)
+			{
+			cout << "muon phi,eta,pt" << endl;
+			for (unsigned int i=0; i<selMuons.size(); i++)
+				{
+				pat::Muon& muon = selMuons[i];
+				cout << muon.phi() << ',' << muon.eta() << ',' << muon.pt() << endl;
+				}
 			}
 
 		} // End single file event loop

@@ -429,6 +429,18 @@ elmu_fake_rates_jets_distrs_medium_systematics:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  elmu_passjets_JES_DOWN_mediumTaus_jets_distr_pt  " mediumTaus JES DOWN jet p_{T} " " Events/bin " 1 -1 -1 0.1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta elmu_passjets_JES_DOWN_mediumTaus_jets_distr_eta " mediumTaus JES DOWN jet #eta "  " Events/bin " 1 -1 -1 0.1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
+elmu_fake_rates_jets_distrs_medium:
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt  f " vlooseTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta f " vlooseTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt   f " looseTausp jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta  f " looseTaus jet #eta "   " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  f " mediumTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta f " mediumTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt   f " tightTaus jet p_{T} "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta  f " tightTaus jet #eta "   " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt  f " vtightTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta f " vtightTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
+
 elmu_fake_rates_jets_distrs_all:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt  f " vlooseTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta f " vlooseTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
@@ -521,6 +533,27 @@ elmu_fake_rates:
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 tight_taus  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+
+elmu_fakerate_tau_candidate_energies:
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_signalCands               f   " tau Signal cand E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_signalChargedHadrCands    f   " tau Sig Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_signalNeutrHadrCands      f   " tau Sig Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_signalGammaCands          f   " tau Signal Gamma E " " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_isolationCands            f   " tau Iso cand E "     " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_isolationChargedHadrCands f   " tau Iso Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_isolationNeutrHadrCands   f   " tau Iso Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_tau_isolationGammaCands       f   " tau Iso Gamma E "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+
+elmu_fakerate_tau_candidate_energies_looseTaus:
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_signalCands               f   " tau Signal cand E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_signalChargedHadrCands    f   " tau Sig Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_signalNeutrHadrCands      f   " tau Sig Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_signalGammaCands          f   " tau Signal Gamma E " " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_isolationCands            f   " tau Iso cand E "     " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_isolationChargedHadrCands f   " tau Iso Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_isolationNeutrHadrCands   f   " tau Iso Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_looseTaus_tau_isolationGammaCands       f   " tau Iso Gamma E "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+
 
 elmu_fake_rates_SYS_medium:
 	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`

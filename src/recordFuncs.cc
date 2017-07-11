@@ -619,14 +619,15 @@ int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::Jet
 				//fill_pt_pt(channel + selection + ("_tau_taujet_pts"), jet.pt(), selTaus[itau].pt(), event_weight);
 				fill_2d(channel + selection + ("_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTaus[itau].pt(), event_weight);
 
-                                fill_1d(channel + selection + "_tau_signalCands",               200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_signalChargedHadrCands",    200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalChargedHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_signalGammaCands",          200, 0, 100, energy_sum_of_candidates(selTaus[itau].signalGammaCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_isolationCands",            200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_isolationChargedHadrCands", 200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationChargedHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_isolationNeutrHadrCands",   200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationNeutrHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_isolationGammaCands",       200, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationGammaCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalCands",               100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalChargedHadrCands",    100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalChargedHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      100, 0,   5, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalGammaCands",          100, 0, 100, energy_sum_of_candidates(selTaus[itau].signalGammaCands()), event_weight);
+
+                                fill_1d(channel + selection + "_tau_isolationCands",            100, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationChargedHadrCands", 100, 0,  50, energy_sum_of_candidates(selTaus[itau].isolationChargedHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationNeutrHadrCands",   100, 0,   5, energy_sum_of_candidates(selTaus[itau].isolationNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationGammaCands",       100, 0,  50, energy_sum_of_candidates(selTaus[itau].isolationGammaCands()), event_weight);
 				//fill_1d(channel + selection + "", 200, 0, 100, energy_sum_of_candidates(selTaus[itau].));
 
 				// N tau-jets
