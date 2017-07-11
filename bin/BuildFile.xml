@@ -51,7 +51,24 @@
   <bin name="printoutTriggers" file="printoutTriggers.cc"></bin>
 
 <!--
+    UP the printoutTriggers with HLT pathnames
+    
+    so trigger object has: filterLabels, algorithmNames, conditionName, pathName
+    
+    printoutTriggers prints
+    - list of all available HLT triggers (not only the SingleLepton or others)
+    - loops through trigger objects and prints their filterLabels, algorithmNames, conditionNames, pathNames
+    
+        modified:   bin/BuildFile.xml
+        modified:   bin/printoutTriggers.cc
+        modified:   jobing/Makefile
+        modified:   src/recordFuncs.cc
+    
+    Then the muons are selected with standard Tight ID/Iso, 30 GeV pT, 2.4-2.5 eta.
+    And phi,eta,pt of all muons are printed.
 -->
+
+
 
   <!-- <bin name="eventSelection_tokens"  file="ttbar-leptons-80X/eventSelection_tokens.cc"></bin> -->
 
