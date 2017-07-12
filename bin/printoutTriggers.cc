@@ -13,7 +13,7 @@
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
 
-// for trigger matching:
+// for trigger matching (no, this is not enough, says: error: 'TriggerObjectStandAlone' is not a member of 'pat')
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 
 //Load here all the dataformat that we will need

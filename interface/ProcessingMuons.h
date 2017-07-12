@@ -14,6 +14,13 @@ int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex good
 	pat::MuonCollection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,               // output
 	bool record, bool debug); // more output
 
+int processMuons_MatchHLT(
+	pat::MuonCollection& muons,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	pat::MuonCollection& muons_matched
+	);
+
 #endif /* PROCESSINGMUONS_H */
 
 

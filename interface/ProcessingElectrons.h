@@ -14,6 +14,12 @@ int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco:
 	pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE,                    // output
 	bool record, bool debug); // more output
 
+int processElectrons_MatchHLT(
+	pat::ElectronCollection& electrons,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	pat::ElectronCollection& electrons_matched
+	);
 
 #endif /* PROCESSINGELECTRONS_H */
 

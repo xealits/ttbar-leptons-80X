@@ -155,10 +155,42 @@ std::sort(selElectrons.begin(),   selElectrons.end(),   utils::sort_CandidatesBy
 // std::sort(selLeptons.begin(),   selLeptons.end(),   utils::sort_CandidatesByPt);
 // std::sort(selLeptons_nocor.begin(),   selLeptons_nocor.end(),   utils::sort_CandidatesByPt);
 
-
-
-
 return 0;
 }
 
+
+/*
+ */
+int processElectrons_MatchHLT(
+	pat::ElectronCollection& electrons,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	pat::ElectronCollection& electrons_matched
+	)
+{
+// loop over all electrons
+// for each electron check if it matches in dR (< min_dR) to any of given trigger objects
+// save it if yes
+// return amount of discarded leptons
+
+unsigned int nDiscarded = 0;
+for(unsigned int n=0; n<electrons.size(); ++n)
+	{
+	pat::Electron& electron = electrons[n];
+	bool matched = false;
+	for (size_t i = 0; i < trig_objs.size(); i++)
+		{
+		pat::TriggerObjectStandAlone& obj = trig_objs[i];
+		if (reco::deltaR(electron, obj) < min_dR)
+			{
+			matched = true;
+			electrons_matched.push_back(electron);
+			break;
+			}
+		}
+	if (!matched) nDiscarded += 1;
+	}
+
+return nDiscarded;
+}
 

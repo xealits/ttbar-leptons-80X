@@ -3,8 +3,9 @@
 
 
 
-int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV, double weight, // input
-	patUtils::llvvMuonId::MuonId mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,               // config/cuts
+int processMuons_ID_ISO_Kinematics(
+	pat::MuonCollection& muons, reco::Vertex goodPV, double weight, // input
+	patUtils::llvvMuonId::MuonId   mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,             // config/cuts
 	patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
 	pat::MuonCollection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,               // output
@@ -140,4 +141,39 @@ std::sort(selMuons.begin(),   selMuons.end(),   utils::sort_CandidatesByPt);
 return 0;
 }
 
+
+/*
+ */
+int processMuons_MatchHLT(
+	pat::MuonCollection& muons,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	pat::MuonCollection& muons_matched
+	)
+{
+// loop over all muons
+// for each muon check if it matches in dR (< min_dR) to any of given trigger objects
+// save it if yes
+// return amount of discarded leptons
+
+unsigned int nDiscarded = 0;
+for(unsigned int n=0; n<muons.size(); ++n)
+	{
+	pat::Muon& muon = muons[n];
+	bool matched = false;
+	for (size_t i = 0; i < trig_objs.size(); i++)
+		{
+		pat::TriggerObjectStandAlone& obj = trig_objs[i];
+		if (reco::deltaR(muon, obj) < min_dR)
+			{
+			matched = true;
+			muons_matched.push_back(muon);
+			break;
+			}
+		}
+	if (!matched) nDiscarded += 1;
+	}
+
+return nDiscarded;
+}
 

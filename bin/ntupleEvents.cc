@@ -95,6 +95,7 @@
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingTaus.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingJets.h"
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingDRCleaning.h"
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingHLT.h"
 
 #include "UserCode/ttbar-leptons-80X/interface/SystematicShifts.h"
 
@@ -2429,27 +2430,43 @@ for(size_t f=0; f<urls.size();++f)
 		// --------------------------------------------- HLT TRIGGER
 		// ---------------- and require compatibilitiy of the event with the PD
 
-		// HLT2 was a quirk of Spring16 MC campaigns (noHLT/reHLT/withHLT thing)
-		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT2");
+		// TriggerNames for TriggerObjects --------------------
+		edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
+		edm::InputTag * trigResultsTag; // the tag object, trigResults are extracted from the event via this tag
+
+		edm::TriggerResultsByName tr = ev.triggerResultsByName ("HLT");
 		if (!tr.isValid ()){
 			if(debug){
-				cout << "HLT2 is NOT valid, switching to HLT!\n";
+				cout << "HLT is NOT valid, switching to HLT!\n";
 				}
-			tr = ev.triggerResultsByName ("HLT");
+			// HLT2 was a quirk of Spring16 MC campaigns (noHLT/reHLT/withHLT thing)
+			tr = ev.triggerResultsByName ("HLT2");
 			if (!tr.isValid ()){
-				cout << "Trigger HLT is not valid, exiting" << endl;
+				cout << "Trigger HLT2 is not valid, exiting" << endl;
 				return false;
 				}
-			else if(debug){
-				cout << "Trigger HLT is valid\n";
+			else
+				{
+				if(debug){ cout << "Trigger HLT2 is valid\n"; }
+				trigResultsTag = new edm::InputTag("TriggerResults","","HLT2"); //make sure have correct process on MC
 				}
 			}
-		else if(debug){
-			cout << "Trigger HLT2 is valid\n";
-			if(!tr.isValid()){
-				cout << "And now trigger HLT2 is NOT valid\n";
-				}
+		else
+			{
+			if (debug) cout << "Trigger HLT is valid\n";
+			trigResultsTag = new edm::InputTag("TriggerResults","","HLT"); //make sure have correct process on MC
 			}
+		// yep, there was this weird bug
+		//else if(debug){
+		//	cout << "Trigger HLT is valid\n";
+		//	if(!tr.isValid()){
+		//		cout << "And now trigger HLT is NOT valid\n";
+		//		}
+		//	}
+
+		// names for trigger bits
+		ev.getByLabel(*trigResultsTag, trigResults);
+		const edm::TriggerNames& trigNames = ev.triggerNames(*trigResults);   
 
 		if(debug){
 			cout << "Printing HLT trigger list" << endl;
@@ -2528,8 +2545,45 @@ for(size_t f=0; f<urls.size();++f)
 			//if (!isMC && (!isSingleElectronDataset && !muTrigger)) continue; // SingleMu processes only events with HLT Mu
 		}
 
-		if (eTrigger)  NT_HLT_el = true;
-		if (muTrigger) NT_HLT_mu = true;
+		/*
+		 * HLT objects
+		 * if a trigger is passed save the objects
+		 * later save only leptons which match to trigger objects
+		 */
+		fwlite::Handle<vector<pat::TriggerObjectStandAlone>> triggerObjectsHandle;
+		triggerObjectsHandle.getByLabel(ev, "selectedPatTrigger");
+		if (!triggerObjectsHandle.isValid())
+			{
+			if (debug) cout << "!triggerObjectsHandle.isValid()" << endl;
+			return 11;
+			}
+		vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+
+		vector<pat::TriggerObjectStandAlone> el_trig_objs;
+		vector<pat::TriggerObjectStandAlone> mu_trig_objs, mu_trig_objs2;
+
+		/*
+		 * void Processing_selectHLTobjects(
+		 *      vector<pat::TriggerObjectStandAlone>& trig_objs,                  // input:  trigger objects in the event
+		 *      const edm::TriggerNames& trigNames,                               // input:  names for trigger bits in the event
+		 *      vector<pat::TriggerObjectStandAlone>& our_hlt_trigger_objects,    // output: trigger objects matching target HLT
+		 *      string& targetHLT // target HLT string-pattern (like "HLT_IsoMuon24_v" or "HLT_IsoMuon_v4")
+		 *      )
+		 */
+
+		if (eTrigger)
+			{
+			NT_HLT_el = true;
+			Processing_selectHLTobjects(trig_objs, trigNames, el_trig_objs, (isMC? elHLT_MC : elHLT_Data));
+			}
+		if (muTrigger)
+			{
+			NT_HLT_mu = true;
+			Processing_selectHLTobjects(trig_objs, trigNames, mu_trig_objs,  (isMC? muHLT_MC1 : muHLT_Data1));
+			Processing_selectHLTobjects(trig_objs, trigNames, mu_trig_objs2, (isMC? muHLT_MC2 : muHLT_Data2));
+			// vector1.insert( vector1.end(), vector2.begin(), vector2.end() );
+			mu_trig_objs.insert(mu_trig_objs.end(), mu_trig_objs2.begin(), mu_trig_objs2.end());
+			}
 
 		if (debug)
 			cout << "passed el/mu trig\t" << eTrigger << '(' << NT_HLT_el << ')' << '\t' << muTrigger << '(' << NT_HLT_mu << ')' << endl;
@@ -2733,11 +2787,11 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
-		pat::ElectronCollection selElectrons;
+		pat::ElectronCollection selIDElectrons, selElectrons;
 		unsigned int nVetoE(0);
 
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, NT_fixedGridRhoFastjetAll, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
-			30., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, false, debug);
+			30., 2.4, 15., 2.5, selIDElectrons, elDiff, nVetoE, false, debug);
 
 		/*
 		for (int i=0; i<selElectrons.size(); i++) 
@@ -2748,6 +2802,8 @@ for(size_t f=0; f<urls.size();++f)
 			}
 		*/
 
+		nVetoE += processElectrons_MatchHLT(selIDElectrons, el_trig_objs, 0.4, selElectrons);
+
 		if(debug){
 			cout << "processed electrons" << endl;
 			}
@@ -2755,7 +2811,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton> selLeptons;
-		pat::MuonCollection selMuons;
+		pat::MuonCollection selIDMuons, selMuons;
 		unsigned int nVetoMu(0);
 		// unsigned int count_idiso_muons = 0;
 		/*
@@ -2767,7 +2823,18 @@ for(size_t f=0; f<urls.size();++f)
 		 *         bool record, bool debug) // more output
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weights_FULL[SYS_NOMINAL], patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
-			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
+			30., 2.4, 10., 2.5, selIDMuons, muDiff, nVetoMu, false, debug);
+
+		/*
+		 * int processMuons_MatchHLT(
+		 *     pat::MuonCollection& muons,
+		 *     vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+		 *     float min_dR,
+		 *     pat::MuonCollection& muons_matched
+		 *     )
+		 */
+
+		 nVetoMu += processMuons_MatchHLT(selIDMuons, mu_trig_objs, 0.4, selMuons);
 
 		/*
 		for (int i=0; i<selMuons.size(); i++) 

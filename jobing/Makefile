@@ -429,18 +429,6 @@ elmu_fake_rates_jets_distrs_medium_systematics:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  elmu_passjets_JES_DOWN_mediumTaus_jets_distr_pt  " mediumTaus JES DOWN jet p_{T} " " Events/bin " 1 -1 -1 0.1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta elmu_passjets_JES_DOWN_mediumTaus_jets_distr_eta " mediumTaus JES DOWN jet #eta "  " Events/bin " 1 -1 -1 0.1 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 
-elmu_fake_rates_jets_distrs_medium:
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt  f " vlooseTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta f " vlooseTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_pt   f " looseTausp jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_looseTaus_jets_distr_eta  f " looseTaus jet #eta "   " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  f " mediumTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_eta f " mediumTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_pt   f " tightTaus jet p_{T} "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_tightTaus_jets_distr_eta  f " tightTaus jet #eta "   " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_pt  f " vtightTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vtightTaus_jets_distr_eta f " vtightTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
-
 elmu_fake_rates_jets_distrs_all:
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_pt  f " vlooseTaus jet p_{T} " " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio f ${logy} ${lumi} elmu_passjets_vlooseTaus_jets_distr_eta f " vlooseTaus jet #eta "  " Events/bin " 1 -1 -1 0.25 outdir/${job}/merged-sets/ `cat dtags_${job}` 
