@@ -3159,6 +3159,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			//jet.bDiscriminator(btagger_label)
 			// marrying C macro and dynamic stuff (actully this should also be generated with macro)
+			/*
 			switch(i) {
 				NT_jet(0, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
 				NT_jet(1, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
@@ -3167,6 +3168,29 @@ for(size_t f=0; f<urls.size();++f)
 				NT_jet(4, jet, id_jet_p4, gen_jet_p4, jet_radius, "pfCombinedInclusiveSecondaryVertexV2BJetTags")
 				default: break;
 				}
+			 */
+
+			NT_jet_id.push_back(jet.pdgId());
+			NT_jet_initial_p4.        push_back(id_jet_p4);
+			NT_jet_p4.                push_back(jet.p4());
+			NT_jet_uncorrected_p4.    push_back(jet.correctedP4("Uncorrected"));
+			NT_jet_matched_genjet_p4. push_back(gen_jet_p4);
+			NT_jet_jes_correction.         push_back(jet.userFloat("jes_correction"));
+			NT_jet_jes_correction_relShift.push_back(jet.userFloat("jes_correction_relShift"));
+			NT_jet_resolution.push_back(jet.userFloat("jet_resolution"));
+			NT_jet_sf.       push_back(jet.userFloat("jer_sf"));
+			NT_jet_sf_up.    push_back(jet.userFloat("jer_sf_up"));
+			NT_jet_sf_down.  push_back(jet.userFloat("jer_sf_down"));
+			NT_jet_jer_factor.      push_back(jet.userFloat("jer_factor"));
+			NT_jet_jer_factor_up.   push_back(jet.userFloat("jer_factor_up"));
+			NT_jet_jer_factor_down. push_back(jet.userFloat("jer_factor_down"));
+			NT_jet_rad.push_back(jet_radius(jet));
+			NT_jet_pu_discr.push_back(jet.userFloat("pileupJetId:fullDiscriminant"));
+			NT_jet_b_discr.push_back(jet.bDiscriminator(btagger_label));
+			NT_jet_hadronFlavour.push_back(jet.hadronFlavour());
+			NT_jet_partonFlavour.push_back(jet.partonFlavour());
+
+			// and with propper vectors now:
 
 			//NT_jet_id_(i)  = jet.pdgId(); // I wonder what this is going to be
 			//NT_jet_eta_(i) = jet.eta();

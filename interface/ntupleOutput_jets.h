@@ -26,11 +26,37 @@ Float_t_in_NTuple(OUTNTUPLE, jet##num##_b_discr); \
 Int_t_in_NTuple(OUTNTUPLE, jet##num##_hadronFlavour); \
 Int_t_in_NTuple(OUTNTUPLE, jet##num##_partonFlavour);
 
-JET_OUTPUT(0)
-JET_OUTPUT(1)
-JET_OUTPUT(2)
-JET_OUTPUT(3)
-JET_OUTPUT(4)
+//JET_OUTPUT(0)
+//JET_OUTPUT(1)
+//JET_OUTPUT(2)
+//JET_OUTPUT(3)
+//JET_OUTPUT(4)
+
+// #define VECTOR_PARAMs_in_NTuple (NTuple, TYPE, Name)   std::vector<TYPE> NT_##Name; NTuple.Branch(#Name, &NT_##Name)
+// #define VECTOR_OBJECTs_in_NTuple(NTuple, VECTOR_CLASS, Name)   VECTOR_CLASS NT_##Name; VECTOR_CLASS* pt_NT_##Name ; NTuple.Branch(#Name, #VECTOR_CLASS, &pt_NT_##Name)
+
+#define JETS_OUTPUT \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Int_t, jet_id); \
+VECTOR_OBJECTs_in_NTuple(OUTNTUPLE, std::vector<LorentzVector>, jet_initial_p4); \
+VECTOR_OBJECTs_in_NTuple(OUTNTUPLE, std::vector<LorentzVector>, jet_p4);  \
+VECTOR_OBJECTs_in_NTuple(OUTNTUPLE, std::vector<LorentzVector>, jet_uncorrected_p4); \
+VECTOR_OBJECTs_in_NTuple(OUTNTUPLE, std::vector<LorentzVector>, jet_matched_genjet_p4); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_jes_correction); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_jes_correction_relShift); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_resolution); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_sf); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_sf_up); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_sf_down); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_jer_factor); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_jer_factor_up); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_jer_factor_down); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_rad); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_pu_discr); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, jet_b_discr); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Int_t,   jet_hadronFlavour); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Int_t,   jet_partonFlavour);
+
+JETS_OUTPUT
 
 #define NT_jet(i, jet, id_jet_p4, matched_genjet_p4, jet_radius_func, btagger_label) case i: { \
 NT_jet ##i ##_id                = jet.pdgId(); \
@@ -76,12 +102,34 @@ NT_jet##num##_b_discr = -1; \
 NT_jet##num##_hadronFlavour = -1; \
 NT_jet##num##_partonFlavour = -1;
 
-#define RESET_JETS \
+#define RESET_JETS_old \
 RESET_JET(0) \
 RESET_JET(1) \
 RESET_JET(2) \
 RESET_JET(3) \
 RESET_JET(4)
+
+// the automatic reset of all parameters for now
+#define RESET_JETS \
+NT_jet_id.clear(); \
+NT_jet_initial_p4.clear(); \
+NT_jet_p4.clear();  \
+NT_jet_uncorrected_p4.clear(); \
+NT_jet_matched_genjet_p4.clear(); \
+NT_jet_jes_correction.clear(); \
+NT_jet_jes_correction_relShift.clear(); \
+NT_jet_resolution.clear(); \
+NT_jet_sf.clear(); \
+NT_jet_sf_up.clear(); \
+NT_jet_sf_down.clear(); \
+NT_jet_jer_factor.clear(); \
+NT_jet_jer_factor_up.clear(); \
+NT_jet_jer_factor_down.clear(); \
+NT_jet_rad.clear(); \
+NT_jet_pu_discr.clear(); \
+NT_jet_b_discr.clear(); \
+NT_jet_hadronFlavour.clear(); \
+NT_jet_partonFlavour.clear();
 
 #endif /* NTUPLEOUTPUT_JETS_H */
 

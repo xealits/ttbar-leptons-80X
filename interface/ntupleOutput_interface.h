@@ -58,6 +58,8 @@
  *    2) the branch name in the ntuple is `Name`
  */
 #if defined(NTUPLE_INTERFACE_CREATE)
+	#define VECTOR_PARAMs_in_NTuple(NTuple, TYPE, Name)   std::vector<TYPE> NT_##Name; NTuple.Branch(#Name, &NT_##Name)
+	#define VECTOR_OBJECTs_in_NTuple(NTuple, VECTOR_CLASS, Name)   VECTOR_CLASS NT_##Name; VECTOR_CLASS* pt_NT_##Name ; NTuple.Branch(#Name, #VECTOR_CLASS, &pt_NT_##Name)
 	#define OBJECT_in_NTuple(NTuple, CLASS, Name)   CLASS   NT_##Name; NTuple.Branch(#Name, #CLASS, &NT_##Name)
 	#define Float_t_in_NTuple(NTuple, Name)         Float_t NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/F")
 	#define Int_t_in_NTuple(NTuple, Name)           Int_t   NT_##Name; NTuple.Branch(#Name, &NT_##Name, #Name "/I")
@@ -72,6 +74,23 @@
 	error: set ntuple interface mode
 #endif
 
+/*
+ * complex objects in vectors
+ * from https://root.cern.ch/root/html/tutorials/math/mathcoreVectorCollection.C.html
+ *   std::vector<ROOT::Math::XYZTVector>  tracks;
+ *   std::vector<ROOT::Math::XYZTVector> * pTracks = &tracks;
+ *   t1.Branch("tracks","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >",&pTracks);
+ *
+ * simple objects (float, int) in vectors)
+ * from
+ *
+ *   std::vector<float> vpx;
+ *
+ *   // Create a TTree
+ *   TTree *t = new TTree("tvec","Tree with vectors");
+ *   t->Branch("vpx",&vpx);
+ *
+ */
 
 /*
  * this file ties the interface to our ntuple (TTree) in the current namespace
