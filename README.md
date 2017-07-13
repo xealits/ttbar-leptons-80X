@@ -153,3 +153,11 @@ You need to add a command which resets/clears the object for each iteration over
 (Uncleared value might get stored into the TTree.)
 
 
+
+MISC
+====
+
+Just to keep it around:
+
+    http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_8_0_25/doc/html/d1/de9/classpat_1_1Tau.html
+
