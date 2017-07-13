@@ -14,8 +14,19 @@ Float_t_in_NTuple(OUTNTUPLE, tau##num##_leadChargedHadrCand_pt); \
 Float_t_in_NTuple(OUTNTUPLE, tau##num##_leadNeutralCand_pt); \
 Float_t_in_NTuple(OUTNTUPLE, tau##num##_leadCand_pt);
 
-TAU_OUTPUT(0)
-TAU_OUTPUT(1)
+//TAU_OUTPUT(0)
+//TAU_OUTPUT(1)
+
+#define TAUS_OUTPUT \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Int_t, tau_id); \
+VECTOR_OBJECTs_in_NTuple(OUTNTUPLE, std::vector<LorentzVector>, tau_p4); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Int_t, tau_IDlev); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, tau_leading_track_pt); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, tau_leadChargedHadrCand_pt); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, tau_leadNeutralCand_pt); \
+VECTOR_PARAMs_in_NTuple(OUTNTUPLE, Float_t, tau_leadCand_pt);
+
+TAUS_OUTPUT
 
 #define NT_tau(i, tau, IDlev) case i: { \
 NT_tau ##i ##_id    = tau.pdgId(); \
@@ -37,6 +48,15 @@ NT_tau##num##_leadNeutralCand_pt = -1; \
 NT_tau##num##_leadCand_pt = -1;
 
 #define RESET_TAUS \
+NT_tau_id.clear(); \
+NT_tau_p4.clear(); \
+NT_tau_IDlev.clear(); \
+NT_tau_leading_track_pt.clear(); \
+NT_tau_leadChargedHadrCand_pt.clear(); \
+NT_tau_leadNeutralCand_pt.clear(); \
+NT_tau_leadCand_pt.clear();
+
+#define RESET_TAUS_old \
 RESET_TAU(0) \
 RESET_TAU(1)
 

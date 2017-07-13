@@ -44,22 +44,9 @@ Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_20);
 Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_21);
 Float_t_in_NTuple(OUTNTUPLE, tau_secondaryVertexCov_22);
 
-Int_t_in_NTuple(OUTNTUPLE, lep0_id);
-OBJECT_in_NTuple(OUTNTUPLE, LorentzVector, lep0_p4);
-Float_t_in_NTuple(OUTNTUPLE, lep0_dxy);
-Float_t_in_NTuple(OUTNTUPLE, lep0_dz);
-Float_t_in_NTuple(OUTNTUPLE, lep0_relIso);
-Float_t_in_NTuple(OUTNTUPLE, lep0_dB);
-Int_t_in_NTuple(OUTNTUPLE, lep1_id);
-OBJECT_in_NTuple(OUTNTUPLE, LorentzVector, lep1_p4);
-Float_t_in_NTuple(OUTNTUPLE, lep1_dxy);
-Float_t_in_NTuple(OUTNTUPLE, lep1_dz);
-Float_t_in_NTuple(OUTNTUPLE, lep1_relIso);
-Float_t_in_NTuple(OUTNTUPLE, lep1_dB);
-
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_jets.h"
-
 #include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_taus.h"
+#include "UserCode/ttbar-leptons-80X/interface/ntupleOutput_leps.h"
 
 // convenience:
 #define NT_tau_secondaryVertexCov_(i, j) NT_tau_secondaryVertexCov_ ##i ##j
@@ -91,20 +78,9 @@ NT_tau_secondaryVertexCov_12 = -1; \
 NT_tau_secondaryVertexCov_20 = -1; \
 NT_tau_secondaryVertexCov_21 = -1; \
 NT_tau_secondaryVertexCov_22 = -1; \
-NT_lep0_id = -1; \
-NT_lep0_p4.SetXYZT(0, 0, 0, 0); \
-NT_lep0_dxy = -1; \
-NT_lep0_dz  = -1; \
-NT_lep0_relIso  = -1; \
-NT_lep0_dB  = -1; \
-NT_lep1_id = -1; \
-NT_lep1_p4.SetXYZT(0, 0, 0, 0); \
-NT_lep1_dxy = -1; \
-NT_lep1_dz  = -1; \
-NT_lep1_relIso  = -1; \
-NT_lep1_dB  = -1; \
 RESET_JETS \
 RESET_TAUS \
+RESET_LEPS \
 NT_gen_t_w_p1_eta = -1; \
 NT_gen_t_w_p1_phi = -1; \
 NT_gen_t_w_p2_eta = -1; \

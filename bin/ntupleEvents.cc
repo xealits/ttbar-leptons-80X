@@ -2861,58 +2861,28 @@ for(size_t f=0; f<urls.size();++f)
 		if (selLeptons.size() == 0 || selLeptons.size() > 2)
 			continue;
 
-		// there are the NT output leptons
-		// the event will be recorded in NT if there are 1 or 2 clean leptons
-		// max output of leptons = 2
-		NT_lep0_id = selLeptons[0].pdgId();
-		NT_lep0_p4 = selLeptons[0].p4();
-		NT_lep0_relIso  = relIso(selLeptons[0], NT_fixedGridRhoFastjetAll);
-		//if (debug) cout << "lep0 pdgId " << selLeptons[0].pdgId() << endl;
-		// save dxy and dz -- they are obtained differently for electron and muon
-		{
-		Float_t dxy = -1, dz = -1;
-		if (selLeptons[0].pdgId() == 13 || selLeptons[0].pdgId() == -13)
+		for(size_t l=0; l<selLeptons.size(); ++l)
 			{
-			dxy = fabs(selLeptons[0].mu.muonBestTrack()->dxy(goodPV.position()));
-			dz  = fabs(selLeptons[0].mu.muonBestTrack()->dz (goodPV.position()));
-			NT_lep0_dB = selLeptons[0].mu.dB();
-			}
-		else // electron
-			{
-			dxy = fabs(selLeptons[0].el.gsfTrack()->dxy(goodPV.position()));
-			dz  = fabs(selLeptons[0].el.gsfTrack()->dz (goodPV.position()));
-			NT_lep0_dB = selLeptons[0].el.dB();
-			}
-		if (debug) cout << "lep0 pdgId, dxy, dz " << selLeptons[0].pdgId() << " " << dxy << " " << dz << endl;
-		NT_lep0_dxy = dxy;
-		NT_lep0_dz  = dz;
-		}
-
-		if (selLeptons.size() == 2)
-			{
+			NT_lep_id.push_back(selLeptons[l].pdgId());
+			NT_lep_p4.push_back(selLeptons[l].p4());
+			NT_lep_relIso.push_back(relIso(selLeptons[l], NT_fixedGridRhoFastjetAll));
 			Float_t dxy = -1, dz = -1;
-			NT_lep1_id = selLeptons[1].pdgId();
-			NT_lep1_p4 = selLeptons[1].p4();
-			if (debug) cout << "lep1 pdgId " << selLeptons[1].pdgId() << endl;
-			//NT_lep1_dxy = selLeptons[1].userFloat("dxy");
-			//NT_lep1_dz  = selLeptons[1].userFloat("dz");
-			NT_lep1_relIso  = relIso(selLeptons[1], NT_fixedGridRhoFastjetAll);
-			if (selLeptons[1].pdgId() == 13 || selLeptons[1].pdgId() == -13)
+			if (selLeptons[l].pdgId() == 13 || selLeptons[l].pdgId() == -13)
 				{
-				dxy = fabs(selLeptons[1].mu.muonBestTrack()->dxy(goodPV.position()));
-				dz  = fabs(selLeptons[1].mu.muonBestTrack()->dz (goodPV.position()));
-				NT_lep1_dB = selLeptons[1].mu.dB();
+				dxy = fabs(selLeptons[l].mu.muonBestTrack()->dxy(goodPV.position()));
+				dz  = fabs(selLeptons[l].mu.muonBestTrack()->dz (goodPV.position()));
+				NT_lep_dB.push_back(selLeptons[l].mu.dB());
 				}
 			else // electron
 				{
-				dxy = fabs(selLeptons[1].el.gsfTrack()->dxy(goodPV.position()));
-				dz  = fabs(selLeptons[1].el.gsfTrack()->dz (goodPV.position()));
-				NT_lep1_dB = selLeptons[1].el.dB();
+				dxy = fabs(selLeptons[l].el.gsfTrack()->dxy(goodPV.position()));
+				dz  = fabs(selLeptons[l].el.gsfTrack()->dz (goodPV.position()));
+				NT_lep_dB.push_back(selLeptons[l].el.dB());
 				}
-			NT_lep1_dxy = dxy;
-			NT_lep1_dz  = dz;
-			if (debug) cout << "lep1 pdgId, dxy, dz " << selLeptons[0].pdgId() << " " << dxy << " " << dz << endl;
+			NT_lep_dxy.push_back(dxy);
+			NT_lep_dz .push_back(dz);
 			}
+
 
 		// record "ID of the channel" -- product of lepton IDs
 		// if 1 lepton -- just its' ID
@@ -2996,12 +2966,13 @@ for(size_t f=0; f<urls.size();++f)
 			else if (tau.tauID(tau_Loose_ID)) IDlev = 1;
 			//NT_tau_IDlev_(i) = IDlev;
 
-			switch(i)
-				{
-				NT_tau(0, tau, IDlev)
-				NT_tau(1, tau, IDlev)
-				default: break;
-				}
+			NT_tau_id.push_back(tau.pdgId());
+			NT_tau_p4.push_back(tau.p4());
+			NT_tau_IDlev.push_back(IDlev);
+			NT_tau_leading_track_pt.push_back(tau.userFloat("leading_track_pt"));
+			NT_tau_leadChargedHadrCand_pt.push_back(tau.userFloat("leadChargedHadrCand_pt"));
+			NT_tau_leadNeutralCand_pt.push_back(tau.userFloat("leadNeutralCand_pt"));
+			NT_tau_leadCand_pt.push_back(tau.userFloat("leadCand_pt"));
 
 			// also store for the first tau:
 			if (i==0)
@@ -3318,7 +3289,7 @@ for(size_t f=0; f<urls.size();++f)
 			pass_dileptons = dileptonSystem.mass() > 20;
 			}
 		//bool record_ntuple = (met_corrected > 30) && njets >= 2 && (isSingleMu || isSingleE || pass_dileptons);
-		bool record_ntuple = (isSingleMu || isSingleE || pass_dileptons) && NT_nbjets > 0 && NT_tau0_IDlev > 0; // at least 1 b jet and 1 loose tau
+		bool record_ntuple = (isSingleMu || isSingleE || pass_dileptons) && NT_nbjets > 0 && NT_tau_IDlev.size() > 0; // at least 1 b jet and 1 loose tau
 		// record if event has 1 or 2 well isolated leptons
 		// MET > 20
 		// and at least 2 jets (maybe record 1-jet events for background later)
