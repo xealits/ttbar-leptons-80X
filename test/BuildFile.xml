@@ -31,9 +31,12 @@
   <bin name="stacked_histo_project3to1_distr"  file="stacked_histo_project3to1_distr.cc"></bin>
   <bin name="stacked_histo_distr"              file="stacked_histo_distr.cc"></bin>
 
+<!--
   <bin name="ntuple_distr"              file="ntuple_distr.cc"></bin>
   <bin name="ntuple_deep_distr"         file="ntuple_deep_distr.cc"></bin>
   <bin name="ntuple_2d_distr"           file="ntuple_2d_distr.cc"></bin>
+  <bin name="likelihood_regions"          file="likelihood_regions.cc"></bin>
+-->
 
   <bin name="jet_distrs_stacked_per_origin"    file="jet_distrs_stacked_per_origin.cc"></bin>
   <bin name="jet_distrs_per_origin_overlayed"  file="jet_distrs_per_origin_overlayed.cc"></bin>
@@ -80,7 +83,6 @@
 
   <bin name="jet_fakefactor_data"         file="jet_fakefactor_data.cc"></bin>
 
-  <bin name="likelihood_regions"          file="likelihood_regions.cc"></bin>
 
   <bin name="weightflow_table"         file="weightflow_table.cc"></bin>
   <bin name="weightflow_nicknames_script"     file="weightflow_nicknames_script.cc"></bin>

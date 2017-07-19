@@ -138,7 +138,7 @@ get_dtags:
 get_job_dtags:
 	# job output filenames:
 	# outdir/v10.8/Data13TeV_SingleElectron2016B_03Feb2017_ver2_0._.root
-	ls outdir/"${job}"/*root | sed -e 's_^.*'${job}'/__' -e 's/_[0-9][0-9]*..root//' | sort | uniq > dtags_job_${job}
+	ls outdir/"${job}"/*root | sed -e 's,^.*'${job}'/,,' -e 's/_[0-9][0-9]*\.[a-z]*\.root//' | sort | uniq > dtags_job_${job}
 
 jet_fakerate_measurements:
 	jet_fakerate_measurements --add-header HLTjet_qcd outdir/${jjob}/merged-sets/ `cat dtags_${jjob}_JetHT ` 2> /dev/null >  ${jjob}_${vjob}_fakerate_measurement

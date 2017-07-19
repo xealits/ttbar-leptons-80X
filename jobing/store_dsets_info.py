@@ -14,8 +14,10 @@ parser = argparse.ArgumentParser(
     )
 
 parser.add_argument("dsets_dir",   help="the local directory for dsets files info")
-parser.add_argument("dsets",       help="the filename (relational path) of the dsets yaml or json with dtag-dset targets for jobs")
+parser.add_argument("dsets",       help="the filename (relational path) or the DAS name of the dsets yaml or json with dtag-dset targets for jobs")
 parser.add_argument("--all",       help="update presence of a dset and its' files",
+        action = "store_true")
+parser.add_argument("--dset",      help="treat input as DAS name",
         action = "store_true")
 
 
@@ -47,7 +49,12 @@ logging.info("Proxy is ready.")
 
 storing_action = fetch_n_store_dset if args.all else fetch_dset_presence
 
-if ".json" in args.dsets:
+if args.dset:
+    # the dataset DAS name is given on command line
+    logging.info("Storing dset %s" % args.dsets)
+    storing_action(args.dsets_dir, args.dsets)
+
+elif ".json" in args.dsets:
     # load the dsets from the json file
     with open(args.dsets) as d_f:
         dsets = json.load(d_f)

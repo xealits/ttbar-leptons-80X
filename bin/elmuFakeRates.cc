@@ -3197,6 +3197,7 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection IDtaus, selTaus, selTaus_JetTauFakeRate,
+			NoIsoIDtaus,  selNoIsoIDtaus,
 			IDVLoosetaus, selVLooseTaus,
 			IDLoosetaus,  selLooseTaus,
 			IDMediumtaus, selMediumTaus,
@@ -3212,6 +3213,34 @@ for(size_t f=0; f<urls.size();++f)
 		 */
 
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, debug);
+
+		// taus with no isolation (pre-iso control)
+		for (unsigned int count_ided_taus = 0, n = 0; n < taus.size(); ++n)
+			{
+			pat::Tau& tau = taus[n];
+
+			//if (record)
+			//	{
+			//	fill_2d(string("control_tau_slimmedtaus_pt_eta"), 250, 0., 500., 200, -4., 4., tau.pt(), tau.eta(), weight);
+			//	fill_1d(string("control_tau_slimmedtaus_phi"), 128, -3.2, 3.2, tau.phi(), weight);
+			//	}
+
+			if (tau.tauID(tau_decayMode) < 0.5) continue;
+			//if (tau.tauID(tauID) < 0.5)           continue; // See whether to us the new byMediumPileupWeightedIsolation3Hits that is available only for dynamic strip reconstruction (default in CMSSW_7_4_14)
+			if (tau.tauID(tau_againstMuon) < 0.5)  continue; // Medium working point not usable. Available values: Loose, Tight
+			if (tau.tauID(tau_againstElectron) < 0.5) continue;
+
+			NoIsoIDtaus.push_back(tau);
+
+			//if (record)
+				{
+				fill_1d(string("control_tau_NoIsoIDtaus_pt"),  250,  0., 500. , tau.pt(), weights_FULL[SYS_NOMINAL]);
+				fill_1d(string("control_tau_NoIsoIDtaus_eta"), 200, -4.,   4. , tau.eta(), weights_FULL[SYS_NOMINAL]);
+				fill_1d(string("control_tau_NoIidedtaus_phi"), 128, -3.2,  3.2, tau.phi(), weights_FULL[SYS_NOMINAL]);
+				}
+			}
+
+		std::sort (NoIsoIDtaus.begin(), NoIsoIDtaus.end(), utils::sort_CandidatesByPt);
 
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_VLoose_ID, tau_againstMuon, tau_againstElectron, IDVLoosetaus, false, debug);
 		processTaus_ID_ISO(taus, weights_FULL[SYS_NOMINAL], tau_decayMode, tau_Loose_ID,  tau_againstMuon, tau_againstElectron, IDLoosetaus,  false, debug);
@@ -3232,6 +3261,7 @@ for(size_t f=0; f<urls.size();++f)
 		processTaus_Kinematics(IDtaus, weights_FULL[SYS_NOMINAL],      tau_kino_cuts_pt, tau_kino_cuts_eta, selTaus,      false, debug);
 		processTaus_Kinematics(IDtaus, weights_FULL[SYS_NOMINAL],      jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selTaus_JetTauFakeRate, false, debug);
 		// all-ID taus for measurement of el-mu fake rates
+		processTaus_Kinematics(NoIsoIDtaus,  weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selNoIsoIDtaus, false, debug);
 		processTaus_Kinematics(IDVLoosetaus, weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selVLooseTaus, false, debug);
 		processTaus_Kinematics(IDLoosetaus,  weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selLooseTaus, false, debug);
 		processTaus_Kinematics(IDMediumtaus, weights_FULL[SYS_NOMINAL], jettaufr_tau_kino_cuts_pt, jettaufr_tau_kino_cuts_eta, selMediumTaus, false, debug);
@@ -3248,11 +3278,13 @@ for(size_t f=0; f<urls.size();++f)
 		//	bool record, bool debug) // more output
 
 		pat::TauCollection selTausNoLep, selTaus_JetTauFakeRate_NoLep,
+			selNoIsoIDtausNoLep,
 			selVLooseTausNoLep, selLooseTausNoLep, selMediumTausNoLep, selTightTausNoLep, selVTightTausNoLep;
 
 		crossClean_in_dR(selTaus,       selLeptons, 0.4, selTausNoLep,        weights_FULL[SYS_NOMINAL], string("selTausNoLep"),        false, debug);
 		crossClean_in_dR(selTaus_JetTauFakeRate, selLeptons, 0.4, selTaus_JetTauFakeRate_NoLep, weights_FULL[SYS_NOMINAL], string("selTaus_JetTauFakeRate_NoLep"), false, debug);
 
+		crossClean_in_dR(selNoIsoIDtaus, selLeptons, 0.4, selNoIsoIDtausNoLep, weights_FULL[SYS_NOMINAL], string("selNoIsoIDtausNoLep"),   false, debug);
 		crossClean_in_dR(selVLooseTaus,  selLeptons, 0.4, selVLooseTausNoLep,  weights_FULL[SYS_NOMINAL], string("selVLooseTausNoLep"),   false, debug);
 		crossClean_in_dR(selLooseTaus,   selLeptons, 0.4, selLooseTausNoLep,   weights_FULL[SYS_NOMINAL], string("selLooseTausNoLep"),   false, debug);
 		crossClean_in_dR(selMediumTaus,  selLeptons, 0.4, selMediumTausNoLep,  weights_FULL[SYS_NOMINAL], string("selMediumTausNoLep"),   false, debug);
@@ -4006,11 +4038,25 @@ for(size_t f=0; f<urls.size();++f)
 					/* record fake rates at JER, JES and PU systematics
 					 */
 					{ // NOMINAL
+					fill_1d( string("elmu_passjets_lep1_pt_NOMINAL"), 100, 0, 300, selLeptons[0].pt(), weight);
+					fill_1d( string("elmu_passjets_lep2_pt_NOMINAL"), 100, 0, 300, selLeptons[1].pt(), weight);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_NoIsoIDtaus"), selJetsNoLep[SYS_NOMINAL], selNoIsoIDtausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vlooseTaus"), selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_looseTaus"),  selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_mediumTaus"), selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_tightTaus"),  selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight, isMC);
 					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_vtightTaus"), selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight, isMC);
+					}
+					{ // with Top pT
+					double weight_with_top = weights_FULL[SYS_TOP_PT];
+					fill_1d( string("elmu_passjets_lep1_pt_TOP_PT"), 100, 0, 300, selLeptons[0].pt(), weight_with_top);
+					fill_1d( string("elmu_passjets_lep2_pt_TOP_PT"), 100, 0, 300, selLeptons[1].pt(), weight_with_top);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_NoIsoIDtaus"), selJetsNoLep[SYS_NOMINAL], selNoIsoIDtausNoLep, visible_gen_taus, weight_with_top, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_vlooseTaus"),  selJetsNoLep[SYS_NOMINAL], selVLooseTausNoLep, visible_gen_taus, weight_with_top, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_looseTaus"),   selJetsNoLep[SYS_NOMINAL], selLooseTausNoLep,  visible_gen_taus, weight_with_top, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_mediumTaus"),  selJetsNoLep[SYS_NOMINAL], selMediumTausNoLep, visible_gen_taus, weight_with_top, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_tightTaus"),   selJetsNoLep[SYS_NOMINAL], selTightTausNoLep,  visible_gen_taus, weight_with_top, isMC);
+					record_jets_fakerate_distrs_1D_2D(string("elmu_"), string("passjets_TOP_PT_vtightTaus"),  selJetsNoLep[SYS_NOMINAL], selVTightTausNoLep, visible_gen_taus, weight_with_top, isMC);
 					}
 					{ // PU UP
 					double weight_up = weights_FULL[SYS_PU_UP];

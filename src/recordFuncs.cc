@@ -619,6 +619,10 @@ int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::Jet
 				//fill_pt_pt(channel + selection + ("_tau_taujet_pts"), jet.pt(), selTaus[itau].pt(), event_weight);
 				fill_2d(channel + selection + ("_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTaus[itau].pt(), event_weight);
 
+                                fill_1d(channel + selection + "_tau_isolationPFGammaCandsEtSum",         100, 0, 200, selTaus[itau].isolationPFGammaCandsEtSum(), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationPFChargedHadrCandsPtSum",   100, 0, 200, selTaus[itau].isolationPFChargedHadrCandsPtSum(), event_weight);
+                                fill_1d(channel + selection + "_tau_ecalStripSumEOverPLead",   100, 0, 200, selTaus[itau].ecalStripSumEOverPLead(), event_weight);
+
                                 fill_1d(channel + selection + "_tau_signalCands",               100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_signalChargedHadrCands",    100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalChargedHadrCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      100, 0,   5, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
