@@ -577,6 +577,15 @@ hs_sum->SetXTitle(distr_name);
 leg->SetBorderSize(0);
 leg->Draw();
 
+cout << "MC SUMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << endl;
+hs_sum->Print();
+// save MC sum fake rate to file:
+TFile* test_f = TFile::Open( dir + "/jobsums/MCfakerate_" + distr_selection + "_" + name_tag + (set_logy? "_logy" : "") + ".root", "RECREATE" );
+hs_sum->Write();
+
+test_f->Write();
+test_f->Close();
+
 // THE RATIO PLOT
 pad2->cd();
 //cst->cd(2);
@@ -693,6 +702,7 @@ leg->Draw();
 //cst->Modified();
 
 cst->SaveAs( dir + "/jobsums/" + distr_selection + "_MCFakeRates_" + suffix + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
+
 
 return 0;
 }
