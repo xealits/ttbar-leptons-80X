@@ -1946,6 +1946,20 @@ for(size_t f=0; f<urls.size();++f)
 		}
 
 		std::sort(mc_decay.begin(), mc_decay.end()); // no dif between elmu and muel etc
+		/*
+		 * the only relevant modes for the study are:
+		 * el-mu
+		 * taul-l
+		 * tauel-taumu -- but it is negligible, so add it to other
+		 * other
+		 */
+		if (debug) {
+			cout << "MC suffix " << mc_decay << " is found\n";
+			}
+
+		//if (mc_decay.compare("ahmtuu") != 0 && mc_decay.compare("aahmttuuu") != 0 && mc_decay.compare("mqu") != 0)
+		if (mc_decay.compare("elmu") != 0 && mc_decay.compare("aelmtuu") != 0)
+			mc_decay = "other";
 
 		if (debug) {
 			cout << "MC suffix " << mc_decay << " is found\n";
