@@ -619,10 +619,10 @@ int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::Jet
 				//fill_pt_pt(channel + selection + ("_tau_taujet_pts"), jet.pt(), selTaus[itau].pt(), event_weight);
 				fill_2d(channel + selection + ("_tau_taujet_pts"), 400, 0., 400., 400, 0., 400, jet.pt(), selTaus[itau].pt(), event_weight);
 
-				fill_1d(channel + selection + "_photonPtSumOutsideSignalCone",  100, 0, 200, selTaus[itau].tauID("photonPtSumOutsideSignalCone"), event_weight);
-				fill_1d(channel + selection + "_chargedIsoPtSum",               100, 0, 200, selTaus[itau].tauID("chargedIsoPtSum"),              event_weight);
-				fill_1d(channel + selection + "_neutralIsoPtSum",               100, 0, 200, selTaus[itau].tauID("neutralIsoPtSum"),              event_weight);
-				fill_1d(channel + selection + "_puCorrPtSum",                   100, 0, 200, selTaus[itau].tauID("puCorrPtSum"),                  event_weight);
+				fill_1d(channel + selection + "_photonPtSumOutsideSignalCone",  100, 0,  20, selTaus[itau].tauID("photonPtSumOutsideSignalCone"), event_weight);
+				fill_1d(channel + selection + "_chargedIsoPtSum",               400, 0,  80, selTaus[itau].tauID("chargedIsoPtSum"),              event_weight);
+				fill_1d(channel + selection + "_neutralIsoPtSum",               200, 0,  40, selTaus[itau].tauID("neutralIsoPtSum"),              event_weight);
+				fill_1d(channel + selection + "_puCorrPtSum",                    80, 0,  80, selTaus[itau].tauID("puCorrPtSum"),                  event_weight);
 
                                 // only PF taus:
                                 //fill_1d(channel + selection + "_tau_isolationPFGammaCandsEtSum",         100, 0, 200, selTaus[itau].isolationPFGammaCandsEtSum(), event_weight);
@@ -631,13 +631,15 @@ int record_jets_fakerate_distrs_1D_2D(string channel, string selection, pat::Jet
 
                                 fill_1d(channel + selection + "_tau_signalCands",               100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_signalChargedHadrCands",    100, 0, 200, energy_sum_of_candidates(selTaus[itau].signalChargedHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      100, 0,   5, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_signalNeutrHadrCands",      20, -1,   1, energy_sum_of_candidates(selTaus[itau].signalNeutrHadrCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_signalGammaCands",          100, 0, 100, energy_sum_of_candidates(selTaus[itau].signalGammaCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_N_signalGammaCands",         20, 0,  20, selTaus[itau].signalGammaCands().size(), event_weight);
 
                                 fill_1d(channel + selection + "_tau_isolationCands",            100, 0, 100, energy_sum_of_candidates(selTaus[itau].isolationCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_isolationChargedHadrCands", 100, 0,  50, energy_sum_of_candidates(selTaus[itau].isolationChargedHadrCands()), event_weight);
-                                fill_1d(channel + selection + "_tau_isolationNeutrHadrCands",   100, 0,   5, energy_sum_of_candidates(selTaus[itau].isolationNeutrHadrCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_isolationNeutrHadrCands",   20, -1,   1, energy_sum_of_candidates(selTaus[itau].isolationNeutrHadrCands()), event_weight);
                                 fill_1d(channel + selection + "_tau_isolationGammaCands",       100, 0,  50, energy_sum_of_candidates(selTaus[itau].isolationGammaCands()), event_weight);
+                                fill_1d(channel + selection + "_tau_N_isolationGammaCands",      20, 0,  20, selTaus[itau].isolationGammaCands().size(), event_weight);
 				//fill_1d(channel + selection + "", 200, 0, 100, energy_sum_of_candidates(selTaus[itau].));
 
 				// N tau-jets

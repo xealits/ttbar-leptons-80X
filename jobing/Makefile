@@ -460,8 +460,8 @@ elmu_fake_rates_taus_distrs_all:
 elmu_fake_rates_control_plots2:
 	# NOMINAL VS TOP PT trend
 	# leptons
-	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_lep1_pt_NOMINAL                     f "" " NOMINAL lep p_{T} " " Events/bin "  5 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
-	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_lep1_pt_TOP_PT                      f "" " TOP PT lep p_{T} " " Events/bin "  5 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_lep1_pt_NOMINAL      f "" " NOMINAL lep p_{T} " " Events/bin "  5 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
+	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_lep1_pt_TOP_PT       f "" " TOP PT lep p_{T} "  " Events/bin "  5 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
 	# jets
 	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_mediumTaus_jets_distr_pt  f "" " NOMINAL jet p_{T} " " Events/bin " 1 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
 	stacked_histo_distr_with_ratio T f f f ${logy} ${lumi} elmu_passjets_TOP_PT_mediumTaus_jets_distr_pt  f "" " TOP PT jet p_{T} " " Events/bin " 1 -1 -1 -1 -1 0.5 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
@@ -556,27 +556,27 @@ elmu_fakerate_tau_candidate_energies:
 
 elmu_fakerate_tau_candidate_energies_4vars:
 	# 4 iso var-s
-	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_photonPtSumOutsideSignalCone       f   " tau Photon Pt Sum Outside Signal Cone "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_chargedIsoPtSum  f   " tau Charged Iso Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_neutralIsoPtSum  f   " tau Neutral Iso Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_puCorrPtSum      f   " tau Pu Corr Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_photonPtSumOutsideSignalCone  f   " tau Photon Pt Sum Outside Signal Cone "    " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_chargedIsoPtSum  f   " tau Charged Iso Pt Sum "    " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_neutralIsoPtSum  f   " tau Neutral Iso Pt Sum "    " Events/bin " 1 0 40 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys T T T f f ${lumi} elmu_passjets_mediumTaus_puCorrPtSum      f   " tau Pu Corr Pt Sum "    " Events/bin " 2 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 elmu_fakerate_tau_candidate_energies_NoIsoIDtaus:
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalCands               f   " tau Signal cand E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalChargedHadrCands    f   " tau Sig Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalNeutrHadrCands      f   " tau Sig Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalGammaCands          f   " tau Signal Gamma E " " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationCands            f   " tau Iso cand E "     " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationChargedHadrCands f   " tau Iso Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationNeutrHadrCands   f   " tau Iso Nu Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationGammaCands       f   " tau Iso Gamma E "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalCands               f " tau Signal cand E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalChargedHadrCands    f " tau Sig Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalNeutrHadrCands      f " tau Sig Nu Hadr E "  " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_signalGammaCands          f " tau Signal Gamma E " " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationCands            f " tau Iso cand E "     " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationChargedHadrCands f " tau Iso Ch Hadr E "  " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationNeutrHadrCands   f " tau Iso Nu Hadr E "  " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_tau_isolationGammaCands       f " tau Iso Gamma E "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 elmu_fakerate_tau_candidate_energies_NoIsoIDtaus_4vars:
 	# 4 iso var-s
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_photonPtSumOutsideSignalCone       f   " tau Photon Pt Sum Outside Signal Cone "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_chargedIsoPtSum  f   " tau Charged Iso Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_neutralIsoPtSum  f   " tau Neutral Iso Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
-	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_puCorrPtSum      f   " tau Pu Corr Pt Sum "    " Events/bin " 10 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_photonPtSumOutsideSignalCone f " tau Photon Pt Sum Outside Signal Cone "  " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_chargedIsoPtSum  f   " tau Charged Iso Pt Sum "    " Events/bin " 1 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_neutralIsoPtSum  f   " tau Neutral Iso Pt Sum "    " Events/bin " 1 0 40 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
+	stacked_histo_distr_with_ratio_elmuFakeRateSys f f f f f ${lumi} elmu_passjets_NoIsoIDtaus_puCorrPtSum      f   " tau Pu Corr Pt Sum "    " Events/bin " 2 -1 -1 0.5 outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 
 
