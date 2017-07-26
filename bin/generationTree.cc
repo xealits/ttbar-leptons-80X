@@ -1368,8 +1368,8 @@ for(size_t f=0; f<urls.size();++f)
 		 * 1 with its' (possible) mothers (pdgId & status)
 		 * 2 and (possible) daughters
 		 *
-		 * N_part: particle_string id status [<- mom1_id status;[ mom2...]]
-		 * [	|-> daught1_id status;[ daught2...]]
+		 * N_part: [ mom1_id status;[ mom2...]] >>| particle_string id status |>> [ daught1_id status;[ daught2...]]
+		 * 
 		 */
 
 		vector<LorentzVector> vis_taus;
@@ -1378,21 +1378,21 @@ for(size_t f=0; f<urls.size();++f)
 			int id = p.pdgId();
 			int st = p.status();
 			int n_daughters = p.numberOfDaughters();
-			cout << i << ": " << id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass() << endl;
-			if (p.numberOfMothers() != 0) cout << " <- " ;
+			cout << i << ": " ;
 			for (int j = 0 ; j < p.numberOfMothers(); ++j) {
 				const reco::Candidate * mom = p.mother(j);
 				cout << " " << mom->pdgId() << " " << mom->status() << ";";
 				}
-			cout << endl;
+			if (p.numberOfMothers() != 0) cout << "\t >>| \t" ;
+			cout <<  id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass();
 			if (n_daughters>0) {
-				cout << "\t|-> " ;
+				cout << " |>> \t" ;
 				for (int j = 0; j < n_daughters; ++j) {
 					const reco::Candidate * d = p.daughter( j );
 					cout << d->pdgId() << " " << d->status() << "; " ;
 					}
-				cout << endl;
 				}
+			cout << endl;
 
 			// if it is a final state tau
 			//  the status is 1 or 2
