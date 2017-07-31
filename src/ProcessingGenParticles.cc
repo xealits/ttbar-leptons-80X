@@ -61,7 +61,7 @@ string parse_W_decay(const reco::Candidate * W) {
  * decay_id *= simple_tau_decay_id(W_final->daughter(0));
  * = 11, 13 for leptons and 20 + 5*Nch + Npi0 for hadrons
  */
-int simple_tau_decay_id(const reco::Candidate * tau)
+unsigned int simple_tau_decay_id(const reco::Candidate * tau)
 {
 int id = tau->pdgId();
 int st = tau->status(); // TODO: check what is status in decat simulation (pythia for our TTbar set)
