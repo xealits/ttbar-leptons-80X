@@ -1,4 +1,5 @@
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingGenParticles.h"
+#include "TMath.h"
 
 using namespace std;
 
@@ -129,4 +130,30 @@ return tau_decay_id;
  *    status 21-29: Particles from the hardest subprocess
  * -- so, these should be prompt
  */
+
+
+
+// Top pT reweighting
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
+// -- the study is done for 7-8 Tev
+//    but still recommended for 13TeV
+
+double top_pT_SF(double x)
+	{
+	// the SF function is SF(x)=exp(a+bx)
+	// where x is pT of the top quark (at generation?)
+	// sqrt(s) 	channel     	a     	b
+	// 7 TeV 	all combined 	0.199 	-0.00166
+	// 7 TeV 	l+jets      	0.174 	-0.00137
+	// 7 TeV 	dilepton    	0.222 	-0.00197
+	// 8 TeV 	all combined 	0.156 	-0.00137
+	// 8 TeV 	l+jets       	0.159 	-0.00141
+	// 8 TeV 	dilepton     	0.148 	-0.00129
+	// 13 TeV	all combined	0.0615	-0.0005
+	// -- taking all combined 13 TeV
+	double a = 0.0615;
+	double b = -0.0005;
+	return TMath::Exp(a + b*x);
+	}
+
 

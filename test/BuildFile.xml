@@ -49,6 +49,8 @@
   <bin name="jet_distrs_origin_fractions_stacked"      file="jet_distrs_origin_fractions_stacked.cc"></bin>
   <bin name="jet_fakerate_fractions_per_origin"        file="jet_fakerate_fractions_per_origin.cc"></bin>
 
+  <bin name="print_dtag_factors"        file="print_dtag_factors.cc"></bin>
+
   <bin name="csv_jet_distrs_origin_fractions"        file="csv_jet_distrs_origin_fractions.cc"></bin>
 
   <bin name="jet_fakerate_separate_origins_csv"  file="jet_fakerate_separate_origins_csv.cc"></bin>
