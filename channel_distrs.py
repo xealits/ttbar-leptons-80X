@@ -1,5 +1,7 @@
 import logging
 import argparse
+from os import path
+from collections import OrderedDict
 
 
 lep, channel_lep_id = 'el', 11 # or 'mu', 13 for mutau
@@ -22,9 +24,14 @@ logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
 logging.debug("ntupler_dir, lumi, small_test = %s, %r, %r" % (args.ntupler_directory, args.lumi, args.small))
 
+
+
+
+
 # ROOT is heavy, init it after comline
-from ROOT import TFile, TTree, TH1D, gROOT, TCanvas
+from ROOT import TFile, TTree, TH1D, gROOT, gSystem, TCanvas
 gROOT.SetBatch(True)
+
 
 
 all_processes = {
@@ -38,22 +45,14 @@ all_processes = {
   'tt_other':   (["MC2016_Summer16_TTJets_powheg.root"],
                  [" !(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == {lep}) && !((abs(gen_t_w_decay_id) == 15*{lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*{lep} && abs(gen_t_w_decay_id) > 15*15)) && !((abs(gen_t_w_decay_id) == {lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == {lep} && abs(gen_t_w_decay_id) > 15*15))".format(lep=channel_lep_id)], 1),
 
-  'st_tW_{}tauh'.format(lep):    (["MC2016_Summer16_SingleT_tW_5FS_powheg.root"],
+  'st_tW_{}tauh'.format(lep):    (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
                                   ["((abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'st_tW_tau{}tauh'.format(lep): (["MC2016_Summer16_SingleT_tW_5FS_powheg.root"],
+  'st_tW_tau{}tauh'.format(lep): (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
                                   ["((abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'st_tW_{}jets'.format(lep):  (["MC2016_Summer16_SingleT_tW_5FS_powheg.root"],
+  'st_tW_{}jets'.format(lep):  (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
                                 ["(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep})".format(lep=channel_lep_id)], 2),
-  'st_tW_other':   (["MC2016_Summer16_SingleT_tW_5FS_powheg.root"],
+  'st_tW_other':   (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
                     ["!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep}) && !(abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) && !(abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15)".format(lep=channel_lep_id)], 2),
-  'stbar_tW_{}tauh'.format(lep):    (["MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                         ["((abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'stbar_tW_tau{}tauh'.format(lep): (["MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                         ["((abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'stbar_tW_{}jets'.format(lep):    (["MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                         ["(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep})".format(lep=channel_lep_id)], 2),
-  'stbar_tW_other':     (["MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                         ["!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep}) && !(abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) && !(abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15)".format(lep=channel_lep_id)], 2),
 
   'st_schan':         (["MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo.root"],      [""], 3),
   'st_tchan_antitop': (["MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg.root"], [""], 3),
@@ -70,7 +69,18 @@ all_processes = {
               "((abs(gen_zdecays_IDs[1]) == {lep}*15 && gen_zdecays_IDs[0] > 15*15) || (abs(gen_zdecays_IDs[0]) == {lep}*15 && gen_zdecays_IDs[1] > 15*15))".format(lep=channel_lep_id)], 5),
   'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
              ["gen_N_zdecays < 1 && !((abs(gen_pythia8_prompt_leptons_IDs[1]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))".format(lep=channel_lep_id),
-              " !((abs(gen_zdecays_IDs[1]) == {lep}*15 && gen_zdecays_IDs[0] > 15*15) || (abs(gen_zdecays_IDs[0]) == {lep}*15 && gen_zdecays_IDs[1] > 15*15))".format(lep=channel_lep_id)], 5)
+              " !((abs(gen_zdecays_IDs[1]) == {lep}*15 && gen_zdecays_IDs[0] > 15*15) || (abs(gen_zdecays_IDs[0]) == {lep}*15 && gen_zdecays_IDs[1] > 15*15))".format(lep=channel_lep_id)], 5),
+
+  'qcd': (
+    ["MC2016_Summer16_QCD_HT-2000-Inf.root",
+     "MC2016_Summer16_QCD_HT-1500-2000.root",
+     "MC2016_Summer16_QCD_HT-1000-1500.root",
+     "MC2016_Summer16_QCD_HT-700-1000.root",
+     "MC2016_Summer16_QCD_HT-500-700.root",
+     "MC2016_Summer16_QCD_HT-300-500.root",
+     "MC2016_Summer16_QCD_HT-200-300.root",
+     "MC2016_Summer16_QCD_HT-100-200.root"], [''], 7
+  )
 }
 
 small_test_process = {test_process: all_processes[test_process]}
@@ -125,18 +135,53 @@ mc_factors = {
 
 }
 
+gROOT.ProcessLine(".L pu_weight.C+")
+gSystem.Load("libUserCodettbar-leptons-80X.so")
 
 #draw_distr = "tau_flightLengthSignificance[0]>>h(100,-5,50)"
 #event_selection = "HLT_mu == 1 && leps_ID == 13 && tau_IDlev[0] > 1 && tau_flightLengthSignificance[0] > -5 && tau_flightLengthSignificance[0] < 50"
 
+#draw_distr = "lep_p4[0].pt()>>h(25,0,250)"
+#event_selection = "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && leps_ID == 11" + " && tau_IDlev[0] > 1 && lep_p4[0].pt() > 0 && lep_p4[0].pt() < 250"
 draw_distr = "sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi())))>>h(25,0,250)"
-event_selection = "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && leps_ID == 11" + " && tau_IDlev[0] > 1"
+event_selection = "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && leps_ID == 11" + " && tau_IDlev[0] > 1 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 0 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 250"
 
 logging.debug("Draw    " + draw_distr)
 logging.debug("Select  " + event_selection)
 
 out_file = TFile("test_channels_output.root", "recreate")
 channel1 = out_file.mkdir("channel1")
+
+# name: (parameters)
+# parameters = PU, 
+class NominalParameters:
+    known_parameters = 'PU', 'TOP_PT'
+    def __init__(self, PU=0, TOP_PT=0):
+        '''__init__(self, PU=0, TOP_PT=0)
+
+        PU      0 = nominal, 1 = up, -1 = down
+        TOP_PT  0 = no weight, 1 = reweight (2nd Run parameters)
+        '''
+        args = {k:v for k, v in locals().items() if k is not 'self'}
+        # save the input parameters in dict for unpacking
+        self.parameters_dict = OrderedDict()
+        for p in self.known_parameters:
+            self.parameters_dict[p] = args.pop(p)
+        if args: # still some input left
+            print 'WARNING: these parameters are not known:', args
+    # parameters
+    def __getattr__(self, param_name):
+        if param_name in self.parameters_dict:
+           return self.parameters_dict[param_name]
+        else:
+           raise AttributeError("Parameter %s doesn't exist" % param_name)
+    def keys(self):
+       return self.parameters_dict.keys()
+    # for tuple-like unpacking
+    def __getitem__(self, index):
+        return self.parameters_dict[index] if index in self.parameters_dict else self.parameters_dict[self.known_parameters[index]]
+
+systematics = {'NOMINAL': NominalParameters(), 'PU_UP': NominalParameters(PU=1), 'PU_DOWN': NominalParameters(PU=-1)}
 
 for name, (filenames, proc_defs, proc_color) in processes.items():
     logging.info(name)
@@ -148,24 +193,46 @@ for name, (filenames, proc_defs, proc_color) in processes.items():
     # in case of DY there are 2 definitions, thus extract both ways
     # add up all the distributions for this process
     for filename in filenames:
+      if path.exists(args.ntupler_directory + '/' + filename):
         # DY processes have 2 definitions, since there are 2 ways to split MC
         for proc_def in proc_defs:
             f = TFile(args.ntupler_directory + '/' + filename, 'read')
             t = f.Get('ntupler/reduced_ttree')
             subchan_selection = event_selection + (' && ' + proc_def if proc_def else '')
-            logging.debug("Select    " + subchan_selection)
-            nentries_processed = t.Draw(draw_distr, subchan_selection)
-            logging.debug("N entries = %d" % nentries_processed)
+            if name is not 'data': # the weights for MC
+                # the aMCatNLO weight
+		weight  = '(pu_weight(nvtx_gen, {}))* '.format(0) # 0 for nominal PU weights
+                weight += '(aMCatNLO_weight > 0 ? 1 : -1)* ' if 'amcatnlo' in filename else ''
+                weight += '(ttbar_pT_SF(gen_t_w_decay_id, gen_tb_w_decay_id))* ' if 'TT' in filename else ''
+            else:
+                weight = ''
+            selection = weight + '({})'.format(subchan_selection)
+            logging.debug("draw_distr selection = {} {}".format(draw_distr, selection))
+            nentries_processed = t.Draw(draw_distr, selection)
             h = t.GetHistogram().Clone()
+            logging.debug("N processed, N entries, Integral = %d %d %d" % (nentries_processed, h.GetEntries(), h.Integral()))
             h.SetLineColor = proc_color
             h.SetName("NOMINAL")
 
             if filename in mc_factors: # scaling with the xsec*lumi/Nevents factors
                 xsec, old_factor = mc_factors[filename]
+
+                # new factor = xsec / N original weight
+                # but I shouldn't rely on weight of counters -- theprocessing may use different weights
+                # therefore N original weight = N orig events (from the counter) * h_weight / h_events
+                # in debug compare it with N weights from the counter
+                events_h = f.Get('ntupler/events_counter')
+                weight_h = f.Get('ntupler/weight_counter')
+                n_events = events_h.GetBinContent(2)
+                n_weight = weight_h.GetBinContent(2)
+                n_new_weight = n_events * h.Integral() / h.GetEntries() if h.GetEntries() > 0 else 1
                 # the mc factor is its' xsec / N events before cuts
                 # it normalizes N events of MC -- multiply by lumi to get expected amount
-                logging.debug("Scale %f by %f * %f" % (h.Integral(), old_factor, args.lumi))
-                h.Scale(old_factor*args.lumi)
+                logging.debug("old_weight, new_weight = {} {}".format(n_weight, n_new_weight))
+                logging.debug("old_factor, new_factor = {} {}".format(old_factor, xsec / n_new_weight))
+                logging.debug("Scale %f by %f * %f" % (h.Integral(), xsec / n_new_weight, args.lumi))
+                h.Scale(args.lumi * xsec / n_new_weight)
+                #h.Scale(args.lumi * old_factor)
                 logging.debug("Scaled to %f" % h.Integral())
             elif 'MC' in filename:
                 logging.info(filename + ' is not scaled, since it is not in the array of MC factors')
@@ -199,5 +266,5 @@ for i, (n, histo) in enumerate(processes_histos.items()):
     mc_sum += histo.Integral()
 
 print "mc_sum", mc_sum
-print 'data', processes_histos['data'].Integral()
+print 'data', processes_histos['data'].Integral() if 'data' in processes_histos else 0
 
