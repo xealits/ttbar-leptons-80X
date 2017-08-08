@@ -613,6 +613,150 @@ std::map<TString, double> xsecs = {
 { "MC2016_Summer16_TT_powheg_pythia_hdampUP_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
 { "MC2016_Summer16_TT_powheg_pythia_hdampUP_qq"        , ttbar_xsec * W_qar_br2 },
 
+// GluonMoveCRTune
+// inclusive sample
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune"      , ttbar_xsec },
+/* inclusive tau decays
+*/
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br * 2},
+// 2 tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aaelmttuuu",  ttbar_xsec * W_lep_br2 *2 * br_tau_muon     * br_tau_electron},
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aaeellttuu",  ttbar_xsec * W_lep_br2    * br_tau_electron * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aaehlttuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aammttuuuu",  ttbar_xsec * W_lep_br2    * br_tau_muon     * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aahmttuuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aahhttuu"  ,  ttbar_xsec * W_lep_br2    * br_tau_hadronic * br_tau_hadronic},
+// 1 tau decays
+// leptonic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aelmtuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_lepton },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aeelltu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_ammtuuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aelqtu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_amqtuu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_muon },
+// hadronic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_aehltu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_ahmtuu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_ahqtu"      , ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_hadronic},
+/* no taus, taken care by inclusive tau dtags
+ */
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_eell"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_elmu"      , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_elq"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_mmuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune_qq"        , ttbar_xsec * W_qar_br2 },
+
+// QCDbasedCRTune
+// inclusive sample
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune"      , ttbar_xsec },
+/* inclusive tau decays
+*/
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br * 2},
+// 2 tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aaelmttuuu",  ttbar_xsec * W_lep_br2 *2 * br_tau_muon     * br_tau_electron},
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aaeellttuu",  ttbar_xsec * W_lep_br2    * br_tau_electron * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aaehlttuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aammttuuuu",  ttbar_xsec * W_lep_br2    * br_tau_muon     * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aahmttuuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aahhttuu"  ,  ttbar_xsec * W_lep_br2    * br_tau_hadronic * br_tau_hadronic},
+// 1 tau decays
+// leptonic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aelmtuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_lepton },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aeelltu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_ammtuuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aelqtu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_amqtuu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_muon },
+// hadronic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_aehltu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_ahmtuu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_ahqtu"      , ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_hadronic},
+/* no taus, taken care by inclusive tau dtags
+ */
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_eell"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_elmu"      , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_elq"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_mmuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune_qq"        , ttbar_xsec * W_qar_br2 },
+
+// TuneCUETP8M2T4down
+// inclusive sample
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down"      , ttbar_xsec },
+/* inclusive tau decays
+*/
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br * 2},
+// 2 tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aaelmttuuu",  ttbar_xsec * W_lep_br2 *2 * br_tau_muon     * br_tau_electron},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aaeellttuu",  ttbar_xsec * W_lep_br2    * br_tau_electron * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aaehlttuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aammttuuuu",  ttbar_xsec * W_lep_br2    * br_tau_muon     * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aahmttuuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aahhttuu"  ,  ttbar_xsec * W_lep_br2    * br_tau_hadronic * br_tau_hadronic},
+// 1 tau decays
+// leptonic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aelmtuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_lepton },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aeelltu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_ammtuuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aelqtu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_amqtuu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_muon },
+// hadronic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_aehltu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_ahmtuu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_ahqtu"      , ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_hadronic},
+/* no taus, taken care by inclusive tau dtags
+ */
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_eell"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_elmu"      , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_elq"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_mmuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down_qq"        , ttbar_xsec * W_qar_br2 },
+
+// TuneCUETP8M2T4up
+// inclusive sample
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up"      , ttbar_xsec },
+/* inclusive tau decays
+*/
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aattuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aeltu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_amtuu"       , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aqtu"        , ttbar_xsec * W_lep_br*W_qar_br * 2},
+// 2 tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aaelmttuuu",  ttbar_xsec * W_lep_br2 *2 * br_tau_muon     * br_tau_electron},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aaeellttuu",  ttbar_xsec * W_lep_br2    * br_tau_electron * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aaehlttuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aammttuuuu",  ttbar_xsec * W_lep_br2    * br_tau_muon     * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aahmttuuu" ,  ttbar_xsec * W_lep_br2 *2 * br_tau_hadronic * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aahhttuu"  ,  ttbar_xsec * W_lep_br2    * br_tau_hadronic * br_tau_hadronic},
+// 1 tau decays
+// leptonic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aelmtuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_lepton },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aeelltu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_ammtuuu"   ,  ttbar_xsec * W_lep_br2         * 2 * br_tau_muon },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aelqtu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_electron },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_amqtuu"    ,  ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_muon },
+// hadronic tau decays
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_aehltu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_ahmtuu"     , ttbar_xsec * W_lep_br2 * 2         * br_tau_hadronic},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_ahqtu"      , ttbar_xsec * W_lep_br*W_qar_br * 2 * br_tau_hadronic},
+/* no taus, taken care by inclusive tau dtags
+ */
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_eell"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_elmu"      , ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_elq"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_mmuu"      , ttbar_xsec * W_lep_br2 },
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_mqu"       , ttbar_xsec * W_lep_br*W_qar_br * 2},
+{ "MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up_qq"        , ttbar_xsec * W_qar_br2 },
+
 };
 
 std::map<TString, double> xsecs_inclusive_tt = {

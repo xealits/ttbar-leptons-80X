@@ -34,62 +34,67 @@ int main (int argc, char *argv[])
 {
 if (argc < DTAG_ARGS_START)
 	{
-	std::cout << "Usage : " << argv[0] << "scale_width inclusive_xsec normalize csv_out logy lumi distr mc_distr name_suffix distr_name yname rebin_factor xmin xmax ymin ymax ratio_range dir zero_bin zero_bin2 x_leg dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " withdata scale_width inclusive_xsec normalize csv_out logy lumi distr mc_distr name_suffix distr_name yname rebin_factor xmin xmax ymin ymax ratio_range dir zero_bin zero_bin2 x_leg dtags" << std::endl;
 	exit (0);
 	}
 
 gROOT->Reset();
 
-TString scaling_width(argv[1]);
+int i = 1;
+
+TString with_data_s(argv[i++]);
+bool with_data = (with_data_s == TString("T")) || (with_data_s == TString("Y"));
+
+TString scaling_width(argv[i++]);
 bool scale_width = false;
 if (scaling_width == TString("T") || scaling_width == TString("Y"))
 	scale_width = true;
 
-TString inclusive(argv[2]); // for ntuple output
+TString inclusive(argv[i++]); // for ntuple output
 bool inclusive_xsec = false;
 if (inclusive == TString("T") || inclusive == TString("Y"))
 	inclusive_xsec = true;
 
-TString normalize_s(argv[3]);
+TString normalize_s(argv[i++]);
 bool normalize_to_data = false;
 if (normalize_s == TString("T") || normalize_s == TString("Y"))
 	normalize_to_data = true;
 
-TString csv_s(argv[4]);
+TString csv_s(argv[i++]);
 bool csv_out = false;
 if (csv_s == TString("T") || csv_s == TString("Y"))
 	csv_out = true;
 
-TString logy(argv[5]);
+TString logy(argv[i++]);
 bool set_logy = false;
 if (logy == TString("T") || logy == TString("Y"))
 	set_logy = true;
 
-double lumi = atof(argv[6]);
-TString distr_data(argv[7]);
-TString distr_mc(argv[8]);
+double lumi = atof(argv[i++]);
+TString distr_data(argv[i++]);
+TString distr_mc(argv[i++]);
 if (distr_mc == TString("f") || distr_mc == TString("same"))
 	distr_mc = distr_data;
-TString suffix(argv[9]);
-TString distr_name(argv[10]);
-TString yname(argv[11]);
+TString suffix(argv[i++]);
+TString distr_name(argv[i++]);
+TString yname(argv[i++]);
 
-Int_t rebin_factor(atoi(argv[12]));
+Int_t rebin_factor(atoi(argv[i++]));
 
-double xmin = atof(argv[13]);
-double xmax = atof(argv[14]);
-double y_min = atof(argv[15]);
-double y_max = atof(argv[16]);
-double ratio_range = atof(argv[17]);
+double xmin = atof(argv[i++]);
+double xmax = atof(argv[i++]);
+double y_min = atof(argv[i++]);
+double y_max = atof(argv[i++]);
+double ratio_range = atof(argv[i++]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
 	xlims_set = false;
 
-TString dir(argv[18]);
-int zero_bin = atoi(argv[19]);
-int zero_bin2 = atoi(argv[20]);
-double x_leg = atof(argv[21]);
-TString dtag1(argv[22]);
+TString dir(argv[i++]);
+int zero_bin = atoi(argv[i++]);
+int zero_bin2 = atoi(argv[i++]);
+double x_leg = atof(argv[i++]);
+TString dtag1(argv[i++]);
 
 bool eltau = false, mutau = false;
 if (distr_data.Contains("singleel"))
@@ -140,6 +145,7 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 	//dtags.push_back(5);
 	bool isData = dtag.Contains("Data");
 	TString distr = (isData? distr_data : distr_mc);
+	if (isData && (! with_data)) continue;
 
 	if (!files.back()->GetListOfKeys()->Contains(distr))
 		{
@@ -288,7 +294,7 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 // scale MC to Data
 double scale = 1.0;
 // normalize MC integral if requested
-if (normalize_to_data)
+if (with_data && normalize_to_data)
 	{
 	scale = hs_sum->Integral() / hs_data->Integral();
 	}
@@ -331,7 +337,7 @@ cathegories.push_back("lj_peak");
 cathegories.push_back("pretau");
 cathegories.push_back("elmu");
 
-if (csv_out)
+if (with_data && csv_out)
 	{
 	cout << "csv of distrs for the fit:" << endl;
 
@@ -372,7 +378,7 @@ if (normalize_to_data)
 	//hs->Scale(scale); // ROOT is crap, THStack doesn't have Scale method
 	}
 
-cout << "Data sum = " << hs_data->Integral() << endl;
+if (with_data) cout << "Data sum = " << hs_data->Integral() << endl;
 cout << "MC   sum = " << hs_sum->Integral()  << endl;
 
 //cst->SetFillColor(41);
@@ -391,7 +397,7 @@ m_gStyle->SetOptStat(111100);
 //cst->Update();
 //cst->Modified();
 
-if (xlims_set)
+if (with_data && xlims_set)
 	{
 	cout << "setting X limits " << xmin << ' ' << xmax << endl;
 	hs_data->GetXaxis()->SetRange(xmin, xmax);
@@ -428,10 +434,13 @@ TPad *pad2 = (TPad *)(cst->cd(2));
 //cst->cd(1);
 pad1->cd();
 
-hs_data->GetXaxis()->SetLabelFont(63);
-hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_data->GetYaxis()->SetLabelFont(63);
-hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
+if (with_data)
+	{
+	hs_data->GetXaxis()->SetLabelFont(63);
+	hs_data->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
+	hs_data->GetYaxis()->SetLabelFont(63);
+	hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
+	}
 
 /* I don't get how root chooses default values
  * it constantly screwws everything up
@@ -439,8 +448,11 @@ hs_data->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 if (y_min > -1 && y_max > -1)
 	{
 	cout << "setting Y range " << y_min << " " << y_max << endl;
-	hs_data->GetYaxis()->    SetRange(y_min, y_max);
-	hs_data->GetYaxis()->SetRangeUser(y_min, y_max);
+	if (with_data)
+		{
+		hs_data->GetYaxis()->    SetRange(y_min, y_max);
+		hs_data->GetYaxis()->SetRangeUser(y_min, y_max);
+		}
 	//hs->GetYaxis()->    SetRange(0, 5500);
 	//hs->GetYaxis()->SetRangeUser(0, 5500);
 	hs_sum->GetYaxis()->    SetRange(y_min, y_max);
@@ -449,8 +461,15 @@ if (y_min > -1 && y_max > -1)
 
 cout << "drawing" << endl;
 
-hs_data->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
-hs->Draw("same"); // the stack
+if (with_data)
+	{
+	hs_data->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
+	hs->Draw("same"); // the stack
+	}
+else
+	{
+	hs->Draw(); // the stack
+	}
 // also draw the sum of the stack and its' errors:
 //((TObjArray*) hs->GetStack())->Last()->Draw("e4 same"); // then, how to set styles with the hatched error bars?
 
@@ -467,20 +486,20 @@ if (hs_sum != NULL)
 else
 	cout << "NO HS_SUM!!!!!!!!!!!!!!" << endl;
 
-hs_data->Draw("e p same"); // the data with the errors
+if (with_data) hs_data->Draw("e p same"); // the data with the errors
 
 // histo->SetTitle("boxtitle;x axis title [unit];y axis title [unit]")
 cout << "setting the stack titles " << distr_name << " " << yname << endl;
 hs->GetXaxis()->SetTitle(distr_name);
 hs->GetYaxis()->SetTitle(yname);
 cout << "done setting the stack title" << endl;
-hs_data->SetXTitle(distr_name);
+if (with_data) hs_data->SetXTitle(distr_name);
 hs_sum->SetXTitle(distr_name);
-hs_data->SetYTitle(yname);
+if (with_data) hs_data->SetYTitle(yname);
 hs_sum-> SetYTitle(yname);
 
 hs->     GetYaxis()->SetTitleOffset(1.4);
-hs_data->GetYaxis()->SetTitleOffset(1.4);
+if (with_data) hs_data->GetYaxis()->SetTitleOffset(1.4);
 hs_sum-> GetYaxis()->SetTitleOffset(1.4);
 
 cout << "setting title" << endl;
@@ -516,21 +535,22 @@ pad2->cd();
 //cst->cd(2);
 cout << "relative distr" << endl;
 
-TH1D * hs_data_relative = (TH1D*) hs_data->Clone();
+TH1D * hs_data_relative =  (TH1D*) hs_sum->Clone();
+if (with_data) hs_data_relative = (TH1D*) hs_data->Clone();
 TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
 
-hs_data_relative->SetXTitle("");
+if (with_data) hs_data_relative->SetXTitle("");
 hs_sum_relative-> SetXTitle("");
-hs_data_relative->SetYTitle("");
+if (with_data) hs_data_relative->SetYTitle("");
 hs_sum_relative-> SetYTitle("");
 
-hs_data_relative->SetMarkerColor(1);
+if (with_data) hs_data_relative->SetMarkerColor(1);
 
 // to have the same font size on both pads:
-hs_data_relative->GetXaxis()->SetLabelFont(63);
-hs_data_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
-hs_data_relative->GetYaxis()->SetLabelFont(63);
-hs_data_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
+if (with_data) hs_data_relative->GetXaxis()->SetLabelFont(63);
+if (with_data) hs_data_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
+if (with_data) hs_data_relative->GetYaxis()->SetLabelFont(63);
+if (with_data) hs_data_relative->GetYaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_sum_relative->GetXaxis()->SetLabelFont(63);
 hs_sum_relative->GetXaxis()->SetLabelSize(14); // labels will be 14 pixels
 hs_sum_relative->GetYaxis()->SetLabelFont(63);
@@ -554,26 +574,26 @@ for (int i=0; i<=HS_size; i++)
 		{
 		hs_sum_relative->SetBinContent(i, 1);
 		hs_sum_relative->SetBinError(i, mc_error/mc_content);	
-		hs_data_relative->SetBinContent(i, data_content/mc_content);
-		hs_data_relative->SetBinError(i, data_error/mc_content);
+		if (with_data) hs_data_relative->SetBinContent(i, data_content/mc_content);
+		if (with_data) hs_data_relative->SetBinError(i, data_error/mc_content);
 		}
 	else
 		{
 		hs_sum_relative->SetBinContent(i, 1);
 		hs_sum_relative->SetBinError(i, mc_error);
-		hs_data_relative->SetBinContent(i, 1);
-		hs_data_relative->SetBinError(i, data_error);
+		if (with_data) hs_data_relative->SetBinContent(i, 1);
+		if (with_data) hs_data_relative->SetBinError(i, data_error);
 		}
 	//cout << "reset contents, now size is " << hs_sum_relative->GetSize() << " i = " << i << endl;
 	}
 cout << "scaled the distrs" << endl;
 
 hs_sum_relative->SetStats(false);
-hs_data_relative->SetStats(false);
+if (with_data) hs_data_relative->SetStats(false);
 hs_sum_relative->GetYaxis()->SetRange(1 - ratio_range, 1 + ratio_range);
 hs_sum_relative->GetYaxis()->SetRangeUser(1 - ratio_range, 1 + ratio_range);
-hs_data_relative->GetYaxis()->SetRange(1 - ratio_range, 1 + ratio_range);
-hs_data_relative->GetYaxis()->SetRangeUser(1 - ratio_range, 1 + ratio_range);
+if (with_data) hs_data_relative->GetYaxis()->SetRange(1 - ratio_range, 1 + ratio_range);
+if (with_data) hs_data_relative->GetYaxis()->SetRangeUser(1 - ratio_range, 1 + ratio_range);
 
 if (xlims_set)
 	{
@@ -584,7 +604,7 @@ if (xlims_set)
 	}
 
 hs_sum_relative->Draw("e2");
-hs_data_relative->Draw("e p same");
+if (with_data) hs_data_relative->Draw("e p same");
 
 cout << "drawn" << endl;
 

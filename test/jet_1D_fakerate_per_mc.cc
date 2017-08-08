@@ -581,6 +581,8 @@ cout << "MC SUMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << endl;
 hs_sum->Print();
 // save MC sum fake rate to file:
 TFile* test_f = TFile::Open( dir + "/jobsums/MCfakerate_" + distr_selection + "_" + name_tag + (set_logy? "_logy" : "") + ".root", "RECREATE" );
+hs_data[0]->SetName("Data");
+hs_data[0]->Write();
 hs_sum->Write();
 
 test_f->Write();
@@ -639,10 +641,10 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.75, 1.25);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
-hs_data_relative->GetYaxis()->SetRange(0.75, 1.25);
-hs_data_relative->GetYaxis()->SetRangeUser(0.75, 1.25);
+hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
+hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
 
 /*
 if (xlims_set)

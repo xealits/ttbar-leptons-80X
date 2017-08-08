@@ -531,6 +531,13 @@ elmu_fake_rates:
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
 
+elmu_fake_rates_TT_tunes_nominal:
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_nominal_fullMC " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}   `
+	#_taujet_origins
+	#stacked_histo_distr_with_ratio f T f f f ${logy} ${lumi} elmu_passjets_mediumTaus_taujet_origins  f ""  " jet origins "  " Events/bin " 1 -1 -1 -1 -1 0.25 outdir/${job}/merged-sets/ -1 -1 0.5 `cat dtags_${job}` 
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_powheg " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_powheg   `
+
+
 elmu_fake_rates_TT_tunes:
 	#jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_h " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_h   `
@@ -542,6 +549,19 @@ elmu_fake_rates_TT_tunes:
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_hdD " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_hdD `
 	#                                                                                                                                                     _hdD 
 	#jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+
+
+elmu_fake_rates_TT_tunes_batch2:
+	#jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_GluonMoveCR " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_GCR`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_QCDbasedCR  " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_QCR`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_TuneM2T4_U  " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_TnUp`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_TuneM2T4_D  " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}_TnDw`
+
+# MC2016_Summer16_TT_powheg_pythia_GluonMoveCRTune
+# MC2016_Summer16_TT_powheg_pythia_QCDbasedCRTune
+# MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4down
+# MC2016_Summer16_TT_powheg_pythia_TuneCUETP8M2T4up
 
 
 elmu_fakerate_tau_candidate_energies:
