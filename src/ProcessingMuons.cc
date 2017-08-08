@@ -142,6 +142,30 @@ return 0;
 }
 
 
+
+/*
+ * loop over all HLT objects, find if anything matches to given muon
+ */
+bool processMuon_matchesHLTs(
+	pat::Muon& muon,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	)
+{
+bool matched = false;
+for (size_t i = 0; i < trig_objs.size(); i++)
+	{
+	pat::TriggerObjectStandAlone& obj = trig_objs[i];
+	if (reco::deltaR(muon, obj) < min_dR)
+		{
+		matched = true;
+		muons_matched.push_back(muon);
+		break;
+		}
+	}
+return matched;
+}
+
 /*
  */
 int processMuons_MatchHLT(

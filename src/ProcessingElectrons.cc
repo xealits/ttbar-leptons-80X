@@ -160,6 +160,29 @@ return 0;
 
 
 /*
+ * loop over all HLT objects, find if anything matches to given lepton
+ */
+bool processElectron_matchesHLT(
+	pat::Electron& electron,
+	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
+	float min_dR,
+	)
+{
+bool matched = false;
+for (size_t i = 0; i < trig_objs.size(); i++)
+	{
+	pat::TriggerObjectStandAlone& obj = trig_objs[i];
+	if (reco::deltaR(electron, obj) < min_dR)
+		{
+		matched = true;
+		electrons_matched.push_back(electron);
+		break;
+		}
+	}
+return matched;
+}
+
+/*
  */
 int processElectrons_MatchHLT(
 	pat::ElectronCollection& electrons,
