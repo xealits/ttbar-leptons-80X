@@ -1,6 +1,7 @@
 
 das_client --limit=0 --query=" dataset=/SingleElectron/Run2016*/MINIAOD"
 das_client --limit=0 --query=" dataset=/SingleMuon/Run2016*/MINIAOD"
+das_client --limit=0 --query=" dataset=/JetHT/Run2016*/MINIAOD"
 
 dataset=/*/RunIISpring16*80X*/*
 dataset=/*/RunIISpring16*reHLT_80X*/*
