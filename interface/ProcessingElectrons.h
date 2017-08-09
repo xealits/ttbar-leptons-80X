@@ -24,7 +24,7 @@ int processElectrons_MatchHLT(
 bool processElectron_matchesHLT(
 	pat::Electron& electron,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
-	float min_dR,
+	float min_dR
 	);
 
 #endif /* PROCESSINGELECTRONS_H */

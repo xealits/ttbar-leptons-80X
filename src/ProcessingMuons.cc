@@ -149,7 +149,7 @@ return 0;
 bool processMuon_matchesHLTs(
 	pat::Muon& muon,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
-	float min_dR,
+	float min_dR
 	)
 {
 bool matched = false;
@@ -159,7 +159,6 @@ for (size_t i = 0; i < trig_objs.size(); i++)
 	if (reco::deltaR(muon, obj) < min_dR)
 		{
 		matched = true;
-		muons_matched.push_back(muon);
 		break;
 		}
 	}

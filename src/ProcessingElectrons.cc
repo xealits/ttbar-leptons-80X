@@ -165,7 +165,7 @@ return 0;
 bool processElectron_matchesHLT(
 	pat::Electron& electron,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
-	float min_dR,
+	float min_dR
 	)
 {
 bool matched = false;
@@ -175,7 +175,6 @@ for (size_t i = 0; i < trig_objs.size(); i++)
 	if (reco::deltaR(electron, obj) < min_dR)
 		{
 		matched = true;
-		electrons_matched.push_back(electron);
 		break;
 		}
 	}

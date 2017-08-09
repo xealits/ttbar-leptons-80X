@@ -24,7 +24,7 @@ int processMuons_MatchHLT(
 bool processMuon_matchesHLTs(
 	pat::Muon& muon,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
-	float min_dR,
+	float min_dR
 	);
 
 #endif /* PROCESSINGMUONS_H */
