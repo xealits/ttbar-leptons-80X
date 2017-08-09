@@ -21,11 +21,13 @@ int processElectrons_MatchHLT(
 	pat::ElectronCollection& electrons_matched
 	);
 
-bool processElectron_matchesHLT(
+bool processElectron_matchesHLTs(
 	pat::Electron& electron,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
 	float min_dR
 	);
+
+float relIso(pat::Electron& el, double rho);
 
 #endif /* PROCESSINGELECTRONS_H */
 

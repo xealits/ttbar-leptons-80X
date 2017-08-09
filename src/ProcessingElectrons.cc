@@ -162,7 +162,7 @@ return 0;
 /*
  * loop over all HLT objects, find if anything matches to given lepton
  */
-bool processElectron_matchesHLT(
+bool processElectron_matchesHLTs(
 	pat::Electron& electron,
 	vector<pat::TriggerObjectStandAlone>& trig_objs,    // input: trigger objects to match against (so, these should match HLT of interest)
 	float min_dR
@@ -215,4 +215,28 @@ for(unsigned int n=0; n<electrons.size(); ++n)
 
 return nDiscarded;
 }
+
+float relIso(pat::Electron& el, double rho)
+{
+float relIso = 0.0; 
+
+//https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+float  chIso   = el.pfIsolationVariables().sumChargedHadronPt;
+float  nhIso   = el.pfIsolationVariables().sumNeutralHadronEt;
+float  gIso    = el.pfIsolationVariables().sumPhotonEt;
+  
+if (rho == 0)
+	{
+	float  puchIso = el.pfIsolationVariables().sumPUPt; 
+	relIso  = (chIso + TMath::Max(0.,nhIso+gIso-0.5*puchIso)) / el.pt();
+	}
+else
+	{
+	float effArea = utils::cmssw::getEffectiveArea(11,el.superCluster()->eta());
+	relIso  = (chIso + TMath::Max(0.,nhIso+gIso-rho*effArea)) / el.pt();
+	}
+
+return relIso;
+}
+
 

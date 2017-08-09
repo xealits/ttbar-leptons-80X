@@ -200,3 +200,18 @@ for(unsigned int n=0; n<muons.size(); ++n)
 return nDiscarded;
 }
 
+float relIso(pat::Muon& muon, double rho)
+{
+float relIso = 0.0; 
+
+float  chIso   = muon.pfIsolationR04().sumChargedHadronPt;
+float  nhIso   = muon.pfIsolationR04().sumNeutralHadronEt;
+float  gIso    = muon.pfIsolationR04().sumPhotonEt;
+float  puchIso = muon.pfIsolationR04().sumPUPt;
+      
+relIso  = (chIso + TMath::Max(0.,nhIso+gIso-0.5*puchIso)) / muon.pt();
+
+return relIso;
+}
+
+

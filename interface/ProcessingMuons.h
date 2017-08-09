@@ -27,6 +27,8 @@ bool processMuon_matchesHLTs(
 	float min_dR
 	);
 
+float relIso(pat::Muon& lep, double rho);
+
 #endif /* PROCESSINGMUONS_H */
 
 
