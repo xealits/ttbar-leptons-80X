@@ -321,6 +321,12 @@ std::map<TString, double> xsecs = {
 // inclusive sample
 { "MC2016_Summer16_TTJets_powheg"      , ttbar_xsec },
 
+/* elmu fakerates 2
+ */
+{ "MC2016_Summer16_TTJets_powheg_2_aelmtuu" ,  ttbar_xsec * W_lep_br2 * 2 * br_tau_lepton },
+{ "MC2016_Summer16_TTJets_powheg_2_elmu"    ,  ttbar_xsec * W_lep_br2 * 2 },
+{ "MC2016_Summer16_TTJets_powheg_2_other"   ,  ttbar_xsec * (1 - 2*W_lep_br2 - 2*W_lep_br2*br_tau_lepton) },
+
 /* inclusive tau decays
 */
 { "MC2016_Summer16_TTJets_powheg_aattuu"      , ttbar_xsec * W_lep_br2 },

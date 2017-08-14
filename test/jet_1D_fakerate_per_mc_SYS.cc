@@ -15,6 +15,7 @@
 #include "TROOT.h"
 #include "TNtuple.h"
 #include <Math/VectorUtil.h>
+#include "TMath.h"
 #include "TPaveText.h"
 
 #include "TStyle.h"
@@ -24,17 +25,18 @@
 #include <vector>
 
 #include "dtag_xsecs.h"
+#include "elmu_fakerates_dtag_xsecs.h"
 
-#define INPUT_DTAGS_START 10
 
+#define INPUT_DTAGS_START 13
 
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
 {
-char usage_string[128] = "[--verbose] [--normalize] lumi distr suffix rebin_factor x_axis_min_range x_axis_max_range name_tag distr_name dir dtags";
-if (argc < 10)
+char usage_string[256] = " [--verbose] [--normalize] addPU addJER addJES lumi distr suffix rebin_factor x_axis_min_range x_axis_max_range name_tag distr_name dir dtags";
+if (argc < INPUT_DTAGS_START)
 	{
 	std::cout << "Usage : " << argv[0] << usage_string << std::endl;
 	return 1;
@@ -66,16 +68,22 @@ if (be_verbose) cout << "being verbose" << endl;
 if (normalize_MC) cout << "will normalize MC stack to Data integral" << endl;
 cout << "options are taken from " << input_starts << endl;
 
-double lumi = atof(argv[input_starts + 1]);
-TString distr_selection(argv[input_starts + 2]);
-string suffix(argv[input_starts + 3]);
-Int_t rebin_factor(atoi(argv[input_starts + 4]));
+unsigned int i = 1;
 
-double x_axis_min_range = atof(argv[input_starts + 5]);
-double x_axis_max_range = atof(argv[input_starts + 6]);
-TString name_tag(argv[input_starts + 7]);
-TString distr_name(argv[input_starts + 8]);
-TString dir(argv[input_starts + 9]);
+bool add_sys_pu  = (TString(argv[input_starts + i++]) == TString("T"));
+bool add_sys_jer = (TString(argv[input_starts + i++]) == TString("T"));
+bool add_sys_jes = (TString(argv[input_starts + i++]) == TString("T"));
+
+double lumi = atof(argv[input_starts + i++]);
+TString distr_selection(argv[input_starts + i++]);
+string suffix(argv[input_starts + i++]);
+Int_t rebin_factor(atoi(argv[input_starts + i++]));
+
+double x_axis_min_range = atof(argv[input_starts + i++]);
+double x_axis_max_range = atof(argv[input_starts + i++]);
+TString name_tag(argv[input_starts + i++]);
+TString distr_name(argv[input_starts + i++]);
+TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi  << endl;
@@ -116,6 +124,20 @@ TH1D* hs_data[2] = {NULL, NULL};
 TH1D* mc_all_jets = NULL;
 std::map<TString, TH1D*> nicknamed_mc_tau_jets;
 
+struct hs_mc_sys_shifts {
+	TH1D* PU_UP = NULL;
+	TH1D* PU_DOWN = NULL;
+	TH1D* JER_UP = NULL;
+	TH1D* JER_DOWN = NULL;
+	TH1D* JES_UP = NULL;
+	TH1D* JES_DOWN = NULL;
+};
+
+struct hs_mc_sys_shifts mc_all_jets_sys;
+struct hs_mc_sys_shifts mc_all_tau_jets_sys;
+TH1D* mc_all_tau_jets = NULL;
+//std::map<TString, struct hs_mc_sys_shifts> nicknamed_mc_tau_jets_sys;
+
 /*
 // different jet origin histos:
 unsigned int n_jet_origins = 5;
@@ -131,7 +153,7 @@ TCanvas *cst = new TCanvas("cst","stacked hists",10,10,700,700);
 
 //TLegend *leg = new TLegend(0.845, 0.2, 0.99, 0.99);
 //leg = new TLegend(0.845, 0.2, 0.99, 0.99);
-TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
+TLegend* leg = new TLegend(0.75, 0.12, 0.9, 0.45);
 
 /*
  * Get each dtag file in the reduced dir,
@@ -277,7 +299,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			// get the histogram's projection
 			//TH1D* histo = (TH1D*) ((TH3D*) file->Get(tau_jets_name))->Project3D(projection);
 			TH1D* histo = (TH1D*) file->Get(tau_jets_name);
-			if (be_verbose) histo->Print();
+			if (be_verbose) cout << "tau jets" << endl;
 
 			/*
 			// normalize the histo for bin width
@@ -298,8 +320,9 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			if (be_verbose) histo->Print();
 
 			// colour and nick
-			std::pair<TString, Color_t> nick_colour = dtag_nick_colour(dtag);
+			std::pair<TString, Color_t> nick_colour = dtag_nick_colour_elmufakerates(dtag);
 			TString nick = nick_colour.first;
+			if (nick == TString("tt_{other}")) cout << "tt_{other}     " << dtag << endl;
 			Color_t col = nick_colour.second;
 
 			histo->SetFillColor( col );
@@ -313,6 +336,77 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			else
 				nicknamed_mc_tau_jets[nick]->Add(histo);
 			//hs->Add(histos.back(), "HIST");
+
+			// add to all taus distr:
+			if (mc_all_tau_jets)
+				mc_all_tau_jets->Add(histo);
+			else
+				mc_all_tau_jets = (TH1D*) histo->Clone();
+
+			// also pull all systematic shifts for this micknamed tau_jets
+			TString distr_PU_UP = tau_jets_name;
+			TString distr_PU_DOWN = tau_jets_name;
+			TString distr_JER_UP = tau_jets_name;
+			TString distr_JER_DOWN = tau_jets_name;
+			TString distr_JES_UP = tau_jets_name;
+			TString distr_JES_DOWN = tau_jets_name;
+			distr_PU_UP    .ReplaceAll("_vtightTaus", "_PU_UP_vtightTaus"); distr_PU_DOWN  .ReplaceAll("_vtightTaus", "_PU_DOWN_vtightTaus"); distr_JER_UP   .ReplaceAll("_vtightTaus", "_JER_UP_vtightTaus"); distr_JER_DOWN .ReplaceAll("_vtightTaus", "_JER_DOWN_vtightTaus"); distr_JES_UP   .ReplaceAll("_vtightTaus", "_JES_UP_vtightTaus"); distr_JES_DOWN .ReplaceAll("_vtightTaus", "_JES_DOWN_vtightTaus");
+			distr_PU_UP    .ReplaceAll("_tightTaus", "_PU_UP_tightTaus"); distr_PU_DOWN  .ReplaceAll("_tightTaus", "_PU_DOWN_tightTaus"); distr_JER_UP   .ReplaceAll("_tightTaus", "_JER_UP_tightTaus"); distr_JER_DOWN .ReplaceAll("_tightTaus", "_JER_DOWN_tightTaus"); distr_JES_UP   .ReplaceAll("_tightTaus", "_JES_UP_tightTaus"); distr_JES_DOWN .ReplaceAll("_tightTaus", "_JES_DOWN_tightTaus");
+			distr_PU_UP    .ReplaceAll("_mediumTaus", "_PU_UP_mediumTaus"); distr_PU_DOWN  .ReplaceAll("_mediumTaus", "_PU_DOWN_mediumTaus"); distr_JER_UP   .ReplaceAll("_mediumTaus", "_JER_UP_mediumTaus"); distr_JER_DOWN .ReplaceAll("_mediumTaus", "_JER_DOWN_mediumTaus"); distr_JES_UP   .ReplaceAll("_mediumTaus", "_JES_UP_mediumTaus"); distr_JES_DOWN .ReplaceAll("_mediumTaus", "_JES_DOWN_mediumTaus");
+			distr_PU_UP    .ReplaceAll("_looseTaus", "_PU_UP_looseTaus"); distr_PU_DOWN  .ReplaceAll("_looseTaus", "_PU_DOWN_looseTaus"); distr_JER_UP   .ReplaceAll("_looseTaus", "_JER_UP_looseTaus"); distr_JER_DOWN .ReplaceAll("_looseTaus", "_JER_DOWN_looseTaus"); distr_JES_UP   .ReplaceAll("_looseTaus", "_JES_UP_looseTaus"); distr_JES_DOWN .ReplaceAll("_looseTaus", "_JES_DOWN_looseTaus");
+			distr_PU_UP    .ReplaceAll("_vlooseTaus", "_PU_UP_vlooseTaus"); distr_PU_DOWN  .ReplaceAll("_vlooseTaus", "_PU_DOWN_vlooseTaus"); distr_JER_UP   .ReplaceAll("_vlooseTaus", "_JER_UP_vlooseTaus"); distr_JER_DOWN .ReplaceAll("_vlooseTaus", "_JER_DOWN_vlooseTaus"); distr_JES_UP   .ReplaceAll("_vlooseTaus", "_JES_UP_vlooseTaus"); distr_JES_DOWN .ReplaceAll("_vlooseTaus", "_JES_DOWN_vlooseTaus");
+			vector<TString*> sys_distrs_names = { &distr_PU_UP, &distr_PU_DOWN, &distr_JER_UP, &distr_JER_DOWN, &distr_JES_UP, &distr_JES_DOWN };
+			//vector<TH1D*> sys_distrs = { nicknamed_mc_tau_jets_sys[nick].PU_UP, nicknamed_mc_tau_jets_sys[nick].PU_DOWN,
+			//	nicknamed_mc_tau_jets_sys[nick].JER_UP, nicknamed_mc_tau_jets_sys[nick].JER_DOWN,
+			//	nicknamed_mc_tau_jets_sys[nick].JES_UP, nicknamed_mc_tau_jets_sys[nick].JES_DOWN};
+			// it should be a simple list of pairs actually
+			vector<TH1D**> sys_distrs = { &mc_all_tau_jets_sys.PU_UP, &mc_all_tau_jets_sys.PU_DOWN,
+				&mc_all_tau_jets_sys.JER_UP, &mc_all_tau_jets_sys.JER_DOWN,
+				&mc_all_tau_jets_sys.JES_UP, &mc_all_tau_jets_sys.JES_DOWN};
+
+			for (int i=0; i< sys_distrs_names.size(); i++)
+				{
+				TString& distr = *sys_distrs_names[i];
+				//cout << "sys:\t" << distr << '\t';
+				if (!file->GetListOfKeys()->Contains(distr))
+					{
+					cout << "no " << distr << endl;
+					continue;
+					}
+
+				TH1D* histo = (TH1D*) file->Get(distr);
+
+				histo->Scale(ratio);
+				if (rebin_factor != 1) histo->Rebin(rebin_factor); // should rebin the new histo inplace
+				// and normalize per bin-width:
+				/* no need for fake rate
+				for (Int_t i=0; i<=histo->GetSize(); i++)
+					{
+					//yAxis->GetBinLowEdge(3)
+					double content = histo->GetBinContent(i);
+					double error   = histo->GetBinError(i);
+					double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+					histo->SetBinContent(i, content/width);
+					histo->SetBinError(i, error/width);
+					}
+				*/
+
+				// the pointers in sys_distr are aligned to names correctly -- get them by index
+				if (*sys_distrs[i])
+					{
+					if (be_verbose) cout << "adding" << '\t';
+					//nicknamed_mc_tau_jets_sys[nick].PU_UP->Add(histo);
+					(*sys_distrs[i])->Add(histo);
+					if (be_verbose) cout << "added" << endl;
+					}
+				else
+					{
+					if (be_verbose) cout << "clonning" << '\t';
+					//hs_mc_sys[i] = (TH1D*) histo->Clone();
+					(*sys_distrs[i]) = (TH1D*) histo->Clone();
+					if (be_verbose) cout << "cloned" << endl;
+					}
+				}
 			}
 
 		// jets -> bin width scale -> MC ratio -> add to jets histogram
@@ -321,7 +415,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			// get the histogram's projection
 			//TH1D* histo = (TH1D*) ((TH3D*) file->Get(jets_name))->Project3D(projection);
 			TH1D* histo = (TH1D*) file->Get(jets_name);
-			if (be_verbose) histo->Print();
+			if (be_verbose) cout << "jets" << endl;
 
 			/*
 			// normalize the histo for bin width
@@ -358,6 +452,79 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			else
 				mc_all_jets = (TH1D*) histo->Clone();
 			//hs->Add(histos.back(), "HIST");
+
+			if (be_verbose) cout << "added to all jets" << endl;
+
+			// and add up the systematic shifts:
+			// also pull all systematic shifts for this micknamed jets
+			TString distr_PU_UP = jets_name;
+			TString distr_PU_DOWN = jets_name;
+			TString distr_JER_UP = jets_name;
+			TString distr_JER_DOWN = jets_name;
+			TString distr_JES_UP = jets_name;
+			TString distr_JES_DOWN = jets_name;
+			distr_PU_UP    .ReplaceAll("_vtightTaus", "_PU_UP_vtightTaus"); distr_PU_DOWN  .ReplaceAll("_vtightTaus", "_PU_DOWN_vtightTaus"); distr_JER_UP   .ReplaceAll("_vtightTaus", "_JER_UP_vtightTaus"); distr_JER_DOWN .ReplaceAll("_vtightTaus", "_JER_DOWN_vtightTaus"); distr_JES_UP   .ReplaceAll("_vtightTaus", "_JES_UP_vtightTaus"); distr_JES_DOWN .ReplaceAll("_vtightTaus", "_JES_DOWN_vtightTaus");
+			distr_PU_UP    .ReplaceAll("_tightTaus", "_PU_UP_tightTaus"); distr_PU_DOWN  .ReplaceAll("_tightTaus", "_PU_DOWN_tightTaus"); distr_JER_UP   .ReplaceAll("_tightTaus", "_JER_UP_tightTaus"); distr_JER_DOWN .ReplaceAll("_tightTaus", "_JER_DOWN_tightTaus"); distr_JES_UP   .ReplaceAll("_tightTaus", "_JES_UP_tightTaus"); distr_JES_DOWN .ReplaceAll("_tightTaus", "_JES_DOWN_tightTaus");
+			distr_PU_UP    .ReplaceAll("_mediumTaus", "_PU_UP_mediumTaus"); distr_PU_DOWN  .ReplaceAll("_mediumTaus", "_PU_DOWN_mediumTaus"); distr_JER_UP   .ReplaceAll("_mediumTaus", "_JER_UP_mediumTaus"); distr_JER_DOWN .ReplaceAll("_mediumTaus", "_JER_DOWN_mediumTaus"); distr_JES_UP   .ReplaceAll("_mediumTaus", "_JES_UP_mediumTaus"); distr_JES_DOWN .ReplaceAll("_mediumTaus", "_JES_DOWN_mediumTaus");
+			distr_PU_UP    .ReplaceAll("_looseTaus", "_PU_UP_looseTaus"); distr_PU_DOWN  .ReplaceAll("_looseTaus", "_PU_DOWN_looseTaus"); distr_JER_UP   .ReplaceAll("_looseTaus", "_JER_UP_looseTaus"); distr_JER_DOWN .ReplaceAll("_looseTaus", "_JER_DOWN_looseTaus"); distr_JES_UP   .ReplaceAll("_looseTaus", "_JES_UP_looseTaus"); distr_JES_DOWN .ReplaceAll("_looseTaus", "_JES_DOWN_looseTaus");
+			distr_PU_UP    .ReplaceAll("_vlooseTaus", "_PU_UP_vlooseTaus"); distr_PU_DOWN  .ReplaceAll("_vlooseTaus", "_PU_DOWN_vlooseTaus"); distr_JER_UP   .ReplaceAll("_vlooseTaus", "_JER_UP_vlooseTaus"); distr_JER_DOWN .ReplaceAll("_vlooseTaus", "_JER_DOWN_vlooseTaus"); distr_JES_UP   .ReplaceAll("_vlooseTaus", "_JES_UP_vlooseTaus"); distr_JES_DOWN .ReplaceAll("_vlooseTaus", "_JES_DOWN_vlooseTaus");
+			vector<TString*> sys_distrs_names = { &distr_PU_UP, &distr_PU_DOWN, &distr_JER_UP, &distr_JER_DOWN, &distr_JES_UP, &distr_JES_DOWN };
+			vector<TH1D**> sys_distrs = { &mc_all_jets_sys.PU_UP, &mc_all_jets_sys.PU_DOWN,
+				&mc_all_jets_sys.JER_UP, &mc_all_jets_sys.JER_DOWN,
+				&mc_all_jets_sys.JES_UP, &mc_all_jets_sys.JES_DOWN};
+			// it should be a simple list of pairs actually
+			if (be_verbose) cout << "prepared systematics" << endl;
+
+			for (int i=0; i< sys_distrs_names.size(); i++)
+				{
+				TString& distr = *sys_distrs_names[i];
+				if (be_verbose) cout << "sys:\t" << distr << endl;
+				if (!file->GetListOfKeys()->Contains(distr))
+					{
+					cout << "no " << distr << endl;
+					continue;
+					}
+
+				TH1D* histo = (TH1D*) file->Get(distr);
+				if (be_verbose) cout << "got distr" << endl;
+
+				histo->Scale(ratio);
+				if (be_verbose) cout << "scaled lumi" << endl;
+				if (rebin_factor != 1)
+					{
+					histo->Rebin(rebin_factor); // should rebin the new histo inplace
+					if (be_verbose) cout << "re-binned" << endl;
+					}
+				// and normalize per bin-width:
+				/* no need to do it for fake rate
+				for (Int_t i=0; i<=histo->GetSize(); i++)
+					{
+					//yAxis->GetBinLowEdge(3)
+					double content = histo->GetBinContent(i);
+					double error   = histo->GetBinError(i);
+					double width   = histo->GetXaxis()->GetBinUpEdge(i) - histo->GetXaxis()->GetBinLowEdge(i);
+					histo->SetBinContent(i, content/width);
+					histo->SetBinError(i, error/width);
+					}
+				*/
+
+				if (be_verbose) cout << "scaled the distr, adding to struct via pointers" << endl;
+				// the pointers in sys_distr are aligned to names correctly -- get them by index
+				if (*sys_distrs[i])
+					{
+					if (be_verbose) cout << "adding" << '\t';
+					//nicknamed_mc_tau_jets_sys[nick].PU_UP->Add(histo);
+					(*sys_distrs[i])->Add(histo);
+					if (be_verbose) cout << "added" << endl;
+					}
+				else
+					{
+					if (be_verbose) cout << "clonning" << '\t';
+					//hs_mc_sys[i] = (TH1D*) histo->Clone();
+					(*sys_distrs[i]) = (TH1D*) histo->Clone();
+					if (be_verbose) cout << "cloned" << endl;
+					}
+				}
 			}
 		}
 
@@ -368,9 +535,9 @@ double integral_data = hs_data[1]->Integral();
 double integral_MC_taus  = 0.;
 double integral_MC_jets  = 0.;
 // INCLUSIVE FAKERATE
-cout << "data    integral: " << hs_data[0]->Integral() << " / " << hs_data[1]->Integral() << " = " << hs_data[0]->Integral() / hs_data[1]->Integral() << endl;
+cout << "data    integral = " << hs_data[0]->Integral()   << " / " << hs_data[1]->Integral() << " = " << hs_data[0]->Integral() / hs_data[1]->Integral() << endl;
 //cout << "MC taus integral = " << integral_MC_taus   << endl;
-cout << "MC jets integral = " << mc_all_jets->Integral() << endl;
+cout << "MC jets integral = " << mc_all_tau_jets->Integral() << " / " << mc_all_jets->Integral() << " = " << mc_all_tau_jets->Integral() / mc_all_jets->Integral() << endl;
 //double ratio = integral_data / integral_MC;
 //cout << "ratio = " << ratio << endl;
 
@@ -417,10 +584,14 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_tau_jets.begin(); it !=
 		distr->Print();
 		}
 	}
+// now this summ is not needed, since it's computed in the loop
+// leaving it for control
+cout << "compare" << endl;
+hs_sum->Print();
+mc_all_tau_jets->Print();
 
-// INCLUSIVE FAKERATE divide MC taus by mc jets
-cout << "MC integrals: " << hs_sum->Integral() << " / " << mc_all_jets->Integral() << " = " <<  hs_sum->Integral() / mc_all_jets->Integral() << endl;
-hs_sum->Divide(mc_all_jets);
+hs_sum = mc_all_tau_jets;
+cout << "switched to the second one" << endl;
 
 /* no need to normalize in case of fake rate
  * it's a function, not count of events in bins
@@ -444,6 +615,69 @@ for (Int_t h=0; h<4; h++)
 		}
 	}
 */
+
+// add systematic errors to the MC sum histos:
+// taus:
+for (int i=0; i<=hs_sum->GetSize(); i++)
+	{
+	double mc_content = hs_sum->GetBinContent(i);
+	double mc_error   = hs_sum->GetBinError(i);
+
+	double mc_PU_UP  = mc_all_tau_jets_sys.PU_UP ->GetBinContent(i);
+	double mc_JER_UP = mc_all_tau_jets_sys.JER_UP->GetBinContent(i);
+	double mc_JES_UP = mc_all_tau_jets_sys.JES_UP->GetBinContent(i);
+
+	double mc_PU_DOWN  = mc_all_tau_jets_sys.PU_DOWN ->GetBinContent(i);
+	double mc_JER_DOWN = mc_all_tau_jets_sys.JER_DOWN->GetBinContent(i);
+	double mc_JES_DOWN = mc_all_tau_jets_sys.JES_DOWN->GetBinContent(i);
+
+	double sys_PU   = (abs(mc_PU_UP  - mc_content) + abs(mc_PU_DOWN  - mc_content))/2;
+	double sys_JER  = (abs(mc_JER_UP - mc_content) + abs(mc_JER_DOWN - mc_content))/2;
+	double sys_JES  = (abs(mc_JES_UP - mc_content) + abs(mc_JES_DOWN - mc_content))/2;
+
+	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
+	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
+	//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
+	//cout << mc_error << '_' << sys_error << ") ";
+
+	hs_sum->SetBinError(i, sys_error);	
+	}
+cout << "added tau jets systematics" << endl;
+
+// jets:
+for (int i=0; i<=mc_all_jets->GetSize(); i++)
+	{
+	double mc_content = mc_all_jets->GetBinContent(i);
+	double mc_error   = mc_all_jets->GetBinError(i);
+
+	double mc_PU_UP  = mc_all_jets_sys.PU_UP ->GetBinContent(i);
+	double mc_JER_UP = mc_all_jets_sys.JER_UP->GetBinContent(i);
+	double mc_JES_UP = mc_all_jets_sys.JES_UP->GetBinContent(i);
+
+	double mc_PU_DOWN  = mc_all_jets_sys.PU_DOWN ->GetBinContent(i);
+	double mc_JER_DOWN = mc_all_jets_sys.JER_DOWN->GetBinContent(i);
+	double mc_JES_DOWN = mc_all_jets_sys.JES_DOWN->GetBinContent(i);
+
+	//double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
+	//double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
+	//double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
+	double sys_PU   = (add_sys_pu  ? (abs(mc_PU_UP  - mc_content) + abs(mc_PU_DOWN  - mc_content))/2 : 0);
+	double sys_JER  = (add_sys_jer ? (abs(mc_JER_UP - mc_content) + abs(mc_JER_DOWN - mc_content))/2 : 0);
+	double sys_JES  = (add_sys_jes ? (abs(mc_JES_UP - mc_content) + abs(mc_JES_DOWN - mc_content))/2 : 0);
+
+	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
+	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
+	//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
+	//cout << mc_error << '_' << sys_error << ") ";
+
+	mc_all_jets->SetBinError(i, sys_error);	
+	}
+cout << "added all jets systematics" << endl;
+
+
+// INCLUSIVE FAKERATE divide MC taus by mc jets
+cout << "MC integrals: " << hs_sum->Integral() << " / " << mc_all_jets->Integral() << " = " <<  hs_sum->Integral() / mc_all_jets->Integral() << endl;
+hs_sum->Divide(mc_all_jets);
 
 // find the fake rate in data:
 hs_data[0]->Sumw2();
@@ -498,21 +732,20 @@ cout << "setting title" << endl;
 //cst->SetXaxisTile(distr);
 //hs_data->GetXaxis()->SetTitle(distr);
 
+
+TH1D * hs_data_relative = (TH1D*) hs_data[0]->Clone();
+TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
+
 // just MC and Data legend
-TLegend* leg2 = new TLegend(0.65, 0.7, 0.89, 0.89);
-//leg2->SetTextFont(63); // 132 -- serif, 63 -- entries are sans serif, but header is veeeeeery small size
-// no other thing but ROOT
-//leg2->SetTextSize(1); // crazy results
+TLegend* leg2 = new TLegend(0.6, 0.65, 0.89, 0.89);
 leg2->SetHeader(name_tag);
-//leg2->SetLegendTextSize(14);
+TLegendEntry *le_data = (TLegendEntry*) leg2->AddEntry(hs_data[0], "Data", "lpe");
+TLegendEntry *le_mc   = (TLegendEntry*) leg2->AddEntry(hs_sum,     "Simulation", "lpe");
 
 TH1F * h = cst->DrawFrame(0.,0.,1.,1.);
 //h->SetXTitle("x");
 //cst->Update();
 //cst->Modified();
-
-TH1D * hs_data_relative = (TH1D*) hs_data[0]->Clone();
-TH1D * hs_sum_relative  = (TH1D*) hs_sum->Clone();
 
 gStyle->SetOptStat(0); // removes the stats legend-box from all pads
 
@@ -531,8 +764,6 @@ if (set_logy)
 	{
 	cout << "setting logy" << endl;
 	pad1->SetLogy();
-	//pad1->SetLogx();
-	//pad2->SetLogx();
 	//gPad->SetLogy();
 	}
 
@@ -562,40 +793,31 @@ hs->GetXaxis()->SetTitle(distr);
 hs_data->SetXTitle(distr);
 */
 
-TLegendEntry *le_data = (TLegendEntry*) leg2->AddEntry(hs_data[0], "Data", "lpe");
-TLegendEntry *le_mc   = (TLegendEntry*) leg2->AddEntry(hs_sum,     "Simulation", "lpe");
-/* doesn't work:
-le_data->SetTextSize(14);
-le_mc->SetTextSize(14);
-*/
+hs_sum->    GetYaxis()->SetRange(0.000008, 1);
+hs_sum->    GetYaxis()->SetRangeUser(0.000008, 1);
+hs_data[0]->GetYaxis()->SetRange(0.000008, 1);
+hs_data[0]->GetYaxis()->SetRangeUser(0.000008, 1);
 
 hs_data[0]->SetMarkerSize(0.5);
-
-hs_data[0]->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
-// not drawing stack now, just MC sum
 //hs->Draw("same"); // the stack
 // also draw the sum of the stack and its' errors:
 //((TObjArray*) hs->GetStack())->Last()->Draw("e4 same"); // then, how to set styles with the hatched error bars?
-
-// removing the X axis labels on the distribution plot
 hs_data[0]->GetXaxis()->SetLabelOffset(999);
 hs_data[0]->GetXaxis()->SetLabelSize(0);
 
+hs_data[0]->Draw("p"); // drawing data-MC-data to have them both in the range of the plot
 
 if (hs_sum != NULL)
 	{
 	hs_sum->Print();
-	// removing the X axis labels on the distribution plot
 	hs_sum->GetXaxis()->SetLabelOffset(999);
 	hs_sum->GetXaxis()->SetLabelSize(0);
 	hs_sum->SetFillStyle(3004);
 	hs_sum->SetFillColor(1);
-	//hs_sum->SetMarkerColorAlpha(0, 1);
-	hs_sum->SetMarkerStyle(1);
+	//hs_sum->SetMarkerColorAlpha(0, 0.1);
 	hs_sum->SetMarkerStyle(25);
 	hs_sum->SetMarkerColor(kRed);
 	hs_sum->SetLineColor(kRed);
-	//hs_sum->Draw("e2 same"); // the errors on the stack
 	hs_sum->Draw("e same"); // the errors on the stack
 	}
 else
@@ -610,21 +832,22 @@ TString distr = distr_selection + TString((const char*) suffix.c_str());
 
 //hs->GetXaxis()->SetTitle(distr);
 cout << "done setting the stack title" << endl;
-//hs_data[0]->SetXTitle(distr_name);
-//hs_sum->SetXTitle(distr_name);
+hs_data[0]->GetYaxis()->SetTitleFont(63);
+hs_data[0]->GetYaxis()->SetTitleSize(24);
+hs_data[0]->GetYaxis()->SetTitleOffset(1);
 hs_data[0]->SetYTitle("Fake rate");
 hs_data[0]->SetXTitle("");
 hs_sum->SetXTitle("");
 
 // label texts
-TPaveText* left_title = new TPaveText(0.1, 0.9, 0.4, 0.94, "brNDC");
+TPaveText* left_title = new TPaveText(0.1, 0.9, 0.4, 0.95, "brNDC");
 left_title->AddText("CMS preliminary at 13 TeV");
 left_title->SetTextFont(1);
 left_title->SetFillColor(0);
 cout << "drawing left title" << endl;
 left_title->Draw("same");
 
-TPaveText* right_title = new TPaveText(0.75, 0.9, 0.9, 0.94, "brNDC");
+TPaveText* right_title = new TPaveText(0.75, 0.9, 0.9, 0.95, "brNDC");
 TString s_title(""); s_title.Form("L = %.1f fb^{-1}", lumi/1000);
 right_title->AddText(s_title);
 right_title->SetTextFont(132);
@@ -632,27 +855,12 @@ right_title->SetFillColor(0);
 cout << "drawing right title" << endl;
 right_title->Draw("same");
 
-//leg->SetBorderSize(0);
-//leg->Draw();
-
 leg2->SetBorderSize(0);
 leg2->Draw();
-
-cout << "MC SUMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << endl;
-hs_sum->Print();
-// save MC sum fake rate to file:
-TFile* test_f = TFile::Open( dir + "/jobsums/MCfakerate_" + distr_selection + "_" + name_tag + (set_logy? "_logy" : "") + ".root", "RECREATE" );
-hs_data[0]->SetName("Data");
-hs_data[0]->Write();
-hs_sum->Write();
-
-test_f->Write();
-test_f->Close();
 
 // THE RATIO PLOT
 pad2->cd();
 //cst->cd(2);
-
 
 hs_data_relative->SetMarkerSize(0.5);
 hs_sum_relative->SetMarkerStyle(1);
@@ -662,8 +870,8 @@ hs_sum_relative->SetFillStyle(3004);
 hs_data_relative->Print();
 hs_sum_relative->Print();
 
-// hs_data_relative->SetXTitle("");
-// hs_sum_relative->SetXTitle("");
+hs_data_relative->SetXTitle("");
+hs_sum_relative->SetXTitle("");
 
 hs_data_relative->SetMarkerColor(1);
 
@@ -684,21 +892,19 @@ hs_data_relative->SetYTitle("obs/exp");
 hs_sum_relative->SetYTitle("obs/exp");
 
 hs_data_relative->GetXaxis()->SetTitleFont(63);
-hs_data_relative->GetXaxis()->SetTitleSize(14);
+hs_data_relative->GetXaxis()->SetTitleSize(24);
 hs_sum_relative ->GetXaxis()->SetTitleFont(63);
-hs_sum_relative ->GetXaxis()->SetTitleSize(14);
+hs_sum_relative ->GetXaxis()->SetTitleSize(24);
 hs_data_relative->GetYaxis()->SetTitleFont(63);
-hs_data_relative->GetYaxis()->SetTitleSize(14);
+hs_data_relative->GetYaxis()->SetTitleSize(24);
 hs_sum_relative ->GetYaxis()->SetTitleFont(63);
-hs_sum_relative ->GetYaxis()->SetTitleSize(14);
+hs_sum_relative ->GetYaxis()->SetTitleSize(24);
 
-hs_data_relative->GetYaxis()->SetTitleOffset(2);
-hs_sum_relative ->GetYaxis()->SetTitleOffset(2);
-hs_data_relative->GetXaxis()->SetTitleOffset(5);
-hs_sum_relative ->GetXaxis()->SetTitleOffset(5);
+hs_data_relative->GetYaxis()->SetTitleOffset(1);
+hs_sum_relative ->GetYaxis()->SetTitleOffset(1);
+hs_data_relative->GetXaxis()->SetTitleOffset(3.5);
+hs_sum_relative ->GetXaxis()->SetTitleOffset(3.5);
 
-//hs_data_relative->GetXaxis()->SetLabelOffset(0);
-//hs_data_relative->GetXaxis()->SetLabelSize(1);
 
 for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 	{
@@ -727,10 +933,10 @@ for (int i=0; i<=hs_sum_relative->GetSize(); i++)
 
 hs_sum_relative->SetStats(false);
 hs_data_relative->SetStats(false);
-hs_sum_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_sum_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRange(0.5, 1.5);
-hs_data_relative->GetYaxis()->SetRangeUser(0.5, 1.5);
+hs_sum_relative->GetYaxis()->SetRange(0, 3.4);
+hs_sum_relative->GetYaxis()->SetRangeUser(0, 3.4);
+hs_data_relative->GetYaxis()->SetRange(0, 3.4);
+hs_data_relative->GetYaxis()->SetRangeUser(0, 3.4);
 
 /*
 if (xlims_set)
@@ -789,8 +995,7 @@ leg->Draw();
 
 //cst->Modified();
 
-cst->SaveAs( dir + "/jobsums/" + distr_selection + "_MCFakeRates_" + suffix + "_" + name_tag + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
-
+cst->SaveAs( dir + "/jobsums/" + distr_selection + "_MCFakeRates_SYS_" + suffix + "_" + name_tag + (add_sys_pu ? "_wPU" : "") + (add_sys_jer ? "_wJER" : "") + (add_sys_jes ? "_wJES" : "") + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + ".png" );
 
 return 0;
 }

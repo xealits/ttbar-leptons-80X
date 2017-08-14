@@ -520,16 +520,16 @@ elmu_fake_rates_control_plots_SYS_medium:
 
 # elmu ELMU FAKE RATE
 elmu_fake_rates:
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 vloose_taus " vlooseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 vloose_taus " vlooseTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _pt  1 -1 -1 loose_taus  " looseTausp jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _eta 1 -1 -1 loose_taus  " looseTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _pt  1 -1 -1 tight_taus  " tightTaus  jet p_{T} "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 tight_taus  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 "vLooseMVAIso" " vlooseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 "vLooseMVAIso" " vlooseTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _pt  1 -1 -1 "LooseMVAIso"  " looseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_looseTaus  _eta 1 -1 -1 "LooseMVAIso"  " looseTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 "MediumMVAIso" " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 "MediumMVAIso" " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _pt  1 -1 -1 "TightMVAIso"  " tightTaus  jet p_{T} "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 "TightMVAIso"  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 "vTightMVAIso" " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 "vTightMVAIso" " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 elmu_fake_rates_TT_tunes_nominal:
 	jet_1D_fakerate_per_mc ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus_nominal_fullMC " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}   `
@@ -626,16 +626,16 @@ elmu_fake_rates_SYS_medium_noSYS:
 	jet_1D_fakerate_per_mc_SYS f f f ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 elmu_fake_rates_SYS_all:
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 vloose_taus " vlooseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 vloose_taus " vlooseTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_looseTaus  _pt  1 -1 -1 loose_taus  " looseTausp jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_looseTaus  _eta 1 -1 -1 loose_taus  " looseTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 medium_taus " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 medium_taus " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_tightTaus  _pt  1 -1 -1 tight_taus  " tightTaus  jet p_{T} "  outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 tight_taus  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 vtight_taus " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
-	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 vtight_taus " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vlooseTaus _pt  1 -1 -1 "vLooseMVAIso" " vlooseTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vlooseTaus _eta 1 -1 -1 "vLooseMVAIso" " vlooseTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_looseTaus  _pt  1 -1 -1 "LooseMVAIso"  " looseTausp jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_looseTaus  _eta 1 -1 -1 "LooseMVAIso"  " looseTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_mediumTaus _pt  1 -1 -1 "MediumMVAIso" " mediumTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_mediumTaus _eta 1 -1 -1 "MediumMVAIso" " mediumTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_tightTaus  _pt  1 -1 -1 "TightMVAIso"  " tightTaus  jet p_{T} "  outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_tightTaus  _eta 1 -1 -1 "TightMVAIso"  " tightTaus  jet #eta "   outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vtightTaus _pt  1 -1 -1 "vTightMVAIso" " vtightTaus jet p_{T} " outdir/${job}/merged-sets/ `cat dtags_${job}`
+	jet_1D_fakerate_per_mc_SYS T T T ${lumi} elmu_passjets_vtightTaus _eta 1 -1 -1 "vTightMVAIso" " vtightTaus jet #eta "  outdir/${job}/merged-sets/ `cat dtags_${job}`
 
 jet_origins:
 	# "HLTjet_qcd_jet_partonFlavour HLTmu_qcd_jet_partonFlavour HLTjetmu_qcd_jet_partonFlavour HLTjet_wjets_jet_partonFlavour HLTmu_wjets_jet_partonFlavour HLTjetmu_wjets_jet_partonFlavour"
