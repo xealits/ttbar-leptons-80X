@@ -190,18 +190,25 @@ all_processes = {
 #event_selection += "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && abs(leps_ID) == 11"
 #event_selection = "nbjets > 0 && tau_IDlev[0] > 2 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 0 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 250 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4"
 
-selection_specific = {'el': {'common': 'HLT_el && abs(leps_ID) == 11 && lep_matched_HLT[0] && nbjets > 0 && tau_IDlev[0] > 2 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
+selection_specific = {'el': {'common': 'HLT_el && abs(leps_ID) == 11 && lep_matched_HLT[0] && met_corrected.pt() > 40 && nbjets > 0 && tau_IDlev[0] > 2 && tau_id[0]*lep_id[0] < 0 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleElectron2016.root'], [''], 0)}, tt_el_processes, dy_el_processes, st_tW_el_processes]},
-                      'mu': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets > 0 && tau_IDlev[0] > 2 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
+                      'mu': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && met_corrected.pt() > 40 && nbjets > 0 && tau_IDlev[0] > 2 && tau_id[0]*lep_id[0] < 0 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)},     tt_mu_processes, dy_mu_processes, st_tW_mu_processes]},
-                    'elmu': {'common': 'HLT_mu && abs(leps_ID) == 13*11 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+              'elmu_hltmu': {'common': 'HLT_mu && leps_ID == -13*11 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+              'elmu_hltel': {'common': 'HLT_el && leps_ID == -13*11 && ((abs(lep_id[0]) == 11 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 11 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+            'elmu_hltelmu': {'common': 'HLT_el && HLT_mu && leps_ID == -13*11 && lep_matched_HLT[0] && lep_matched_HLT[1] && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+
                     'elel': {'common': 'HLT_el && abs(leps_ID) == 11*11 && ((abs(lep_id[0]) == 11 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 11 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleElectron2016.root'], [''], 0)}, tt_elel_processes, st_tW_elel_processes, dy_elel_processes]},
                     'mumu': {'common': 'HLT_mu && abs(leps_ID) == 13*13 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mumu_processes, st_tW_mumu_processes, dy_mumu_processes]},
-                    'mujets': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && tau_IDlev[0] > 0',
+                  'mujets': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && tau_IDlev[0] > 0 && transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi()) > 50',
+                  #Float_t transverse_mass(Float_t v1_pt, Float_t v2_pt, Float_t v1_phi, Float_t v2_phi)
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mujets_processes, st_tW_mujets_processes, dy_mujets_processes]},
+
                # HLT + match + tau ID medium + tau pt > 30 + 0 b tags + mT < 40 + 45 < (mu + tau).M < 85
                # HLT + match + tau ID medium + tau pt > 30 + 0 b tags + mT < 40 + 45 < (mu + tau).M < 85
                'taumutauh': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets == 0 && tau_IDlev[0] > 2 && tau_p4[0].pt() > 30 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 40 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) > 45 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) < 85',

@@ -1345,10 +1345,10 @@ ntuple_likelihood_el:
 
 test_ntuple_channels:
 	python channel_distrs.py outdir/v12.2/merged-sets/ el --lumi 28000
-	python channel_distrs.py outdir/v12.2/merged-sets/ elmu --lumi 35000
-	python channel_distrs.py outdir/v12.2/merged-sets/ mu --lumi 35000
-	python channel_distrs.py outdir/v12.2/merged-sets/ taumutauh --lumi 35000
-	python channel_distrs.py outdir/v12.2/merged-sets/ elel --lumi 28000
-	python channel_distrs.py outdir/v12.2/merged-sets/ mumu --lumi 35000
-	python channel_distrs.py outdir/v12.2/merged-sets/ mujets --lumi 35000
+	python channel_distrs.py outdir/v12.2/merged-sets/ mu --lumi 30800
+	python channel_distrs.py outdir/v12.2/merged-sets/ elmu_hltel --lumi 28000
+	python channel_distrs.py outdir/v12.2/merged-sets/ elmu_hltmu --lumi 30800
+	python channel_distrs.py outdir/v12.2/merged-sets/ elmu_hltelmu --lumi 30800
+	python channel_distrs.py outdir/v12.2/merged-sets/ taumutauh --lumi 30800
+	python channel_distrs.py outdir/v12.2/merged-sets/ mujets --lumi 30800
 
