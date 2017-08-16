@@ -27,7 +27,7 @@
 #include "dtag_xsecs.h"
 #include "elmu_fakerates_dtag_xsecs.h"
 
-#define DTAG_ARGS_START 16
+#define DTAG_ARGS_START 17
 using namespace std;
 
 //int stacked_histo_distr (int argc, char *argv[])
@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 {
 if (argc < 13)
 	{
-	std::cout << "Usage : " << argv[0] << " wPU wJER wJES normalize logy lumi distr mc_distr distr_name yname rebin_factor xmin xmax ratio_range dir dtags" << std::endl;
+	std::cout << "Usage : " << argv[0] << " wPU wJER wJES normalize logy lumi distr mc_distr distr_name yname rebin_factor xmin xmax ymax ratio_range dir dtags" << std::endl;
 	exit (0);
 	}
 
@@ -70,6 +70,7 @@ Int_t rebin_factor(atoi(argv[i++]));
 
 double xmin = atof(argv[i++]);
 double xmax = atof(argv[i++]);
+double ymax = atof(argv[i++]);
 double ratio_range = atof(argv[i++]);
 bool xlims_set = true;
 if (xmin < 0 || xmax < 0)
@@ -276,6 +277,17 @@ for (int i = DTAG_ARGS_START; i<argc; i++)
 
 		}
 	}
+
+cout << "control errors" << endl;
+cout << "Data";
+for (int i=0; i<=hs_data->GetSize(); i++)
+	{
+	double cont   = hs_data->GetBinContent(i);
+	double error   = hs_data->GetBinError(i);
+	cout << ", " << error << '/' << cont;
+	}
+cout << endl;
+
 // build the sum of MC
 // it has to be done before building the stack because ROOT is crap
 // yep, you cannot scale a stack after it's been built
@@ -299,67 +311,89 @@ for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_histos.begin(); it != n
 	}
 
 // now hs_sum VS systematics can be done
-TH1D* hs_mc_PU_UP    = hs_mc_sys[0];
-TH1D* hs_mc_PU_DOWN  = hs_mc_sys[1];
-TH1D* hs_mc_JER_UP   = hs_mc_sys[2];
-TH1D* hs_mc_JER_DOWN = hs_mc_sys[3];
-TH1D* hs_mc_JES_UP   = hs_mc_sys[4];
-TH1D* hs_mc_JES_DOWN = hs_mc_sys[5];
-cout << "sys subtraction " << endl;
-hs_sum->Print();
-hs_mc_PU_UP   ->Print();
-hs_mc_PU_DOWN ->Print();
-hs_mc_JES_UP   ->Print();
-hs_mc_JES_DOWN ->Print();
-hs_mc_JER_UP   ->Print();
-hs_mc_JER_DOWN ->Print();
-//hs_mc_PU_UP   ->Add(hs_sum, -1);
-//hs_mc_PU_DOWN ->Add(hs_sum, -1);
-//hs_mc_JER_UP  ->Add(hs_sum, -1);
-//hs_mc_JER_DOWN->Add(hs_sum, -1);
-//hs_mc_JES_UP  ->Add(hs_sum, -1);
-//hs_mc_JES_DOWN->Add(hs_sum, -1);
-TFile* test_f = TFile::Open( dir + "/jobsums/TEST_" + distr_mc + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.root" : ".root"), "RECREATE" );
+if (add_sys_pu && add_sys_jer && add_sys_jes)
+	{
+	cout << "sys subtraction " << endl;
+	TH1D* hs_mc_PU_UP    = hs_mc_sys[0];
+	TH1D* hs_mc_PU_DOWN  = hs_mc_sys[1];
+	TH1D* hs_mc_JER_UP   = hs_mc_sys[2];
+	TH1D* hs_mc_JER_DOWN = hs_mc_sys[3];
+	TH1D* hs_mc_JES_UP   = hs_mc_sys[4];
+	TH1D* hs_mc_JES_DOWN = hs_mc_sys[5];
+	hs_sum->Print();
+	hs_mc_PU_UP   ->Print();
+	hs_mc_PU_DOWN ->Print();
+	hs_mc_JES_UP   ->Print();
+	hs_mc_JES_DOWN ->Print();
+	hs_mc_JER_UP   ->Print();
+	hs_mc_JER_DOWN ->Print();
+	//hs_mc_PU_UP   ->Add(hs_sum, -1);
+	//hs_mc_PU_DOWN ->Add(hs_sum, -1);
+	//hs_mc_JER_UP  ->Add(hs_sum, -1);
+	//hs_mc_JER_DOWN->Add(hs_sum, -1);
+	//hs_mc_JES_UP  ->Add(hs_sum, -1);
+	//hs_mc_JES_DOWN->Add(hs_sum, -1);
+	TFile* test_f = TFile::Open( dir + "/jobsums/TEST_" + distr_mc + (set_logy? "_logy" : "") + (normalize_to_data? "_normalizedToData.root" : ".root"), "RECREATE" );
 
-hs_mc_PU_UP   ->Write();
-hs_mc_PU_DOWN ->Write();
-hs_mc_JER_UP  ->Write();
-hs_mc_JER_DOWN->Write();
-hs_mc_JES_UP  ->Write();
-hs_mc_JES_DOWN->Write();
+	hs_mc_PU_UP   ->Write();
+	hs_mc_PU_DOWN ->Write();
+	hs_mc_JER_UP  ->Write();
+	hs_mc_JER_DOWN->Write();
+	hs_mc_JES_UP  ->Write();
+	hs_mc_JES_DOWN->Write();
 
-test_f->Write();
-test_f->Close();
+	test_f->Write();
+	test_f->Close();
 
-// now set this errors in mc sum
+	// now set this errors in mc sum
+	for (int i=0; i<=hs_sum->GetSize(); i++)
+		{
+		double mc_content = hs_sum->GetBinContent(i);
+		double mc_error   = hs_sum->GetBinError(i);
+
+		double mc_PU_UP  = hs_mc_PU_UP ->GetBinContent(i);
+		double mc_JER_UP = hs_mc_JER_UP->GetBinContent(i);
+		double mc_JES_UP = hs_mc_JES_UP->GetBinContent(i);
+
+		double mc_PU_DOWN  = hs_mc_PU_DOWN ->GetBinContent(i);
+		double mc_JER_DOWN = hs_mc_JER_DOWN->GetBinContent(i);
+		double mc_JES_DOWN = hs_mc_JES_DOWN->GetBinContent(i);
+
+		//double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
+		//double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
+		//double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
+		double sys_PU   = (add_sys_pu  ? (abs(mc_PU_UP  - mc_content) + abs(mc_PU_DOWN  - mc_content))/2 : 0);
+		double sys_JER  = (add_sys_jer ? (abs(mc_JER_UP - mc_content) + abs(mc_JER_DOWN - mc_content))/2 : 0);
+		double sys_JES  = (add_sys_jes ? (abs(mc_JES_UP - mc_content) + abs(mc_JES_DOWN - mc_content))/2 : 0);
+
+		double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
+		//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
+		//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
+		//cout << mc_error << '_' << sys_error << ") ";
+		cout << " (" << sys_PU << ',' << sys_JER << ',' << sys_JES << ' ' << mc_error << ") ";
+
+		hs_sum->SetBinError(i, sys_error);	
+		}
+	}
+
+cout << "control error magnitude" << endl;
+cout << "MC";
 for (int i=0; i<=hs_sum->GetSize(); i++)
 	{
-	double mc_content = hs_sum->GetBinContent(i);
+	double cont   = hs_sum->GetBinContent(i);
 	double mc_error   = hs_sum->GetBinError(i);
-
-	double mc_PU_UP  = hs_mc_PU_UP ->GetBinContent(i);
-	double mc_JER_UP = hs_mc_JER_UP->GetBinContent(i);
-	double mc_JES_UP = hs_mc_JES_UP->GetBinContent(i);
-
-	double mc_PU_DOWN  = hs_mc_PU_DOWN ->GetBinContent(i);
-	double mc_JER_DOWN = hs_mc_JER_DOWN->GetBinContent(i);
-	double mc_JES_DOWN = hs_mc_JES_DOWN->GetBinContent(i);
-
-	//double sys_PU   = (abs(hs_mc_PU_UP  ->GetBinContent(i) - mc_content) + abs(hs_mc_PU_DOWN->GetBinContent(i) - mc_content ))/2;
-	//double sys_JER  = (abs(hs_mc_JER_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JER_DOWN->GetBinContent(i) - mc_content))/2;
-	//double sys_JES  = (abs(hs_mc_JES_UP ->GetBinContent(i) - mc_content) + abs(hs_mc_JES_DOWN->GetBinContent(i) - mc_content))/2;
-	double sys_PU   = (add_sys_pu  ? (abs(mc_PU_UP  - mc_content) + abs(mc_PU_DOWN  - mc_content))/2 : 0);
-	double sys_JER  = (add_sys_jer ? (abs(mc_JER_UP - mc_content) + abs(mc_JER_DOWN - mc_content))/2 : 0);
-	double sys_JES  = (add_sys_jes ? (abs(mc_JES_UP - mc_content) + abs(mc_JES_DOWN - mc_content))/2 : 0);
-
-	double sys_error = TMath::Sqrt(sys_PU*sys_PU + sys_JER*sys_JER + sys_JES*sys_JES + mc_error*mc_error);
-	//cout << '(' << mc_PU_UP << '_' << mc_JER_UP << '_' << mc_JES_UP << '-' << mc_content << ',';
-	//cout << mc_PU_DOWN << '_' << mc_JER_DOWN << '_' << mc_JES_DOWN << '-' << mc_content << '=';
-	//cout << mc_error << '_' << sys_error << ") ";
-	cout << " (" << sys_PU << ',' << sys_JER << ',' << sys_JES << ' ' << mc_error << ") ";
-
-	hs_sum->SetBinError(i, sys_error);	
+	cout << ", " << mc_error << '/' << cont;
 	}
+cout << endl;
+cout << "Data";
+for (int i=0; i<=hs_data->GetSize(); i++)
+	{
+	double cont   = hs_data->GetBinContent(i);
+	double error   = hs_data->GetBinError(i);
+	cout << ", " << error << '/' << cont;
+	}
+cout << endl;
+
 
 
 // scale MC to Data
@@ -445,6 +479,8 @@ if (set_logy)
 	{
 	cout << "setting logy" << endl;
 	pad1->SetLogy();
+	hs_data->GetYaxis()->SetRange(1, ymax);
+	hs_data->GetYaxis()->SetRangeUser(1, ymax);
 	//gPad->SetLogy();
 	}
 

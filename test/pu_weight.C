@@ -529,3 +529,19 @@ return njets > njets_theshold && nbjets > nbjets_theshold && met.pt() > met_thre
 }
 */
 
+
+double divector_mass( Float_t vec0_X, Float_t vec0_Y, Float_t vec0_Z, Float_t vec0_T, 
+	Float_t vec1_X, Float_t vec1_Y, Float_t vec1_Z, Float_t vec1_T)
+{
+Float_t X = vec1_X + vec0_X;
+Float_t Y = vec1_Y + vec0_Y;
+Float_t Z = vec1_Z + vec0_Z;
+Float_t T = vec1_T + vec0_T;
+return sqrt(T*T - X*X - Y*Y - Z*Z);
+}
+
+Float_t transverse_mass(Float_t v1_pt, Float_t v2_pt, Float_t v1_phi, Float_t v2_phi)
+{
+return sqrt(2*v1_pt*v2_pt * (1 - cos(v1_phi - v2_phi)));
+}
+

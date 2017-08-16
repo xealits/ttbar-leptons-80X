@@ -11,27 +11,131 @@ lep, channel_lep_id = 'mu', 13
 
 
 
-data_files = {'el': 'Data13TeV_SingleElectron2016.root', 'mu': 'Data13TeV_SingleMuon2016.root'}
+
+tt_el_processes = {
+  'tt_eltauh': (["MC2016_Summer16_TTJets_powheg.root"],
+                            ["((abs(gen_t_w_decay_id) == 11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 11 && abs(gen_t_w_decay_id) > 15*15))"], 0),
+  'tt_taueltauh': (["MC2016_Summer16_TTJets_powheg.root"],
+                               ["((abs(gen_t_w_decay_id) == 15*11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*11 && abs(gen_t_w_decay_id) > 15*15))"], 1),
+  'tt_eljets': (["MC2016_Summer16_TTJets_powheg.root"],
+                            [" (abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11) "], 1),
+  'tt_other':   (["MC2016_Summer16_TTJets_powheg.root"],
+                 [" !(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11) && !((abs(gen_t_w_decay_id) == 15*11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*11 && abs(gen_t_w_decay_id) > 15*15)) && !((abs(gen_t_w_decay_id) == 11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 11 && abs(gen_t_w_decay_id) > 15*15))"], 1)
+}
+
+tt_mu_processes = {
+  'tt_mutauh': (["MC2016_Summer16_TTJets_powheg.root"],
+                            ["((abs(gen_t_w_decay_id) == 13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 13 && abs(gen_t_w_decay_id) > 15*15))"], 0),
+  'tt_taumutauh': (["MC2016_Summer16_TTJets_powheg.root"],
+                               ["((abs(gen_t_w_decay_id) == 15*13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*13 && abs(gen_t_w_decay_id) > 15*15))"], 1),
+  'tt_mujets': (["MC2016_Summer16_TTJets_powheg.root"],
+                            [" (abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13) "], 1),
+  'tt_other':   (["MC2016_Summer16_TTJets_powheg.root"],
+                 [" !(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13) && !((abs(gen_t_w_decay_id) == 15*13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*13 && abs(gen_t_w_decay_id) > 15*15)) && !((abs(gen_t_w_decay_id) == 13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 13 && abs(gen_t_w_decay_id) > 15*15))"], 1)
+}
+
+tt_elmu_processes = {'tt_elmu': (["MC2016_Summer16_TTJets_powheg.root"],
+                                 ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13)"], 0),
+                     'tt_taueltaumu': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13*15*15)"], 1),
+                     'tt_other': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["!(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13 || abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13*15*15)"], 1) }
+
+tt_mumu_processes = {'tt_mumu': (["MC2016_Summer16_TTJets_powheg.root"],
+                                 ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13)"], 0),
+                     'tt_taumutaumu': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13*15*15)"], 1),
+                     'tt_other': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["!(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13 || abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13*15*15)"], 1) }
+
+tt_mujets = {'tt': (["MC2016_Summer16_TTJets_powheg.root"], [''], 0)}
+
+
+st_tW_el_processes = {
+  'st_tW_eltauh':    (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                  ["((abs(gen_wdecays_IDs[0]) == 11 && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 11 && abs(gen_wdecays_IDs[0]) > 15*15))"], 2),
+  'st_tW_taueltauh': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                  ["((abs(gen_wdecays_IDs[0]) == 15*11 && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 15*11 && abs(gen_wdecays_IDs[0]) > 15*15))"], 2),
+  'st_tW_eljets':  (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                ["(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 11)"], 2),
+  'st_tW_other':   (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                    ["!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 11) && !(abs(gen_wdecays_IDs[1]) == 11 && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 11 && abs(gen_wdecays_IDs[1]) > 15*15) && !(abs(gen_wdecays_IDs[1]) == 15*11 && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 15*11 && abs(gen_wdecays_IDs[1]) > 15*15)"], 2)
+}
+
+st_tW_mu_processes = {
+  'st_tW_mutauh':    (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                  ["((abs(gen_wdecays_IDs[0]) == 13 && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 13 && abs(gen_wdecays_IDs[0]) > 15*15))"], 2),
+  'st_tW_taumutauh': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                  ["((abs(gen_wdecays_IDs[0]) == 15*13 && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 15*13 && abs(gen_wdecays_IDs[0]) > 15*15))"], 2),
+  'st_tW_mujets':  (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                ["(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13)"], 2),
+  'st_tW_other':   (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                    ["!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13) && !(abs(gen_wdecays_IDs[1]) == 13 && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 13 && abs(gen_wdecays_IDs[1]) > 15*15) && !(abs(gen_wdecays_IDs[1]) == 15*13 && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 15*13 && abs(gen_wdecays_IDs[1]) > 15*15)"], 2)
+}
+
+st_tW_elmu_processes = {'st_tW_elmu': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13*11)'], 2),
+                        'st_tW_taueltaumu': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*11)'], 2),
+                        'st_tW_other': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*11 || abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13*11)'], 2) }
+
+st_tW_mumu_processes = {'st_tW_mumu': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13*13)'], 2),
+                        'st_tW_taumutaumu': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*13)'], 2),
+                        'st_tW_other': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*13 || abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13*13)'], 2) }
+
+st_tW_mujets_processes = {'st_tW': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"], [''], 2)}
+
+dy_el_processes = {
+  'dy_taueltauh':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+                    ["gen_N_zdecays < 1 && ((abs(gen_pythia8_prompt_leptons_IDs[1]) == 11*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == 11*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))",
+              "gen_N_zdecays > 0 && ((abs(gen_zdecays_IDs[1]) == 11*15 && abs(gen_zdecays_IDs[0]) > 15*15) || (abs(gen_zdecays_IDs[0]) == 11*15 && abs(gen_zdecays_IDs[1]) > 15*15))"], 5),
+  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+             ["gen_N_zdecays < 1 && !((abs(gen_pythia8_prompt_leptons_IDs[1]) == 11*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == 11*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))",
+              "gen_N_zdecays > 0 && !((abs(gen_zdecays_IDs[1]) == 11*15 && abs(gen_zdecays_IDs[0]) > 15*15) || (abs(gen_zdecays_IDs[0]) == 11*15 && abs(gen_zdecays_IDs[1]) > 15*15))"], 5)
+}
+
+dy_mu_processes = {
+  'dy_taumutauh':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+                    ["gen_N_zdecays < 1 && ((abs(gen_pythia8_prompt_leptons_IDs[1]) == 13*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == 13*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))",
+              "gen_N_zdecays > 0 && ((abs(gen_zdecays_IDs[1]) == 13*15 && abs(gen_zdecays_IDs[0]) > 15*15) || (abs(gen_zdecays_IDs[0]) == 13*15 && abs(gen_zdecays_IDs[1]) > 15*15))"], 5),
+  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+             ["gen_N_zdecays < 1 && !((abs(gen_pythia8_prompt_leptons_IDs[1]) == 13*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == 13*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))",
+              "gen_N_zdecays > 0 && !((abs(gen_zdecays_IDs[1]) == 13*15 && abs(gen_zdecays_IDs[0]) > 15*15) || (abs(gen_zdecays_IDs[0]) == 13*15 && abs(gen_zdecays_IDs[1]) > 15*15))"], 5)
+}
+
+dy_elmu_processes = {
+  'dy_taumutauel':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+                    ["gen_N_zdecays < 1 && (abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*11*15*15)",
+              "gen_N_zdecays > 0 && (abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*13*15*15)"], 5),
+  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+             ["gen_N_zdecays < 1 && !(abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*11*15*15)",
+              "gen_N_zdecays > 0 && !(abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*13*15*15)"], 5)
+}
+
+dy_mumu_processes = {
+  'dy_mumu': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+              ["gen_N_zdecays < 1 && (abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13)",
+               "gen_N_zdecays > 0 && (abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13)"], 5),
+  'dy_taumutaumu': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+                    ["gen_N_zdecays < 1 && (abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13*15*15)",
+              "gen_N_zdecays > 0 && (abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13*15*15)"], 5),
+  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+             ["gen_N_zdecays < 1 && !(abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13*15*15 || abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13)",
+              "gen_N_zdecays > 0 && !(abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13*15*15 || abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13)"], 5)
+}
+
+dy_mujets_processes = {'dy': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"], [''], 5)}
+
+
+
+
 
 all_processes = {
-  'data': ([data_files[lep]], [""], 0),
-  'tt_{}tauh'.format(lep): (["MC2016_Summer16_TTJets_powheg.root"],
-                            ["((abs(gen_t_w_decay_id) == {lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == {lep} && abs(gen_t_w_decay_id) > 15*15))".format(lep=channel_lep_id)], 0),
-  'tt_tau{}tauh'.format(lep): (["MC2016_Summer16_TTJets_powheg.root"],
-                               ["((abs(gen_t_w_decay_id) == 15*{lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*{lep} && abs(gen_t_w_decay_id) > 15*15))".format(lep=channel_lep_id)], 1),
-  'tt_{}jets'.format(lep): (["MC2016_Summer16_TTJets_powheg.root"],
-                            [" (abs(gen_t_w_decay_id * gen_tb_w_decay_id) == {lep}) ".format(lep=channel_lep_id)], 1),
-  'tt_other':   (["MC2016_Summer16_TTJets_powheg.root"],
-                 [" !(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == {lep}) && !((abs(gen_t_w_decay_id) == 15*{lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == 15*{lep} && abs(gen_t_w_decay_id) > 15*15)) && !((abs(gen_t_w_decay_id) == {lep} && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_tb_w_decay_id) == {lep} && abs(gen_t_w_decay_id) > 15*15))".format(lep=channel_lep_id)], 1),
-
-  'st_tW_{}tauh'.format(lep):    (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                                  ["((abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'st_tW_tau{}tauh'.format(lep): (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                                  ["((abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15) || (abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15))".format(lep=channel_lep_id)], 2),
-  'st_tW_{}jets'.format(lep):  (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                                ["(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep})".format(lep=channel_lep_id)], 2),
-  'st_tW_other':   (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
-                    ["!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == {lep}) && !(abs(gen_wdecays_IDs[1]) == {lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == {lep} && abs(gen_wdecays_IDs[1]) > 15*15) && !(abs(gen_wdecays_IDs[1]) == 15*{lep} && abs(gen_wdecays_IDs[0]) > 15*15) && !(abs(gen_wdecays_IDs[0]) == 15*{lep} && abs(gen_wdecays_IDs[1]) > 15*15)".format(lep=channel_lep_id)], 2),
+  #'data': ([data_files[lep]], [""], 0),
 
   'st_schan':         (["MC2016_Summer16_schannel_4FS_leptonicDecays_amcatnlo.root"],      [""], 3),
   'st_tchan_antitop': (["MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg.root"], [""], 3),
@@ -43,13 +147,6 @@ all_processes = {
               'MC2016_Summer16_W2Jets_madgraph.root',
               'MC2016_Summer16_W3Jets_madgraph.root',
               'MC2016_Summer16_W4Jets_madgraph.root'], [""], 4),
-
-  'dy_tau{}tauh'.format(lep):  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
-                    ["gen_N_zdecays < 1 && ((abs(gen_pythia8_prompt_leptons_IDs[1]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))".format(lep=channel_lep_id),
-              "((abs(gen_zdecays_IDs[1]) == {lep}*15 && gen_zdecays_IDs[0] > 15*15) || (abs(gen_zdecays_IDs[0]) == {lep}*15 && gen_zdecays_IDs[1] > 15*15))".format(lep=channel_lep_id)], 5),
-  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
-             ["gen_N_zdecays < 1 && !((abs(gen_pythia8_prompt_leptons_IDs[1]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[0]) > 15*15) || (abs(gen_pythia8_prompt_leptons_IDs[0]) == {lep}*15 && abs(gen_pythia8_prompt_leptons_IDs[1]) > 15*15))".format(lep=channel_lep_id),
-              " !((abs(gen_zdecays_IDs[1]) == {lep}*15 && gen_zdecays_IDs[0] > 15*15) || (abs(gen_zdecays_IDs[0]) == {lep}*15 && gen_zdecays_IDs[1] > 15*15))".format(lep=channel_lep_id)], 5),
 
   'qcd': (
     ["MC2016_Summer16_QCD_HT-2000-Inf.root",
@@ -63,6 +160,22 @@ all_processes = {
   )
 }
 
+#data_files = {'el': 'Data13TeV_SingleElectron2016.root', 'mu': 'Data13TeV_SingleMuon2016.root'}
+#event_selection += "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && abs(leps_ID) == 11"
+#event_selection = "nbjets > 0 && tau_IDlev[0] > 2 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 0 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 250 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4"
+
+selection_specific = {'el': {'common': 'HLT_el && abs(leps_ID) == 11 && lep_matched_HLT[0] && nbjets > 0 && tau_IDlev[0] > 2 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleElectron2016.root'], [''], 0)}, tt_el_processes, dy_el_processes, st_tW_el_processes]},
+                      'mu': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets > 0 && tau_IDlev[0] > 2 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)},     tt_mu_processes, dy_mu_processes, st_tW_mu_processes]},
+                    'elmu': {'common': 'HLT_mu && abs(leps_ID) == 13*11 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+                    'mumu': {'common': 'HLT_mu && abs(leps_ID) == 13*13 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+               # HLT + match + tau ID medium + tau pt > 30 + 0 b tags + mT < 40 + 45 < (mu + tau).M < 85
+               'taumutauh': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets == 0 && tau_IDlev[0] > 2 && tau_p4[0].pt() > 30 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 40 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) > 45 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) < 85',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mu_processes, st_tW_mujets_processes, dy_mu_processes]}
+                     }
 
 
 processes_histos = dict()
@@ -125,18 +238,28 @@ if __name__ == '__main__':
         )
 
     parser.add_argument("ntupler_directory", help="the name of the directory with the Ntupler outputs")
+    parser.add_argument("channel", help="channel to select: el, mu, elmu, mumu, mujets")
     parser.add_argument("--lumi",  help="the data luminosity", default=1, type=float)
     parser.add_argument("--debug", help="set DEBUG level in logging output", action = "store_true")
-    test_process = 'dy_tau{}tauh'.format(lep)
-    small_test_process = {test_process: all_processes[test_process]}
-    parser.add_argument("--small", help="run on 1 small (%s) dataset for test" % test_process, action = "store_true")
-
+    parser.add_argument("--small", help="run on 1 small (DY) dataset for test", action = "store_true")
+    parser.add_argument("--process", help="run only on given process (data, tt_elmu)")
+    parser.add_argument("--draw", help="draw distr")
 
     args = parser.parse_args()
-    processes = small_test_process if args.small else all_processes
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
     logging.debug("ntupler_dir, lumi, small_test = %s, %r, %r" % (args.ntupler_directory, args.lumi, args.small))
+
+    for d in selection_specific[args.channel]['processes']:
+        all_processes.update(d)
+    test_process = {'el': 'dy_taueltauh', 'mu': 'dy_taumutauh', 'elmu': 'dy_taumutauel', 'mumu': 'dy_mumu', 'taumutauh': 'dy_taumutauh'}[args.channel]
+    small_test_process = {test_process: all_processes[test_process]}
+    small_test_process.update(dy_elmu_processes)
+    processes = small_test_process if args.small else all_processes
+
+    if args.process:
+        processes = {args.process: all_processes[args.process]}
+        logging.info("running on %s" % repr(processes))
 
     # ROOT is heavy, init it after comline
     from ROOT import TFile, TTree, TH1D, gROOT, gSystem, TCanvas
@@ -150,10 +273,16 @@ if __name__ == '__main__':
 
     #draw_distr = "lep_p4[0].pt()>>h(25,0,250)"
     #event_selection = "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && leps_ID == 11" + " && tau_IDlev[0] > 1 && lep_p4[0].pt() > 0 && lep_p4[0].pt() < 250"
-    draw_distr = "sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi())))>>h(25,0,250)"
-    event_selection = "nbjets > 0 && tau_IDlev[0] > 2 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 0 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 250 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4"
-    event_selection += ' && '
-    event_selection += "HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && abs(leps_ID) == 11"
+
+    if args.draw:
+        draw_distr = args.draw
+        event_selection = ''
+    else:
+        draw_distr = "sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi())))>>h(25,0,250)"
+        event_selection = "sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 0 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 250"
+        event_selection += ' && '
+    event_selection += selection_specific[args.channel]['common']
+    #"HLT_mu == 1 && leps_ID == 13" if channel_lep_id == 13 else "HLT_el == 1 && abs(leps_ID) == 11"
 
     logging.debug("Draw    " + draw_distr)
     logging.debug("Select  " + event_selection)
@@ -211,8 +340,9 @@ if __name__ == '__main__':
                   t = f.Get('ntupler/reduced_ttree')
                   subchan_selection = event_selection + (' && ' + proc_def if proc_def else '')
 
-                  if name is not 'data': # the weights for MC
+                  if 'data' not in name: # the weights for MC
                       # the aMCatNLO weight
+                      logging.debug('adding MC weights to selection')
                       weight  = '(pu_weight(nvtx_gen, {}))* '.format(0) # 0 for nominal PU weights
                       weight += '(aMCatNLO_weight > 0 ? 1 : -1)* ' if 'amcatnlo' in filename else ''
                       weight += '(ttbar_pT_SF(gen_t_w_decay_id, gen_tb_w_decay_id))* ' if 'TT' in filename else ''
@@ -238,13 +368,16 @@ if __name__ == '__main__':
                       weight_h = f.Get('ntupler/weight_counter')
                       n_events = events_h.GetBinContent(2)
                       n_weight = weight_h.GetBinContent(2)
-                      n_new_weight = n_events * h.Integral() / h.GetEntries() if h.GetEntries() > 0 else 1
+                      n_new_weight = n_events * h.Integral() / (h.GetEntries() if h.GetEntries() > 0 else 1)
+                      if n_new_weight == 0: # division by zero fix
+                          n_new_weight = 1
                       # the mc factor is its' xsec / N events before cuts
                       # it normalizes N events of MC -- multiply by lumi to get expected amount
                       logging.debug("old_weight, new_weight = {} {}".format(n_weight, n_new_weight))
                       logging.debug("old_factor, new_factor = {} {}".format(old_factor, xsec / n_new_weight))
                       logging.debug("Scale %f by %f * %f = %f" % (h.Integral(), xsec / n_new_weight, args.lumi, args.lumi * xsec / n_new_weight))
-                      h.Scale(args.lumi * xsec / n_new_weight)
+                      if n_new_weight > 0:
+                          h.Scale(args.lumi * xsec / n_new_weight)
                       #h.Scale(args.lumi * old_factor)
                       logging.debug("Scaled to %f" % h.Integral())
                   elif 'MC' in filename:
