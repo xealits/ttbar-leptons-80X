@@ -41,6 +41,13 @@ tt_elmu_processes = {'tt_elmu': (["MC2016_Summer16_TTJets_powheg.root"],
                      'tt_other': (["MC2016_Summer16_TTJets_powheg.root"],
                                   ["!(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13 || abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*13*15*15)"], 1) }
 
+tt_elel_processes = {'tt_elel': (["MC2016_Summer16_TTJets_powheg.root"],
+                                 ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*11)"], 0),
+                     'tt_taueltauel': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*11*15*15)"], 1),
+                     'tt_other': (["MC2016_Summer16_TTJets_powheg.root"],
+                                  ["!(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*11 || abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*11*15*15)"], 1) }
+
 tt_mumu_processes = {'tt_mumu': (["MC2016_Summer16_TTJets_powheg.root"],
                                  ["(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13)"], 0),
                      'tt_taumutaumu': (["MC2016_Summer16_TTJets_powheg.root"],
@@ -48,7 +55,7 @@ tt_mumu_processes = {'tt_mumu': (["MC2016_Summer16_TTJets_powheg.root"],
                      'tt_other': (["MC2016_Summer16_TTJets_powheg.root"],
                                   ["!(abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13 || abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*13*15*15)"], 1) }
 
-tt_mujets = {'tt': (["MC2016_Summer16_TTJets_powheg.root"], [''], 0)}
+tt_mujets_processes = {'tt': (["MC2016_Summer16_TTJets_powheg.root"], [''], 0)}
 
 
 st_tW_el_processes = {
@@ -86,6 +93,13 @@ st_tW_mumu_processes = {'st_tW_mumu': (["MC2016_Summer16_SingleT_tW_5FS_powheg.r
                                        ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*13)'], 2),
                         'st_tW_other': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
                                        ['!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*13*13 || abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 13*13)'], 2) }
+
+st_tW_elel_processes = {'st_tW_elel': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 11*11)'], 2),
+                        'st_tW_taueltauel': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*11*11)'], 2),
+                        'st_tW_other': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"],
+                                       ['!(abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 15*15*11*11 || abs(gen_wdecays_IDs[0] * gen_wdecays_IDs[1]) == 11*11)'], 2) }
 
 st_tW_mujets_processes = {'st_tW': (["MC2016_Summer16_SingleT_tW_5FS_powheg.root", "MC2016_Summer16_SingleTbar_tW_5FS_powheg.root"], [''], 2)}
 
@@ -126,6 +140,18 @@ dy_mumu_processes = {
   'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
              ["gen_N_zdecays < 1 && !(abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13*15*15 || abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 13*13)",
               "gen_N_zdecays > 0 && !(abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13*15*15 || abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 13*13)"], 5)
+}
+
+dy_elel_processes = {
+  'dy_elel': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+              ["gen_N_zdecays < 1 && (abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 11*11)",
+               "gen_N_zdecays > 0 && (abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*11)"], 5),
+  'dy_taueltauel': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+                    ["gen_N_zdecays < 1 && (abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 11*11*15*15)",
+              "gen_N_zdecays > 0 && (abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*11*15*15)"], 5),
+  'dy_other':  (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"],
+             ["gen_N_zdecays < 1 && !(abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 11*11*15*15 || abs(gen_pythia8_prompt_leptons_IDs[1] * gen_pythia8_prompt_leptons_IDs[0]) == 11*11)",
+              "gen_N_zdecays > 0 && !(abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*11*15*15 || abs(gen_zdecays_IDs[1]*gen_zdecays_IDs[0]) == 11*11)"], 5)
 }
 
 dy_mujets_processes = {'dy': (["MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root", "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root"], [''], 5)}
@@ -170,10 +196,17 @@ selection_specific = {'el': {'common': 'HLT_el && abs(leps_ID) == 11 && lep_matc
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)},     tt_mu_processes, dy_mu_processes, st_tW_mu_processes]},
                     'elmu': {'common': 'HLT_mu && abs(leps_ID) == 13*11 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+                    'elel': {'common': 'HLT_el && abs(leps_ID) == 11*11 && ((abs(lep_id[0]) == 11 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 11 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
+                             'processes': [{'data': (['Data13TeV_SingleElectron2016.root'], [''], 0)}, tt_elel_processes, st_tW_elel_processes, dy_elel_processes]},
                     'mumu': {'common': 'HLT_mu && abs(leps_ID) == 13*13 && ((abs(lep_id[0]) == 13 && lep_matched_HLT[0]) || (abs(lep_id[1]) == 13 && lep_matched_HLT[1])) && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && lep_p4[1].pt() > 30 && fabs(lep_p4[1].eta()) < 2.4',
-                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_elmu_processes, st_tW_elmu_processes, dy_elmu_processes]},
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mumu_processes, st_tW_mumu_processes, dy_mumu_processes]},
+                    'mujets': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && tau_IDlev[0] > 0',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mujets_processes, st_tW_mujets_processes, dy_mujets_processes]},
+               # HLT + match + tau ID medium + tau pt > 30 + 0 b tags + mT < 40 + 45 < (mu + tau).M < 85
                # HLT + match + tau ID medium + tau pt > 30 + 0 b tags + mT < 40 + 45 < (mu + tau).M < 85
                'taumutauh': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets == 0 && tau_IDlev[0] > 2 && tau_p4[0].pt() > 30 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) < 40 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) > 45 && divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) < 85',
+                             'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mu_processes, st_tW_mujets_processes, dy_mu_processes]},
+               'taumutauh_antiMt': {'common': 'HLT_mu && abs(leps_ID) == 13 && lep_matched_HLT[0] && nbjets == 0 && tau_IDlev[0] > 2 && tau_p4[0].pt() > 30 && lep_p4[0].pt() > 30 && fabs(lep_p4[0].eta()) < 2.4 && sqrt(2*lep_p4[0].pt()*met_corrected.pt() * (1 - cos(lep_p4[0].phi() - met_corrected.phi()))) > 50 && (divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) < 45 || divector_mass(lep_p4[0].x(), lep_p4[0].y(), lep_p4[0].z(), lep_p4[0].t(), tau_p4[0].x(), tau_p4[0].y(), tau_p4[0].z(), tau_p4[0].t()) > 85)',
                              'processes': [{'data': (['Data13TeV_SingleMuon2016.root'], [''], 0)}, tt_mu_processes, st_tW_mujets_processes, dy_mu_processes]}
                      }
 
@@ -252,10 +285,14 @@ if __name__ == '__main__':
 
     for d in selection_specific[args.channel]['processes']:
         all_processes.update(d)
-    test_process = {'el': 'dy_taueltauh', 'mu': 'dy_taumutauh', 'elmu': 'dy_taumutauel', 'mumu': 'dy_mumu', 'taumutauh': 'dy_taumutauh'}[args.channel]
-    small_test_process = {test_process: all_processes[test_process]}
-    small_test_process.update(dy_elmu_processes)
-    processes = small_test_process if args.small else all_processes
+
+    if args.small:
+        test_process = {'el': 'dy_taueltauh', 'elel': 'dy_elel', 'mu': 'dy_taumutauh', 'mujets': 'dy', 'elmu': 'dy_taumutauel', 'mumu': 'dy_mumu', 'taumutauh': 'dy_taumutauh'}[args.channel]
+        small_test_process = {test_process: all_processes[test_process]}
+        small_test_process.update(dy_elmu_processes)
+        processes = small_test_process
+    else:
+        processes = all_processes
 
     if args.process:
         processes = {args.process: all_processes[args.process]}
@@ -344,8 +381,12 @@ if __name__ == '__main__':
                       # the aMCatNLO weight
                       logging.debug('adding MC weights to selection')
                       weight  = '(pu_weight(nvtx_gen, {}))* '.format(0) # 0 for nominal PU weights
-                      weight += '(aMCatNLO_weight > 0 ? 1 : -1)* ' if 'amcatnlo' in filename else ''
-                      weight += '(ttbar_pT_SF(gen_t_w_decay_id, gen_tb_w_decay_id))* ' if 'TT' in filename else ''
+                      if 'amcatnlo' in filename:
+                          logging.debug('aMCatNLO -1 weights')
+                          weight += '(aMCatNLO_weight > 0 ? 1 : -1)* ' 
+                      if 'TT' in filename:
+                          logging.debug('top pT')
+                          weight += '(ttbar_pT_SF(gen_t_w_decay_id, gen_tb_w_decay_id))* '
                   else:
                       weight = ''
 
@@ -405,12 +446,14 @@ if __name__ == '__main__':
     c1.SaveAs( "test_channel_distrs.png" )
     """
 
-    mc_sum = 0
+    print args.channel
+    mc_sum = sum(histo.Integral() for n, histo in processes_histos.items() if 'data' not in n)
     for i, (n, histo) in enumerate(processes_histos.items()):
-        if n is 'data': continue
-        print n, histo.Integral()
-        mc_sum += histo.Integral()
+        if 'data' in n: continue
+        print '%-20s  %10.2f  %10.2f' % (n, histo.Integral(), histo.Integral() / mc_sum)
 
     print "mc_sum", mc_sum
-    print 'data', processes_histos['data'].Integral() if 'data' in processes_histos else 0
+    if 'data' in processes_histos:
+        print 'data', processes_histos['data'].Integral()
+        print 'ratio', processes_histos['data'].Integral() / mc_sum
 
