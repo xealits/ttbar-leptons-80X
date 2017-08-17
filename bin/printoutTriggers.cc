@@ -1227,6 +1227,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *
 		 * -- so trigger object has: filterLabels, algorithmNames, conditionName, pathName
 		 */
+		vector<pat::TriggerObjectStandAlone> trig_objs;
 		if(debug)
 			{
 			cout << "Printing SingleMuon HLT trigger objects" << endl;
@@ -1237,7 +1238,7 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				cout << "!triggerObjectsHandle.isValid()" << endl;
 				}
-			vector<pat::TriggerObjectStandAlone> trig_objs = *triggerObjectsHandle;
+			trig_objs = *triggerObjectsHandle;
 
 			cout << "phi, eta, pt of trigger object, pathNames and labelNames" << endl;
 			for (size_t i = 0; i < trig_objs.size(); i++)
@@ -1342,6 +1343,37 @@ for(size_t f=0; f<urls.size();++f)
 				{
 				pat::Muon& muon = selMuons[i];
 				cout << muon.phi() << ',' << muon.eta() << ',' << muon.pt() << endl;
+
+				for (size_t i = 0; i < trig_objs.size(); i++)
+					{
+					pat::TriggerObjectStandAlone& obj = trig_objs[i];
+					if (reco::deltaR(muon, obj) < 0.3)
+						{
+						cout << "matched trig" << endl;
+						obj.unpackPathNames(trigNames); // trigNamse are initialized above
+						cout << "(pN) " << obj.pathNames().size();
+						for (unsigned h = 0; h < obj.pathNames().size(); ++h)
+							{
+							cout << "; " << obj.pathNames()[h];
+							}
+						cout << endl << "(fL) " << obj.filterLabels().size();
+						for (unsigned h = 0; h < obj.filterLabels().size(); ++h)
+							{
+							cout << "; " << obj.filterLabels()[h];
+							}
+						cout << endl << "(cN) " << obj.conditionNames().size();
+						for (unsigned h = 0; h < obj.conditionNames().size(); ++h)
+							{
+							cout << "; " << obj.conditionNames()[h];
+							}
+						cout << endl << "(aN) " << obj.algorithmNames().size();
+						for (unsigned h = 0; h < obj.algorithmNames().size(); ++h)
+							{
+							cout << "; " << obj.algorithmNames()[h];
+							}
+						cout << endl;
+						}
+					}
 				}
 			}
 
