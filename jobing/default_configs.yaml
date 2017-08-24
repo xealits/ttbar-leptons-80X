@@ -89,3 +89,5 @@ conf_record_electrons:  False
 conf_record_muons:      False
 conf_record_taus_ID:    False
 conf_record_taus_kino:  False
+
+record_scheme: ''
