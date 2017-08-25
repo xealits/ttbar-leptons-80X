@@ -301,8 +301,8 @@ if __name__ == '__main__':
      "MC2016_Summer16_tchannel_antitop_4f_leptonicDecays_powheg.root": ( 80.95,2.08575e-06),
      "MC2016_Summer16_tchannel_top_4f_leptonicDecays_powheg.root":     (136.02,2.02288e-06),
 
-     "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root":      (18610  ,0.000601864),
-     "MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root":     ( 5765.4,0.000117316),
+     "MC2016_Summer16_DYJetsToLL_10to50_amcatnlo.root":      (18610  ,0.000601864), # same
+     "MC2016_Summer16_DYJetsToLL_50toInf_madgraph.root":     ( 5765.4,0.000117316), # 6025.2
      "MC2016_Summer16_DYJetsToTauTau_50toInf_amcatnlo.root": ( 1867  ,6.95408e-05),
 
      "MC2016_Summer16_WJets_madgraph.root" : (61526.7 * wjets_normalization, 0.0019671),

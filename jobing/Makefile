@@ -1352,6 +1352,8 @@ test_ntuple_channels_tauID:
 	python channel_distrs.py ${dir} taumutauh --lumi ${mulumi} ${add}
 	python channel_distrs.py ${dir} taumutauh_antiMt --lumi ${mulumi} ${add}
 	python channel_distrs.py ${dir} mujets --lumi ${mulumi} ${add}
+	python channel_distrs.py ${dir} taumutauh_antiMt_pretau --lumi ${mulumi} ${add}
+	python channel_distrs.py ${dir} taumutauh_antiMt_pretau_allb --lumi ${mulumi} ${add}
 
 test_ntuple_channels_Dilep:
 	python channel_distrs.py ${dir} mumu --lumi ${mulumi}
