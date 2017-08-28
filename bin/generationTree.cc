@@ -640,6 +640,22 @@ double top_pT_SF(double x)
 // TODO organize the code with new general record functions and remove these
 
 
+//void printDaughters(const reco::GenParticle & p, int offset)
+void printDaughters(const reco::Candidate * p, int offset)
+{
+int n_daughters = p->numberOfDaughters();
+if (n_daughters>0)
+	{
+	for (int j = 0; j < n_daughters; ++j) {
+		const reco::Candidate * d = p->daughter( j );
+		//const reco::GenParticle * d = p.daughter( j );
+		for (int o=0; o<offset; o++) cout << ' ';
+		cout << d->pdgId() << " (" << d->status() << ")" << endl;
+		printDaughters(d, offset+1);
+		}
+	}
+}
+
 
 
 
@@ -1359,6 +1375,44 @@ for(size_t f=0; f<urls.size();++f)
 		//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
 		mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
 
+		// recursive print of genTree
+		// cmssw crap doesn't print and notes from 2013 are far outdated (include instead of load?)
+		// how to print it here?
+		// which particles are "original" mothers
+		// let's just take two first ones...
+
+		const reco::GenParticle & proton_1 = gen[0];
+		const reco::GenParticle & proton_2 = gen[1];
+
+		cout << proton_1.pdgId() << " (" << proton_1.status() << ')' << endl;
+		//printDaughters(proton_1, 1);
+		int offset = 1;
+		int n_daughters = proton_1.numberOfDaughters();
+		if (n_daughters>0)
+			{
+			for (int j = 0; j < n_daughters; ++j) {
+				const reco::Candidate * d = proton_1.daughter( j );
+				//const reco::GenParticle * d = p.daughter( j );
+				for (int o=0; o<offset; o++) cout << ' ';
+				cout << d->pdgId() << " (" << d->status() << ")" << endl;
+				printDaughters(d, offset+1);
+				}
+			}
+
+		cout << proton_2.pdgId() << " (" << proton_2.status() << ')' << endl;
+		//printDaughters(proton_2, 1);
+		n_daughters = proton_2.numberOfDaughters();
+		if (n_daughters>0)
+			{
+			for (int j = 0; j < n_daughters; ++j) {
+				const reco::Candidate * d = proton_2.daughter( j );
+				//const reco::GenParticle * d = p.daughter( j );
+				for (int o=0; o<offset; o++) cout << ' ';
+				cout << d->pdgId() << " (" << d->status() << ")" << endl;
+				printDaughters(d, offset+1);
+				}
+			}
+
 		//* List of mother-daughters for all particles
 		//* TODO: make it into a separate function
 
@@ -1378,21 +1432,21 @@ for(size_t f=0; f<urls.size();++f)
 			int id = p.pdgId();
 			int st = p.status();
 			int n_daughters = p.numberOfDaughters();
-			cout << i << ": " ;
+			//cout << i << ": " ;
 			for (int j = 0 ; j < p.numberOfMothers(); ++j) {
 				const reco::Candidate * mom = p.mother(j);
-				cout << " " << mom->pdgId() << " " << mom->status() << ";";
+				//cout << " " << mom->pdgId() << " " << mom->status() << ";";
 				}
-			if (p.numberOfMothers() != 0) cout << "\t >>| \t" ;
-			cout <<  id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass();
+			//if (p.numberOfMothers() != 0) cout << "\t >>| \t" ;
+			//cout <<  id << " " << st << "\t" << p.pt() << "," << p.eta() << "," << p.phi() << "," << p.mass();
 			if (n_daughters>0) {
-				cout << " |>> \t" ;
+				//cout << " |>> \t" ;
 				for (int j = 0; j < n_daughters; ++j) {
 					const reco::Candidate * d = p.daughter( j );
-					cout << d->pdgId() << " " << d->status() << "; " ;
+					//cout << d->pdgId() << " " << d->status() << "; " ;
 					}
 				}
-			cout << endl;
+			//cout << endl;
 
 			// if it is a final state tau
 			//  the status is 1 or 2
@@ -1400,19 +1454,19 @@ for(size_t f=0; f<urls.size();++f)
 			//  2. (decayed or fragmented -- the case for tau)
 			if (fabs(id) == 15 && (st == 1 || st == 2))
 				{
-				cout << "A final state tau!" << endl;
-				cout << p << endl;
-				cout << "visible daughters:" << endl;
+				//cout << "A final state tau!" << endl;
+				//cout << p << endl;
+				//cout << "visible daughters:" << endl;
 				LorentzVector vis_ds(0,0,0,0);
 				for (int j = 0; j < n_daughters; ++j) {
 					const reco::Candidate * d = p.daughter(j);
 					unsigned int d_id = fabs(d->pdgId());
 					if (d_id == 12 || d_id == 14 || d_id == 16) continue;
-					cout << d->pdgId() << " (" << d->status() << ", " << d->numberOfDaughters() << "); " ;
+					//cout << d->pdgId() << " (" << d->status() << ", " << d->numberOfDaughters() << "); " ;
 					vis_ds += d->p4();
 					}
 				vis_taus.push_back(vis_ds);
-				cout << endl << "sum = " << vis_ds << endl;
+				//cout << endl << "sum = " << vis_ds << endl;
 				//cout << "sum = " << vis_ds.pt() << " " << vis_ds.eta() << endl;
 				}
 			}
