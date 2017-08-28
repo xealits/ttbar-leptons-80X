@@ -1,5 +1,13 @@
-from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas, TGraphAsymmErrors, TMath
 from array import array
+from sys import argv
+from collections import OrderedDict
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG)
+
+logging.info('importing ROOT')
+from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas, TGraphAsymmErrors, TMath
 
 pileup_ratio = array('d', [0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
 0.884048630953726, 0.964813189764159, 1.07045369167689, 1.12497267309738, 1.17367530613108, 1.20239808206413, 1.20815108390021, 1.20049333094509, 1.18284686347315, 1.14408796655615,
@@ -36,6 +44,15 @@ pileup_ratio_down = array('d', [0, 0.37361294640242, 1.1627791004568, 1.26890787
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+
+
+
+
+
+
+
 
 muon_effs_dirname = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/analysis/muon-effs/"
 gSystem.ExpandPathName(muon_effs_dirname    )
@@ -201,62 +218,75 @@ def lepton_muon_trigger_SF(abs_eta, pt): #, double SingleMuon_data_bcdef_fractio
  *
  * the trig eff for dilepton case is: apply negative of it for both leptons
  */
-//cout << "unpacking electron eff SFs" << endl;
-TString electron_effs_dirname = "analysis/electron-effs/";
-
-TFile* electron_effs_tracking_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronReconstructionSF_egammaEffi.txt_EGM2D.root").Data() );
-TH2D* electron_effs_tracking_all_histo = (TH2D*) electron_effs_tracking_all_file->Get("EGamma_SF2D");
-//cout << "Y tracking (reconstruction)" << endl;
-
-// for the selected electrons, Tight ID
-// not for Veto
-TFile* electron_effs_id_all_file = TFile::Open((electron_effs_dirname + "/2016_Sept23_ElectronID_TightCutBased_egammaEffi.txt_EGM2D.root").Data() );
-TH2D* electron_effs_id_all_histo = (TH2D*) electron_effs_id_all_file->Get("EGamma_SF2D");
-//cout << "Y id" << endl;
-
-//analysis/electron-effs/2016_03Feb_TriggerSF_Run2016All_v1.root
-TFile* electron_effs_trg_all_file = TFile::Open((electron_effs_dirname + "/2016_03Feb_TriggerSF_Run2016All_v1.root").Data() );
-TH2D* electron_effs_trg_all_histo = (TH2D*) electron_effs_trg_all_file->Get("Ele27_WPTight_Gsf");
-//cout << "Y trigger" << endl;
-
-// --- these SFs will be applied to the selected leptons independently
-
-
-double lepton_electron_SF(Float_t eta, Float_t pt)
-    {
-    double weight_reco, weight_id;
-
-    // here X axis is eta, Y axis is pt
-    // X is from -2.5 to 2.5 -- our eta is up to 2.4, should be ok
-    //double bin_x = (pt < electron_effs_tracking_all_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
-    double bin_x = eta;
-    double bin_y = (pt < electron_effs_tracking_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_tracking_all_histo->GetYaxis()->GetXmax() - 1);
-    weight_reco = electron_effs_tracking_all_histo->GetBinContent (electron_effs_tracking_all_histo->FindBin(bin_x, bin_y));
-
-    //bin_x = eta;
-    bin_y = (pt < electron_effs_id_all_histo->GetYaxis()->GetXmax() ? pt : electron_effs_id_all_histo->GetYaxis()->GetXmax() - 1);
-    weight_id = electron_effs_id_all_histo->GetBinContent (electron_effs_id_all_histo->FindBin(bin_x, bin_y));
-
-    return weight_reco * weight_id;
-    }
-
-
-double lepton_electron_trigger_SF(Float_t eta, Float_t pt)
-    {
-    //double no_ele_trig = 1;
-    // (calculate it the inverse-probbility way)
-    // no, just return the SF, assume 1-lepton case
-        //pat::Electron& el = selElectrons[i];
-    //double eta = el.superCluster()->position().eta();
-    //double pt = el.pt();
-    // here X axis is pt, Y axis is eta (from -2.5 to 2.5)
-    double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
-    double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
-    return electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
-    //el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
-    //fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
-    }
 '''
+logging.info("unpacking electron eff SFs")
+
+electron_effs_dirname = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/analysis/electron-effs"
+gSystem.ExpandPathName(electron_effs_dirname)
+
+electron_effs_tracking_all_file  = TFile(electron_effs_dirname + "/2016_Sept23_ElectronReconstructionSF_egammaEffi.txt_EGM2D.root")
+electron_effs_tracking_all_histo = electron_effs_tracking_all_file.Get("EGamma_SF2D")
+logging.info("Y tracking (reconstruction)")
+
+# for the selected electrons, Tight ID
+# not for Veto
+electron_effs_id_all_file  = TFile(electron_effs_dirname + "/2016_Sept23_ElectronID_TightCutBased_egammaEffi.txt_EGM2D.root")
+electron_effs_id_all_histo = electron_effs_id_all_file.Get("EGamma_SF2D")
+logging.info("Y id")
+
+#analysis/electron-effs/2016_03Feb_TriggerSF_Run2016All_v1.root
+electron_effs_trg_all_file  = TFile(electron_effs_dirname + "/2016_03Feb_TriggerSF_Run2016All_v1.root")
+electron_effs_trg_all_histo = electron_effs_trg_all_file.Get("Ele27_WPTight_Gsf")
+logging.info("Y trigger")
+
+# --- these SFs will be applied to the selected leptons independently
+
+electron_effs_tracking_all_histo_max_y = electron_effs_tracking_all_histo.GetYaxis().GetXmax()
+electron_effs_id_all_histo_max_y = electron_effs_id_all_histo.GetYaxis().GetXmax()
+
+h_weight_el_trk_pt = TH1D("weight_mu_trk_bcdef_pt", "", 50, 0, 200)
+h_weight_el_idd_pt = TH1D("weight_mu_idd_bcdef_pt", "", 50, 0, 200)
+h_weight_mu_iso_bcdef_pt = TH1D("weight_mu_iso_bcdef_pt", "", 50, 0, 200)
+h_weight_mu_trg_bcdef_pt = TH1D("weight_mu_trg_bcdef_pt", "", 50, 0, 200)
+
+def lepton_electron_SF(eta, pt):
+    #double weight_reco, weight_id;
+
+    # here X axis is eta, Y axis is pt
+    # X is from -2.5 to 2.5 -- our eta is up to 2.4 (2.5 in wide ntuples), should be ok
+    #double bin_x = (pt < electron_effs_tracking_all_histo->GetXaxis()->GetXmax()      ? pt : muon_effs_id_BCDEF_histo->GetXaxis()->GetXmax() - 1);
+    bin_x = eta;
+    bin_y = pt if pt < electron_effs_tracking_all_histo_max_y else electron_effs_tracking_all_histo_max_y - 1
+    sf_reco = electron_effs_tracking_all_histo.GetBinContent (electron_effs_tracking_all_histo.FindBin(bin_x, bin_y))
+
+    #bin_x = eta;
+    bin_y = pt if pt < electron_effs_id_all_histo_max_y else electron_effs_id_all_histo_max_y - 1
+    sf_id = electron_effs_id_all_histo.GetBinContent (electron_effs_id_all_histo.FindBin(bin_x, bin_y))
+
+    return sf_reco, sf_id
+
+electron_effs_trg_all_histo_max_x = electron_effs_trg_all_histo.GetXaxis().GetXmax()
+electron_effs_trg_all_histo_max_y = electron_effs_trg_all_histo.GetYaxis().GetXmax()
+
+def lepton_electron_trigger_SF(eta, pt):
+    #double no_ele_trig = 1;
+    # (calculate it the inverse-probbility way)
+    # no, just return the SF, assume 1-lepton case
+    #pat::Electron& el = selElectrons[i];
+    #double eta = el.superCluster()->position().eta();
+    #double pt = el.pt();
+    # here X axis is pt, Y axis is eta (from -2.5 to 2.5)
+    bin_x = pt  if pt  < electron_effs_trg_all_histo_max_x else electron_effs_trg_all_histo_max_x - 1
+
+    bin_y = eta
+    if eta > electron_effs_trg_all_histo_max_y:
+        bin_y = electron_effs_trg_all_histo_max_y - 0.01
+    elif eta < - electron_effs_trg_all_histo_max_y:
+        bin_y = - electron_effs_trg_all_histo_max_y + 0.01
+
+    return electron_effs_trg_all_histo.GetBinContent(electron_effs_trg_all_histo.FindBin(bin_x, bin_y))
+    #el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
+    #fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
 
 
 
@@ -286,21 +316,28 @@ def transverse_mass(v1, v2):
 
 def full_loop(t):
 
-    control_hs = {
-    'weight_pu' : TH1D("weight_pu", "", 50, 0, 2),
-    'weight_pu_up' : TH1D("weight_pu_up", "", 50, 0, 2),
-    'weight_pu_dn' : TH1D("weight_pu_dn", "", 50, 0, 2),
+    control_hs = OrderedDict([
+    ('weight_pu', TH1D("weight_pu", "", 50, 0, 2)),
+    ('weight_pu_up', TH1D("weight_pu_up", "", 50, 0, 2)),
+    ('weight_pu_dn', TH1D("weight_pu_dn", "", 50, 0, 2)),
 
-    'weight_mu_trk_bcdef' : TH1D("weight_mu_trk_bcdef", "", 50, 0, 2),
-    'weight_mu_id_bcdef'  : TH1D("weight_mu_id_bcdef", "", 50, 0, 2),
-    'weight_mu_iso_bcdef' : TH1D("weight_mu_iso_bcdef", "", 50, 0, 2),
-    'weight_mu_trg_bcdef' : TH1D("weight_mu_trg_bcdef", "", 50, 0, 2),
+    ('weight_mu_trk_bcdef', TH1D("weight_mu_trk_bcdef", "", 50, 0, 2)),
+    ('weight_mu_id_bcdef' , TH1D("weight_mu_id_bcdef", "", 50, 0, 2)),
+    ('weight_mu_iso_bcdef', TH1D("weight_mu_iso_bcdef", "", 50, 0, 2)),
+    ('weight_mu_trg_bcdef', TH1D("weight_mu_trg_bcdef", "", 50, 0, 2)),
+    ('weight_mu_all_bcdef', TH1D("weight_mu_all_bcdef", "", 50, 0, 2)),
 
-    'weight_mu_trk_gh' : TH1D("weight_mu_trk_gh", "", 50, 0, 2),
-    'weight_mu_id_gh'  : TH1D("weight_mu_id_gh", "", 50, 0, 2),
-    'weight_mu_iso_gh' : TH1D("weight_mu_iso_gh", "", 50, 0, 2),
-    'weight_mu_trg_gh' : TH1D("weight_mu_trg_gh", "", 50, 0, 2)
-    }
+    ('weight_mu_trk_gh', TH1D("weight_mu_trk_gh", "", 50, 0, 2)),
+    ('weight_mu_id_gh' , TH1D("weight_mu_id_gh", "", 50, 0, 2)),
+    ('weight_mu_iso_gh', TH1D("weight_mu_iso_gh", "", 50, 0, 2)),
+    ('weight_mu_trg_gh', TH1D("weight_mu_trg_gh", "", 50, 0, 2)),
+    ('weight_mu_all_gh', TH1D("weight_mu_all_gh", "", 50, 0, 2)),
+
+    ('weight_el_trk', TH1D("weight_el_trk", "", 50, 0, 2)),
+    ('weight_el_idd', TH1D("weight_el_idd", "", 50, 0, 2)),
+    ('weight_el_trg', TH1D("weight_el_trg", "", 50, 0, 2)),
+    ('weight_el_all', TH1D("weight_el_all", "", 50, 0, 2)),
+    ])
 
     for i, event in enumerate(t):
         try:
@@ -310,29 +347,44 @@ def full_loop(t):
         except:
             print i, event.nvtx
 
-        if not (abs(event.leps_ID) == 13 and event.HLT_mu and event.lep_matched_HLT[0]): continue
+        if abs(event.leps_ID) == 13 and event.HLT_mu and event.lep_matched_HLT[0]:
+            # bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso, gh_weight_trk, gh_weight_id, gh_weight_iso
+            mu_sfs = lepton_muon_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
+            mu_trg_sf = lepton_muon_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
 
-        # bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso, gh_weight_trk, gh_weight_id, gh_weight_iso
-        mu_sfs = lepton_muon_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
+            control_hs['weight_mu_trk_bcdef'].Fill(mu_sfs[0])
+            control_hs['weight_mu_id_bcdef'] .Fill(mu_sfs[1])
+            control_hs['weight_mu_iso_bcdef'].Fill(mu_sfs[2])
+            control_hs['weight_mu_trg_bcdef'].Fill(mu_trg_sf[0])
+            control_hs['weight_mu_all_bcdef'].Fill(mu_trg_sf[0] * mu_sfs[0] * mu_sfs[1] * mu_sfs[2])
 
-        mu_trg_sf = lepton_muon_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
-        control_hs['weight_mu_trk_bcdef'].Fill(mu_sfs[0])
-        control_hs['weight_mu_id_bcdef'] .Fill(mu_sfs[1])
-        control_hs['weight_mu_iso_bcdef'].Fill(mu_sfs[2])
-        control_hs['weight_mu_trg_bcdef'].Fill(mu_trg_sf[0])
+            control_hs['weight_mu_trk_gh'].Fill(mu_sfs[3])
+            control_hs['weight_mu_id_gh'] .Fill(mu_sfs[4])
+            control_hs['weight_mu_iso_gh'].Fill(mu_sfs[5])
+            control_hs['weight_mu_trg_gh'].Fill(mu_trg_sf[1])
+            control_hs['weight_mu_all_gh'].Fill(mu_trg_sf[1] * mu_sfs[3] * mu_sfs[4] * mu_sfs[5])
+        elif abs(event.leps_ID) == 11 and event.HLT_el and event.lep_matched_HLT[0]:
+            el_sfs = lepton_electron_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
+            el_trg_sf = lepton_electron_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
 
-        control_hs['weight_mu_trk_gh'].Fill(mu_sfs[3])
-        control_hs['weight_mu_id_gh'] .Fill(mu_sfs[4])
-        control_hs['weight_mu_iso_gh'].Fill(mu_sfs[5])
-        control_hs['weight_mu_trg_gh'].Fill(mu_trg_sf[1])
+            control_hs['weight_el_trk'].Fill(el_sfs[0])
+            control_hs['weight_el_idd'].Fill(el_sfs[1])
+            control_hs['weight_el_trg'].Fill(el_trg_sf)
+            control_hs['weight_el_all'].Fill(el_trg_sf * el_sfs[0] * el_sfs[1])
 
 
     return control_hs
 
 
-f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_WJets_madgraph.root')
-#f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
-t = f.Get('ntupler/reduced_ttree')
-c_hs = full_loop(t)
-print c_hs.values()
+if __name__ == '__main__':
+    if '-w' in argv:
+        input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
+    else:
+        input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+    f = TFile(input_filename)
+    #f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
+    t = f.Get('ntupler/reduced_ttree')
+    c_hs = full_loop(t)
+    for name, h in c_hs.items():
+        print "%20s %9.5f" % (name, h.GetMean())
 

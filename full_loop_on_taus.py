@@ -1,7 +1,10 @@
 import logging
 from numpy import array, sqrt
 from numpy.linalg import norm
+from sys import argv
 
+
+gen_match = '-g' in argv
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -9,9 +12,10 @@ logging.basicConfig(level=logging.DEBUG)
 from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas
 gROOT.SetBatch(True)
 
-
-filename, nick = "outdir/v12.2/merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
-filename, nick = "outdir/v12.2/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+if '-w' in argv:
+    filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
+else:
+    filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
 
 isTT = 'TT' in filename
 
@@ -20,7 +24,9 @@ ntuple  = in_file.Get("ntupler/reduced_ttree")
 
 logging.debug("opened file and ntuple")
 
-out_file = TFile("test_full_loop_on_taus_%s.root" % nick, "recreate")
+out_filename = "test_full_loop_on_taus_%s.root" % (nick if not gen_match else "genMatch_" + nick)
+logging.debug("will write to " + out_filename)
+out_file = TFile(out_filename, "recreate")
 h_refit_SV_cov00 = TH1D("refit_SV_cov00_%s" % nick, "", 100, 0, 0.00001)
 h_refit_SV_cov01 = TH1D("refit_SV_cov01_%s" % nick, "", 100, 0, 0.00001)
 h_refit_SV_cov02 = TH1D("refit_SV_cov02_%s" % nick, "", 100, 0, 0.00001)
@@ -57,9 +63,9 @@ h_pat_flightSign = TH1D("pat_flightSign_%s" % nick, "", 100, 0, 50)
 h_pat_flightSign_lt = TH1D("pat_flightSign_lt", "", 100, 0, 50)
 h_pat_flightSign_lj = TH1D("pat_flightSign_lj", "", 100, 0, 50)
 
-h_pat_bTag_flightSign    = TH2D("pat_bTag_flightSign_%s" % nick, "", 100, 0, 1, 100, 0, 50)
-h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 1, 100, 0, 50)
-h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 1, 100, 0, 50)
+h_pat_bTag_flightSign    = TH2D("pat_bTag_flightSign_%s" % nick, "", 100, 0, 50, 100, 0, 1)
+h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 50, 100, 0, 1)
+h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 50, 100, 0, 1)
 #tau_dR_matched_jet
 
 h_refit_flightSign_lt_noBtag = TH1D("refit_flightSign_lt_noBtag", "", 100, 0, 50)
@@ -79,6 +85,12 @@ for i, event in enumerate(ntuple):
     if event.tau_SV_fit_isOk.size() < 1 or not event.tau_SV_fit_isOk[0]: continue
     n_events += 1
     if n_events > N_events: break
+
+    # match the 0 tau to any of gen taus
+    if gen_match and not any(sqrt((gen.Eta() - event.tau_p4[0].Eta())**2 + (gen.Phi() - event.tau_p4[0].Phi())**2) < 0.1 for gen in event.gen_tau_p4): continue
+    # ref:
+    # http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_5_3_9/doc/html/d5/d6b/DataFormats_2Math_2interface_2deltaR_8h_source.html#l00019
+
     h_n_goodPV.Fill(event.PV_x.size())
     h_refit_SV_cov00.Fill(event.tau_SV_cov[0](0, 0))
     h_refit_SV_cov01.Fill(event.tau_SV_cov[0](0, 1))
@@ -116,7 +128,7 @@ for i, event in enumerate(ntuple):
     h_refit_flightSign.Fill(flight_sign)
     i_matched_tau_jet = event.tau_dR_matched_jet[0]
     if i_matched_tau_jet > -1:
-        h_pat_bTag_flightSign.Fill(event.jet_b_discr[i_matched_tau_jet], pat_flightSign)
+        h_pat_bTag_flightSign.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
 
     if isTT:
         if abs(event.gen_t_w_decay_id * event.gen_tb_w_decay_id) == 13: # lj
@@ -125,8 +137,8 @@ for i, event in enumerate(ntuple):
             h_pat_flightLen_lj .Fill(pat_flightLen)
             h_pat_flightSign_lj.Fill(pat_flightSign)
             if i_matched_tau_jet > -1:
-                h_pat_bTag_flightSign_lj.Fill(event.jet_b_discr[i_matched_tau_jet], pat_flightSign)
-                if event.jet_b_discr[i_matched_tau_jet] < 0.3:
+                h_pat_bTag_flightSign_lj.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
+                if event.jet_b_discr[i_matched_tau_jet] < 0.85:
                     h_refit_flightSign_lj_noBtag .Fill(flight_sign)
                     h_pat_flightSign_lj_noBtag   .Fill(pat_flightSign)
 
@@ -136,8 +148,8 @@ for i, event in enumerate(ntuple):
             h_pat_flightLen_lt .Fill(pat_flightLen)
             h_pat_flightSign_lt.Fill(pat_flightSign)
             if i_matched_tau_jet > -1:
-                h_pat_bTag_flightSign_lt.Fill(event.jet_b_discr[i_matched_tau_jet], pat_flightSign)
-                if event.jet_b_discr[i_matched_tau_jet] < 0.3:
+                h_pat_bTag_flightSign_lt.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
+                if event.jet_b_discr[i_matched_tau_jet] < 0.85:
                     h_refit_flightSign_lt_noBtag .Fill(flight_sign)
                     h_pat_flightSign_lt_noBtag   .Fill(pat_flightSign)
 
