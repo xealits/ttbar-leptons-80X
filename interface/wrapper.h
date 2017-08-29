@@ -1,3 +1,5 @@
+// test
+int foo();
 
 // initializators
 void set_bSF_calibrators();

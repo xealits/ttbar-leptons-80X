@@ -288,6 +288,101 @@ def lepton_electron_trigger_SF(eta, pt):
     #el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
     #fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
 
+'''
+b-tagging SF
+'''
+
+"""
+#bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+bTaggingEfficiencies_filename = '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root'
+gSystem.ExpandPathName(bTaggingEfficiencies_filename)
+bTaggingEfficiencies_file = TFile(bTaggingEfficiencies_filename)
+
+
+def set_bSF_effs_for_dtag(dtag):
+    # read-in and setup all the b-tagging crap
+
+    backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph"
+
+    # b flavour
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged"):
+        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates")
+        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged")
+    else
+        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates")
+        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged")
+    # c flavour
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
+        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates")
+        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
+    else
+        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates")
+        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged")
+
+    # light flavour
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"):
+        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates")
+        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged")
+    else
+        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates")
+        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged")
+
+    '''
+    bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
+    bEffs.b_tagged    = bTaggingEfficiencies_b_tagged   ;
+    bEffs.c_alljet    = bTaggingEfficiencies_c_alljet   ;
+    bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
+    bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
+    bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
+    '''
+
+    return ((bTaggingEfficiencies_b_tagged, bTaggingEfficiencies_b_alljet), (bTaggingEfficiencies_c_tagged, bTaggingEfficiencies_c_alljet), (bTaggingEfficiencies_udsg_tagged, bTaggingEfficiencies_udsg_alljet))
+"""
+
+logging.info("loading b-tagging wrapper with gROOT stuff")
+
+ROOT.gROOT.Reset()
+ROOT.gROOT.ProcessLine(".L pu_weight.C+") # this is also needed for stuf to run
+ROOT.gSystem.Load("libUserCodettbar-leptons-80X.so")
+ROOT.gROOT.ProcessLine("set_bSF_calibrators()")
+
+'''
+itak
+
+standalone even if you get to it and  run .L
+colapses with
+error: constructor for 'BTagCalibration' must explicitly
+      initialize the member 'data_'
+
+-- same error as when the wrapper was made...
+
+it should work like:
+import ROOT
+
+ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cc+') 
+
+calib = ROOT.BTagCalibration("csv", "CSV.csv")
+reader = ROOT.BTagCalibrationReader(0, "central")  # 0 is for loose op
+reader.load(calib, 0, "comb")  # 0 is for b flavour, "comb" is the measurement type
+
+# in your event loop
+reader.eval(0, 1.2, 30.)  # jet flavor, eta, pt
+
+-- maybe loading ttbar lib the calibrator class should be there?
+
+yup:
+>>> import ROOT
+>>> ROOT.gROOT.Reset()
+>>> ROOT.gROOT.ProcessLine(".L pu_weight.C+") # this is also needed for stuf to run
+0L
+>>> ROOT.gSystem.Load("libUserCodettbar-leptons-80X.so")
+0
+>>> 
+>>> ROOT.BTagCalibration
+<class 'ROOT.BTagCalibration'>
+
+-- test tomorrow
+'''
 
 
 def top_pT_SF(x):
@@ -333,10 +428,14 @@ def full_loop(t):
     ('weight_mu_trg_gh', TH1D("weight_mu_trg_gh", "", 50, 0, 2)),
     ('weight_mu_all_gh', TH1D("weight_mu_all_gh", "", 50, 0, 2)),
 
+    ('weight_mu_bSF', TH1D("weight_mu_bSF", "", 50, 0, 2)),
+
     ('weight_el_trk', TH1D("weight_el_trk", "", 50, 0, 2)),
     ('weight_el_idd', TH1D("weight_el_idd", "", 50, 0, 2)),
     ('weight_el_trg', TH1D("weight_el_trg", "", 50, 0, 2)),
     ('weight_el_all', TH1D("weight_el_all", "", 50, 0, 2)),
+
+    ('weight_el_bSF', TH1D("weight_el_bSF", "", 50, 0, 2)),
     ])
 
     for i, event in enumerate(t):
@@ -363,6 +462,13 @@ def full_loop(t):
             control_hs['weight_mu_iso_gh'].Fill(mu_sfs[5])
             control_hs['weight_mu_trg_gh'].Fill(mu_trg_sf[1])
             control_hs['weight_mu_all_gh'].Fill(mu_trg_sf[1] * mu_sfs[3] * mu_sfs[4] * mu_sfs[5])
+
+            if event.jet_b_discr.size() > 0:
+                control_hs['weight_mu_bSF'].Fill(
+                    gROOT.ProcessLine('calc_btag_sf_weight(*btagCal, bEffs, %f > 0.8484, %d, %f, %f)' % (event.jet_b_discr[0], event.jet_hadronFlavour[0], event.jet_p4[0].pt(), event.jet_p4[0].eta())))
+            # I do need a working standalone b-tag calibrator instead of this jogling
+            #b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.8484)
+
         elif abs(event.leps_ID) == 11 and event.HLT_el and event.lep_matched_HLT[0]:
             el_sfs = lepton_electron_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
             el_trg_sf = lepton_electron_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
@@ -379,8 +485,18 @@ def full_loop(t):
 if __name__ == '__main__':
     if '-w' in argv:
         input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
+        dtag = "MC2016_Summer16_WJets_madgraph"
+        init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
+        logging.info("init b SFs with: " + init_bSF_call)
+        gROOT.ProcessLine(init_bSF_call)
+
     else:
         input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+        dtag = "MC2016_Summer16_TTJets_powheg"
+        init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
+        logging.info("init b SFs with: " + init_bSF_call)
+        gROOT.ProcessLine(init_bSF_call)
+
     f = TFile(input_filename)
     #f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
     t = f.Get('ntupler/reduced_ttree')

@@ -12,6 +12,11 @@
 
 #include <string.h>
 
+int foo()
+{
+return 5;
+}
+
 /*
 // b-tagging SF
 // for each jet check if it is tagged
