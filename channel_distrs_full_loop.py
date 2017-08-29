@@ -1,5 +1,6 @@
 from array import array
 from sys import argv
+from os import environ
 from collections import OrderedDict
 import logging
 
@@ -7,6 +8,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 logging.info('importing ROOT')
+import ROOT
 from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas, TGraphAsymmErrors, TMath
 
 pileup_ratio = array('d', [0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
@@ -53,10 +55,12 @@ pileup_ratio_down = array('d', [0, 0.37361294640242, 1.1627791004568, 1.26890787
 
 
 
+logging.info("leptonic SFs")
 
 muon_effs_dirname = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/analysis/muon-effs/"
 gSystem.ExpandPathName(muon_effs_dirname    )
 #TString muon_effs_dirname = "analysis/muon-effs/";
+logging.info("muon SFs from " + muon_effs_dirname)
 
 muon_effs_tracking_BCDEF_file  = TFile(muon_effs_dirname + "/2016_23Sep_tracking_more_BCDEF_fits.root" )
 muon_effs_tracking_GH_file     = TFile(muon_effs_dirname + "/2016_23Sep_tracking_more_GH_fits.root" )
@@ -288,65 +292,13 @@ def lepton_electron_trigger_SF(eta, pt):
     #el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
     #fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
 
+
+
+
+
 '''
 b-tagging SF
-'''
 
-"""
-#bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-bTaggingEfficiencies_filename = '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root'
-gSystem.ExpandPathName(bTaggingEfficiencies_filename)
-bTaggingEfficiencies_file = TFile(bTaggingEfficiencies_filename)
-
-
-def set_bSF_effs_for_dtag(dtag):
-    # read-in and setup all the b-tagging crap
-
-    backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph"
-
-    # b flavour
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged"):
-        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates")
-        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged")
-    else
-        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates")
-        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged")
-    # c flavour
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
-        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates")
-        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
-    else
-        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates")
-        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged")
-
-    # light flavour
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"):
-        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates")
-        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged")
-    else
-        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates")
-        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged")
-
-    '''
-    bEffs.b_alljet    = bTaggingEfficiencies_b_alljet   ;
-    bEffs.b_tagged    = bTaggingEfficiencies_b_tagged   ;
-    bEffs.c_alljet    = bTaggingEfficiencies_c_alljet   ;
-    bEffs.c_tagged    = bTaggingEfficiencies_c_tagged   ;
-    bEffs.udsg_alljet = bTaggingEfficiencies_udsg_alljet;
-    bEffs.udsg_tagged = bTaggingEfficiencies_udsg_tagged;
-    '''
-
-    return ((bTaggingEfficiencies_b_tagged, bTaggingEfficiencies_b_alljet), (bTaggingEfficiencies_c_tagged, bTaggingEfficiencies_c_alljet), (bTaggingEfficiencies_udsg_tagged, bTaggingEfficiencies_udsg_alljet))
-"""
-
-logging.info("loading b-tagging wrapper with gROOT stuff")
-
-ROOT.gROOT.Reset()
-ROOT.gROOT.ProcessLine(".L pu_weight.C+") # this is also needed for stuf to run
-ROOT.gSystem.Load("libUserCodettbar-leptons-80X.so")
-ROOT.gROOT.ProcessLine("set_bSF_calibrators()")
-
-'''
 itak
 
 standalone even if you get to it and  run .L
@@ -384,6 +336,170 @@ yup:
 -- test tomorrow
 '''
 
+logging.info("loading b-tagging SF stuff")
+
+ROOT.gROOT.Reset()
+ROOT.gROOT.ProcessLine(".L pu_weight.C+") # this is also needed for stuf to run
+ROOT.gSystem.Load("libUserCodettbar-leptons-80X.so")
+#ROOT.gROOT.ProcessLine("set_bSF_calibrators()")
+
+
+#calib = ROOT.BTagCalibration("csv", "CSV.csv")
+#reader = ROOT.BTagCalibrationReader(0, "central")  # 0 is for loose op
+#reader.load(calib, 0, "comb")  # 0 is for b flavour, "comb" is the measurement type
+
+logging.info("loading b-tagging SF callibration")
+#bCalib_filename = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv"
+bCalib_filename = environ['CMSSW_BASE'] + '/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv'
+#gSystem.ExpandPathName(bCalib_filename)
+
+logging.info("btag SFs from " + bCalib_filename)
+btagCalib = ROOT.BTagCalibration("CSVv2", bCalib_filename)
+#BTagCalibration* btagCalib; // ("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/ttbar-leptons-80X/data/weights/CSVv2_Moriond17_B_H.csv");
+
+logging.info("loading Reader")
+btagCal_sys = ROOT.vector('string')()
+btagCal_sys.push_back("up")
+btagCal_sys.push_back("down")
+btagCal = ROOT.BTagCalibrationReader(ROOT.BTagEntry.OP_MEDIUM,  # operating point
+# BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
+			     "central",            # central sys type
+			     btagCal_sys)      # other sys types
+# the type is:
+# const std::vector<std::string> & otherSysTypes={}
+
+
+logging.info("...flavours")
+btagCal.load(btagCalib,        # calibration instance
+	ROOT.BTagEntry.FLAV_B,      # btag flavour
+#            "comb");          # they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
+	"mujets")              #
+btagCal.load(btagCalib,        # calibration instance
+	ROOT.BTagEntry.FLAV_C,      # btag flavour
+	"mujets")              # measurement type
+btagCal.load(btagCalib,        # calibration instance
+	ROOT.BTagEntry.FLAV_UDSG,   # btag flavour
+	"incl")                # measurement type
+
+logging.info("loaded b-tagging callibration")
+
+logging.info("loading b-tagging efficiencies")
+#bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+bTaggingEfficiencies_filename = '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root'
+gSystem.ExpandPathName(bTaggingEfficiencies_filename)
+bTaggingEfficiencies_file = TFile(bTaggingEfficiencies_filename)
+
+logging.info("loaded b-tagging efficiencies")
+
+def set_bSF_effs_for_dtag(dtag):
+    # read-in and setup all the b-tagging crap
+
+    #TString bTaggingEfficiencies_filename   = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
+    #gSystem->ExpandPathName(bTaggingEfficiencies_filename);
+
+    global b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
+
+    backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph";
+
+    # b flavour
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged"):
+        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates")
+        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged")
+    else:
+        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates")
+        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged")
+    # c flavour
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged"):
+        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates")
+        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
+    else:
+        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates")
+        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged")
+    # light flavours
+    if bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"):
+        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates")
+        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged")
+    else:
+        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates")
+        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged")
+
+    b_alljet    = bTaggingEfficiencies_b_alljet   
+    b_tagged    = bTaggingEfficiencies_b_tagged   
+    c_alljet    = bTaggingEfficiencies_c_alljet   
+    c_tagged    = bTaggingEfficiencies_c_tagged   
+    udsg_alljet = bTaggingEfficiencies_udsg_alljet
+    udsg_tagged = bTaggingEfficiencies_udsg_tagged
+
+    #return bTaggingEfficiencies_b_alljet, bTaggingEfficiencies_b_tagged,
+    #     bTaggingEfficiencies_c_alljet, bTaggingEfficiencies_c_tagged,
+    #     bTaggingEfficiencies_udsg_alljet, bTaggingEfficiencies_udsg_tagged
+
+'''
+static double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
+	{
+	Int_t global_bin_id = bEffs.b_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
+        Double_t N_alljets  = bEffs.b_alljet->GetBinContent(global_bin_id);
+	Double_t N_tagged   = bEffs.b_tagged->GetBinContent(global_bin_id);
+	if (N_alljets < 0.001 || N_tagged < 0.001)
+		{
+		//fill_2d(string("btag_eff_retrieved0_flavour_b"), 250, 0., 500., 200, -4., 4., pt, eta, 1);
+		//fill_btag_efficiency(string("btag_eff_retrieved0_flavour_b"), pt, eta, 1);
+		return 0; // whatch out -- equality of floats
+		}
+	return N_tagged/N_alljets;
+	}
+'''
+
+# TODO: substitute by just prepared efficiency histogram!
+def bTagging_X_jet_efficiency(alljet, tagged):
+
+    def the_funct(pt, eta):
+        global_bin_id = alljet.FindBin(pt, eta); # the binning should be the same in both histograms
+        N_alljets  = alljet.GetBinContent(global_bin_id);
+        N_tagged   = tagged.GetBinContent(global_bin_id);
+        if N_alljets < 0.001 or N_tagged < 0.001:
+            #fill_2d(string("btag_eff_retrieved0_flavour_b"), 250, 0., 500., 200, -4., 4., pt, eta, 1);
+            #fill_btag_efficiency(string("btag_eff_retrieved0_flavour_b"), pt, eta, 1);
+            return 0 # whatch out -- equality of floats
+        return N_tagged/N_alljets
+
+    return the_funct
+
+#def calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta):
+    # int flavId=jet.partonFlavour();
+    #int flavId=jet.hadronFlavour();
+    # also: patJet->genParton().pdgId()
+    # fill_btag_eff(string("mc_all_b_tagging_candidate_jets_pt_eta"), jet.pt(), eta, weight);
+
+    sf, eff = 1.0, 1.0
+    # If the jet is tagged -- weight *= SF of the jet
+    # if not weight *= (1 - eff*SF)/(1 - eff)
+    # 
+
+    if abs(flavId) == 5:
+        # get SF for the jet
+        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_B, eta, pt, 0.)
+        # get eff for the jet
+        eff = bTagging_b_jet_efficiency(pt, eta)
+    elif abs(flavId) == 4:
+        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_C, eta, pt, 0.)
+        eff = bTagging_c_jet_efficiency(pt, eta)
+    else:
+        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_UDSG, eta, pt, 0.)
+        eff = bTagging_udsg_jet_efficiency(pt, eta)
+
+    jet_weight_factor = 1.
+    if hasCSVtag: # a tagged jet
+        jet_weight_factor = sf
+    else: # not tagged
+        # truncate efficiency to 0 and 0.99
+        eff = 0. if eff < 0. else (0.999 if eff > 0.999 else eff)
+        jet_weight_factor = (1 - sf*eff) / (1 - eff)
+
+    return jet_weight_factor
+
+
 
 def top_pT_SF(x):
     # the SF function is SF(x)=exp(a+bx)
@@ -409,7 +525,13 @@ def transverse_mass(v1, v2):
 
 
 
-def full_loop(t):
+def full_loop(t, dtag):
+    set_bSF_effs_for_dtag(dtag)
+    print b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
+    global bTagging_b_jet_efficiency, bTagging_c_jet_efficiency, bTagging_udsg_jet_efficiency
+    bTagging_b_jet_efficiency = bTagging_X_jet_efficiency(b_alljet, b_tagged)
+    bTagging_c_jet_efficiency = bTagging_X_jet_efficiency(c_alljet, c_tagged)
+    bTagging_udsg_jet_efficiency = bTagging_X_jet_efficiency(udsg_alljet, udsg_tagged)
 
     control_hs = OrderedDict([
     ('weight_pu', TH1D("weight_pu", "", 50, 0, 2)),
@@ -463,9 +585,9 @@ def full_loop(t):
             control_hs['weight_mu_trg_gh'].Fill(mu_trg_sf[1])
             control_hs['weight_mu_all_gh'].Fill(mu_trg_sf[1] * mu_sfs[3] * mu_sfs[4] * mu_sfs[5])
 
-            if event.jet_b_discr.size() > 0:
-                control_hs['weight_mu_bSF'].Fill(
-                    gROOT.ProcessLine('calc_btag_sf_weight(*btagCal, bEffs, %f > 0.8484, %d, %f, %f)' % (event.jet_b_discr[0], event.jet_hadronFlavour[0], event.jet_p4[0].pt(), event.jet_p4[0].eta())))
+            for i, (p4, flavId, b_discr) in enumerate(zip(event.jet_p4, event.jet_hadronFlavour, event.jet_b_discr)):
+                # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+                control_hs['weight_mu_bSF'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta()))
             # I do need a working standalone b-tag calibrator instead of this jogling
             #b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.8484)
 
@@ -478,6 +600,10 @@ def full_loop(t):
             control_hs['weight_el_trg'].Fill(el_trg_sf)
             control_hs['weight_el_all'].Fill(el_trg_sf * el_sfs[0] * el_sfs[1])
 
+            for i, (p4, flavId, b_discr) in enumerate(zip(event.jet_p4, event.jet_hadronFlavour, event.jet_b_discr)):
+                # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+                control_hs['weight_el_bSF'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta()))
+
 
     return control_hs
 
@@ -486,21 +612,24 @@ if __name__ == '__main__':
     if '-w' in argv:
         input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
         dtag = "MC2016_Summer16_WJets_madgraph"
-        init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
-        logging.info("init b SFs with: " + init_bSF_call)
-        gROOT.ProcessLine(init_bSF_call)
+        #init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
+        #logging.info("init b SFs with: " + init_bSF_call)
+        #gROOT.ProcessLine(init_bSF_call)
 
     else:
         input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
         dtag = "MC2016_Summer16_TTJets_powheg"
-        init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
-        logging.info("init b SFs with: " + init_bSF_call)
-        gROOT.ProcessLine(init_bSF_call)
+        #init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
+        #logging.info("init b SFs with: " + init_bSF_call)
+        #gROOT.ProcessLine(init_bSF_call)
 
+    #dtag = input_filename.split('/')[-1].split('.')[0]
+    logging.info("dtag = " + dtag)
     f = TFile(input_filename)
     #f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
     t = f.Get('ntupler/reduced_ttree')
-    c_hs = full_loop(t)
+    logging.info("N entries = %s" % t.GetEntries())
+    c_hs = full_loop(t, dtag)
     for name, h in c_hs.items():
         print "%20s %9.5f" % (name, h.GetMean())
 
