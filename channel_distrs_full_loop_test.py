@@ -18,11 +18,10 @@ pileup_ratio = array('d', [0, 0.360609416811339, 0.910848525427002, 1.2062996050
 0.405579825620816, 0.309696044611377, 0.228191137503131, 0.163380359253309, 0.113368437957202, 0.0772279997453792, 0.0508111733313502, 0.0319007262683943, 0.0200879459309245, 0.0122753366005436,
 0.00739933885813127, 0.00437426967257811, 0.00260473545284139, 0.00157047254226743, 0.000969500595715493, 0.000733193118123283, 0.000669817107713128, 0.000728548958604492, 0.000934559691182011, 0.00133719688378802,
 0.00186652283903214, 0.00314422244976771, 0.00406954793369611, 0.00467888840511915, 0.00505224284441512, 0.00562827194936864, 0.0055889504870752, 0.00522867039470319, 0.00450752163476433, 0.00395300774604375,
-0.00330577167682956, 0.00308353042577215, 0.00277846504893301, 0.00223943190687725, 0.00196650068765464, 0.00184742734258922,])
-# 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+0.00330577167682956, 0.00308353042577215, 0.00277846504893301, 0.00223943190687725, 0.00196650068765464, 0.00184742734258922, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 pileup_ratio_up = array('d', [0, 0.351377216124927, 0.717199649125846, 1.14121536968772, 0.84885826611733, 1.00700929402897, 1.03428595270903, 0.717444379696992, 0.344078389355127, 0.499570875027422,
 0.606614916257104, 0.632584599390169, 0.731450949466174, 0.827511723989754, 0.910682115553867, 0.960170981598162, 0.988896170761361, 1.02468865580207, 1.05296667126403, 1.05112033565679,
@@ -31,11 +30,10 @@ pileup_ratio_up = array('d', [0, 0.351377216124927, 0.717199649125846, 1.1412153
 0.655054015673457, 0.533361034358457, 0.423095146361996, 0.329177839117034, 0.250352385505809, 0.188377378855567, 0.137852651411779, 0.0968577167707531, 0.0686240187247059, 0.0473889635126706,
 0.0323695027438475, 0.0216752397914914, 0.0145119352923332, 0.00961177893634792, 0.00615582219138384, 0.00430085627914427, 0.00305735512896403, 0.00223567790438986, 0.00189369737638594, 0.00199585978316291,
 0.00236236592656064, 0.00372472999463276, 0.00474687312579969, 0.00549508151576102, 0.00603023110946686, 0.0068545111910253, 0.00695838760530896, 0.00666224781277046, 0.00588243140681038, 0.00528714370892014,
-0.00453424615273565, 0.00433985030329723, 0.00401493171035719, 0.00332436608713241, 0.00300063798808221, 0.00289925128977536,])
-#0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+0.00453424615273565, 0.00433985030329723, 0.00401493171035719, 0.00332436608713241, 0.00300063798808221, 0.00289925128977536, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 pileup_ratio_down = array('d', [0, 0.37361294640242, 1.1627791004568, 1.26890787896295, 1.10266790442705, 1.23456697093644, 1.26278991594152, 0.909648777562084, 0.759569490571151, 1.09035651921682,
 1.34530547603283, 1.48713160105, 1.52535976889483, 1.49730550773404, 1.49792998045778, 1.49767851097519, 1.44431045398336, 1.3681909492045, 1.29912252494785, 1.2274279217797,
@@ -44,11 +42,10 @@ pileup_ratio_down = array('d', [0, 0.37361294640242, 1.1627791004568, 1.26890787
 0.214909665968644, 0.149991974352384, 0.100014138338029, 0.0642260884603397, 0.0396553405911344, 0.0238687936736627, 0.0137921542898078, 0.00756854010632403, 0.00415483516246187, 0.00221776872027937,
 0.00118249725637452, 0.000641889697310868, 0.000383647166012176, 0.000273637590071334, 0.000242902582071058, 0.000291239677209452, 0.000394091114279828, 0.000542541231466254, 0.000771067920964491, 0.00113596447675107,
 0.00158061353194779, 0.00261959852500539, 0.00331800452823827, 0.00372426930370732, 0.00392086545082614, 0.00425479965493548, 0.00411256966391362, 0.00374240422174387, 0.00313603438166934, 0.00267155793176928,
-0.00216878198028599, 0.00196249821290853, 0.00171433839159669, 0.00133866519755926, 0.00113810604240254, 0.00103447940224886,])
-#0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+0.00216878198028599, 0.00196249821290853, 0.00171433839159669, 0.00133866519755926, 0.00113810604240254, 0.00103447940224886, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 
 
@@ -495,8 +492,6 @@ def full_loop(t, dtag):
     dtag string
     '''
 
-    isMC = 'MC' in dtag
-    aMCatNLO = 'amcatnlo' in dtag
     isTT = 'TT' in dtag
 
     #set_bSF_effs_for_dtag(dtag)
@@ -511,7 +506,6 @@ def full_loop(t, dtag):
     ('weight_pu', TH1D("weight_pu", "", 50, 0, 2)),
     ('weight_pu_up', TH1D("weight_pu_up", "", 50, 0, 2)),
     ('weight_pu_dn', TH1D("weight_pu_dn", "", 50, 0, 2)),
-    ('weight_top_pt', TH1D("weight_top_pt", "", 50, 0, 2)),
 
     ('weight_mu_trk_bcdef', TH1D("weight_mu_trk_bcdef", "", 50, 0, 2)),
     ('weight_mu_id_bcdef' , TH1D("weight_mu_id_bcdef", "", 50, 0, 2)),
@@ -539,23 +533,18 @@ def full_loop(t, dtag):
     ('weight_el_bSF_down', TH1D("weight_el_bSF_down", "", 50, 0, 2)),
     ])
 
-    systs = ShapeSystematics()
-
     for i, ev in enumerate(t):
         '''
         HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0
         '''
 
-        '''
-        scheme:
-
-        dtag -> process [subprocesses]
-        for event:
-            for each SYS -> jet_pts, tau_pts, weight
-                which (reco) [channels] it passes
-                find (gen) subprocess <------! different subprocess def-s for diff channels
-                record distr-s for each
-        '''
+        try:
+            control_hs['weight_pu']   .Fill(pileup_ratio[ev.nvtx])
+            control_hs['weight_pu_up'].Fill(pileup_ratio_up[ev.nvtx])
+            control_hs['weight_pu_dn'].Fill(pileup_ratio_down[ev.nvtx])
+        except:
+            print i, ev.nvtx
+            continue
 
         # the lepton requirements for all 1-lepton channels:
         # TODO: is there relIso cut now?
@@ -565,51 +554,10 @@ def full_loop(t, dtag):
         # only 1-lep channels
         if not (pass_mu or pass_el): continue
 
-        weight = 1. # common weight of event (1. for data)
-        if isMC:
-            try:
-                weight_pu    = pileup_ratio[ev.nvtx]
-                weight_pu_up = pileup_ratio_up[ev.nvtx]
-                weight_pu_dn = pileup_ratio_down[ev.nvtx]
-                control_hs['weight_pu']   .Fill(weight_pu)
-                control_hs['weight_pu_up'].Fill(weight_pu_up)
-                control_hs['weight_pu_dn'].Fill(weight_pu_dn)
-            except:
-                #print i, ev.nvtx
-                continue
-
-            if aMCatNLO and ev.aMCatNLO_weight < 0:
-                weight *= -1
-            #weight_top_pt = 1.
-            if isTT:
-                weight_top_pt = ttbar_pT_SF(ev.gen_t_pt, ev.gen_tb_pt)
-                weight *= weight_top_pt
-                control_hs['weight_top_pt']   .Fill(weight_top_pt)
-
-            if pass_mu:
-                mu_sfs = lepton_muon_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
-                mu_trg_sf = lepton_muon_trigger_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
-
-            if pass_el:
-                el_sfs = lepton_electron_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
-                el_trg_sf = lepton_electron_trigger_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
-
-            #JES corrections
-            #[((1-f)*j.pt(), (1+f)*j.pt()) for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4)]
-            jet_pts_jes_up, jet_pts_jes_down = [], []
-            for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4):
-                jet_pts_jes_up  .append(j.pt()*(1-f))
-                jet_pts_jes_down.append(j.pt()*(1+f))
-            #JER
-            #[(j.pt()*(down/factor), j.pt()*(up/factor)) for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down)]
-            jet_pts_jer_up, jet_pts_jer_down = [], []
-            for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down):
-                jet_pts_jer_up  .append(j.pt()*(up/factor))
-                jet_pts_jer_down.append(j.pt()*(down/factor))
-
-        jet_pts = [] # nominal jet pts
-        for j in ev.jet_p4:
-            jet_pts.append(j.pt())
+        # JES corrections
+        # [((1-f)*j.pt(), (1+f)*j.pt()) for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4)]
+        # JER
+        # [(j.pt()*(down/factor), j.pt()*(up/factor)) for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down)]
 
         N_bjets = 0
         weight_bSF, weight_bSF_up, weight_bSF_down = 1., 1., 1.
@@ -617,13 +565,21 @@ def full_loop(t, dtag):
             # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
             if p4.pt() < 30: continue
             N_bjets += b_discr > 0.8484
-            if isMC:
-                weight_bSF      *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta())
-                weight_bSF_up   *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up")
-                weight_bSF_down *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down")
+            weight_bSF      *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta())
+            weight_bSF_up   *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up")
+            weight_bSF_down *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down")
+
+        weight_top_pt = 1.
+        if isTT:
+            weight_top_pt = ttbar_pT_SF(ev.gen_t_pt, ev.gen_tb_pt)
+
+        # also add these?
+        # njets > 2 && met_corrected.pt() > 40 && nbjets > 0
+        pass_met = ev.met_corrected.pt() > 40
+        #has_medium_tau = any(IDlev > 2 and p4.pt() > 30 for IDlev, p4 in zip(ev.tau_IDlev, ev.tau_p4))
+        has_medium_tau = ev.tau_IDlev.size() > 0 and ev.tau_IDlev[0] > 2 and ev.tau_p4[0].pt() > 30
 
         # tau pt-s
-        # ES correction
         # modes have different correction but the same uncertainty = +- 1.2% = 0.012
         # uncertainties are not correlated, but I'll do correlated UP/DOWN -- all modes UP or all modes DOWN
         tau_pts_corrected = []
@@ -633,52 +589,17 @@ def full_loop(t, dtag):
             # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
             if IDlev < 2: continue # only Medium taus
             if DM == 0:
-              tau_pts_corrected.append(p4.pt() * 0.995)
-              if isMC:
+                tau_pts_corrected.append(p4.pt() * 0.995)
                 tau_pts_corrected_up.append(p4.pt() * (0.995 + 0.012))
                 tau_pts_corrected_down.append(p4.pt() * (0.995 - 0.012))
             elif DM < 10:
-              tau_pts_corrected.append(p4.pt() * 1.011)
-              if isMC:
+                tau_pts_corrected.append(p4.pt() * 1.011)
                 tau_pts_corrected_up.append(p4.pt()   * (1.011 + 0.012))
                 tau_pts_corrected_down.append(p4.pt() * (1.011 - 0.012))
             else:
-              tau_pts_corrected.append(p4.pt() * 1.006)
-              if isMC:
+                tau_pts_corrected.append(p4.pt() * 1.006)
                 tau_pts_corrected_up.append(p4.pt()   * (1.006 + 0.012))
                 tau_pts_corrected_down.append(p4.pt() * (1.006 - 0.012))
-        #has_medium_tau = any(IDlev > 2 and p4.pt() > 30 for IDlev, p4 in zip(ev.tau_IDlev, ev.tau_p4))
-        #has_medium_tau = ev.tau_IDlev.size() > 0 and ev.tau_IDlev[0] > 2 and ev.tau_p4[0].pt() > 30
-        #has_medium_tau = bool(tau_pts_corrected)
-
-        # shape systematics are:
-        # corrected jet pts and tau pts
-        # weight variations
-        #nominal systematics
-        # jet pts, tau pts, b weight (=1 for data), pu weight (=1 for data)
-        if isMC:
-            systematics = {'nominal': [jet_pts, tau_pts_corrected, weight_bSF, weight_pu],
-                'JESUp'     : [jet_pts_jes_up,   tau_pts_corrected, weight_bSF, weight_pu],
-                'JESDown'   : [jet_pts_jes_down, tau_pts_corrected, weight_bSF, weight_pu],
-                'JERUp'     : [jet_pts_jer_up,   tau_pts_corrected, weight_bSF, weight_pu],
-                'JERDown'   : [jet_pts_jer_down, tau_pts_corrected, weight_bSF, weight_pu],
-                'TauESUp'   : [jet_pts, tau_pts_corrected_up  , weight_bSF, weight_pu],
-                'TauESDown' : [jet_pts, tau_pts_corrected_down, weight_bSF, weight_pu],
-                'bSFUp'     : [jet_pts, tau_pts_corrected, weight_bSF_up  , weight_pu],
-                'bSFDown'   : [jet_pts, tau_pts_corrected, weight_bSF_down, weight_pu],
-                'PUUp'      : [jet_pts, tau_pts_corrected, weight_bSF, weight_pu_up]
-                'PUDown'    : [jet_pts, tau_pts_corrected, weight_bSF, weight_pu_dn]
-                }
-        else:
-            systematics = {'nominal': [jet_pts, tau_pts_corrected, 1., 1.]}
-
-        # also add these?
-        # njets > 2 && met_corrected.pt() > 40 && nbjets > 0
-        pass_met = ev.met_corrected.pt() > 40
-
-        # pass one of the reco selections
-        # check the subprocess
-        # store distr
 
         if abs(ev.leps_ID) == 13 and ev.HLT_mu and ev.lep_matched_HLT[0]:
             # bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso, gh_weight_trk, gh_weight_id, gh_weight_iso
