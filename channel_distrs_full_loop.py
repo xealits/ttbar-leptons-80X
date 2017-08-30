@@ -395,87 +395,20 @@ bEff_histo_udsg = bTaggingEfficiencies_file.Get('MC2016_Summer16_TTJets_powheg_b
 
 logging.info("loaded b-tagging efficiencies")
 
-'''
-# TODO: outdated, remove
-def set_bSF_effs_for_dtag(dtag):
-    # read-in and setup all the b-tagging crap
+h_control_btag_eff_b    = TH1D("control_btag_eff_b",    "", 150, 0, 2)
+h_control_btag_eff_c    = TH1D("control_btag_eff_c",    "", 150, 0, 2)
+h_control_btag_eff_udsg = TH1D("control_btag_eff_udsg", "", 150, 0, 2)
 
-    #TString bTaggingEfficiencies_filename   = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-    #gSystem->ExpandPathName(bTaggingEfficiencies_filename);
+h_control_btag_weight_b    = TH1D("control_btag_weight_b",    "", 150, 0, 2)
+h_control_btag_weight_c    = TH1D("control_btag_weight_c",    "", 150, 0, 2)
+h_control_btag_weight_udsg = TH1D("control_btag_weight_udsg", "", 150, 0, 2)
 
-    global b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
-
-    backup_b_eff_distr = "MC2016_Summer16_DYJetsToLL_50toInf_madgraph";
-
-    # b flavour
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged"):
-        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates")
-        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_b_hadronFlavour_candidates_tagged")
-    else:
-        bTaggingEfficiencies_b_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates")
-        bTaggingEfficiencies_b_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_b_hadronFlavour_candidates_tagged")
-    # c flavour
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged"):
-        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates")
-        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(dtag + "_btag_c_hadronFlavour_candidates_tagged")
-    else:
-        bTaggingEfficiencies_c_alljet    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates")
-        bTaggingEfficiencies_c_tagged    = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_c_hadronFlavour_candidates_tagged")
-    # light flavours
-    if bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged"):
-        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates")
-        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(dtag + "_btag_udsg_hadronFlavour_candidates_tagged")
-    else:
-        bTaggingEfficiencies_udsg_alljet = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates")
-        bTaggingEfficiencies_udsg_tagged = bTaggingEfficiencies_file.Get(backup_b_eff_distr + "_btag_udsg_hadronFlavour_candidates_tagged")
-
-    b_alljet    = bTaggingEfficiencies_b_alljet   
-    b_tagged    = bTaggingEfficiencies_b_tagged   
-    c_alljet    = bTaggingEfficiencies_c_alljet   
-    c_tagged    = bTaggingEfficiencies_c_tagged   
-    udsg_alljet = bTaggingEfficiencies_udsg_alljet
-    udsg_tagged = bTaggingEfficiencies_udsg_tagged
-
-    #return bTaggingEfficiencies_b_alljet, bTaggingEfficiencies_b_tagged,
-    #     bTaggingEfficiencies_c_alljet, bTaggingEfficiencies_c_tagged,
-    #     bTaggingEfficiencies_udsg_alljet, bTaggingEfficiencies_udsg_tagged
-'''
-
-'''
-static double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
-	{
-	Int_t global_bin_id = bEffs.b_alljet->FindBin(pt, eta); // the binning should be the same in both histograms
-        Double_t N_alljets  = bEffs.b_alljet->GetBinContent(global_bin_id);
-	Double_t N_tagged   = bEffs.b_tagged->GetBinContent(global_bin_id);
-	if (N_alljets < 0.001 || N_tagged < 0.001)
-		{
-		//fill_2d(string("btag_eff_retrieved0_flavour_b"), 250, 0., 500., 200, -4., 4., pt, eta, 1);
-		//fill_btag_efficiency(string("btag_eff_retrieved0_flavour_b"), pt, eta, 1);
-		return 0; // whatch out -- equality of floats
-		}
-	return N_tagged/N_alljets;
-	}
-'''
-
-'''
-# TODO: substitute by just prepared efficiency histogram!
-def bTagging_X_jet_efficiency(alljet, tagged):
-
-    def the_funct(pt, eta):
-        global_bin_id = alljet.FindBin(pt, eta); # the binning should be the same in both histograms
-        N_alljets  = alljet.GetBinContent(global_bin_id);
-        N_tagged   = tagged.GetBinContent(global_bin_id);
-        if N_alljets < 0.001 or N_tagged < 0.001:
-            #fill_2d(string("btag_eff_retrieved0_flavour_b"), 250, 0., 500., 200, -4., 4., pt, eta, 1);
-            #fill_btag_efficiency(string("btag_eff_retrieved0_flavour_b"), pt, eta, 1);
-            return 0 # whatch out -- equality of floats
-        return N_tagged/N_alljets
-
-    return the_funct
-'''
+h_control_btag_weight_notag_b    = TH1D("control_btag_weight_notag_b",    "", 150, 0, 2)
+h_control_btag_weight_notag_c    = TH1D("control_btag_weight_notag_c",    "", 150, 0, 2)
+h_control_btag_weight_notag_udsg = TH1D("control_btag_weight_notag_udsg", "", 150, 0, 2)
 
 #def calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
-def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta):
+def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta, sys="central"):
     # int flavId=jet.partonFlavour();
     #int flavId=jet.hadronFlavour();
     # also: patJet->genParton().pdgId()
@@ -488,26 +421,41 @@ def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta):
 
     if abs(flavId) == 5:
         # get SF for the jet
-        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_B, eta, pt, 0.)
+        sf = btagCal.eval_auto_bounds(sys, ROOT.BTagEntry.FLAV_B, eta, pt, 0.)
         # get eff for the jet
         #eff = bTagging_b_jet_efficiency(pt, eta)
         eff = bEff_histo_b.GetBinContent(bEff_histo_b.FindBin(pt, eta))
+        h_control_btag_eff_b.Fill(eff)
     elif abs(flavId) == 4:
-        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_C, eta, pt, 0.)
+        sf = btagCal.eval_auto_bounds(sys, ROOT.BTagEntry.FLAV_C, eta, pt, 0.)
         #eff = bTagging_c_jet_efficiency(pt, eta)
         eff = bEff_histo_c.GetBinContent(bEff_histo_c.FindBin(pt, eta))
+        h_control_btag_eff_c.Fill(eff)
     else:
-        sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_UDSG, eta, pt, 0.)
+        sf = btagCal.eval_auto_bounds(sys, ROOT.BTagEntry.FLAV_UDSG, eta, pt, 0.)
         #eff = bTagging_udsg_jet_efficiency(pt, eta)
         eff = bEff_histo_udsg.GetBinContent(bEff_histo_udsg.FindBin(pt, eta))
+        h_control_btag_eff_udsg.Fill(eff)
 
     jet_weight_factor = 1.
     if hasCSVtag: # a tagged jet
         jet_weight_factor = sf
+        if abs(flavId) == 5:
+            h_control_btag_weight_b.Fill(jet_weight_factor)
+        elif abs(flavId) == 4:
+            h_control_btag_weight_c.Fill(jet_weight_factor)
+        else:
+            h_control_btag_weight_udsg.Fill(jet_weight_factor)
     else: # not tagged
         # truncate efficiency to 0 and 0.99
         #eff = 0. if eff < 0. else (0.999 if eff > 0.999 else eff)
         jet_weight_factor = (1 - sf*eff) / (1 - eff)
+        if abs(flavId) == 5:
+            h_control_btag_weight_notag_b.Fill(jet_weight_factor)
+        elif abs(flavId) == 4:
+            h_control_btag_weight_notag_c.Fill(jet_weight_factor)
+        else:
+            h_control_btag_weight_notag_udsg.Fill(jet_weight_factor)
 
     return jet_weight_factor
 
@@ -538,6 +486,14 @@ def transverse_mass(v1, v2):
 
 
 def full_loop(t, dtag):
+    '''full_loop(t, dtag)
+
+    TTree t
+    dtag string
+    '''
+
+    isTT = 'TT' in dtag
+
     #set_bSF_effs_for_dtag(dtag)
     print bEff_histo_b, bEff_histo_c, bEff_histo_udsg
     #print b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
@@ -564,6 +520,8 @@ def full_loop(t, dtag):
     ('weight_mu_all_gh', TH1D("weight_mu_all_gh", "", 50, 0, 2)),
 
     ('weight_mu_bSF', TH1D("weight_mu_bSF", "", 50, 0, 2)),
+    ('weight_mu_bSF_up', TH1D("weight_mu_bSF_up", "", 50, 0, 2)),
+    ('weight_mu_bSF_down', TH1D("weight_mu_bSF_down", "", 50, 0, 2)),
 
     ('weight_el_trk', TH1D("weight_el_trk", "", 50, 0, 2)),
     ('weight_el_idd', TH1D("weight_el_idd", "", 50, 0, 2)),
@@ -571,20 +529,82 @@ def full_loop(t, dtag):
     ('weight_el_all', TH1D("weight_el_all", "", 50, 0, 2)),
 
     ('weight_el_bSF', TH1D("weight_el_bSF", "", 50, 0, 2)),
+    ('weight_el_bSF_up', TH1D("weight_el_bSF_up", "", 50, 0, 2)),
+    ('weight_el_bSF_down', TH1D("weight_el_bSF_down", "", 50, 0, 2)),
     ])
 
-    for i, event in enumerate(t):
-        try:
-            control_hs['weight_pu']   .Fill(pileup_ratio[event.nvtx])
-            control_hs['weight_pu_up'].Fill(pileup_ratio_up[event.nvtx])
-            control_hs['weight_pu_dn'].Fill(pileup_ratio_down[event.nvtx])
-        except:
-            print i, event.nvtx
+    for i, ev in enumerate(t):
+        '''
+        HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0
+        '''
 
-        if abs(event.leps_ID) == 13 and event.HLT_mu and event.lep_matched_HLT[0]:
+        try:
+            control_hs['weight_pu']   .Fill(pileup_ratio[ev.nvtx])
+            control_hs['weight_pu_up'].Fill(pileup_ratio_up[ev.nvtx])
+            control_hs['weight_pu_dn'].Fill(pileup_ratio_down[ev.nvtx])
+        except:
+            print i, ev.nvtx
+            continue
+
+        # the lepton requirements for all 1-lepton channels:
+        # TODO: is there relIso cut now?
+        pass_mu = abs(ev.leps_ID) == 13 and ev.HLT_mu and ev.lep_matched_HLT[0] and ev.lep_p4[0].pt() > 26 and abs(ev.lep_p4[0].eta()) < 2.4 and ev.lep_dxy[0] < 0.01 and ev.lep_dz[0] < 0.02 # lep_relIso[0]
+        pass_el = abs(ev.leps_ID) == 11 and ev.HLT_el and ev.lep_matched_HLT[0] and ev.lep_p4[0].pt() > 29 and abs(ev.lep_p4[0].eta()) < 2.4 and ev.lep_dxy[0] < 0.01 and ev.lep_dz[0] < 0.02 # lep_relIso[0]
+
+        # only 1-lep channels
+        if not (pass_mu or pass_el): continue
+
+        # JES corrections
+        # [((1-f)*j.pt(), (1+f)*j.pt()) for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4)]
+        # JER
+        # [(j.pt()*(down/factor), j.pt()*(up/factor)) for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down)]
+
+        N_bjets = 0
+        weight_bSF, weight_bSF_up, weight_bSF_down = 1., 1., 1.
+        for i, (p4, flavId, b_discr) in enumerate(zip(ev.jet_p4, ev.jet_hadronFlavour, ev.jet_b_discr)):
+            # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+            if p4.pt() < 30: continue
+            N_bjets += b_discr > 0.8484
+            weight_bSF      *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta())
+            weight_bSF_up   *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up")
+            weight_bSF_down *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down")
+
+        weight_top_pt = 1.
+        if isTT:
+            weight_top_pt = ttbar_pT_SF(ev.gen_t_pt, ev.gen_tb_pt)
+
+        # also add these?
+        # njets > 2 && met_corrected.pt() > 40 && nbjets > 0
+        pass_met = ev.met_corrected.pt() > 40
+        #has_medium_tau = any(IDlev > 2 and p4.pt() > 30 for IDlev, p4 in zip(ev.tau_IDlev, ev.tau_p4))
+        has_medium_tau = ev.tau_IDlev.size() > 0 and ev.tau_IDlev[0] > 2 and ev.tau_p4[0].pt() > 30
+
+        # tau pt-s
+        # modes have different correction but the same uncertainty = +- 1.2% = 0.012
+        # uncertainties are not correlated, but I'll do correlated UP/DOWN -- all modes UP or all modes DOWN
+        tau_pts_corrected = []
+        tau_pts_corrected_up = []
+        tau_pts_corrected_down = []
+        for i, (p4, DM, IDlev) in enumerate(zip(ev.tau_p4, ev.tau_decayMode, ev.tau_IDlev)):
+            # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+            if IDlev < 2: continue # only Medium taus
+            if DM == 0:
+                tau_pts_corrected.append(p4.pt() * 0.995)
+                tau_pts_corrected_up.append(p4.pt() * (0.995 + 0.012))
+                tau_pts_corrected_down.append(p4.pt() * (0.995 - 0.012))
+            elif DM < 10:
+                tau_pts_corrected.append(p4.pt() * 1.011)
+                tau_pts_corrected_up.append(p4.pt()   * (1.011 + 0.012))
+                tau_pts_corrected_down.append(p4.pt() * (1.011 - 0.012))
+            else:
+                tau_pts_corrected.append(p4.pt() * 1.006)
+                tau_pts_corrected_up.append(p4.pt()   * (1.006 + 0.012))
+                tau_pts_corrected_down.append(p4.pt() * (1.006 - 0.012))
+
+        if abs(ev.leps_ID) == 13 and ev.HLT_mu and ev.lep_matched_HLT[0]:
             # bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso, gh_weight_trk, gh_weight_id, gh_weight_iso
-            mu_sfs = lepton_muon_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
-            mu_trg_sf = lepton_muon_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
+            mu_sfs = lepton_muon_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
+            mu_trg_sf = lepton_muon_trigger_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
 
             control_hs['weight_mu_trk_bcdef'].Fill(mu_sfs[0])
             control_hs['weight_mu_id_bcdef'] .Fill(mu_sfs[1])
@@ -598,30 +618,33 @@ def full_loop(t, dtag):
             control_hs['weight_mu_trg_gh'].Fill(mu_trg_sf[1])
             control_hs['weight_mu_all_gh'].Fill(mu_trg_sf[1] * mu_sfs[3] * mu_sfs[4] * mu_sfs[5])
 
-            for i, (p4, flavId, b_discr) in enumerate(zip(event.jet_p4, event.jet_hadronFlavour, event.jet_b_discr)):
+            for i, (p4, flavId, b_discr) in enumerate(zip(ev.jet_p4, ev.jet_hadronFlavour, ev.jet_b_discr)):
                 # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
                 control_hs['weight_mu_bSF'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta()))
+                control_hs['weight_mu_bSF_up']  .Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up"))
+                control_hs['weight_mu_bSF_down'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down"))
             # I do need a working standalone b-tag calibrator instead of this jogling
             #b_taggin_SF(jet0_p4.pt(), jet0_p4.eta(), jet0_b_discr, jet0_hadronFlavour, 0.8484)
 
-        elif abs(event.leps_ID) == 11 and event.HLT_el and event.lep_matched_HLT[0]:
-            el_sfs = lepton_electron_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
-            el_trg_sf = lepton_electron_trigger_SF(abs(event.lep_p4[0].eta()), event.lep_p4[0].pt())
+        elif abs(ev.leps_ID) == 11 and ev.HLT_el and ev.lep_matched_HLT[0]:
+            el_sfs = lepton_electron_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
+            el_trg_sf = lepton_electron_trigger_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
 
             control_hs['weight_el_trk'].Fill(el_sfs[0])
             control_hs['weight_el_idd'].Fill(el_sfs[1])
             control_hs['weight_el_trg'].Fill(el_trg_sf)
             control_hs['weight_el_all'].Fill(el_trg_sf * el_sfs[0] * el_sfs[1])
 
-            for i, (p4, flavId, b_discr) in enumerate(zip(event.jet_p4, event.jet_hadronFlavour, event.jet_b_discr)):
+            for i, (p4, flavId, b_discr) in enumerate(zip(ev.jet_p4, ev.jet_hadronFlavour, ev.jet_b_discr)):
                 # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
                 control_hs['weight_el_bSF'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta()))
-
+                control_hs['weight_el_bSF_up']  .Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up"))
+                control_hs['weight_el_bSF_down'].Fill(calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down"))
 
     return control_hs
 
 
-if __name__ == '__main__':
+def main(argv):
     if '-w' in argv:
         input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
         dtag = "MC2016_Summer16_WJets_madgraph"
@@ -645,4 +668,18 @@ if __name__ == '__main__':
     c_hs = full_loop(t, dtag)
     for name, h in c_hs.items():
         print "%20s %9.5f" % (name, h.GetMean())
+
+    print "eff_b             ", h_control_btag_eff_b             .GetMean()
+    print "eff_c             ", h_control_btag_eff_c             .GetMean()
+    print "eff_udsg          ", h_control_btag_eff_udsg          .GetMean()
+    print "weight_b          ", h_control_btag_weight_b          .GetMean()
+    print "weight_c          ", h_control_btag_weight_c          .GetMean()
+    print "weight_udsg       ", h_control_btag_weight_udsg       .GetMean()
+    print "weight_notag_b    ", h_control_btag_weight_notag_b    .GetMean()
+    print "weight_notag_c    ", h_control_btag_weight_notag_c    .GetMean()
+    print "weight_notag_udsg ", h_control_btag_weight_notag_udsg .GetMean()
+
+
+if __name__ == '__main__':
+    main(argv)
 
