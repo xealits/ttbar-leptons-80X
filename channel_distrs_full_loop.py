@@ -385,12 +385,18 @@ logging.info("loaded b-tagging callibration")
 
 logging.info("loading b-tagging efficiencies")
 #bTaggingEfficiencies_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root";
-bTaggingEfficiencies_filename = '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/jobing/configs/b-tagging-efficiencies.root'
+bTaggingEfficiencies_filename = '${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/analysis/b-tagging/v9.38-for-b-effs/beff_histos.root'
 gSystem.ExpandPathName(bTaggingEfficiencies_filename)
 bTaggingEfficiencies_file = TFile(bTaggingEfficiencies_filename)
 
+bEff_histo_b = bTaggingEfficiencies_file.Get('MC2016_Summer16_TTJets_powheg_btag_b_hadronFlavour_candidates_tagged')
+bEff_histo_c = bTaggingEfficiencies_file.Get('MC2016_Summer16_TTJets_powheg_btag_c_hadronFlavour_candidates_tagged')
+bEff_histo_udsg = bTaggingEfficiencies_file.Get('MC2016_Summer16_TTJets_powheg_btag_udsg_hadronFlavour_candidates_tagged')
+
 logging.info("loaded b-tagging efficiencies")
 
+'''
+# TODO: outdated, remove
 def set_bSF_effs_for_dtag(dtag):
     # read-in and setup all the b-tagging crap
 
@@ -433,6 +439,7 @@ def set_bSF_effs_for_dtag(dtag):
     #return bTaggingEfficiencies_b_alljet, bTaggingEfficiencies_b_tagged,
     #     bTaggingEfficiencies_c_alljet, bTaggingEfficiencies_c_tagged,
     #     bTaggingEfficiencies_udsg_alljet, bTaggingEfficiencies_udsg_tagged
+'''
 
 '''
 static double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEffs, double& pt, double& eta)
@@ -450,6 +457,7 @@ static double bTagging_b_jet_efficiency(struct bTaggingEfficiencyHistograms& bEf
 	}
 '''
 
+'''
 # TODO: substitute by just prepared efficiency histogram!
 def bTagging_X_jet_efficiency(alljet, tagged):
 
@@ -464,6 +472,7 @@ def bTagging_X_jet_efficiency(alljet, tagged):
         return N_tagged/N_alljets
 
     return the_funct
+'''
 
 #def calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
 def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta):
@@ -481,20 +490,23 @@ def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta):
         # get SF for the jet
         sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_B, eta, pt, 0.)
         # get eff for the jet
-        eff = bTagging_b_jet_efficiency(pt, eta)
+        #eff = bTagging_b_jet_efficiency(pt, eta)
+        eff = bEff_histo_b.GetBinContent(bEff_histo_b.FindBin(pt, eta))
     elif abs(flavId) == 4:
         sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_C, eta, pt, 0.)
-        eff = bTagging_c_jet_efficiency(pt, eta)
+        #eff = bTagging_c_jet_efficiency(pt, eta)
+        eff = bEff_histo_c.GetBinContent(bEff_histo_c.FindBin(pt, eta))
     else:
         sf = btagCal.eval_auto_bounds("central", ROOT.BTagEntry.FLAV_UDSG, eta, pt, 0.)
-        eff = bTagging_udsg_jet_efficiency(pt, eta)
+        #eff = bTagging_udsg_jet_efficiency(pt, eta)
+        eff = bEff_histo_udsg.GetBinContent(bEff_histo_udsg.FindBin(pt, eta))
 
     jet_weight_factor = 1.
     if hasCSVtag: # a tagged jet
         jet_weight_factor = sf
     else: # not tagged
         # truncate efficiency to 0 and 0.99
-        eff = 0. if eff < 0. else (0.999 if eff > 0.999 else eff)
+        #eff = 0. if eff < 0. else (0.999 if eff > 0.999 else eff)
         jet_weight_factor = (1 - sf*eff) / (1 - eff)
 
     return jet_weight_factor
@@ -526,12 +538,13 @@ def transverse_mass(v1, v2):
 
 
 def full_loop(t, dtag):
-    set_bSF_effs_for_dtag(dtag)
-    print b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
-    global bTagging_b_jet_efficiency, bTagging_c_jet_efficiency, bTagging_udsg_jet_efficiency
-    bTagging_b_jet_efficiency = bTagging_X_jet_efficiency(b_alljet, b_tagged)
-    bTagging_c_jet_efficiency = bTagging_X_jet_efficiency(c_alljet, c_tagged)
-    bTagging_udsg_jet_efficiency = bTagging_X_jet_efficiency(udsg_alljet, udsg_tagged)
+    #set_bSF_effs_for_dtag(dtag)
+    print bEff_histo_b, bEff_histo_c, bEff_histo_udsg
+    #print b_alljet, b_tagged, c_alljet, c_tagged, udsg_alljet, udsg_tagged
+    #global bTagging_b_jet_efficiency, bTagging_c_jet_efficiency, bTagging_udsg_jet_efficiency
+    #bTagging_b_jet_efficiency = bTagging_X_jet_efficiency(b_alljet, b_tagged)
+    #bTagging_c_jet_efficiency = bTagging_X_jet_efficiency(c_alljet, c_tagged)
+    #bTagging_udsg_jet_efficiency = bTagging_X_jet_efficiency(udsg_alljet, udsg_tagged)
 
     control_hs = OrderedDict([
     ('weight_pu', TH1D("weight_pu", "", 50, 0, 2)),
