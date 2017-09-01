@@ -650,7 +650,7 @@ if (n_daughters>0)
 		const reco::Candidate * d = p->daughter( j );
 		//const reco::GenParticle * d = p.daughter( j );
 		for (int o=0; o<offset; o++) cout << ' ';
-		cout << d->pdgId() << " (" << d->status() << ")" << endl;
+		cout << d->pdgId() << " (" << d->status() << ")" << " <- " << abs(p->pdgId()) << endl;
 		printDaughters(d, offset+1);
 		}
 	}
@@ -1374,6 +1374,12 @@ for(size_t f=0; f<urls.size();++f)
 
 		//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
 		mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
+
+		bool only_tt_lepjets = true;
+		if (only_tt_lepjets)
+			{
+			if (mc_decay != string("elqbar") && mc_decay != string("qelbar") && mc_decay != string("qmubar") && mc_decay != string("muqbar")) continue;
+			}
 
 		// recursive print of genTree
 		// cmssw crap doesn't print and notes from 2013 are far outdated (include instead of load?)

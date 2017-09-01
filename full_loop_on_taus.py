@@ -68,6 +68,16 @@ h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 50,
 h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 50, 100, 0, 1)
 #tau_dR_matched_jet
 
+h_pat_bTag_refit_flightSign    = TH2D("pat_bTag_refit_flightSign_%s" % nick, "", 100, 0, 50, 100, 0, 1)
+h_pat_bTag_refit_flightSign_lt = TH2D("pat_bTag_refit_flightSign_lt",        "", 100, 0, 50, 100, 0, 1)
+h_pat_bTag_refit_flightSign_lj = TH2D("pat_bTag_refit_flightSign_lj",        "", 100, 0, 50, 100, 0, 1)
+#tau_dR_matched_jet
+
+h_refit_flightSign_lt_Btag = TH1D("refit_flightSign_lt_Btag", "", 100, 0, 50)
+h_refit_flightSign_lj_Btag = TH1D("refit_flightSign_lj_Btag", "", 100, 0, 50)
+h_pat_flightSign_lt_Btag   = TH1D("pat_flightSign_lt_Btag",   "", 100, 0, 50)
+h_pat_flightSign_lj_Btag   = TH1D("pat_flightSign_lj_Btag",   "", 100, 0, 50)
+
 h_refit_flightSign_lt_noBtag = TH1D("refit_flightSign_lt_noBtag", "", 100, 0, 50)
 h_refit_flightSign_lj_noBtag = TH1D("refit_flightSign_lj_noBtag", "", 100, 0, 50)
 h_pat_flightSign_lt_noBtag   = TH1D("pat_flightSign_lt_noBtag",   "", 100, 0, 50)
@@ -129,6 +139,7 @@ for i, event in enumerate(ntuple):
     i_matched_tau_jet = event.tau_dR_matched_jet[0]
     if i_matched_tau_jet > -1:
         h_pat_bTag_flightSign.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
+        h_pat_bTag_refit_flightSign.Fill(flight_sign, event.jet_b_discr[i_matched_tau_jet])
 
     if isTT:
         if abs(event.gen_t_w_decay_id * event.gen_tb_w_decay_id) == 13: # lj
@@ -138,9 +149,13 @@ for i, event in enumerate(ntuple):
             h_pat_flightSign_lj.Fill(pat_flightSign)
             if i_matched_tau_jet > -1:
                 h_pat_bTag_flightSign_lj.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
+                h_pat_bTag_refit_flightSign_lj.Fill(flight_sign, event.jet_b_discr[i_matched_tau_jet])
                 if event.jet_b_discr[i_matched_tau_jet] < 0.85:
                     h_refit_flightSign_lj_noBtag .Fill(flight_sign)
                     h_pat_flightSign_lj_noBtag   .Fill(pat_flightSign)
+                else:
+                    h_refit_flightSign_lj_Btag .Fill(flight_sign)
+                    h_pat_flightSign_lj_Btag   .Fill(pat_flightSign)
 
         if (abs(event.gen_t_w_decay_id) > 15*15 and abs(event.gen_tb_w_decay_id) == 13) or (abs(event.gen_t_w_decay_id) == 13 and abs(event.gen_tb_w_decay_id) > 15*15): # lt
             h_refit_flightLen_lt .Fill(flight_len)
@@ -149,9 +164,13 @@ for i, event in enumerate(ntuple):
             h_pat_flightSign_lt.Fill(pat_flightSign)
             if i_matched_tau_jet > -1:
                 h_pat_bTag_flightSign_lt.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
+                h_pat_bTag_refit_flightSign_lt.Fill(flight_sign, event.jet_b_discr[i_matched_tau_jet])
                 if event.jet_b_discr[i_matched_tau_jet] < 0.85:
                     h_refit_flightSign_lt_noBtag .Fill(flight_sign)
                     h_pat_flightSign_lt_noBtag   .Fill(pat_flightSign)
+                else:
+                    h_refit_flightSign_lt_Btag .Fill(flight_sign)
+                    h_pat_flightSign_lt_Btag   .Fill(pat_flightSign)
 
 
 

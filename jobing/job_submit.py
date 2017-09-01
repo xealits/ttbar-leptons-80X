@@ -114,23 +114,27 @@ if __name__ == "__main__":
         exit(0)
 
     proxy_file = outdirname + "/FARM/inputs/x509_proxy"
-    logging.info("Initializing proxy in " + proxy_file)
-    #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
-    # os.system handles the hidden input well
-    # subprocess.check_output(shell=True) and .Popen(shell=True)
-    # had some issues
-    status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
-    if status !=0:
-        logging.error("Proxy initialization failed: status = %s output =\n%s" % (str(status), output))
-        exit(2)
+    if 'X509_USER_PROXY' not in os.environ:
+        logging.info("Initializing proxy in " + proxy_file)
+        #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
+        # os.system handles the hidden input well
+        # subprocess.check_output(shell=True) and .Popen(shell=True)
+        # had some issues
+        status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
-    #os.system('export X509_USER_PROXY=' + proxy_file)
-    #my_env = os.environ.copy()
-    #my_env["X509_USER_PROXY"] = proxy_file
-    os.environ["X509_USER_PROXY"] = proxy_file
+        if status !=0:
+            logging.error("Proxy initialization failed: status = %s output =\n%s" % (str(status), output))
+            exit(2)
 
-    logging.info("Proxy is ready.")
+        #os.system('export X509_USER_PROXY=' + proxy_file)
+        #my_env = os.environ.copy()
+        #my_env["X509_USER_PROXY"] = proxy_file
+        os.environ["X509_USER_PROXY"] = proxy_file
+
+        logging.info("Proxy is ready.")
+    else:
+        logging.info("Using the proxy from env at: %s" % os.environ['X509_USER_PROXY'])
 
 
     # finding local computing resourses

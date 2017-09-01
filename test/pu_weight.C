@@ -244,7 +244,7 @@ double lepton_electron_trigger_SF(Float_t eta, Float_t pt)
 	//double pt = el.pt();
 	// here X axis is pt, Y axis is eta (from -2.5 to 2.5)
 	double bin_x = (pt  < electron_effs_trg_all_histo->GetXaxis()->GetXmax() ? pt  : electron_effs_trg_all_histo->GetXaxis()->GetXmax() - 1);
-	double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 1);
+	double bin_y = (eta < electron_effs_trg_all_histo->GetYaxis()->GetXmax() ? eta : electron_effs_trg_all_histo->GetYaxis()->GetXmax() - 0.01);
 	return electron_effs_trg_all_histo->GetBinContent( electron_effs_trg_all_histo->FindBin(bin_x, bin_y) );
 	//el_trig_weight = 1 - no_trig; // so for 1 lepton it will = to the SF, for 2 there will be a mix
 	//fill_1d(string("weight_trigger_no_electron"),  200, 0., 1.1,   no_ele_trig, 1);
@@ -540,8 +540,66 @@ Float_t T = vec1_T + vec0_T;
 return sqrt(T*T - X*X - Y*Y - Z*Z);
 }
 
+double divector_mass_tES( Float_t vec0_X, Float_t vec0_Y, Float_t vec0_Z, Float_t vec0_T, 
+	Float_t tau_X, Float_t tau_Y, Float_t tau_Z, Float_t tau_T, Int_t tau_DM)
+{
+float tau_cor = 1.;
+if (tau_DM == 0) tau_cor = 0.995;
+else if (tau_DM < 10) tau_cor = 1.011;
+else tau_cor = 1.006;
+Float_t X = tau_X*tau_cor + vec0_X;
+Float_t Y = tau_Y*tau_cor + vec0_Y;
+Float_t Z = tau_Z*tau_cor + vec0_Z;
+Float_t T = tau_T*tau_cor + vec0_T;
+return sqrt(T*T - X*X - Y*Y - Z*Z);
+}
+
 Float_t transverse_mass(Float_t v1_pt, Float_t v2_pt, Float_t v1_phi, Float_t v2_phi)
 {
 return sqrt(2*v1_pt*v2_pt * (1 - cos(v1_phi - v2_phi)));
 }
+
+
+Float_t p_zetta(Float_t lep_x, Float_t lep_y, Float_t tau_x, Float_t tau_y, Float_t met_x, Float_t met_y)
+{
+Float_t bisect_x = lep_x + tau_x;
+Float_t bisect_y = lep_y + tau_y;
+Float_t bisect_l = sqrt(bisect_x*bisect_x + bisect_y*bisect_y);
+bisect_x /= bisect_l;
+bisect_y /= bisect_l;
+
+Float_t zetta_all = (lep_x + tau_x + met_x)*bisect_x + (lep_y + tau_y + met_y)*bisect_y;
+Float_t zetta_vis = (lep_x + tau_x)*bisect_x + (lep_y + tau_y)*bisect_y;
+return zetta_all - 0.85*zetta_vis;
+}
+
+Float_t dilep_recoil_pt(
+	Float_t lep1_x,
+	Float_t lep1_y,
+	Float_t lep2_x,
+	Float_t lep2_y,
+	Float_t met_x,
+	Float_t met_y
+)
+{
+Float_t recoil_x = - met_x - (lep1_x + lep2_x);
+Float_t recoil_y = - met_y - (lep1_y + lep2_y);
+
+return sqrt(recoil_x*recoil_x + recoil_y*recoil_y);
+}
+
+Float_t slep_recoil_pt(
+	Float_t lep1_x,
+	Float_t lep1_y,
+	Float_t met_x,
+	Float_t met_y
+)
+{
+Float_t recoil_x = - met_x - lep1_x;
+Float_t recoil_y = - met_y - lep1_y;
+
+return sqrt(recoil_x*recoil_x + recoil_y*recoil_y);
+}
+
+
 

@@ -28,7 +28,7 @@
 
 #include "dtag_xsecs.h"
 
-#define NT_OUTPUT_TTREE_NAME "reduced_ttree"
+#define NT_OUTPUT_TTREE_NAME "ntupler/reduced_ttree"
 
 double pileup_ratio[] = {0, 0.360609416811339, 0.910848525427002, 1.20629960507795, 0.965997726573782, 1.10708082813183, 1.14843491548622, 0.786526251164482, 0.490577792661333, 0.740680941110478,
 0.884048630953726, 0.964813189764159, 1.07045369167689, 1.12497267309738, 1.17367530613108, 1.20239808206413, 1.20815108390021, 1.20049333094509, 1.18284686347315, 1.14408796655615,
@@ -326,6 +326,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	*/
 
 	TTree* output_ttree = (TTree*) file->Get(NT_OUTPUT_TTREE_NAME); // hardcoded output name
+	if (!output_ttree)
+		{
+		if (be_verbose) cout << "no ntupler" << endl;
+		output_ttree = (TTree*) file->Get("reduced_ttree"); // lost in splitting the TT ntuple...
+		}
 	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;
 
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
@@ -371,19 +376,25 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		TString distr_condition = distr_condition_init;
 
 		TH1D* weightflow = NULL;
-		if (file->GetListOfKeys()->Contains("eventflow"))
+		double weight_init = 0;
+		//weight_h = f.Get('ntupler/weight_counter')
+		//n_weight = weight_h.GetBinContent(2)
+		if (file->Get("ntupler/weight_counter"))
 			{
-			weightflow = (TH1D*) file->Get("eventflow");
+			weightflow = (TH1D*) file->Get("ntupler/weight_counter");
+			weight_init = weightflow->GetBinContent(2);
 			}
 		else if (file->GetListOfKeys()->Contains("weightflow_el_NOMINAL"))
 			{
 			weightflow = (TH1D*) file->Get("weightflow_el_NOMINAL");
+			weight_init = weightflow->GetBinContent(11);
 			}
 		else {
 			cout << "NO WEIGHTFLOW: " << dtag << endl;
+			weight_init = 4.68418e+07; // for the splitted TTbar
 			}
 		xsec = xsecs[dtag];
-		ratio = lumi * xsec / weightflow->GetBinContent(11);
+		ratio = lumi * xsec / weight_init;
 
 		// add weights for MC
 		TString weight_cond("");
@@ -403,11 +414,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TString lepton_SF_call("");
 			if (sig == TString("mu") || sig == TString("elmu"))
 				{
-				lepton_SF_call.Form("(lepton_muon_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+				lepton_SF_call.Form("(lepton_muon_SF(abs(lep_p4[0].eta()), lep_p4[0].pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
 			else // assume single-electron as only alternative
 				{
-				lepton_SF_call.Form("(lepton_electron_SF(lep0_p4.eta(), lep0_p4.pt()))*");
+				lepton_SF_call.Form("(lepton_electron_SF(lep_p4[0].eta(), lep_p4[0].pt()))*");
 				}
 			weight_cond += lepton_SF_call;
 			}
@@ -417,15 +428,16 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TString lepton_trig_SF_call("");
 			if (sig == TString("mu") || sig == TString("elmu"))
 				{
-				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep0_p4.eta()), lep0_p4.pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
+				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep_p4[0].eta()), lep_p4[0].pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
 			else
 				{
-				lepton_trig_SF_call.Form("(lepton_electron_trigger_SF(lep0_p4.eta(), lep0_p4.pt()))*");
+				lepton_trig_SF_call.Form("(lepton_electron_trigger_SF(lep_p4[0].eta(), lep_p4[0].pt()))*");
 				}
 			weight_cond += lepton_trig_SF_call;
 			}
 
+		/*
 		// btag SF
 		//b_taggin_SF (double jet_pt, double jet_eta, double jet_b_discr, int jet_hadronFlavour, double b_tag_WP);
 		if (with_b_SF)
@@ -441,6 +453,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			b_SF_call += "(b_taggin_SF(jet4_p4.pt(), jet4_p4.eta(), jet4_b_discr, jet4_hadronFlavour, 0.8484))*";
 			weight_cond += b_SF_call;
 			}
+		*/
 
 		// Tau ID SF
 		if (tau_ID_SF > 0)
@@ -479,9 +492,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 			if (sig == TString("elmu"))
 				{
+				nick = "tt_{em}";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 				nick = "tt_{other}";
 				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11" + ")";
 				}
 			else
 				{
@@ -536,10 +551,10 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 
 			// hack to merge HLTmu & HLTjetmu
-			if (be_verbose) cout << dtag << ' ' << nick << '\t' << histo->Integral() << '\t' << weightflow->GetBinContent(11) << endl;
+			if (be_verbose) cout << dtag << ' ' << nick << '\t' << histo->Integral() << '\t' << weight_init << endl;
 			if (be_verbose) histo->Print();
 
-			cout << "scaling and adding a stack histo " << dtag << " xsec = " << xsec << " ratio = " << ratio << " norm = " << histo->Integral() / weightflow->GetBinContent(11) << endl;
+			cout << "scaling and adding a stack histo " << dtag << " xsec = " << xsec << " ratio = " << ratio << " norm = " << histo->Integral() / weight_init << endl;
 			histo->Scale(ratio);
 			if (be_verbose) histo->Print();
 

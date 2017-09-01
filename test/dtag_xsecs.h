@@ -202,7 +202,7 @@ std::map<TString, double> xsecs = {
 
 // since _perc ~ worked doing this way
 // no NUP, but reduced xsec
-{"MC2016_Summer16_WJets_madgraph", 50690 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_WJets_madgraph", 61526.7}, // 50690 - 9493 - 3120 - 942.3 - 524.2},
 {"MC2016_Summer16_W1Jets_madgraph", 9493},
 {"MC2016_Summer16_W2Jets_madgraph", 3120},
 {"MC2016_Summer16_W3Jets_madgraph", 942.3},
@@ -320,6 +320,9 @@ std::map<TString, double> xsecs = {
 
 // inclusive sample
 { "MC2016_Summer16_TTJets_powheg"      , ttbar_xsec },
+{ "MC2016_Summer16_TTJets_powheg_1"      , ttbar_xsec },
+{ "MC2016_Summer16_TTJets_powheg_2"      , ttbar_xsec },
+{ "MC2016_Summer16_TTJets_powheg_3"      , ttbar_xsec },
 
 /* elmu fakerates 2
  */
@@ -898,6 +901,7 @@ Color_t nick_colour(TString nick)
 	else if (nick.Contains("tt_jj")) return kGreen+4;
 	else if (nick.Contains("tt_lj")) return kGreen+3;
 	else if (nick.Contains("tt_em")) return kYellow-7;
+	else if (nick.Contains("tt_{em}")) return kYellow-7;
 	else if (nick.Contains("tt_ee")) return kAzure-9;
 	else if (nick.Contains("tt_mm")) return kGreen-9;
 	else if (nick.Contains("tt_{e\\tau}")) return kOrange+2;
