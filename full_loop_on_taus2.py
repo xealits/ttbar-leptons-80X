@@ -27,7 +27,7 @@ else:
 isTT = 'TT' in filename
 
 logging.debug("done")
-logging.debug("options: %s %s %s" % (run_test, isTT, gen_match))
+logging.debug("options: %s %s %s %s" % (run_test, isTT, gen_match, gen_match2))
 
 #def PFTau_FlightLength_significance(TVector3 pv,TMatrixTSym<double> PVcov, TVector3 sv, TMatrixTSym<double> SVcov ){
 def PFTau_FlightLength_significance(pv,  PVcov, sv, SVcov):
@@ -119,7 +119,7 @@ out_suffix = ''
 if gen_match:  out_suffix += 'genMatch_'
 if gen_match2: out_suffix += 'genMatch2_'
 out_suffix += nick
-out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix)
+out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix
 
 logging.debug("will write to " + out_filename)
 out_file = TFile(out_filename, "recreate")
@@ -159,8 +159,8 @@ h_pat_flightSign = TH1D("pat_flightSign_%s" % nick, "", 100, 0, 50)
 h_pat_flightSign_lt = TH1D("pat_flightSign_lt", "", 100, 0, 50)
 h_pat_flightSign_lj = TH1D("pat_flightSign_lj", "", 100, 0, 50)
 
-h_pat_flightLen_refit_flightLen    = TH2D("pat_flightLen_refit_flightLen_%s" % nick, "", 100, 0, 0.05, 100, 0, 0.05)
-h_pat_flightSign_refit_flightSign  = TH2D("pat_flightSign_refit_flightSign_%s" % nick, "", 100, 0, 50, 100, 0, 10)
+h_pat_flightLen_refit_flightLen    = TH2D("pat_flightLen_refit_flightLen_%s" % nick, "", 100, 0, 0.01, 100, 0, 0.01)
+h_pat_flightSign_refit_flightSign  = TH2D("pat_flightSign_refit_flightSign_%s" % nick, "", 100, 0, 10, 100, 0, 10)
 
 h_pat_flightLen_flightSign    = TH2D("pat_flightLen_flightSign_%s" % nick, "", 100, 0, 0.05, 100, 0, 10)
 h_pat_flightLen_flightSign_lt = TH2D("pat_flightLen_flightSign_lt",        "", 100, 0, 0.05, 100, 0, 10)
@@ -208,9 +208,10 @@ for i, event in enumerate(ntuple):
        #and not any(sqrt((gen.Eta() - event.tau_p4[0].Eta())**2 + (gen.Phi() - event.tau_p4[0].Phi())**2) < 0.1 for gen in event.gen_tau_p4): continue
        matched = False
        if abs(event.gen_t_pt) > 15*15: # hadronic tau
-           matched = ((event.gen_t_w_final_p4.Eta() - event.tau_p4[0].Eta())**2 + (event.gen_t_w_final_p4.Phi() - event.tau_p4[0].Phi())**2) < 0.04
+           matched = ((event.gen_t_w_final_p4.Eta() - event.tau_p4[0].Eta())**2 + (event.gen_t_w_final_p4.Phi() - event.tau_p4[0].Phi())**2) < 0.04  # 0.2 dR
        if abs(event.gen_tb_pt) > 15*15: # hadronic tau
            matched = ((event.gen_tb_w_final_p4.Eta() - event.tau_p4[0].Eta())**2 + (event.gen_tb_w_final_p4.Phi() - event.tau_p4[0].Phi())**2) < 0.04
+       if not matched: continue
     # ref:
     # http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_5_3_9/doc/html/d5/d6b/DataFormats_2Math_2interface_2deltaR_8h_source.html#l00019
 
