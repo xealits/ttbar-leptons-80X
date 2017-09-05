@@ -332,8 +332,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		output_ttree = (TTree*) file->Get("reduced_ttree"); // lost in splitting the TT ntuple...
 		if (!output_ttree)
 			{
-			cout << "no output_ttree, exiting" << endl;
-			return 1;
+			cout << "no output_ttree, skipping" << endl;
+			continue;
 			}
 		}
 	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;

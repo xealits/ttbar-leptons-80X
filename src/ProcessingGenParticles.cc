@@ -131,6 +131,41 @@ return tau_decay_id;
  * -- so, these should be prompt
  */
 
+/*
+ * save all no-daughters particles, uniq by their pointer
+ * save vectors with p4, pdgId and status
+ */
+void save_final_states(
+	const reco::Candidate * part,
+	std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >>& p4_s,
+	vector<Int_t>& pdgId_s,
+	vector<Int_t>& status_s,
+	vector<const reco::Candidate*>& saved_particles)
+
+{
+for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
+	{
+	const reco::Candidate * daughter = part->daughter(d_i);
+	if (daughter->numberOfDaughters() == 0) // it's a final state
+		{
+		// check if it is already saved
+		if (std::find(saved_particles.begin(), saved_particles.end(), daughter) == saved_particles.end())
+			{
+			// then save it:
+			saved_particles.push_back(daughter);
+			p4_s.push_back(daughter->p4());
+			pdgId_s.push_back(daughter->pdgId());
+			status_s.push_back(daughter->status());
+			}
+		}
+	else // it's not a final particle
+		{
+		save_final_states(daughter, p4_s, pdgId_s, status_s, saved_particles);
+		}
+	}
+// strictly sequencial algorithm
+}
+
 
 
 // Top pT reweighting

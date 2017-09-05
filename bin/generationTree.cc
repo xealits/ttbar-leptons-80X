@@ -46,6 +46,8 @@
 #include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
 #include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 
+#include "UserCode/ttbar-leptons-80X/interface/ProcessingGenParticles.h"
+
 //#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
 
 // should work in CMSSW_8_0_12 and CMSSW_8_1_0
@@ -489,7 +491,8 @@ bool hasTauAsMother(const reco::GenParticle  p)
  * const reco::Candidate * W = p.daughter( W_num );
  * mc_decay += find_W_decay(W);
 */
-string find_W_decay(const reco::Candidate * W) {
+
+string find_W_decay_old(const reco::Candidate * W) {
 	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
 	int d0_id, d1_id; // ids of decay daughters
 	//bool found_decay=false;
@@ -1305,6 +1308,14 @@ for(size_t f=0; f<urls.size();++f)
 		//   follow along W and find decay vertex to leptons or quarks
 		// -- thus recursion is needed
 
+		// tt b and W products
+		//
+        	std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >> t_b_p4_s, tb_b_p4_s, t_W_p4_s, tb_W_p4_s;
+        	vector<Int_t> t_b_pdgId_s, tb_b_pdgId_s, t_W_pdgId_s, tb_W_pdgId_s;
+        	vector<Int_t> t_b_status_s, tb_b_status_s, t_W_status_s, tb_W_status_s;
+        	vector<const reco::Candidate*> t_b_parts, tb_b_parts, t_W_parts, tb_W_parts;
+
+
 		// traversing separate t quarks
 		//if (debug) {
 		if (isTTbarMC && genHandle.isValid()) {
@@ -1346,7 +1357,10 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == 24 ? 0 : (d1_id == 24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						const reco::Candidate * b = p.daughter( 1-W_num );
+						save_final_states(W, t_W_p4_s, t_W_pdgId_s, t_W_status_s, t_W_parts);
+						save_final_states(b, t_b_p4_s, t_b_pdgId_s, t_b_status_s, t_b_parts);
+						mc_decay += find_W_decay_old(W);
 					}
 				}
 
@@ -1359,7 +1373,10 @@ for(size_t f=0; f<urls.size();++f)
 						int W_num = d0_id == -24 ? 0 : (d1_id == -24 ? 1 : -1) ;
 						if (W_num < 0) continue;
 						const reco::Candidate * W = p.daughter( W_num );
-						mc_decay += find_W_decay(W);
+						const reco::Candidate * b = p.daughter( 1-W_num );
+						save_final_states(W, tb_W_p4_s, tb_W_pdgId_s, tb_W_status_s, tb_W_parts);
+						save_final_states(b, tb_b_p4_s, tb_b_pdgId_s, tb_b_status_s, tb_b_parts);
+						mc_decay += find_W_decay_old(W);
 						mc_decay += string("bar");
 					}
 				}
@@ -1370,12 +1387,30 @@ for(size_t f=0; f<urls.size();++f)
 
 		if (debug) {
 			cout << "MC suffix " << mc_decay << " is found\n";
+
+			// printing out t tb final states:
+			cout << "t W final states:" << endl;
+			for (int i=0; i< t_W_parts.size(); i++)
+				cout << "  " << t_W_pdgId_s[i] << '(' << t_W_status_s[i] << ')';
+			cout << endl;
+			cout << "t b final states:" << endl;
+			for (int i=0; i< t_b_parts.size(); i++)
+				cout << "  " << t_b_pdgId_s[i] << '(' << t_b_status_s[i] << ')';
+			cout << endl;
+			cout << "tb W final states:" << endl;
+			for (int i=0; i< t_W_parts.size(); i++)
+				cout << "  " << t_W_pdgId_s[i] << '(' << t_W_status_s[i] << ')';
+			cout << endl;
+			cout << "tb b final states:" << endl;
+			for (int i=0; i< tb_b_parts.size(); i++)
+				cout << "  " << tb_b_pdgId_s[i] << '(' << tb_b_status_s[i] << ')';
+			cout << endl;
 			}
 
 		//if (!mc_decay.empty()) mc_decay = string("_") + mc_decay;
-		mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
+		//mc_decay = string("_") + mc_decay; // so we'll have "_" or "_mcdecay"
 
-		bool only_tt_lepjets = true;
+		bool only_tt_lepjets = false;
 		if (only_tt_lepjets)
 			{
 			if (mc_decay != string("elqbar") && mc_decay != string("qelbar") && mc_decay != string("qmubar") && mc_decay != string("muqbar")) continue;
