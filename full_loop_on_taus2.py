@@ -7,6 +7,7 @@ from sys import argv
 
 gen_match  = '-g' in argv
 gen_match2 = '-g2' in argv
+match_quality = '-m' in argv
 run_test  = '-t' in argv
 logging.basicConfig(level=logging.DEBUG)
 
@@ -22,7 +23,9 @@ if '-w' in argv:
     filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
 else:
     #filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
-    filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+    #filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+    #filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.4_merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
+    filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.5/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt'
 
 isTT = 'TT' in filename
 
@@ -116,6 +119,7 @@ ntuple  = in_file.Get("ntupler/reduced_ttree")
 logging.debug("opened file and ntuple")
 
 out_suffix = ''
+if match_quality:  out_suffix += 'matchQuality_'
 if gen_match:  out_suffix += 'genMatch_'
 if gen_match2: out_suffix += 'genMatch2_'
 out_suffix += nick
@@ -198,7 +202,8 @@ n_events = 0
 # looping:
 for i, event in enumerate(ntuple):
     if run_test and i > 1: break
-    if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and event.tau_SV_fit_matchingQuality[0] < 0.001): continue
+    if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
+        continue
     #n_events += 1
     #if n_events > N_events: break
 
