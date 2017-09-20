@@ -143,26 +143,28 @@ void save_final_states(
 	vector<const reco::Candidate*>& saved_particles)
 
 {
-for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
+if (part->numberOfDaughters() == 0) // it's a final state
 	{
-	const reco::Candidate * daughter = part->daughter(d_i);
-	if (daughter->numberOfDaughters() == 0) // it's a final state
+	// check if it is already saved
+	if (std::find(saved_particles.begin(), saved_particles.end(), part) == saved_particles.end())
 		{
-		// check if it is already saved
-		if (std::find(saved_particles.begin(), saved_particles.end(), daughter) == saved_particles.end())
-			{
-			// then save it:
-			saved_particles.push_back(daughter);
-			p4_s.push_back(daughter->p4());
-			pdgId_s.push_back(daughter->pdgId());
-			status_s.push_back(daughter->status());
-			}
+		// then save it:
+		saved_particles.push_back(part);
+		p4_s.push_back(part->p4());
+		pdgId_s.push_back(part->pdgId());
+		status_s.push_back(part->status());
 		}
-	else // it's not a final particle
+	}
+else
+	{
+	// loop through daughters
+	for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
 		{
+		const reco::Candidate * daughter = part->daughter(d_i);
 		save_final_states(daughter, p4_s, pdgId_s, status_s, saved_particles);
 		}
 	}
+
 // strictly sequencial algorithm
 }
 
