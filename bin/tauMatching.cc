@@ -1648,12 +1648,49 @@ for(size_t f=0; f<urls.size();++f)
 		if(tausHandle.isValid() ) taus = *tausHandle;
 
 		pat::TauCollection IDtaus, selTaus;
-		processTaus_ID    (taus,   weight, tau_decayMode, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
-		//processTaus_ID_ISO    (taus,   weight, tau_decayMode, tau_VLoose_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
+		//processTaus_ID    (taus,   weight, tau_decayMode, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
+		processTaus_ID_ISO    (taus,   weight, tau_decayMode, tau_VLoose_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
 		processTaus_Kinematics(IDtaus, weight, 20., 2.4, selTaus,      false, false);
+
+		// only events with loose taus
+		if (selTaus.size() < 1) continue;
+
 
 
 		// TRACKS? (match sigCands to general tracks and print those too
+		//edm::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
+		//iEvent.getByToken(tracks_, tracksHandle);
+		//if (tracksHandle.isValid()) tracks = *tracksHandle;
+		fwlite::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
+		tracksHandle.getByLabel(ev, "packedPFCandidates");
+		const edm::View<pat::PackedCandidate>* track_cands = tracksHandle.product();
+
+		reco::TrackCollection allTracks; // for taus (with possible SV) (testing now)
+
+		//TLorentzVector aTrack;
+		for(size_t i=0; i<track_cands->size(); ++i)
+			{
+			if((*track_cands)[i].charge()==0 || (*track_cands)[i].vertexRef().isNull()) continue;
+			if(!(*track_cands)[i].bestTrack()) continue;
+
+			unsigned int key = (*track_cands)[i].vertexRef().key();
+			int quality = (*track_cands)[i].pvAssociationQuality();
+
+			/*
+			// here I need to select "good" tracks
+			// save them to all tracks
+			// and if they belong to PV save them to pv tracks
+			if (!(key!=0 ||
+				(quality!=pat::PackedCandidate::UsedInFitTight
+				 && quality!=pat::PackedCandidate::UsedInFitLoose)))// continue;
+				{
+				pvTracks.push_back(*((*track_cands)[i].bestTrack()));
+				}
+			*/
+
+			// TODO: add requirement of "goodness"?
+			allTracks.push_back(*((*track_cands)[i].bestTrack()));
+			}
 
 
 		// PRINTOUT
@@ -1701,21 +1738,54 @@ for(size_t f=0; f<urls.size();++f)
 			cout << endl;
 			}
 
+		std::vector<double> tracksToBeRemoved; // compared by Pt due to the conflict of comparing const and not const iterators
 		for (unsigned int i=0; i<selTaus.size(); i++)
 			{
 			cout << iev << ",tau" << i << ',' << selTaus[i].pdgId() << ',' << selTaus[i].decayMode()
 				<< ',' << selTaus[i].energy() << ',' << selTaus[i].pt()
 				<< ',' << selTaus[i].eta()    << ',' << selTaus[i].phi();
 			cout << endl;
+
 			// tracks
 			reco::CandidatePtrVector sigCands = selTaus[i].signalChargedHadrCands();
 			for (reco::CandidatePtrVector::const_iterator itr = sigCands.begin(); itr != sigCands.end(); ++itr)
 				{
-				cout << iev << ",tau" << i << "patTrack," << -1 << ',' << -1
+				cout << iev << ",tau" << i << "patTrack," << (*itr)->charge() << ',' << -1
 					<< ',' << (*itr)->energy() << ',' << (*itr)->pt()
 					<< ',' << (*itr)->eta()    << ',' << (*itr)->phi();
 				cout << endl;
+
+				// matched general tracks
+				double deR(999.); 
+				double checkqual(0);
+				reco::Track closestTrack;
+				int closestTrack_index = -1, index = 0;
+
+				//for(auto iter: pvTracks)
+				for(auto iter: allTracks)
+					{
+					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
+						continue;
+					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < deR)
+						{
+						deR = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
+						checkqual=deR;
+						closestTrack = iter;
+						closestTrack_index = index;
+						}
+					index++;
+					}
+
+				//matchingQuality += checkqual;
+				tracksToBeRemoved.push_back(closestTrack.pt());
+				//transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
+				//cout<<"  closestTrackiter eta  :  "<<   closestTrack.eta() << "   phi   " << closestTrack.phi() << "    pt  "<< closestTrack.pt() <<endl;
+				cout << iev << ",tau" << i << "gnrTrack," << closestTrack.charge() << ',' << checkqual
+					<< ',' << closestTrack.energy() << ',' << closestTrack.pt()
+					<< ',' << closestTrack.eta()    << ',' << closestTrack.phi();
+				cout << endl;
 				}
+
 			}
 
 		if(debug){
