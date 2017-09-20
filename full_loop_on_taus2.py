@@ -9,6 +9,7 @@ gen_match  = '-g' in argv
 gen_match2 = '-g2' in argv
 match_quality = '-m' in argv
 run_test  = '-t' in argv
+run_million  = '-1000000' in argv
 logging.basicConfig(level=logging.DEBUG)
 
 logging.debug("loading ROOT...")
@@ -25,7 +26,7 @@ else:
     #filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.4_merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
-    filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.5/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt'
+    filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt'
 
 isTT = 'TT' in filename
 
@@ -122,6 +123,7 @@ out_suffix = ''
 if match_quality:  out_suffix += 'matchQuality_'
 if gen_match:  out_suffix += 'genMatch_'
 if gen_match2: out_suffix += 'genMatch2_'
+if run_million: out_suffix += 'runMillion_'
 out_suffix += nick
 out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix
 
@@ -174,6 +176,9 @@ h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 50,
 h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 50, 100, 0, 1)
 #tau_dR_matched_jet
 
+h_refit_m1m2_lt = TH2D("refit_m1m2_lt", "", 100, 0, 2, 100, 0, 2)
+h_refit_m1m2_lj = TH2D("refit_m1m2_lj", "", 100, 0, 2, 100, 0, 2)
+
 h_refit_flightLen_flightSign    = TH2D("refit_flightLen_flightSign_%s" % nick, "", 100, 0, 0.01, 100, 0, 10)
 h_refit_flightLen_flightSign_lt = TH2D("refit_flightLen_flightSign_lt", "", 100, 0, 0.01, 100, 0, 10)
 h_refit_flightLen_flightSign_lj = TH2D("refit_flightLen_flightSign_lj", "", 100, 0, 0.01, 100, 0, 10)
@@ -196,16 +201,20 @@ h_n_goodPV = TH1D("n_goodPV_%s" % nick, "", 50, 0, 50)
 
 logging.debug("set histograms")
 
-N_events = 100000 # ntuple.GetEntries()
+N_events = 1000000 # ntuple.GetEntries()
 n_events = 0
 
 # looping:
 for i, event in enumerate(ntuple):
     if run_test and i > 1: break
-    if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
+    #if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
+    if not (event.tau_refited_index.size() > 0 and event.tau_refited_index[0]>-1 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
         continue
-    #n_events += 1
-    #if n_events > N_events: break
+    # check tracks are present:
+    if not (event.tau_SV_fit_track_SS_p4.size() > 0 and event.tau_SV_fit_track_OS1_p4.size() > 0 and event.tau_SV_fit_track_OS2_p4.size() > 0):
+        continue
+    n_events += 1
+    if run_million and n_events > N_events: break
 
     # match the 0 tau to any of gen taus
     if gen_match and not any(sqrt((gen.Eta() - event.tau_p4[0].Eta())**2 + (gen.Phi() - event.tau_p4[0].Phi())**2) < 0.1 for gen in event.gen_tau_p4): continue
@@ -263,6 +272,9 @@ for i, event in enumerate(ntuple):
         flight_len_i = (pv_i - sv).Mag()
         h_refit_flightLen_to_other_PV.Fill(flight_len_i)
 
+    # masses of tracks
+    mass1 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS1_p4[0]).mass()
+    mass2 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS2_p4[0]).mass()
 
     #h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 1, 100, 0, 50)
     #h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 1, 100, 0, 50)
@@ -293,6 +305,8 @@ for i, event in enumerate(ntuple):
             h_pat_flightLen_flightSign_lj  .Fill(pat_flightLen, pat_flightSign)
             h_refit_flightLen_flightSign_lj.Fill(flight_len, flight_sign)
 
+            h_refit_m1m2_lj.Fill(mass1, mass2)
+
             if i_matched_tau_jet > -1:
                 h_pat_bTag_flightSign_lj.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
                 h_refit_bTag_flightSign_lj.Fill(flight_sign, event.jet_b_discr[i_matched_tau_jet])
@@ -311,6 +325,8 @@ for i, event in enumerate(ntuple):
 
             h_pat_flightLen_flightSign_lt  .Fill(pat_flightLen, pat_flightSign)
             h_refit_flightLen_flightSign_lt.Fill(flight_len, flight_sign)
+
+            h_refit_m1m2_lt.Fill(mass1, mass2)
 
             if i_matched_tau_jet > -1:
                 h_pat_bTag_flightSign_lt.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
