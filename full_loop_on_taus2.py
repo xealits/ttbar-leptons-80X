@@ -1,5 +1,5 @@
 import logging
-from numpy import sqrt
+from numpy import sqrt, sign, log
 from array import array
 from numpy.linalg import norm
 from sys import argv
@@ -129,15 +129,15 @@ out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix
 
 logging.debug("will write to " + out_filename)
 out_file = TFile(out_filename, "recreate")
-h_refit_SV_cov00 = TH1D("refit_SV_cov00_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov01 = TH1D("refit_SV_cov01_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov02 = TH1D("refit_SV_cov02_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov10 = TH1D("refit_SV_cov10_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov11 = TH1D("refit_SV_cov11_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov12 = TH1D("refit_SV_cov12_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov20 = TH1D("refit_SV_cov20_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov21 = TH1D("refit_SV_cov21_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_SV_cov22 = TH1D("refit_SV_cov22_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov00 = TH1D("refit_SV_cov00_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov01 = TH1D("refit_SV_cov01_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov02 = TH1D("refit_SV_cov02_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov10 = TH1D("refit_SV_cov10_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov11 = TH1D("refit_SV_cov11_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov12 = TH1D("refit_SV_cov12_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov20 = TH1D("refit_SV_cov20_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov21 = TH1D("refit_SV_cov21_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_SV_cov22 = TH1D("refit_SV_cov22_%s" % nick, "", 100, -0.00005, 0.00005)
 
 h_refit_SV_cov00.SetDirectory(out_file)
 h_refit_SV_cov01.SetDirectory(out_file)
@@ -209,15 +209,15 @@ h_pat_flightLen_Energy_lj   = TH2D("pat_flightLen_Energy_lj",          "", 100, 
 # PV XY Z cov
 h_refit_PV_xy  = TH2D("refit_PV_xy_%s"  % nick, "", 100, 0.1048-0.01, 0.1048+0.01, 100, 0.1686-0.01, 0.1686+0.01)
 h_refit_PV_z   = TH1D("refit_PV_z_%s"   % nick, "", 100, -50, 50)
-h_refit_PV_cov00 = TH1D("refit_PV_cov00_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov01 = TH1D("refit_PV_cov01_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov02 = TH1D("refit_PV_cov02_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov10 = TH1D("refit_PV_cov10_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov11 = TH1D("refit_PV_cov11_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov12 = TH1D("refit_PV_cov12_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov20 = TH1D("refit_PV_cov20_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov21 = TH1D("refit_PV_cov21_%s" % nick, "", 100, -0.0001, 0.0001)
-h_refit_PV_cov22 = TH1D("refit_PV_cov22_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov00 = TH1D("refit_PV_cov00_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov01 = TH1D("refit_PV_cov01_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov02 = TH1D("refit_PV_cov02_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov10 = TH1D("refit_PV_cov10_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov11 = TH1D("refit_PV_cov11_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov12 = TH1D("refit_PV_cov12_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov20 = TH1D("refit_PV_cov20_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov21 = TH1D("refit_PV_cov21_%s" % nick, "", 100, -0.00005, 0.00005)
+h_refit_PV_cov22 = TH1D("refit_PV_cov22_%s" % nick, "", 100, -0.00005, 0.00005)
 
 h_n_goodPV = TH1D("n_goodPV_%s" % nick, "", 50, 0, 50)
 
@@ -252,13 +252,23 @@ for i, event in enumerate(ntuple):
     # http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_5_3_9/doc/html/d5/d6b/DataFormats_2Math_2interface_2deltaR_8h_source.html#l00019
 
     h_n_goodPV.Fill(event.PV_x.size())
+    #h_refit_SV_cov00.Fill(sign(event.tau_SV_cov[0](0, 0)) *log(abs(event.tau_SV_cov[0](0, 0))))
+    #h_refit_SV_cov01.Fill(sign(event.tau_SV_cov[0](0, 1)) *log(abs(event.tau_SV_cov[0](0, 1))))
+    #h_refit_SV_cov02.Fill(sign(event.tau_SV_cov[0](0, 2)) *log(abs(event.tau_SV_cov[0](0, 2))))
+    #h_refit_SV_cov10.Fill(sign(event.tau_SV_cov[0](1, 1)) *log(abs(event.tau_SV_cov[0](1, 1))))
+    #h_refit_SV_cov11.Fill(sign(event.tau_SV_cov[0](1, 1)) *log(abs(event.tau_SV_cov[0](1, 1))))
+    #h_refit_SV_cov12.Fill(sign(event.tau_SV_cov[0](1, 2)) *log(abs(event.tau_SV_cov[0](1, 2))))
+    #h_refit_SV_cov20.Fill(sign(event.tau_SV_cov[0](2, 2)) *log(abs(event.tau_SV_cov[0](2, 2))))
+    #h_refit_SV_cov21.Fill(sign(event.tau_SV_cov[0](2, 1)) *log(abs(event.tau_SV_cov[0](2, 1))))
+    #h_refit_SV_cov22.Fill(sign(event.tau_SV_cov[0](2, 2)) *log(abs(event.tau_SV_cov[0](2, 2))))
+    #
     h_refit_SV_cov00.Fill(event.tau_SV_cov[0](0, 0))
     h_refit_SV_cov01.Fill(event.tau_SV_cov[0](0, 1))
     h_refit_SV_cov02.Fill(event.tau_SV_cov[0](0, 2))
-    h_refit_SV_cov10.Fill(event.tau_SV_cov[0](1, 1))
+    h_refit_SV_cov10.Fill(event.tau_SV_cov[0](1, 0))
     h_refit_SV_cov11.Fill(event.tau_SV_cov[0](1, 1))
     h_refit_SV_cov12.Fill(event.tau_SV_cov[0](1, 2))
-    h_refit_SV_cov20.Fill(event.tau_SV_cov[0](2, 2))
+    h_refit_SV_cov20.Fill(event.tau_SV_cov[0](2, 0))
     h_refit_SV_cov21.Fill(event.tau_SV_cov[0](2, 1))
     h_refit_SV_cov22.Fill(event.tau_SV_cov[0](2, 2))
 
@@ -276,6 +286,17 @@ for i, event in enumerate(ntuple):
 
     h_refit_PV_xy.Fill(event.PV_fit_x, event.PV_fit_y)
     h_refit_PV_z .Fill(event.PV_fit_z)
+    #h_refit_PV_cov00.Fill(sign(event.PV_cov(0, 0))*log(abs(event.PV_cov(0, 0))))
+    #h_refit_PV_cov01.Fill(sign(event.PV_cov(0, 1))*log(abs(event.PV_cov(0, 1))))
+    #h_refit_PV_cov02.Fill(sign(event.PV_cov(0, 2))*log(abs(event.PV_cov(0, 2))))
+    #h_refit_PV_cov10.Fill(sign(event.PV_cov(1, 0))*log(abs(event.PV_cov(1, 0))))
+    #h_refit_PV_cov11.Fill(sign(event.PV_cov(1, 1))*log(abs(event.PV_cov(1, 1))))
+    #h_refit_PV_cov12.Fill(sign(event.PV_cov(1, 2))*log(abs(event.PV_cov(1, 2))))
+    #h_refit_PV_cov20.Fill(sign(event.PV_cov(2, 0))*log(abs(event.PV_cov(2, 0))))
+    #h_refit_PV_cov21.Fill(sign(event.PV_cov(2, 1))*log(abs(event.PV_cov(2, 1))))
+    #h_refit_PV_cov22.Fill(sign(event.PV_cov(2, 2))*log(abs(event.PV_cov(2, 2))))
+    #
+
     h_refit_PV_cov00.Fill(event.PV_cov(0, 0))
     h_refit_PV_cov01.Fill(event.PV_cov(0, 1))
     h_refit_PV_cov02.Fill(event.PV_cov(0, 2))
