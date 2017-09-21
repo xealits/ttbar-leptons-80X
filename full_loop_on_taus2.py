@@ -129,15 +129,15 @@ out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix
 
 logging.debug("will write to " + out_filename)
 out_file = TFile(out_filename, "recreate")
-h_refit_SV_cov00 = TH1D("refit_SV_cov00_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov01 = TH1D("refit_SV_cov01_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov02 = TH1D("refit_SV_cov02_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov10 = TH1D("refit_SV_cov10_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov11 = TH1D("refit_SV_cov11_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov12 = TH1D("refit_SV_cov12_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov20 = TH1D("refit_SV_cov20_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov21 = TH1D("refit_SV_cov21_%s" % nick, "", 100, 0, 0.00001)
-h_refit_SV_cov22 = TH1D("refit_SV_cov22_%s" % nick, "", 100, 0, 0.00001)
+h_refit_SV_cov00 = TH1D("refit_SV_cov00_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov01 = TH1D("refit_SV_cov01_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov02 = TH1D("refit_SV_cov02_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov10 = TH1D("refit_SV_cov10_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov11 = TH1D("refit_SV_cov11_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov12 = TH1D("refit_SV_cov12_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov20 = TH1D("refit_SV_cov20_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov21 = TH1D("refit_SV_cov21_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_SV_cov22 = TH1D("refit_SV_cov22_%s" % nick, "", 100, -0.0001, 0.0001)
 
 h_refit_SV_cov00.SetDirectory(out_file)
 h_refit_SV_cov01.SetDirectory(out_file)
@@ -197,6 +197,28 @@ h_refit_flightSign_lj_noBtag = TH1D("refit_flightSign_lj_noBtag", "", 100, 0, 50
 h_pat_flightSign_lt_noBtag   = TH1D("pat_flightSign_lt_noBtag",   "", 100, 0, 50)
 h_pat_flightSign_lj_noBtag   = TH1D("pat_flightSign_lj_noBtag",   "", 100, 0, 50)
 
+# flightLen vs tau Energy
+h_refit_flightLen_Energy    = TH2D("refit_flightLen_Energy_%s" % nick, "", 100, 0, 0.01, 100, 0, 100)
+h_refit_flightLen_Energy_lt = TH2D("refit_flightLen_Energy_lt",        "", 100, 0, 0.01, 100, 0, 100)
+h_refit_flightLen_Energy_lj = TH2D("refit_flightLen_Energy_lj",        "", 100, 0, 0.01, 100, 0, 100)
+h_pat_flightLen_Energy      = TH2D("pat_flightLen_Energy_%s" % nick,   "", 100, 0, 0.01, 100, 0, 100)
+h_pat_flightLen_Energy_lt   = TH2D("pat_flightLen_Energy_lt",          "", 100, 0, 0.01, 100, 0, 100)
+h_pat_flightLen_Energy_lj   = TH2D("pat_flightLen_Energy_lj",          "", 100, 0, 0.01, 100, 0, 100)
+#tau_dR_matched_jet
+
+# PV XY Z cov
+h_refit_PV_xy  = TH2D("refit_PV_xy_%s"  % nick, "", 100, 0.1048-0.01, 0.1048+0.01, 100, 0.1686-0.01, 0.1686+0.01)
+h_refit_PV_z   = TH1D("refit_PV_z_%s"   % nick, "", 100, -50, 50)
+h_refit_PV_cov00 = TH1D("refit_PV_cov00_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov01 = TH1D("refit_PV_cov01_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov02 = TH1D("refit_PV_cov02_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov10 = TH1D("refit_PV_cov10_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov11 = TH1D("refit_PV_cov11_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov12 = TH1D("refit_PV_cov12_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov20 = TH1D("refit_PV_cov20_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov21 = TH1D("refit_PV_cov21_%s" % nick, "", 100, -0.0001, 0.0001)
+h_refit_PV_cov22 = TH1D("refit_PV_cov22_%s" % nick, "", 100, -0.0001, 0.0001)
+
 h_n_goodPV = TH1D("n_goodPV_%s" % nick, "", 50, 0, 50)
 
 logging.debug("set histograms")
@@ -208,7 +230,7 @@ n_events = 0
 for i, event in enumerate(ntuple):
     if run_test and i > 1: break
     #if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
-    if not (event.tau_refited_index.size() > 0 and event.tau_refited_index[0]>-1 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
+    if not (event.tau_IDlev[0] > 1 and event.tau_decayMode[0] > 9 and event.tau_refited_index.size() > 0 and event.tau_refited_index[0]>-1 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
         continue
     # check tracks are present:
     if not (event.tau_SV_fit_track_SS_p4.size() > 0 and event.tau_SV_fit_track_OS1_p4.size() > 0 and event.tau_SV_fit_track_OS2_p4.size() > 0):
@@ -252,6 +274,18 @@ for i, event in enumerate(ntuple):
     flight_sign = norm(flight_vec / flight_vec_err)
     '''
 
+    h_refit_PV_xy.Fill(event.PV_fit_x, event.PV_fit_y)
+    h_refit_PV_z .Fill(event.PV_fit_z)
+    h_refit_PV_cov00.Fill(event.PV_cov(0, 0))
+    h_refit_PV_cov01.Fill(event.PV_cov(0, 1))
+    h_refit_PV_cov02.Fill(event.PV_cov(0, 2))
+    h_refit_PV_cov10.Fill(event.PV_cov(1, 0))
+    h_refit_PV_cov11.Fill(event.PV_cov(1, 1))
+    h_refit_PV_cov12.Fill(event.PV_cov(1, 2))
+    h_refit_PV_cov20.Fill(event.PV_cov(2, 0))
+    h_refit_PV_cov21.Fill(event.PV_cov(2, 1))
+    h_refit_PV_cov22.Fill(event.PV_cov(2, 2))
+
     pv = ROOT.TVector3(event.PV_fit_x, event.PV_fit_y, event.PV_fit_z)
     sv = ROOT.TVector3(event.tau_SV_fit_x[0], event.tau_SV_fit_y[0], event.tau_SV_fit_z[0])
     flight_len = (sv-pv).Mag()
@@ -290,6 +324,9 @@ for i, event in enumerate(ntuple):
     h_pat_flightLen_refit_flightLen  .Fill(pat_flightLen, flight_len)
     h_pat_flightSign_refit_flightSign.Fill(pat_flightSign, flight_sign)
 
+    h_refit_flightLen_Energy .Fill(flight_len,    event.tau_p4[0].energy())
+    h_pat_flightLen_Energy   .Fill(pat_flightLen, event.tau_p4[0].energy())
+
     i_matched_tau_jet = event.tau_dR_matched_jet[0]
     if i_matched_tau_jet > -1:
         h_pat_bTag_flightSign.Fill(pat_flightSign, event.jet_b_discr[i_matched_tau_jet])
@@ -301,6 +338,9 @@ for i, event in enumerate(ntuple):
             h_refit_flightSign_lj.Fill(flight_sign)
             h_pat_flightLen_lj .Fill(pat_flightLen)
             h_pat_flightSign_lj.Fill(pat_flightSign)
+
+            h_refit_flightLen_Energy_lj .Fill(flight_len,    event.tau_p4[0].energy())
+            h_pat_flightLen_Energy_lj   .Fill(pat_flightLen, event.tau_p4[0].energy())
 
             h_pat_flightLen_flightSign_lj  .Fill(pat_flightLen, pat_flightSign)
             h_refit_flightLen_flightSign_lj.Fill(flight_len, flight_sign)
@@ -322,6 +362,9 @@ for i, event in enumerate(ntuple):
             h_refit_flightSign_lt.Fill(flight_sign)
             h_pat_flightLen_lt .Fill(pat_flightLen)
             h_pat_flightSign_lt.Fill(pat_flightSign)
+
+            h_refit_flightLen_Energy_lt .Fill(flight_len,    event.tau_p4[0].energy())
+            h_pat_flightLen_Energy_lt   .Fill(pat_flightLen, event.tau_p4[0].energy())
 
             h_pat_flightLen_flightSign_lt  .Fill(pat_flightLen, pat_flightSign)
             h_refit_flightLen_flightSign_lt.Fill(flight_len, flight_sign)
