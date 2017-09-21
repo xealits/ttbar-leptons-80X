@@ -1661,20 +1661,28 @@ for(size_t f=0; f<urls.size();++f)
 		//edm::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
 		//iEvent.getByToken(tracks_, tracksHandle);
 		//if (tracksHandle.isValid()) tracks = *tracksHandle;
-		fwlite::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
+		vector<pat::PackedCandidate> track_cands;
+		fwlite::Handle<vector<pat::PackedCandidate>> tracksHandle;
 		tracksHandle.getByLabel(ev, "packedPFCandidates");
-		const edm::View<pat::PackedCandidate>* track_cands = tracksHandle.product();
+		//const pat::PackedCandidate* track_cands = tracksHandle.product();
+		//const pat::PackedCandidate track_cands = tracksHandle.product();
+		if (tracksHandle.isValid()) track_cands = *tracksHandle;
+
+		//edm::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
+		//iEvent.getByToken(tracks_, tracksHandle);
+		//tracksHandle.getByLabel(ev, "packedPFCandidates");
+		//const edm::View<pat::PackedCandidate>* track_cands = tracksHandle.product();
 
 		reco::TrackCollection allTracks; // for taus (with possible SV) (testing now)
 
 		//TLorentzVector aTrack;
-		for(size_t i=0; i<track_cands->size(); ++i)
+		for(size_t i=0; i<track_cands.size(); ++i)
 			{
-			if((*track_cands)[i].charge()==0 || (*track_cands)[i].vertexRef().isNull()) continue;
-			if(!(*track_cands)[i].bestTrack()) continue;
+			if( track_cands[i].charge()==0 || track_cands[i].vertexRef().isNull()) continue;
+			if(!track_cands[i].bestTrack()) continue;
 
-			unsigned int key = (*track_cands)[i].vertexRef().key();
-			int quality = (*track_cands)[i].pvAssociationQuality();
+			unsigned int key = track_cands[i].vertexRef().key();
+			int quality = track_cands[i].pvAssociationQuality();
 
 			/*
 			// here I need to select "good" tracks
@@ -1689,7 +1697,7 @@ for(size_t f=0; f<urls.size();++f)
 			*/
 
 			// TODO: add requirement of "goodness"?
-			allTracks.push_back(*((*track_cands)[i].bestTrack()));
+			allTracks.push_back(*(track_cands[i].bestTrack()));
 			}
 
 
@@ -1781,8 +1789,10 @@ for(size_t f=0; f<urls.size();++f)
 				//transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
 				//cout<<"  closestTrackiter eta  :  "<<   closestTrack.eta() << "   phi   " << closestTrack.phi() << "    pt  "<< closestTrack.pt() <<endl;
 				cout << iev << ",tau" << i << "gnrTrack," << closestTrack.charge() << ',' << checkqual
-					<< ',' << closestTrack.energy() << ',' << closestTrack.pt()
+					<< ',' << closestTrack.p() << ',' << closestTrack.pt()
 					<< ',' << closestTrack.eta()    << ',' << closestTrack.phi();
+				// also interesting parameters:
+				// dxy, dz
 				cout << endl;
 				}
 
