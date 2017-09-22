@@ -151,7 +151,12 @@ h_refit_SV_cov21.SetDirectory(out_file)
 h_refit_SV_cov22.SetDirectory(out_file)
 
 h_refit_flightLen_to_other_PV = TH1D("refit_flightLen_to_other_PV_%s" % nick, "", 100, 0, 0.5)
+h_refit_flightLen_to_other_PV_large = TH1D("refit_flightLen_to_other_PV_large_%s" % nick, "", 100, 0, 10)
 
+h_refit_PV_to_all_goodPV       = TH1D("refit_PV_to_all_goodPV_%s" % nick, "", 100, 0, 0.5)
+h_refit_PV_to_all_goodPV_large = TH1D("refit_PV_to_all_goodPV_large_%s" % nick, "", 100, 0, 10)
+
+h_refit_flightLen_small = TH1D("refit_flightLen_small_%s" % nick, "", 100, 0, 0.02)
 h_refit_flightLen     = TH1D("refit_flightLen_%s" % nick, "", 100, 0, 0.1)
 h_refit_flightSign    = TH1D("refit_flightSign_%s" % nick, "", 100, 0, 10)
 h_refit_flightLen_lt  = TH1D("refit_flightLen_lt", "", 100, 0, 0.1)
@@ -205,6 +210,7 @@ h_pat_flightSign_lj_noBtag   = TH1D("pat_flightSign_lj_noBtag",   "", 100, 0, 50
 # flightLen vs tau Energy
 h_refit_flightLen_Energy    = TH2D("refit_flightLen_Energy_%s" % nick, "", 10, 0, 0.02, 10, 0, 150)
 h_refit_flightLen_Energy_lt = TH2D("refit_flightLen_Energy_lt",        "", 10, 0, 0.02, 10, 0, 150)
+h_refit_flightLen_Energy_lt_large = TH2D("refit_flightLen_Energy_lt_large",        "", 10, 0, 0.1, 10, 0, 150)
 h_refit_flightLen_Energy_lj = TH2D("refit_flightLen_Energy_lj",        "", 10, 0, 0.02, 10, 0, 150)
 h_pat_flightLen_Energy      = TH2D("pat_flightLen_Energy_%s" % nick,   "", 10, 0, 0.02, 10, 0, 150)
 h_pat_flightLen_Energy_lt   = TH2D("pat_flightLen_Energy_lt",          "", 10, 0, 0.02, 10, 0, 150)
@@ -326,11 +332,17 @@ for i, event in enumerate(ntuple):
 
     if event.PV_x.size() > 1:
       # check distances to other PVs
-      for i in range(1, event.PV_x.size()):
-        #pv_i = array('f', (event.PV_x[i], event.PV_y[i], event.PV_z[i]))
+      for i in range(event.PV_x.size()):
         pv_i = ROOT.TVector3(event.PV_x[i], event.PV_y[i], event.PV_z[i])
+        pv_dist = (pv_i - pv).Mag()
+        h_refit_PV_to_all_goodPV      .Fill(pv_dist)
+        h_refit_PV_to_all_goodPV_large.Fill(pv_dist)
+
+        if i == 0: continue
+        #pv_i = array('f', (event.PV_x[i], event.PV_y[i], event.PV_z[i]))
         flight_len_i = (pv_i - sv).Mag()
         h_refit_flightLen_to_other_PV.Fill(flight_len_i)
+        h_refit_flightLen_to_other_PV_large.Fill(flight_len_i)
 
     # masses of tracks
     mass1 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS1_p4[0]).mass()
@@ -341,6 +353,7 @@ for i, event in enumerate(ntuple):
     ##tau_dR_matched_jet
     h_pat_flightLen .Fill(pat_flightLen)
     h_pat_flightSign.Fill(pat_flightSign)
+    h_refit_flightLen_small .Fill(flight_len)
     h_refit_flightLen .Fill(flight_len)
     h_refit_flightSign.Fill(flight_sign)
     h_refit_flightErr.Fill(flight_err)
@@ -392,6 +405,7 @@ for i, event in enumerate(ntuple):
             h_pat_flightLen_lt .Fill(pat_flightLen)
             h_pat_flightSign_lt.Fill(pat_flightSign)
 
+            h_refit_flightLen_Energy_lt_large .Fill(flight_len,    event.tau_p4[0].energy())
             h_refit_flightLen_Energy_lt .Fill(flight_len,    event.tau_p4[0].energy())
             h_pat_flightLen_Energy_lt   .Fill(pat_flightLen, event.tau_p4[0].energy())
 

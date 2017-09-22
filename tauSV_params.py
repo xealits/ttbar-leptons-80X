@@ -16,6 +16,7 @@ in_file = TFile(filename + '.root', "read")
 
 params_1D = [
   'refit_flightLen_to_other_PV_tt',	
+  'refit_flightLen_small_tt',	
   'refit_flightLen_tt',	
   'refit_flightSign_tt',	
   'refit_flightLen_lt',	
@@ -54,27 +55,30 @@ params_2D = [
   'pat_bTag_flightSign_lj',	
   'refit_m1m2_lt',	
   'refit_m1m2_lj',	
-  'refit_flightLen_flightSign_tt',	
-  'refit_flightLen_flightSign_lt',	
-  'refit_flightLen_flightSign_lj',	
-  'refit_bTag_flightSign_tt',	
-  'refit_bTag_flightSign_lt',	
-  'refit_bTag_flightSign_lj',	
-  'refit_flightLen_Energy_tt',	
-  'refit_flightLen_Energy_lt',	
-  'refit_flightLen_Energy_lj',	
-  'pat_flightLen_Energy_tt',	
-  'pat_flightLen_Energy_lt',	
-  'pat_flightLen_Energy_lj',	
-  'refit_PV_xy_tt',	
+  'refit_flightLen_flightSign_tt',
+  'refit_flightLen_flightSign_lt',
+  'refit_flightLen_flightSign_lj',
+  'refit_bTag_flightSign_tt',
+  'refit_bTag_flightSign_lt',
+  'refit_bTag_flightSign_lj',
+  'refit_flightLen_Energy_tt',
+  'refit_flightLen_Energy_lt',
+  'refit_flightLen_Energy_lt_large',
+  'refit_flightLen_Energy_lj',
+  'pat_flightLen_Energy_tt',
+  'pat_flightLen_Energy_lt',
+  'pat_flightLen_Energy_lj',
+  'refit_PV_xy_tt',
 ]
 
 c1 = TCanvas("c", "canvas", 800, 800) #
 
 for p in params_1D:
-    logging.debug('drawing ' + p)
+    #logging.debug('drawing ' + p)
+    #if p == "refit_flightLen_tt": c1.SetLogy()
     in_file.Get(p).Draw()
     c1.SaveAs('plots/track-reco-investigation/v1/' + filename + '/tauSV_' + p + ".png")
+    #if p == "refit_flightLen_tt": c1.SetLogy(0) # unset
 
 for p in params_2D:
     in_file.Get(p).Draw("col")

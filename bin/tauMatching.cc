@@ -1783,22 +1783,34 @@ for(size_t f=0; f<urls.size();++f)
 		// usefull all final states together:
 		vector<LorentzVector> NT_gen_all_final_p4s;
 		vector<Int_t> NT_gen_all_final_pdgId;
+		vector<Int_t> NT_gen_all_final_provenance;
 		for (unsigned int i=0; i<NT_gen_t_w_final_pdgIds.size(); i++)
-			{ NT_gen_all_final_pdgId.push_back(NT_gen_t_w_final_pdgIds[i]); }
-		for (unsigned int i=0; i<NT_gen_t_w_final_p4s.size(); i++)
-			{ NT_gen_all_final_p4s.push_back(NT_gen_t_w_final_p4s[i]); }
+			{
+			NT_gen_all_final_pdgId.push_back(NT_gen_t_w_final_pdgIds[i]);
+			NT_gen_all_final_p4s  .push_back(NT_gen_t_w_final_p4s[i]);
+			NT_gen_all_final_provenance.push_back(1);
+			}
+
 		for (unsigned int i=0; i<NT_gen_t_b_final_pdgIds.size(); i++)
-			{ NT_gen_all_final_pdgId.push_back(NT_gen_t_b_final_pdgIds[i]); }
-		for (unsigned int i=0; i<NT_gen_t_b_final_p4s.size(); i++)
-			{ NT_gen_all_final_p4s.push_back(NT_gen_t_b_final_p4s[i]); }
+			{
+			NT_gen_all_final_pdgId.push_back(NT_gen_t_b_final_pdgIds[i]);
+			NT_gen_all_final_p4s  .push_back(NT_gen_t_b_final_p4s[i]);
+			NT_gen_all_final_provenance.push_back(2);
+			}
+
 		for (unsigned int i=0; i<NT_gen_tb_w_final_pdgIds.size(); i++)
-			{ NT_gen_all_final_pdgId.push_back(NT_gen_tb_w_final_pdgIds[i]); }
-		for (unsigned int i=0; i<NT_gen_tb_w_final_p4s.size(); i++)
-			{ NT_gen_all_final_p4s.push_back(NT_gen_tb_w_final_p4s[i]); }
+			{
+			NT_gen_all_final_pdgId.push_back(NT_gen_tb_w_final_pdgIds[i]);
+			NT_gen_all_final_p4s  .push_back(NT_gen_tb_w_final_p4s[i]);
+			NT_gen_all_final_provenance.push_back(-1);
+			}
+
 		for (unsigned int i=0; i<NT_gen_tb_b_final_pdgIds.size(); i++)
-			{ NT_gen_all_final_pdgId.push_back(NT_gen_tb_b_final_pdgIds[i]); }
-		for (unsigned int i=0; i<NT_gen_tb_b_final_p4s.size(); i++)
-			{ NT_gen_all_final_p4s.push_back(NT_gen_tb_b_final_p4s[i]); }
+			{
+			NT_gen_all_final_pdgId.push_back(NT_gen_tb_b_final_pdgIds[i]);
+			NT_gen_all_final_p4s  .push_back(NT_gen_tb_b_final_p4s[i]);
+			NT_gen_all_final_provenance.push_back(-2);
+			}
 
 		// reset sums of p4-s
 		NT_gen_t_w_final_p4 .SetXYZT(0,0,0,0);
@@ -1986,19 +1998,24 @@ for(size_t f=0; f<urls.size();++f)
 
 			//bool matched_to_gen_final_states = false;
 			float min_match_dR = 999;
+			int min_match_pdgId = 0, min_match_provenance = 0;
 			for (unsigned int u=0; u<NT_gen_all_final_p4s.size(); u++)
 				{
-				unsigned int id = abs(NT_gen_all_final_pdgId[u]);
-				if (id == 12 || id == 14 || id == 16) continue;
-				float match_dR = reco::deltaR(NT_gen_t_w_final_p4s[u], tau);
+				int id = NT_gen_all_final_pdgId[u];
+				unsigned int aid = abs(id);
+				if (aid == 12 || aid == 14 || aid == 16) continue;
+				float match_dR = reco::deltaR(NT_gen_all_final_p4s[u], tau);
 				if (match_dR < min_match_dR)
 					{
 					min_match_dR = match_dR;
+					min_match_pdgId = id;
+					min_match_provenance = NT_gen_all_final_provenance[u];
 					}
 				}
 
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << '\t' << tau.decayMode()
-				<< '\t' << tau.pdgId() << '\t' << min_match_dR // dR match to gen final states
+				<< '\t' << tau.pdgId()
+				<< '\t' << min_match_dR << '\t' << min_match_pdgId << '\t' << min_match_provenance // dR match to gen final states
 				<< '\t' << tau.energy() << '\t' << tau.pt()
 				<< '\t' << tau.eta()    << '\t' << tau.phi();
 			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
@@ -2030,12 +2047,29 @@ for(size_t f=0; f<urls.size();++f)
 					index++;
 					}
 
+				float min_match_dR = 999;
+				int min_match_pdgId = 0, min_match_provenance = 0;
+				for (unsigned int u=0; u<NT_gen_all_final_p4s.size(); u++)
+					{
+					int id = NT_gen_all_final_pdgId[u];
+					unsigned int aid = abs(id);
+					if (aid == 12 || aid == 14 || aid == 16) continue;
+					float match_dR = reco::deltaR(NT_gen_all_final_p4s[u], *(*itr));
+					if (match_dR < min_match_dR)
+						{
+						min_match_dR = match_dR;
+						min_match_pdgId = id;
+						min_match_provenance = NT_gen_all_final_provenance[u];
+						}
+					}
+
 				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << "patTrack\t" << -999
-					<< '\t' << (*itr)->charge() << '\t' << -999
+					<< '\t' << (*itr)->charge()
+					<< '\t' << min_match_dR << '\t' << min_match_pdgId << '\t' << min_match_provenance // dR match to gen final states
 					<< '\t' << (*itr)->energy() << '\t' << (*itr)->pt()
-					<< '\t' << (*itr)->eta() << '\t' << closestTrack.eta()
-					<< '\t' << (*itr)->phi() << '\t' << closestTrack.phi();
-				cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+					<< '\t' << (*itr)->eta() //<< '\t' << closestTrack.eta()
+					<< '\t' << (*itr)->phi() //<< '\t' << closestTrack.phi();
+					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 				cout << endl;
 
 				//matchingQuality += checkqual;
