@@ -21,12 +21,13 @@ from ROOT.TMath import Sqrt
 gROOT.SetBatch(True)
 
 if '-w' in argv:
-    filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
+    filename, nick, suff = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets', ''
 else:
     #filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.4_merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
-    filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt'
+    filename, nick, suff = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt', '1'
+    #filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
 
 isTT = 'TT' in filename
 
@@ -111,7 +112,7 @@ def PFTau_FlightLength_significance(pv,  PVcov, sv, SVcov):
    sigmaabs = Sqrt(lambda2(0,0))/SVPV.Mag()
    sign = SVPV.Mag()/sigmaabs
 
-   return sign
+   return sign, sigmaabs
 
 
 in_file = TFile(filename, "read")
@@ -124,7 +125,7 @@ if match_quality:  out_suffix += 'matchQuality_'
 if gen_match:  out_suffix += 'genMatch_'
 if gen_match2: out_suffix += 'genMatch2_'
 if run_million: out_suffix += 'runMillion_'
-out_suffix += nick
+out_suffix += nick + '_' + suff
 out_filename = "test_full_loop_on_taus2_%s.root" % out_suffix
 
 logging.debug("will write to " + out_filename)
@@ -158,6 +159,10 @@ h_refit_flightLen_lj  = TH1D("refit_flightLen_lj", "", 100, 0, 0.1)
 h_refit_flightSign_lt = TH1D("refit_flightSign_lt", "", 100, 0, 10)
 h_refit_flightSign_lj = TH1D("refit_flightSign_lj", "", 100, 0, 10)
 
+h_refit_flightErr    = TH1D("refit_flightErr_%s" % nick, "", 100, 0, 0.02)
+h_refit_flightErr_lt = TH1D("refit_flightErr_lt", "", 100, 0, 0.02)
+h_refit_flightErr_lj = TH1D("refit_flightErr_lj", "", 100, 0, 0.02)
+
 h_pat_flightLen = TH1D("pat_flightLen_%s" % nick, "", 100, 0, 0.1)
 h_pat_flightLen_lt = TH1D("pat_flightLen_lt", "", 100, 0, 0.1)
 h_pat_flightLen_lj = TH1D("pat_flightLen_lj", "", 100, 0, 0.1)
@@ -179,12 +184,12 @@ h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 50,
 h_refit_m1m2_lt = TH2D("refit_m1m2_lt", "", 100, 0, 2, 100, 0, 2)
 h_refit_m1m2_lj = TH2D("refit_m1m2_lj", "", 100, 0, 2, 100, 0, 2)
 
-h_refit_flightLen_flightSign    = TH2D("refit_flightLen_flightSign_%s" % nick, "", 100, 0, 0.01, 100, 0, 10)
-h_refit_flightLen_flightSign_lt = TH2D("refit_flightLen_flightSign_lt", "", 100, 0, 0.01, 100, 0, 10)
-h_refit_flightLen_flightSign_lj = TH2D("refit_flightLen_flightSign_lj", "", 100, 0, 0.01, 100, 0, 10)
-h_refit_bTag_flightSign    = TH2D("refit_bTag_flightSign_%s" % nick, "", 100, 0, 10, 100, 0, 1)
-h_refit_bTag_flightSign_lt = TH2D("refit_bTag_flightSign_lt",        "", 100, 0, 10, 100, 0, 1)
-h_refit_bTag_flightSign_lj = TH2D("refit_bTag_flightSign_lj",        "", 100, 0, 10, 100, 0, 1)
+h_refit_flightLen_flightSign    = TH2D("refit_flightLen_flightSign_%s" % nick, "", 100, 0, 0.05, 100, 0, 10)
+h_refit_flightLen_flightSign_lt = TH2D("refit_flightLen_flightSign_lt",        "", 100, 0, 0.05, 100, 0, 10)
+h_refit_flightLen_flightSign_lj = TH2D("refit_flightLen_flightSign_lj",        "", 100, 0, 0.05, 100, 0, 10)
+h_refit_bTag_flightSign    = TH2D("refit_bTag_flightSign_%s" % nick, "", 100, 0, 10, 100, 0, 1.01)
+h_refit_bTag_flightSign_lt = TH2D("refit_bTag_flightSign_lt",        "", 100, 0, 10, 100, 0, 1.01)
+h_refit_bTag_flightSign_lj = TH2D("refit_bTag_flightSign_lj",        "", 100, 0, 10, 100, 0, 1.01)
 #tau_dR_matched_jet
 
 h_refit_flightSign_lt_Btag = TH1D("refit_flightSign_lt_Btag", "", 100, 0, 50)
@@ -198,12 +203,12 @@ h_pat_flightSign_lt_noBtag   = TH1D("pat_flightSign_lt_noBtag",   "", 100, 0, 50
 h_pat_flightSign_lj_noBtag   = TH1D("pat_flightSign_lj_noBtag",   "", 100, 0, 50)
 
 # flightLen vs tau Energy
-h_refit_flightLen_Energy    = TH2D("refit_flightLen_Energy_%s" % nick, "", 100, 0, 0.01, 100, 0, 100)
-h_refit_flightLen_Energy_lt = TH2D("refit_flightLen_Energy_lt",        "", 100, 0, 0.01, 100, 0, 100)
-h_refit_flightLen_Energy_lj = TH2D("refit_flightLen_Energy_lj",        "", 100, 0, 0.01, 100, 0, 100)
-h_pat_flightLen_Energy      = TH2D("pat_flightLen_Energy_%s" % nick,   "", 100, 0, 0.01, 100, 0, 100)
-h_pat_flightLen_Energy_lt   = TH2D("pat_flightLen_Energy_lt",          "", 100, 0, 0.01, 100, 0, 100)
-h_pat_flightLen_Energy_lj   = TH2D("pat_flightLen_Energy_lj",          "", 100, 0, 0.01, 100, 0, 100)
+h_refit_flightLen_Energy    = TH2D("refit_flightLen_Energy_%s" % nick, "", 10, 0, 0.02, 10, 0, 150)
+h_refit_flightLen_Energy_lt = TH2D("refit_flightLen_Energy_lt",        "", 10, 0, 0.02, 10, 0, 150)
+h_refit_flightLen_Energy_lj = TH2D("refit_flightLen_Energy_lj",        "", 10, 0, 0.02, 10, 0, 150)
+h_pat_flightLen_Energy      = TH2D("pat_flightLen_Energy_%s" % nick,   "", 10, 0, 0.02, 10, 0, 150)
+h_pat_flightLen_Energy_lt   = TH2D("pat_flightLen_Energy_lt",          "", 10, 0, 0.02, 10, 0, 150)
+h_pat_flightLen_Energy_lj   = TH2D("pat_flightLen_Energy_lj",          "", 10, 0, 0.02, 10, 0, 150)
 #tau_dR_matched_jet
 
 # PV XY Z cov
@@ -313,7 +318,7 @@ for i, event in enumerate(ntuple):
     if run_test: logging.debug("flight len  = %f" % flight_len)
 
     ##def PFTau_FlightLength_significance(TVector3 pv,TMatrixTSym<double> PVcov, TVector3 sv, TMatrixTSym<double> SVcov ){
-    flight_sign = PFTau_FlightLength_significance(pv, event.PV_cov, sv, event.tau_SV_cov[0])
+    flight_sign, flight_err = PFTau_FlightLength_significance(pv, event.PV_cov, sv, event.tau_SV_cov[0])
     if run_test: logging.debug("flight sign = %f" % flight_sign)
 
     pat_flightLen  = event.tau_flightLength[0]
@@ -338,6 +343,7 @@ for i, event in enumerate(ntuple):
     h_pat_flightSign.Fill(pat_flightSign)
     h_refit_flightLen .Fill(flight_len)
     h_refit_flightSign.Fill(flight_sign)
+    h_refit_flightErr.Fill(flight_err)
 
     h_pat_flightLen_flightSign  .Fill(pat_flightLen, pat_flightSign)
     h_refit_flightLen_flightSign.Fill(flight_len, flight_sign)
@@ -357,6 +363,7 @@ for i, event in enumerate(ntuple):
         if abs(event.gen_t_w_decay_id * event.gen_tb_w_decay_id) == 13: # lj
             h_refit_flightLen_lj .Fill(flight_len)
             h_refit_flightSign_lj.Fill(flight_sign)
+            h_refit_flightErr_lj.Fill(flight_err)
             h_pat_flightLen_lj .Fill(pat_flightLen)
             h_pat_flightSign_lj.Fill(pat_flightSign)
 
@@ -381,6 +388,7 @@ for i, event in enumerate(ntuple):
         if (abs(event.gen_t_w_decay_id) > 15*15 and abs(event.gen_tb_w_decay_id) == 13) or (abs(event.gen_t_w_decay_id) == 13 and abs(event.gen_tb_w_decay_id) > 15*15): # lt
             h_refit_flightLen_lt .Fill(flight_len)
             h_refit_flightSign_lt.Fill(flight_sign)
+            h_refit_flightErr_lt.Fill(flight_err)
             h_pat_flightLen_lt .Fill(pat_flightLen)
             h_pat_flightSign_lt.Fill(pat_flightSign)
 
