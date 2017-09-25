@@ -1757,14 +1757,14 @@ for(size_t f=0; f<urls.size();++f)
 				(quality==pat::PackedCandidate::UsedInFitTight
 				 || quality==pat::PackedCandidate::UsedInFitLoose))// continue;
 				{
-				pvTracks.push_back(*((*track_cands)[i].bestTrack()));
+				pvTracks.push_back(*(track_cands[i].bestTrack()));
 				}
 
 			if (key==0 &&
 				(quality==pat::PackedCandidate::CompatibilityDz
 				 || quality==pat::PackedCandidate::CompatibilityBTag))// continue;
 				{
-				notPVTracks.push_back(*((*track_cands)[i].bestTrack()));
+				notPVTracks.push_back(*(track_cands[i].bestTrack()));
 				}
 
 			// TODO: add requirement of "goodness"?
