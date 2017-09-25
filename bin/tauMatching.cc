@@ -1738,7 +1738,7 @@ for(size_t f=0; f<urls.size();++f)
 		//tracksHandle.getByLabel(ev, "packedPFCandidates");
 		//const edm::View<pat::PackedCandidate>* track_cands = tracksHandle.product();
 
-		reco::TrackCollection allTracks; // for taus (with possible SV) (testing now)
+		reco::TrackCollection allTracks, pvTracks, notPVTracks; // for taus (with possible SV) (testing now)
 		vector<pat::PackedCandidate> allTracks_cands;
 
 		//TLorentzVector aTrack;
@@ -1750,17 +1750,22 @@ for(size_t f=0; f<urls.size();++f)
 			unsigned int key = track_cands[i].vertexRef().key();
 			int quality = track_cands[i].pvAssociationQuality();
 
-			/*
 			// here I need to select "good" tracks
 			// save them to all tracks
 			// and if they belong to PV save them to pv tracks
-			if (!(key!=0 ||
-				(quality!=pat::PackedCandidate::UsedInFitTight
-				 && quality!=pat::PackedCandidate::UsedInFitLoose)))// continue;
+			if (key==0 &&
+				(quality==pat::PackedCandidate::UsedInFitTight
+				 || quality==pat::PackedCandidate::UsedInFitLoose))// continue;
 				{
 				pvTracks.push_back(*((*track_cands)[i].bestTrack()));
 				}
-			*/
+
+			if (key==0 &&
+				(quality==pat::PackedCandidate::CompatibilityDz
+				 || quality==pat::PackedCandidate::CompatibilityBTag))// continue;
+				{
+				notPVTracks.push_back(*((*track_cands)[i].bestTrack()));
+				}
 
 			// TODO: add requirement of "goodness"?
 			allTracks.push_back(*(track_cands[i].bestTrack()));
@@ -2029,10 +2034,10 @@ for(size_t f=0; f<urls.size();++f)
 				{
 
 				// matched general tracks
-				double deR(999.); 
+				double deR(999.), dR_pvTrack(999.), dR_NotPVTrack(999.); 
 				double checkqual(0);
 				pat::PackedCandidate closestCand;
-				reco::Track closestTrack;
+				reco::Track closestTrack, closestPVTrack, closestNotPVTrack;
 				int closestTrack_index = -1, index = 0;
 
 				//for(auto iter: pvTracks)
@@ -2050,6 +2055,30 @@ for(size_t f=0; f<urls.size();++f)
 						}
 					index++;
 					}
+
+				for(auto iter: pvTracks)
+					{
+					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
+						continue;
+					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < deR)
+						{
+						dR_pvTrack = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
+						closestPVTrack = iter;
+						}
+					}
+
+				for(auto iter: notPVTracks)
+					{
+					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
+						continue;
+					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < deR)
+						{
+						dR_NotPVTrack = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
+						closestNotPVTrack = iter;
+						}
+					}
+
+				tracksToBeRemoved.push_back(closestTrack.pt());
 
 				float min_match_dR = 999;
 				int min_match_pdgId = 0, min_match_provenance = 0;
@@ -2073,6 +2102,9 @@ for(size_t f=0; f<urls.size();++f)
 					<< '\t' << (*itr)->energy() << '\t' << (*itr)->pt()
 					<< '\t' << (*itr)->eta() //<< '\t' << closestTrack.eta()
 					<< '\t' << (*itr)->phi() //<< '\t' << closestTrack.phi();
+					<< '\t' << deR << '\t' << closestTrack.eta() << '\t' << closestTrack.phi()
+					<< '\t' << dR_pvTrack << '\t' << closestPVTrack.eta() << '\t' << closestPVTrack.phi()
+					<< '\t' << dR_NotPVTrack << '\t' << closestNotPVTrack.eta() << '\t' << closestNotPVTrack.phi()
 					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 				cout << endl;
 
@@ -2082,7 +2114,6 @@ for(size_t f=0; f<urls.size();++f)
 				auto distance = the_associated_pv.position() - point_closest_to_pv;
 
 				//matchingQuality += checkqual;
-				tracksToBeRemoved.push_back(closestTrack.pt());
 				//transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
 				//cout<<"  closestTrackiter eta  :  "<<   closestTrack.eta() << "   phi   " << closestTrack.phi() << "    pt  "<< closestTrack.pt() <<endl;
 				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << "gnrTrack\t" << -999
