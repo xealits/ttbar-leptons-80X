@@ -1739,6 +1739,7 @@ for(size_t f=0; f<urls.size();++f)
 		//const edm::View<pat::PackedCandidate>* track_cands = tracksHandle.product();
 
 		reco::TrackCollection allTracks; // for taus (with possible SV) (testing now)
+		vector<pat::PackedCandidate> allTracks_cands;
 
 		//TLorentzVector aTrack;
 		for(size_t i=0; i<track_cands.size(); ++i)
@@ -1763,6 +1764,7 @@ for(size_t f=0; f<urls.size();++f)
 
 			// TODO: add requirement of "goodness"?
 			allTracks.push_back(*(track_cands[i].bestTrack()));
+			allTracks_cands.push_back(track_cands[i]);
 			}
 
 
@@ -2029,6 +2031,7 @@ for(size_t f=0; f<urls.size();++f)
 				// matched general tracks
 				double deR(999.); 
 				double checkqual(0);
+				pat::PackedCandidate closestCand;
 				reco::Track closestTrack;
 				int closestTrack_index = -1, index = 0;
 
@@ -2042,6 +2045,7 @@ for(size_t f=0; f<urls.size();++f)
 						deR = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
 						checkqual=deR;
 						closestTrack = iter;
+						closestCand = allTracks_cands[index];
 						closestTrack_index = index;
 						}
 					index++;
@@ -2072,6 +2076,11 @@ for(size_t f=0; f<urls.size();++f)
 					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 				cout << endl;
 
+				auto the_associated_pv_key = closestCand.vertexRef().key();
+				auto the_associated_pv = (*closestCand.vertexRef());
+				auto point_closest_to_pv = closestCand.vertex();
+				auto distance = the_associated_pv.position() - point_closest_to_pv;
+
 				//matchingQuality += checkqual;
 				tracksToBeRemoved.push_back(closestTrack.pt());
 				//transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
@@ -2079,7 +2088,11 @@ for(size_t f=0; f<urls.size();++f)
 				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << "gnrTrack\t" << -999
 					<< '\t' << closestTrack.charge() << '\t' << checkqual
 					<< '\t' << closestTrack.p() << '\t' << closestTrack.pt()
-					<< '\t' << closestTrack.eta()    << '\t' << closestTrack.phi();
+					<< '\t' << closestTrack.eta() << '\t' << closestTrack.phi()
+					<< '\t' << closestCand.eta() << '\t' << closestCand.phi()
+					<< '\t' << the_associated_pv_key << '\t' << closestCand.pvAssociationQuality() << '\t' << closestCand.dxy() << '\t' << closestCand.dxyError() << '\t' << closestCand.dz() << '\t' << closestCand.dzError()
+					<< '\t' << distance.x() << '\t' << distance.y() << '\t' << distance.z()
+					<< '\t' << closestCand.numberOfHits() << '\t' << closestCand.numberOfPixelHits();
 				cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 				// also interesting parameters:
 				// dxy dz

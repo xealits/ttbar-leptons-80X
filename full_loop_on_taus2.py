@@ -21,7 +21,22 @@ from ROOT.TMath import Sqrt
 gROOT.SetBatch(True)
 
 if '-w' in argv:
-    filename, nick, suff = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets', ''
+    #filename, nick, suff = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets', ''
+    filename, nick, suff = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_WJets_amcatnlo.root', 'wjets', ''
+elif '-q' in argv:
+    filenames = ['MC2016_Summer16_QCD_HT-100-200.root',
+                 'MC2016_Summer16_QCD_HT-1500-2000.root',
+                 'MC2016_Summer16_QCD_HT-2000-Inf.root',
+                 'MC2016_Summer16_QCD_HT-500-700.root',
+                 'MC2016_Summer16_QCD_HT-1000-1500.root',
+                 'MC2016_Summer16_QCD_HT-200-300.root',
+                 'MC2016_Summer16_QCD_HT-300-500.root',
+                 'MC2016_Summer16_QCD_HT-700-1000.root']
+    filename = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_QCD_HT-300-500.root'
+    nick = 'qcd'
+    suff = ''
+elif '-d' in argv:
+    filename, nick, suff = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/Data13TeV_SingleMuon2016B_03Feb2017_ver2.root', 'data', ''
 else:
     #filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
@@ -153,8 +168,12 @@ h_refit_SV_cov22.SetDirectory(out_file)
 h_refit_flightLen_to_other_PV = TH1D("refit_flightLen_to_other_PV_%s" % nick, "", 100, 0, 0.5)
 h_refit_flightLen_to_other_PV_large = TH1D("refit_flightLen_to_other_PV_large_%s" % nick, "", 100, 0, 10)
 
-h_refit_PV_to_all_goodPV       = TH1D("refit_PV_to_all_goodPV_%s" % nick, "", 100, 0, 0.5)
-h_refit_PV_to_all_goodPV_large = TH1D("refit_PV_to_all_goodPV_large_%s" % nick, "", 100, 0, 10)
+h_refit_PV_to_other_goodPV_small = TH1D("refit_PV_to_other_goodPV_small_%s" % nick, "", 100, 0, 0.02)
+h_refit_PV_to_other_goodPV       = TH1D("refit_PV_to_other_goodPV_%s"       % nick, "", 100, 0, 0.5)
+h_refit_PV_to_other_goodPV_large = TH1D("refit_PV_to_other_goodPV_large_%s" % nick, "", 100, 0, 10)
+h_refit_PV_to_all_goodPV_small   = TH1D("refit_PV_to_all_goodPV_small_%s" % nick, "", 100, 0, 0.02)
+h_refit_PV_to_all_goodPV         = TH1D("refit_PV_to_all_goodPV_%s"       % nick, "", 100, 0, 0.5)
+h_refit_PV_to_all_goodPV_large   = TH1D("refit_PV_to_all_goodPV_large_%s" % nick, "", 100, 0, 10)
 
 h_refit_flightLen_small = TH1D("refit_flightLen_small_%s" % nick, "", 100, 0, 0.02)
 h_refit_flightLen     = TH1D("refit_flightLen_%s" % nick, "", 100, 0, 0.1)
@@ -186,6 +205,7 @@ h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 50,
 h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 50, 100, 0, 1)
 #tau_dR_matched_jet
 
+h_refit_m1m2    = TH2D("refit_m1m2_%s" % nick, "", 100, 0, 2, 100, 0, 2)
 h_refit_m1m2_lt = TH2D("refit_m1m2_lt", "", 100, 0, 2, 100, 0, 2)
 h_refit_m1m2_lj = TH2D("refit_m1m2_lj", "", 100, 0, 2, 100, 0, 2)
 
@@ -324,7 +344,11 @@ for i, event in enumerate(ntuple):
     if run_test: logging.debug("flight len  = %f" % flight_len)
 
     ##def PFTau_FlightLength_significance(TVector3 pv,TMatrixTSym<double> PVcov, TVector3 sv, TMatrixTSym<double> SVcov ){
-    flight_sign, flight_err = PFTau_FlightLength_significance(pv, event.PV_cov, sv, event.tau_SV_cov[0])
+    try:
+        flight_sign, flight_err = PFTau_FlightLength_significance(pv, event.PV_cov, sv, event.tau_SV_cov[0])
+    except ZeroDivisionError:
+        print "division by zero in PFTau_FlightLength_significance"
+
     if run_test: logging.debug("flight sign = %f" % flight_sign)
 
     pat_flightLen  = event.tau_flightLength[0]
@@ -335,10 +359,14 @@ for i, event in enumerate(ntuple):
       for i in range(event.PV_x.size()):
         pv_i = ROOT.TVector3(event.PV_x[i], event.PV_y[i], event.PV_z[i])
         pv_dist = (pv_i - pv).Mag()
+        h_refit_PV_to_all_goodPV_small.Fill(pv_dist)
         h_refit_PV_to_all_goodPV      .Fill(pv_dist)
         h_refit_PV_to_all_goodPV_large.Fill(pv_dist)
 
         if i == 0: continue
+        h_refit_PV_to_other_goodPV_small.Fill(pv_dist)
+        h_refit_PV_to_other_goodPV      .Fill(pv_dist)
+        h_refit_PV_to_other_goodPV_large.Fill(pv_dist)
         #pv_i = array('f', (event.PV_x[i], event.PV_y[i], event.PV_z[i]))
         flight_len_i = (pv_i - sv).Mag()
         h_refit_flightLen_to_other_PV.Fill(flight_len_i)
@@ -347,6 +375,8 @@ for i, event in enumerate(ntuple):
     # masses of tracks
     mass1 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS1_p4[0]).mass()
     mass2 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS2_p4[0]).mass()
+
+    h_refit_m1m2.Fill(mass1, mass2)
 
     #h_pat_bTag_flightSign_lt = TH2D("pat_bTag_flightSign_lt",        "", 100, 0, 1, 100, 0, 50)
     #h_pat_bTag_flightSign_lj = TH2D("pat_bTag_flightSign_lj",        "", 100, 0, 1, 100, 0, 50)
