@@ -349,28 +349,28 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;
 
 	// special care for recoil-related variables
-	if (distr == TString("MET")
+	if (distr.Contains("MET"))
 		{
 		if (isWJets || isDY)
 			{
-			distr = TString("sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_eY)");
+			distr.ReplaceAll("MET", "sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_eY)");
 			}
 		else
 			{
-			distr = TString("met_corrected.pt()");
+			distr.ReplaceAll("MET", "met_corrected.pt()");
 			}
 		}
 
-	if (distr == TString("MTlep")
+	if (distr.Contains("MTlep"))
 		{
 		if (isWJets || isDY)
 			{
 			//double transverse_mass_pts(float v1_x, float v1_y, float v2_x, float v2_y)
-			distr = TString("transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
+			distr.ReplaceAll("MTlep", "transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
 			}
 		else
 			{
-			distr = TString("transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi())");
+			distr.ReplaceAll("MTlep", "transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi())");
 			}
 		}
 
