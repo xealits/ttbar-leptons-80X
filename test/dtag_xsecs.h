@@ -323,6 +323,8 @@ std::map<TString, double> xsecs = {
 { "MC2016_Summer16_TTJets_powheg_1"      , ttbar_xsec },
 { "MC2016_Summer16_TTJets_powheg_2"      , ttbar_xsec },
 { "MC2016_Summer16_TTJets_powheg_3"      , ttbar_xsec },
+{ "MC2016_Summer16_TTJets_powheg_4"      , ttbar_xsec },
+{ "MC2016_Summer16_TTJets_powheg_5"      , ttbar_xsec },
 
 /* elmu fakerates 2
  */

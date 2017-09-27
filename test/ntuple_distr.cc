@@ -83,8 +83,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 20
-const char usage_string[256] = " [--verbose] [--normalize] sig global_scale tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight SYS_shift set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
+#define INPUT_DTAGS_START 21
+const char usage_string[256] = " [--verbose] [--normalize] sig global_scale withZPtMass tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight SYS_shift set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -136,6 +136,14 @@ if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu"))
 	}
 
 float global_scale = atof(argv[input_starts + i++]);
+
+TString withZPtMass_s(argv[input_starts + i++]);
+bool withZPtMass = false;
+if (withZPtMass_s == TString("T"))
+	{
+	withZPtMass = true;
+	}
+cout << i << " Z pt-mass weight " << withZPtMass << endl;
 
 float tau_ID_SF = atof(argv[input_starts + i++]);
 cout << i << " tau ID SF " << tau_ID_SF << endl;
@@ -312,6 +320,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	TFile* file = TFile::Open(the_file);
 
 	bool isData = dtag.Contains("Data");
+	bool isDY   = dtag.Contains("DYJet");
+	bool isWJets = dtag.Contains("WJet") || dtag.Contains("W1Jet") || dtag.Contains("W2Jet") || dtag.Contains("W3Jet") || dtag.Contains("W4Jet");
 
 	/*
 	 * data containd distr + _jet_distr
@@ -412,6 +422,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 
 		if (dtag.Contains("amcatnlo"))
 			weight_cond += "(aMCatNLO_weight > 0? 1 : -1)*";
+
+		// DY Z Pt and Mass weight
+		if (withZPtMass && isDY)
+			{
+			weight_cond += "(zPtMass_weight(genMass, genPt))*";
+			}
 
 		// lepton SF
 		if (with_lep_SF)

@@ -70,6 +70,17 @@ Double_t XReturner( Double_t x ) { return x; }
 };
 
 
+// Z pt-mass weight
+// zpt_weights_2016.root
+TFile* zPtMassWeights_file  = TFile::Open("test/zpt_weights_2016.root");
+TH2D*  zPtMassWeights_histo = (TH2D*) zPtMassWeights_file->Get("zptmass_histo");
+TH2D*  zPtMassWeights_histo_err = (TH2D*) zPtMassWeights_file->Get("zptmass_histo_err");
+
+float zPtMass_weight(float genMass, float genPt)
+	{
+	return zPtMassWeights_histo->GetBinContent(zPtMassWeights_histo->GetXaxis()->FindBin(genMass), zPtMassWeights_histo->GetYaxis()->FindBin(genPt));
+	}
+
 // need to open histos in this environment
 
 //TString muon_effs_dirname = "${CMSSW_BASE}/src/UserCode/ttbar-leptons-80X/analysis/muon-effs/";

@@ -26,26 +26,30 @@ args = parser.parse_args()
 
 # Prepare proxy file for DAS
 
-proxy_file = "./x509_proxy"
-logging.info("Initializing proxy in " + proxy_file)
-#status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
-# os.system handles the hidden input well
-# subprocess.check_output(shell=True) and .Popen(shell=True)
-# had some issues
-status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
+if 'X509_USER_PROXY' not in os.environ:
+    proxy_file = "./x509_proxy"
+    logging.info("Initializing proxy in " + proxy_file)
+    #status, output = commands.getstatusoutput('voms-proxy-init --voms cms') # instead of voms-proxy-init --voms cms --noregen
+    # os.system handles the hidden input well
+    # subprocess.check_output(shell=True) and .Popen(shell=True)
+    # had some issues
+    status = os.system('voms-proxy-init --voms cms --out ' + proxy_file)
 
-if status !=0:
-    logging.error("Proxy initialization failed:")
-    logging.error("    status = " + str(status))
-    logging.error("    output =\n" + output)
-    exit(2)
+    if status !=0:
+        logging.error("Proxy initialization failed:")
+        logging.error("    status = " + str(status))
+        logging.error("    output =\n" + output)
+        exit(2)
 
-#os.system('export X509_USER_PROXY=' + proxy_file)
-#my_env = os.environ.copy()
-#my_env["X509_USER_PROXY"] = proxy_file
-os.environ["X509_USER_PROXY"] = os.path.abspath(proxy_file)
+    #os.system('export X509_USER_PROXY=' + proxy_file)
+    #my_env = os.environ.copy()
+    #my_env["X509_USER_PROXY"] = proxy_file
+    os.environ["X509_USER_PROXY"] = os.path.abspath(proxy_file)
 
-logging.info("Proxy is ready.")
+    logging.info("Proxy is ready.")
+else:
+    logging.info("using proxy at X509_USER_PROXY")
+
 
 storing_action = fetch_n_store_dset if args.all else fetch_dset_presence
 
