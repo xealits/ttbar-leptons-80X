@@ -348,6 +348,32 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		}
 	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;
 
+	// special care for recoil-related variables
+	if (distr == TString("MET")
+		{
+		if (isWJets || isDY)
+			{
+			distr = TString("sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_eY)");
+			}
+		else
+			{
+			distr = TString("met_corrected.pt()");
+			}
+		}
+
+	if (distr == TString("MTlep")
+		{
+		if (isWJets || isDY)
+			{
+			//double transverse_mass_pts(float v1_x, float v1_y, float v2_x, float v2_y)
+			distr = TString("transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
+			}
+		else
+			{
+			distr = TString("transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi())");
+			}
+		}
+
 	//TH1D* histo = new TH1D("myhist"+dtag, "title", Nbins, Xlow, Xup);
 	//if (be_verbose) cout << "drawing " << distr + ">>myhist" << endl;
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);

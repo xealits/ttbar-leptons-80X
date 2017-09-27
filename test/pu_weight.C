@@ -291,6 +291,12 @@ double transverse_mass(LorentzVector v1, LorentzVector v2)
 	return sqrt(2*v1.pt()*v2.pt()*(1 - cos(v1.phi() - v2.phi())));
 	}
 
+double transverse_mass_pts(double v1_x, double v1_y, double v2_x, double v2_y)
+	{
+	double v1v2 = sqrt((v1_x*v1_x + v1_y*v1_y)*(v2_x*v2_x + v2_y*v2_y));
+	return sqrt(2*(v1v2 - (v1_x*v2_x + v1_y*v2_y)));
+	}
+
 
 /*
  * Fake Rates
