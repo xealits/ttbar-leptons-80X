@@ -202,11 +202,11 @@ std::map<TString, double> xsecs = {
 
 // since _perc ~ worked doing this way
 // no NUP, but reduced xsec
-{"MC2016_Summer16_WJets_madgraph", 61526.7}, // 50690 - 9493 - 3120 - 942.3 - 524.2},
-{"MC2016_Summer16_W1Jets_madgraph", 9493},
-{"MC2016_Summer16_W2Jets_madgraph", 3120},
-{"MC2016_Summer16_W3Jets_madgraph", 942.3},
-{"MC2016_Summer16_W4Jets_madgraph", 524.2},
+{"MC2016_Summer16_WJets_madgraph",  0.65 * 61526.7}, // 50690 - 9493 - 3120 - 942.3 - 524.2},
+{"MC2016_Summer16_W1Jets_madgraph", 0.65 *  9493},
+{"MC2016_Summer16_W2Jets_madgraph", 0.65 *  3120},
+{"MC2016_Summer16_W3Jets_madgraph", 0.65 *  942.3},
+{"MC2016_Summer16_W4Jets_madgraph", 0.65 *  524.2},
 
 // m-i-t scales
 {"MC2016_Summer16_mScale_WJets_full_madgraph",  61526},

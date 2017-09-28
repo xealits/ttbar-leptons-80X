@@ -83,8 +83,8 @@ int add_nicknamed_mc_histo(std::map<TString, TH1D *>& nicknamed_mc_distrs, TH1D*
 using namespace std;
 
 
-#define INPUT_DTAGS_START 21
-const char usage_string[256] = " [--verbose] [--normalize] sig global_scale withZPtMass tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight SYS_shift set_logy unstack lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
+#define INPUT_DTAGS_START 22
+const char usage_string[256] = " [--verbose] [--normalize] sig global_scale withZPtMass tau_ID_SF with_b_SF with_lep_SF with_lep_trig_SF with_PU_weight SYS_shift set_logy unstack writeRootFile lumi_bcdef lumi_gh distr distr_cond range out_name distr_name Y_name dir dtags";
 
 //int stacked_histo_distr (int argc, char *argv[])
 int main (int argc, char *argv[])
@@ -130,7 +130,7 @@ int i = 1;
 
 cout << i << ' ';
 TString sig(argv[input_starts + i++]);
-if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu"))
+if (sig != TString("el") && sig != TString("mu") && sig != TString("elmu") && sig != TString("tt"))
 	{
 	cout << "not supported tt signal channel: " << sig << endl;
 	}
@@ -229,10 +229,17 @@ if (unstack_inp == TString("T") || unstack_inp == TString("Y"))
 	unstack = true;
 	}
 
+bool write_root_file = false;
+TString write_root_file_s(argv[input_starts + i++]);
+if (write_root_file_s == TString("T") || write_root_file_s == TString("Y"))
+	{
+	write_root_file = true;
+	}
+
 double lumi_bcdef = atof(argv[input_starts + i++]);
 double lumi_gh    = atof(argv[input_starts + i++]);
 double lumi = lumi_bcdef + lumi_gh;
-TString distr(argv[input_starts + i++]);
+TString init_distr(argv[input_starts + i++]);
 TString distr_condition_init(argv[input_starts + i++]);
 TString range(argv[input_starts + i++]);
 string out_name(argv[input_starts + i++]);
@@ -243,7 +250,7 @@ TString dir(argv[input_starts + i++]);
 TString dtag1(argv[input_starts + INPUT_DTAGS_START]);
 
 cout << lumi_bcdef << " + " << lumi_gh << " = " << lumi  << endl;
-cout << distr << endl;
+cout << init_distr << endl;
 cout << range << endl;
 cout << dir   << endl;
 cout << dtag1 << endl;
@@ -307,6 +314,8 @@ TLegend* leg = new TLegend(0.7, 0.7, 0.89, 0.89);
  */
 for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	{
+	TString distr = init_distr;
+	TString distr_condition1 = distr_condition_init;
 	TString dtag(argv[i]);
 	if (be_verbose) cout << "processing " << dtag << ' ';
 	TString the_file = dir + "/" + dtag + ".root";
@@ -317,11 +326,15 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		continue;
 		}
 
+
 	TFile* file = TFile::Open(the_file);
 
 	bool isData = dtag.Contains("Data");
+	bool isTT   = dtag.Contains("TT");
+	bool isNum  = isTT && (dtag.Contains("_1") || dtag.Contains("_2") || dtag.Contains("_3") || dtag.Contains("_4") || dtag.Contains("_5"));
 	bool isDY   = dtag.Contains("DYJet");
 	bool isWJets = dtag.Contains("WJet") || dtag.Contains("W1Jet") || dtag.Contains("W2Jet") || dtag.Contains("W3Jet") || dtag.Contains("W4Jet");
+	if (be_verbose) cout << "data DY WJets " << isData << isDY << isWJets << endl;
 
 	/*
 	 * data containd distr + _jet_distr
@@ -349,28 +362,38 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	if (be_verbose) cout << "got ttree, " << output_ttree->GetEntries() << " drawing:" << endl;
 
 	// special care for recoil-related variables
-	if (distr.Contains("MET"))
+	if (distr.Contains("MET") || distr_condition1.Contains("MET"))
 		{
 		if (isWJets || isDY)
 			{
-			distr.ReplaceAll("MET", "sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_eY)");
+			//distr.ReplaceAll("MET", "sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_ey)");
+			//distr_condition1.ReplaceAll("MET", "sqrt(pfmetcorr_ex*pfmetcorr_ex + pfmetcorr_ey*pfmetcorr_ey)");
+			// met_pt_recoilcor(met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)
+			distr.ReplaceAll("MET", "met_pt_recoilcor(met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)");
+			distr_condition1.ReplaceAll("MET", "met_pt_recoilcor(met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)");
 			}
 		else
 			{
 			distr.ReplaceAll("MET", "met_corrected.pt()");
+			distr_condition1.ReplaceAll("MET", "met_corrected.pt()");
 			}
 		}
 
-	if (distr.Contains("MTlep"))
+	if (distr.Contains("MTlep") || distr_condition1.Contains("MTlep"))
 		{
 		if (isWJets || isDY)
 			{
 			//double transverse_mass_pts(float v1_x, float v1_y, float v2_x, float v2_y)
-			distr.ReplaceAll("MTlep", "transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
+			//distr.ReplaceAll("MTlep", "transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
+			//distr_condition1.ReplaceAll("MTlep", "transverse_mass_pts(lep_p4[0].Px(), lep_p4[0].Py(), pfmetcorr_ex, pfmetcorr_ey)");
+			// met_pt_recoilcor(met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)
+			distr.ReplaceAll("MTlep", "MTlep_met_pt_recoilcor(lep_p4[0].Px(), lep_p4[0].Py(), met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)");
+			distr_condition1.ReplaceAll("MTlep", "MTlep_met_pt_recoilcor(lep_p4[0].Px(), lep_p4[0].Py(), met_corrected.Px(), met_corrected.Py(), gen_genPx, gen_genPy, gen_visPx, gen_visPy, 0)");
 			}
 		else
 			{
 			distr.ReplaceAll("MTlep", "transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi())");
+			distr_condition1.ReplaceAll("MTlep", "transverse_mass(lep_p4[0].pt(), met_corrected.pt(), lep_p4[0].phi(), met_corrected.phi())");
 			}
 		}
 
@@ -379,8 +402,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 	//output_ttree->Draw(distr + ">>myhist"+dtag, distr_condition);
 	if (isData)
 		{
-		if (be_verbose) cout << "command: " << distr + ">>h" + range << '\t' << distr_condition_init << endl;
-		output_ttree->Draw(distr + ">>h" + range, distr_condition_init);
+		if (be_verbose) cout << "command: " << distr + ">>h" + range << '\t' << distr_condition1 << endl;
+		output_ttree->Draw(distr + ">>h" + range, "( " + distr_condition1 + " && pass_basic_METfilters)");
 		TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 		if (be_verbose) cout << histo->Integral();
 
@@ -414,7 +437,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		{
 		// MC lumi ratio
 		Double_t ratio = 1, xsec = 1;
-		TString distr_condition = distr_condition_init;
+		TString distr_condition = distr_condition1;
 
 		TH1D* weightflow = NULL;
 		double weight_init = 0;
@@ -435,6 +458,10 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 			weight_init = 4.68418e+07; // for the splitted TTbar
 			}
 		xsec = xsecs[dtag];
+		//ratio = lumi * xsec / weight_init; // since 1 dtag can be split now (to fit in eos), weight should be per nick/per xsec actually..
+		// ad-hoc solution for tt, which is roughly split in 5 parts:
+		if (isTT && isNum)
+			weight_init *= 5;
 		ratio = lumi * xsec / weight_init;
 
 		// add weights for MC
@@ -459,7 +486,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_SF)
 			{
 			TString lepton_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu") || sig == TString("elmu") || sig == TString("tt"))
 				{
 				lepton_SF_call.Form("(lepton_muon_SF(abs(lep_p4[0].eta()), lep_p4[0].pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -473,7 +500,7 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		if (with_lep_trig_SF)
 			{
 			TString lepton_trig_SF_call("");
-			if (sig == TString("mu") || sig == TString("elmu"))
+			if (sig == TString("mu") || sig == TString("elmu") || sig == TString("tt"))
 				{
 				lepton_trig_SF_call.Form("(lepton_muon_trigger_SF(abs(lep_p4[0].eta()), lep_p4[0].pt(), %f, %f))*", lumi_bcdef/lumi, lumi_gh/lumi);
 				}
@@ -545,6 +572,11 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 				//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
 				histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11" + ")";
 				}
+			else if (sig == TString("tt"))
+				{
+				nick = "tt";
+				histo_conditions[nick] = weight_cond + " (" + distr_condition + ")";
+				}
 			else
 				{
 				if (sig == TString("mu"))
@@ -552,13 +584,15 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 					cout << "TT channels" << endl;
 					nick = "tt_{other}";
 					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15 && !((abs(gen_t_w_decay_id) == 13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_t_w_decay_id) > 15*15 && abs(gen_tb_w_decay_id) == 13))" + ")";
 
 					//nick = "tt_em";
 					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*11" + ")";
 
 					nick = "tt_{\\mu\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")";
+					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && ((abs(gen_t_w_decay_id) == 13 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_t_w_decay_id) > 15*15 && abs(gen_tb_w_decay_id) == 13))" + ")";
 					//output_ttree->Draw(distr + ">>h" + range, weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 13*15" + ")");
 					//TH1D* histo = (TH1D*) output_ttree->GetHistogram();
 					//histos[nick] = histo;
@@ -568,10 +602,12 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 					cout << "TT channels" << endl;
 					nick = "tt_{other}";
 					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*11 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 13*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) != 11*15 && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15" + ")";
+					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) > 1*15 && !((abs(gen_t_w_decay_id) == 11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_t_w_decay_id) > 15*15 && abs(gen_tb_w_decay_id) == 11))" + ")";
 
 					nick = "tt_{e\\tau}";
-					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+					//histo_conditions[nick] = weight_cond + " (" + distr_condition + " && abs(gen_t_w_decay_id * gen_tb_w_decay_id) == 11*15" + ")";
+					histo_conditions[nick] = weight_cond + " (" + distr_condition + " && ((abs(gen_t_w_decay_id) == 11 && abs(gen_tb_w_decay_id) > 15*15) || (abs(gen_t_w_decay_id) > 15*15 && abs(gen_tb_w_decay_id) == 11))" + ")";
 					}
 
 				nick = "tt_lj";
@@ -730,28 +766,30 @@ if (global_scale > 0)
 	}
 
 // ---- Write the separate distributions to file
-//TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
-TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + (SYS_shift != TString("") ? "_" + SYS_shift : "") + ".root", "RECREATE");
-//cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
-
-hs_data->Write();
-hs_data->SetName(TString("data"));
-f_out->Write(TString("data"));
-
-hs_sum->Write();
-hs_sum->SetName(TString("mc_sum"));
-f_out->Write(TString("mc_sum"));
-for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+if (write_root_file)
 	{
-	TString nick = it->first;
-	TH1D * distr = it->second;
-	distr->SetName(nick);
-	distr->Write();
-	f_out->Write(nick);
+	//TString ntuple_output_filename = outdir + TString(string("/") + dtag_s + string("_") + job_num + string(".root"));
+	TFile* f_out = TFile::Open(dir + "/jobsums/" + "QuickNtupleDistr_" + out_name + (SYS_shift != TString("") ? "_" + SYS_shift : "") + ".root", "RECREATE");
+	//cst->SaveAs( dir + "/jobsums/" + out_name + "_QuickNtupleDistr_" + (normalize_MC ? "_normalized" : "") + (set_logy? "_logy" : "") + (unstack? "_unstacked" : "") + ".png" );
+
+	hs_data->Write();
+	hs_data->SetName(TString("data"));
+	f_out->Write(TString("data"));
+
+	hs_sum->Write();
+	hs_sum->SetName(TString("mc_sum"));
+	f_out->Write(TString("mc_sum"));
+	for(std::map<TString, TH1D*>::iterator it = nicknamed_mc_distrs.begin(); it != nicknamed_mc_distrs.end(); ++it)
+		{
+		TString nick = it->first;
+		TH1D * distr = it->second;
+		distr->SetName(nick);
+		distr->Write();
+		f_out->Write(nick);
+		}
+
+	f_out->Close();
 	}
-
-f_out->Close();
-
 
 hs_data->Sumw2();
 hs_data->SetStats(0);      // No statistics on lower plot
