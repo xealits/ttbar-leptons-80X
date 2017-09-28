@@ -144,7 +144,7 @@ def lepton_muon_SF(abs_eta, pt): #, SingleMuon_data_bcdef_fraction, SingleMuon_d
 
     # for control (TODO: remove this later)
     #double bcdef_weight_trk, bcdef_weight_id, bcdef_weight_iso,
-    #	gh_weight_trk, gh_weight_id, gh_weight_iso;
+    #        gh_weight_trk, gh_weight_id, gh_weight_iso;
 
     # hopefully tracking won't overflow in eta range:
     bcdef_weight_trk = muon_effs_tracking_BCDEF_graph.Eval(abs_eta)
@@ -206,7 +206,7 @@ def lepton_muon_trigger_SF(abs_eta, pt): #, double SingleMuon_data_bcdef_fractio
     bin_x = pt      if pt      < muon_effs_trg_BCDEF_histo_max_x else  muon_effs_trg_BCDEF_histo_max_x - 1
     bin_y = abs_eta if abs_eta < muon_effs_trg_BCDEF_histo_max_y else  muon_effs_trg_BCDEF_histo_max_y - 0.01
     #no_mu_trig *= SingleMuon_data_bcdef_fraction * (1 - muon_effs_trg_BCDEF_histo->GetBinContent( muon_effs_trg_BCDEF_histo->FindBin(bin_x, bin_y) )) +
-    #		SingleMuon_data_gh_fraction * (1 - muon_effs_trg_GH_histo->GetBinContent( muon_effs_trg_GH_histo->FindBin(bin_x, bin_y) ));
+    #        SingleMuon_data_gh_fraction * (1 - muon_effs_trg_GH_histo->GetBinContent( muon_effs_trg_GH_histo->FindBin(bin_x, bin_y) ));
     #mu_trig_weight = 1 - no_trig; // so for 1 muon it will = to the SF, for 2 there will be a mix
     #fill_1d(string("weight_trigger_no_muon"),  200, 0., 1.1,   no_mu_trig, 1);
 
@@ -370,23 +370,23 @@ if with_bSF:
     btagCal_sys.push_back("down")
     btagCal = ROOT.BTagCalibrationReader(ROOT.BTagEntry.OP_MEDIUM,  # operating point
     # BTagCalibrationReader btagCal(BTagEntry::OP_TIGHT,  // operating point
-    			     "central",            # central sys type
-    			     btagCal_sys)      # other sys types
+                         "central",            # central sys type
+                         btagCal_sys)      # other sys types
     # the type is:
     # const std::vector<std::string> & otherSysTypes={}
 
 
     logging.info("...flavours")
     btagCal.load(btagCalib,        # calibration instance
-    	ROOT.BTagEntry.FLAV_B,      # btag flavour
+            ROOT.BTagEntry.FLAV_B,      # btag flavour
     #            "comb");          # they say "comb" is better precision, but mujets are independent from ttbar dilepton channels
-    	"mujets")              #
+            "mujets")              #
     btagCal.load(btagCalib,        # calibration instance
-    	ROOT.BTagEntry.FLAV_C,      # btag flavour
-    	"mujets")              # measurement type
+            ROOT.BTagEntry.FLAV_C,      # btag flavour
+            "mujets")              # measurement type
     btagCal.load(btagCalib,        # calibration instance
-    	ROOT.BTagEntry.FLAV_UDSG,   # btag flavour
-    	"incl")                # measurement type
+            ROOT.BTagEntry.FLAV_UDSG,   # btag flavour
+            "incl")                # measurement type
 
     logging.info("loaded b-tagging callibration")
 
@@ -472,14 +472,14 @@ def calc_btag_sf_weight(hasCSVtag, flavId, pt, eta, sys="central"):
 def top_pT_SF(x):
     # the SF function is SF(x)=exp(a+bx)
     # where x is pT of the top quark (at generation?)
-    # sqrt(s) 	channel     	a     	b
-    # 7 TeV 	all combined 	0.199 	-0.00166
-    # 7 TeV 	l+jets      	0.174 	-0.00137
-    # 7 TeV 	dilepton    	0.222 	-0.00197
-    # 8 TeV 	all combined 	0.156 	-0.00137
-    # 8 TeV 	l+jets       	0.159 	-0.00141
-    # 8 TeV 	dilepton     	0.148 	-0.00129
-    # 13 TeV	all combined	0.0615	-0.0005
+    # sqrt(s)         channel     	a     	b
+    # 7 TeV         all combined 	0.199 	-0.00166
+    # 7 TeV         l+jets      	0.174 	-0.00137
+    # 7 TeV         dilepton    	0.222 	-0.00197
+    # 8 TeV         all combined 	0.156 	-0.00137
+    # 8 TeV         l+jets       	0.159 	-0.00141
+    # 8 TeV         dilepton     	0.148 	-0.00129
+    # 13 TeV        all combined	0.0615	-0.0005
     # -- taking all combined 13 TeV
     a = 0.0615
     b = -0.0005
@@ -495,6 +495,44 @@ def transverse_mass_pts(v1_x, v1_y, v2_x, v2_y):
     v1v2 = TMath.Sqrt((v1_x*v1_x + v1_y*v1_y)*(v2_x*v2_x + v2_y*v2_y))
     return TMath.Sqrt(2*(v1v2 - (v1_x*v2_x + v1_y*v2_y)))
 
+
+#lj_var = calc_lj_var(jets, jets_b)
+def calc_lj_var(light_jets, b_jets):
+    if len(b_jets) == 0 or len(light_jets) == 0: return 2000, 2000, 2000
+    # loop over light jets -- check their mass and mass of their pairs to be close to 80
+    # find the closest vector
+    # then loop over b jets finding the combination with mass closest to 173
+
+    # light jets close to W
+    dist_W = 999
+    # closest_vector
+    for j in light_jets:
+        new_dist = abs(j.Mass()- 80)
+        if new_dist < dist_W:
+	    dist_W = new_dist
+	    closest_to_W = j
+
+    # pairs of light jets
+    for i in range(len(light_jets)):
+      for u in range(len(i)):
+        ji = light_jets[i]
+        ju = light_jets[u]
+	pair = ji + ju
+        new_dist = abs(pair.Mass() - 80)
+        if new_dist < dist_W:
+	    dist_W = new_dist
+	    closest_to_W = pair
+
+    # closest to 173
+    dist_t = 999
+    for j in b_jets:
+        pair = j + closest_to_W
+        new_dist = abs(pair.Mass() - 173)
+        if new_dist < dist_t:
+	    dist_t = new_dist
+	    closest_to_t = pair
+
+    return TMath.Sqrt(dist_W*dist_W + dist_t*dist_t), closest_to_W.Mass(), closest_to_t.Mass()
 
 
 def full_loop(t, dtag, lumi_bcdef, lumi_gh):
@@ -586,7 +624,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                    'mu_sel':        (['tt_mutau', 'tt_lj', 'tt_other'], 'tt_other'),
                    'mu_lj':     (['tt_mutau', 'tt_lj', 'tt_other'], 'tt_other'),
                    'mu_lj_out': (['tt_mutau', 'tt_lj', 'tt_other'], 'tt_other')}
-	    process = 'tt_other'
+            process = 'tt_other'
 
         if isWJets:
             channels = {'el_presel': (['wjets'], 'wjets'),
@@ -597,7 +635,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                       'mu_sel':        (['wjets'], 'wjets'),
                       'mu_lj':     (['wjets'], 'wjets'),
                       'mu_lj_out': (['wjets'], 'wjets')}
-	    process = 'wjets'
+            process = 'wjets'
 
         if isDY:
             channels = {'el_presel': (['dy'], 'dy'),
@@ -608,7 +646,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                    'mu_sel':        (['dy'], 'dy'),
                    'mu_lj':     (['dy'], 'dy'),
                    'mu_lj_out': (['dy'], 'dy')}
-	    process = 'dy'
+            process = 'dy'
 
         if isSTop:
             channels = {'el_presel': (['singletop'], 'singletop'),
@@ -619,7 +657,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                    'mu_sel':          (['singletop'], 'singletop'),
                    'mu_lj':       (['singletop'], 'singletop'),
                    'mu_lj_out':   (['singletop'], 'singletop')}
-	    process = 'singletop'
+            process = 'singletop'
 
         if isQCD:
             channels = {'el_presel': (['qcd'], 'qcd'),
@@ -630,7 +668,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                    'mu_sel':          (['qcd'], 'qcd'),
                    'mu_lj':       (['qcd'], 'qcd'),
                    'mu_lj_out':   (['qcd'], 'qcd')}
-	    process = 'qcd'
+            process = 'qcd'
 
         if isDibosons:
             channels = {'el_presel': (['dibosons'], 'dibosons'),
@@ -641,7 +679,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                    'mu_sel':          (['dibosons'], 'dibosons'),
                    'mu_lj':       (['dibosons'], 'dibosons'),
                    'mu_lj_out':   (['dibosons'], 'dibosons')}
-	    process = 'dibosons'
+            process = 'dibosons'
 
     else:
         channels = {'el_presel': (['data'], 'data'),
@@ -652,7 +690,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                       'mu_sel':        (['data'], 'data'),
                       'mu_lj':     (['data'], 'data'),
                       'mu_lj_out': (['data'], 'data')}
-	process = 'data'
+        process = 'data'
 
     proc = process
 
@@ -718,18 +756,18 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
         # only 1-lep channels
         if not (pass_mu or pass_el): continue
 
-	# also at least some kind of tau:
-	if not ev.tau_p4.size() > 0: continue
+        # also at least some kind of tau:
+        if not ev.tau_p4.size() > 0: continue
 
         # expensive calls and they don't depend on systematics now
-	if isDY or isWJets:
+        if isDY or isWJets:
             #def transverse_mass_pts(v1_x, v1_y, v2_x, v2_y):
             met_x = ev.pfmetcorr_ex
-	    met_y = ev.pfmetcorr_ey
+            met_y = ev.pfmetcorr_ey
             #Mt_lep_met = transverse_mass_pts(ev.lep_p4[0].Px(), ev.lep_p4[0].Py(), ev.pfmetcorr_ex, ev.pfmetcorr_ey)
             #Mt_tau_met_nominal = transverse_mass_pts(ev.tau_p4[0].Px(), ev.tau_p4[0].Py(), ev.pfmetcorr_ex, ev.pfmetcorr_ey)
-	    # TODO: tau is corrected with systematic ES
-	else:
+            # TODO: tau is corrected with systematic ES
+        else:
             met_x = ev.met_corrected.Px()
             met_y = ev.met_corrected.Py()
             #Mt_lep_met = transverse_mass(ev.lep_p4[0], ev.met_corrected)
@@ -763,15 +801,15 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                 weight_top_pt = ttbar_pT_SF(ev.gen_t_pt, ev.gen_tb_pt)
                 #weight *= weight_top_pt # to sys
                 control_hs['weight_top_pt']   .Fill(weight_top_pt)
-		# basically only difference is eltau/mutau
+                # basically only difference is eltau/mutau
                 if (abs(ev.gen_t_w_decay_id) > 15*15 and abs(ev.gen_tb_w_decay_id) == 13) or (abs(ev.gen_t_w_decay_id) == 13 and abs(ev.gen_tb_w_decay_id) > 15*15): # lt
-		    proc = 'tt_mutau'
+                    proc = 'tt_mutau'
                 elif (abs(ev.gen_t_w_decay_id) > 15*15 and abs(ev.gen_tb_w_decay_id) == 11) or (abs(ev.gen_t_w_decay_id) == 11 and abs(ev.gen_tb_w_decay_id) > 15*15): # lt
-		    proc = 'tt_eltau'
+                    proc = 'tt_eltau'
                 elif abs(ev.gen_t_w_decay_id * ev.gen_tb_w_decay_id) == 13 or abs(ev.gen_t_w_decay_id * ev.gen_tb_w_decay_id) == 11: # lj
-		    proc = 'tt_lj'
-		else:
-		    proc = 'tt_other'
+                    proc = 'tt_lj'
+                else:
+                    proc = 'tt_other'
 
             if pass_mu and isMC:
                 mu_sfs = lepton_muon_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
@@ -784,65 +822,152 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                 el_trg_sf = lepton_electron_trigger_SF(abs(ev.lep_p4[0].eta()), ev.lep_p4[0].pt())
                 weight *= el_trg_sf * el_sfs[0] * el_sfs[1]
 
-            #JES corrections
-	    # TODO: save only 30 pt 2.5 eta jets
-            #[((1-f)*j.pt(), (1+f)*j.pt()) for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4)]
-            jet_pts_jes_up, jet_pts_jes_down = [], []
-            #for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4):
-            #    jet_pts_jes_up  .append(j.pt()*(1-f))
-            #    jet_pts_jes_down.append(j.pt()*(1+f))
-            #JER
-            #[(j.pt()*(down/factor), j.pt()*(up/factor)) for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down)]
-            jet_pts_jer_up, jet_pts_jer_down = [], []
-            #for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down):
-            for i in range(ev.jet_p4.size()):
-                j, factor, up, down = ev.jet_p4[i], ev.jet_jer_factor[i], ev.jet_jer_factor_up[i], ev.jet_jer_factor_down[i]
-                jet_pts_jer_up  .append(j.pt()*(up/factor))
-                jet_pts_jer_down.append(j.pt()*(down/factor))
-                jes_shift = ev.jet_jes_correction_relShift[i]
-                jet_pts_jes_up  .append(j.pt()*(1-jes_shift))
-                jet_pts_jes_down.append(j.pt()*(1+jes_shift))
-        # implement lj_var?
+        #    #JES corrections
+        #    # TODO: save only 30 pt 2.5 eta jets
+        #    #[((1-f)*j.pt(), (1+f)*j.pt()) for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4)]
+        #    jet_pts_jes_up, jet_pts_jes_down = [], []
+        #    #for f,j in zip(ev.jet_jes_correction_relShift, ev.jet_p4):
+        #    #    jet_pts_jes_up  .append(j.pt()*(1-f))
+        #    #    jet_pts_jes_down.append(j.pt()*(1+f))
+        #    #JER
+        #    #[(j.pt()*(down/factor), j.pt()*(up/factor)) for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down)]
+        #    jet_pts_jer_up, jet_pts_jer_down = [], []
+        #    #for j, factor, up, down in zip(ev.jet_p4, ev.jet_jer_factor, ev.jet_jer_factor_up, ev.jet_jer_factor_down):
+        #    for i in range(ev.jet_p4.size()):
+        #        j, factor, up, down = ev.jet_p4[i], ev.jet_jer_factor[i], ev.jet_jer_factor_up[i], ev.jet_jer_factor_down[i]
+        #        jet_pts_jer_up  .append(j.pt()*(up/factor))
+        #        jet_pts_jer_down.append(j.pt()*(down/factor))
+        #        jes_shift = ev.jet_jes_correction_relShift[i]
+        #        jet_pts_jes_up  .append(j.pt()*(1-jes_shift))
+        #        jet_pts_jes_down.append(j.pt()*(1+jes_shift))
+        ## implement lj_var?
 
-        jet_pts = [] # nominal jet pts
-        for j in ev.jet_p4:
-            jet_pts.append(j.pt())
+        #jet_pts = [] # nominal jet pts
+        #for j in ev.jet_p4:
+        #    jet_pts.append(j.pt())
 
-        # number of b-tagged jets is not varied, it's the same for given jets
-        # TODO: however, the N b jets should be calculated for JER/JES varied jets
-        #       also the variation should be propagated to MET
-        N_bjets = 0
-        weight_bSF, weight_bSF_up, weight_bSF_down = 1., 1., 1.
-        #for i, (p4, flavId, b_discr) in enumerate(zip(ev.jet_p4, ev.jet_hadronFlavour, ev.jet_b_discr)):
-        for i in range(ev.jet_p4.size()):
-            p4, flavId, b_discr = ev.jet_p4[i], ev.jet_hadronFlavour[i], ev.jet_b_discr[i]
-            # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
-            if p4.pt() < 30: continue
-            N_bjets += b_discr > 0.8484
-            if isMC and with_bSF:
-                weight_bSF      *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta())
-                weight_bSF_up   *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up")
-                weight_bSF_down *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down")
+        ## number of b-tagged jets is not varied, it's the same for given jets
+        ## TODO: however, the N b jets should be calculated for JER/JES varied jets
+        ##       also the variation should be propagated to MET
+        #N_bjets = 0
+        #weight_bSF, weight_bSF_up, weight_bSF_down = 1., 1., 1.
+        ##for i, (p4, flavId, b_discr) in enumerate(zip(ev.jet_p4, ev.jet_hadronFlavour, ev.jet_b_discr)):
+        #for i in range(ev.jet_p4.size()):
+        #    p4, flavId, b_discr = ev.jet_p4[i], ev.jet_hadronFlavour[i], ev.jet_b_discr[i]
+        #    # calc_btag_sf_weight(hasCSVtag: bool, flavId: int, pt: float, eta: float) -> float:
+        #    if p4.pt() < 30: continue
+        #    N_bjets += b_discr > 0.8484
+        #    if isMC and with_bSF:
+        #        weight_bSF      *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta())
+        #        weight_bSF_up   *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "up")
+        #        weight_bSF_down *= calc_btag_sf_weight(b_discr > 0.8484, flavId, p4.pt(), p4.eta(), "down")
 
         # I need from jets:
-	#    cut [pt?], eta and PFID == Loose
-	#    save jes/jer factors (if MC)
-	#    find b tags for these jets
-	#    and b SF factors (if MC)
-	#
-	#    get N jets passing selection for diff syst!
-	#    N corresp b jets
-	#    and b SF weights
-	#    build lj_var for every variation of N jets (N b jets doesn't change)
-	#
-	# -- does pyROOT store pointers for everything, like Python, or it copies stuff?
-	# test with TLorentzVector shows that it copies, as it should
-	# therefore append stuff
-	#
-	# for each jet syst make ([p4-s], [sys_factors]) for jets passing eta, ID, pt
-	# find N b-jets and SF weight
-	# and for nominal collection of jets -- b SF up/down weight
-	# build lj only for events passing the selection -- it's expensive
+        #    cut [pt?], eta and PFID == Loose
+        #    save jes/jer factors (if MC) <---- needed later only for lj_var
+        #    find b tags for these jets
+        #    and b SF factors (if MC)
+        #
+        #    get N jets passing selection for diff syst!
+        #    N corresp b jets
+        #    and b SF weights
+        #    build lj_var for every variation of N jets (N b jets doesn't change)
+        #
+        # -- does pyROOT store pointers for everything, like Python, or it copies stuff?
+        # test with TLorentzVector shows that it copies, as it should
+        # therefore append stuff
+        #
+        # for each jet syst make ([p4-s], [sys_factors]) for jets passing eta, ID, pt
+        # find N b-jets and SF weight
+        # and for nominal collection of jets -- b SF up/down weight
+        # build lj only for events passing the selection -- it's expensive
+
+        b_tag_wp = 0.8484
+
+        # lists of "light jets", not passing b-tag
+        jets_nominal = [] # nominal jet pts
+        jets_jer_up, jets_jer_down = [], []
+        jets_jes_up, jets_jes_down = [], []
+        # lists of "heavy jets", passing b-tag
+        jets_b_nominal = [] # nominal jet pts
+        jets_b_jer_up, jets_b_jer_down = [], []
+        jets_b_jes_up, jets_b_jes_down = [], []
+
+        #nbjets_nominal = 0
+        #nbjets_jer_up, nbjets_jer_down = 0, 0
+        #nbjets_jes_up, nbjets_jes_down = 0, 0
+
+        weight_bSF = 1.
+        weight_bSF_up, weight_bSF_down = 1., 1.
+        weight_bSF_jer_up, weight_bSF_jer_down = 1., 1.
+        weight_bSF_jes_up, weight_bSF_jes_down = 1., 1.
+
+        for i in xrange(ev.jet_p4.size()):
+            pfid, p4 = ev.jet_PFID[i] ev.jet_p4[i]
+            if pfid < 1 or abs(p4.eta()) > 2.5: continue # Loose PFID and eta
+
+            flavId = ev.jet_hadronFlavour[i]
+            b_tagged = ev.jet_b_discr[i] > b_tag_wp
+
+            if p4.pt() > 30: # nominal jet
+                if b_tagged:
+                    #nbjets_nominal += 1
+                    jets_b_nominal.append((p4, 1))
+                else:
+                    jets_nominal.append((p4, 1))
+                if isMC: # do the SF weights
+                    weight_bSF      *= calc_btag_sf_weight(b_tagged, flavId, p4.pt(), p4.eta())
+                    weight_bSF_up   *= calc_btag_sf_weight(b_tagged, flavId, p4.pt(), p4.eta(), "up")
+                    weight_bSF_down *= calc_btag_sf_weight(b_tagged, flavId, p4.pt(), p4.eta(), "down")
+
+            if isMC:
+                factor, up, down = ev.jet_jer_factor[i], ev.jet_jer_factor_up[i], ev.jet_jer_factor_down[i]
+                jes_shift = ev.jet_jes_correction_relShift[i]
+                # 
+                mult = (up/factor)
+                if p4.pt() * mult > 30: # jer up
+                    if b_tagged:
+                        #nbjets_jer_up += 1
+                        jets_b_jer_up.append((p4, mult))
+                    else:
+                        jets_jer_up.append((p4, mult))
+                    if isMC:
+                        weight_bSF_jer_up *= calc_btag_sf_weight(b_tagged, flavId, p4.pt() * mult, p4.eta())
+
+                mult = (down/factor)
+                if p4.pt() * mult > 30: # jer down
+                    if b_tagged:
+                        #nbjets_jer_down += 1
+                        jets_b_jer_down.append((p4, mult))
+                    else:
+                        jets_jer_down.append((p4, mult))
+                    if isMC:
+                        weight_bSF_jer_down *= calc_btag_sf_weight(b_tagged, flavId, p4.pt() * mult, p4.eta())
+
+                mult = 1 + jes_shift
+                if p4.pt() * mult > 30: # jer up
+                    if b_tagged:
+                        #nbjets_jes_up += 1
+                        jets_b_jes_up.append((p4, mult))
+                    else:
+                        jets_jes_up.append((p4, mult))
+                    if isMC:
+                        weight_bSF_jes_up *= calc_btag_sf_weight(b_tagged, flavId, p4.pt() * mult, p4.eta())
+
+                mult = 1 - jes_shift
+                if p4.pt() * mult > 30: # jer down
+                    if b_tagged:
+                        #nbjets_jes_down += 1
+                        jets_b_jes_down.append((p4, mult))
+                    else:
+                        jets_jes_down.append((p4, mult))
+                    if isMC:
+                        weight_bSF_jes_down *= calc_btag_sf_weight(b_tagged, flavId, p4.pt() * mult, p4.eta())
+
+            # save jets and factors for lj_var
+            # count b jets
+            # how to calc b SF weight? <---- just calc them, only for nominal jets
+            #
 
         # tau pt-s
         # ES correction
@@ -852,15 +977,15 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
         tau_pts_corrected_up = []
         tau_pts_corrected_down = []
         #for i, (p4, DM, IDlev) in enumerate(zip(ev.tau_p4, ev.tau_decayMode, ev.tau_IDlev)):
-	Mt_tau_met_nominal, Mt_tau_met_up, Mt_tau_met_down = None, None, None
+        Mt_tau_met_nominal, Mt_tau_met_up, Mt_tau_met_down = None, None, None
 
         for i in range(ev.tau_p4.size()):
-	    # it should work like Python does and not copy these objects! (cast)
+            # it should work like Python does and not copy these objects! (cast)
             p4, DM, IDlev = ev.tau_p4[i], ev.tau_decayMode[i], ev.tau_IDlev[i]
             if IDlev < 3: continue # only Medium taus
 
             if DM == 0:
-	      factor = 0.995
+              factor = 0.995
               if isMC:
                 factor_up   = 0.995 + 0.012
                 factor_down = 0.995 - 0.012
@@ -880,8 +1005,8 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                 tau_pts_corrected_up.append(p4.pt() * factor_up)
                 tau_pts_corrected_down.append(p4.pt() * factor_down)
                 if not Mt_tau_met_up:
-		    Mt_tau_met_up   = transverse_mass_pts(ev.tau_p4[0].Px()*factor_up, ev.tau_p4[0].Py()*factor_down, met_x, met_y)
-		    Mt_tau_met_down = transverse_mass_pts(ev.tau_p4[0].Px()*factor_up, ev.tau_p4[0].Py()*factor_down, met_x, met_y)
+                    Mt_tau_met_up   = transverse_mass_pts(ev.tau_p4[0].Px()*factor_up, ev.tau_p4[0].Py()*factor_down, met_x, met_y)
+                    Mt_tau_met_down = transverse_mass_pts(ev.tau_p4[0].Px()*factor_up, ev.tau_p4[0].Py()*factor_down, met_x, met_y)
 
         #has_medium_tau = any(IDlev > 2 and p4.pt() > 30 for IDlev, p4 in zip(ev.tau_IDlev, ev.tau_p4))
         #has_medium_tau = ev.tau_IDlev.size() > 0 and ev.tau_IDlev[0] > 2 and ev.tau_p4[0].pt() > 30
@@ -894,31 +1019,32 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
         # weight variations
         #nominal systematics
         # jet pts, tau pts, b weight (=1 for data), pu weight (=1 for data)
+
         if isMC:
-            systematics = {'NOMINAL': [jet_pts, tau_pts_corrected, weight_bSF, weight_pu,  1, Mt_tau_met_nominal],
-                'JESUp'     : [jet_pts_jes_up,   tau_pts_corrected, weight_bSF, weight_pu, 1, Mt_tau_met_nominal],
-                'JESDown'   : [jet_pts_jes_down, tau_pts_corrected, weight_bSF, weight_pu, 1, Mt_tau_met_nominal],
-                'JERUp'     : [jet_pts_jer_up,   tau_pts_corrected, weight_bSF, weight_pu, 1, Mt_tau_met_nominal],
-                'JERDown'   : [jet_pts_jer_down, tau_pts_corrected, weight_bSF, weight_pu, 1, Mt_tau_met_nominal],
-                'TauESUp'   : [jet_pts, tau_pts_corrected_up  , weight_bSF, weight_pu,     1, Mt_tau_met_up],
-                'TauESDown' : [jet_pts, tau_pts_corrected_down, weight_bSF, weight_pu,     1, Mt_tau_met_down],
-                'bSFUp'     : [jet_pts, tau_pts_corrected, weight_bSF_up  , weight_pu,     1, Mt_tau_met_nominal],
-                'bSFDown'   : [jet_pts, tau_pts_corrected, weight_bSF_down, weight_pu,     1, Mt_tau_met_nominal],
-                'PUUp'      : [jet_pts, tau_pts_corrected, weight_bSF, weight_pu_up,       1, Mt_tau_met_nominal],
-                'PUDown'    : [jet_pts, tau_pts_corrected, weight_bSF, weight_pu_dn,       1, Mt_tau_met_nominal],
-                }
+            systematics = {'NOMINAL'   : [jets_nominal,  jets_b_nominal,  tau_pts_corrected, weight_bSF,          weight_pu,    1, Mt_tau_met_nominal],
+                           'JESUp'     : [jets_jes_up,   jets_b_jes_up,   tau_pts_corrected, weight_bSF_jes_up,   weight_pu,    1, Mt_tau_met_nominal],
+                           'JESDown'   : [jets_jes_down, jets_b_jes_down, tau_pts_corrected, weight_bSF_jes_down, weight_pu,    1, Mt_tau_met_nominal],
+                           'JERUp'     : [jets_jer_up,   jets_b_jer_up,   tau_pts_corrected, weight_bSF_jer_up,   weight_pu,    1, Mt_tau_met_nominal],
+                           'JERDown'   : [jets_jer_down, jets_b_jer_down, tau_pts_corrected, weight_bSF_jer_down, weight_pu,    1, Mt_tau_met_nominal],
+                           'TauESUp'   : [jets_nominal,  jets_b_nominal,  tau_pts_corrected_up  , weight_bSF,     weight_pu,    1, Mt_tau_met_up],
+                           'TauESDown' : [jets_nominal,  jets_b_nominal,  tau_pts_corrected_down, weight_bSF,     weight_pu,    1, Mt_tau_met_down],
+                           'bSFUp'     : [jets_nominal,  jets_b_nominal,  tau_pts_corrected, weight_bSF_up  ,     weight_pu,    1, Mt_tau_met_nominal],
+                           'bSFDown'   : [jets_nominal,  jets_b_nominal,  tau_pts_corrected, weight_bSF_down,     weight_pu,    1, Mt_tau_met_nominal],
+                           'PUUp'      : [jets_nominal,  jets_b_nominal,  tau_pts_corrected, weight_bSF,          weight_pu_up, 1, Mt_tau_met_nominal],
+                           'PUDown'    : [jets_nominal,  jets_b_nominal,  tau_pts_corrected, weight_bSF,          weight_pu_dn, 1, Mt_tau_met_nominal],
+                           }
             if isTT:
-	        systematics['TOPPT'] = [jet_pts, tau_pts_corrected, weight_bSF, weight_pu, weight_top_pt]
+                systematics['TOPPT'] = [jets_nominal, jets_b_nominal, tau_pts_corrected, weight_bSF, weight_pu, weight_top_pt, Mt_tau_met_nominal]
         else:
-            systematics = {'NOMINAL': [jet_pts, tau_pts_corrected, 1., 1.]}
+            systematics = {'NOMINAL': [jets_nominal, jets_b_nominal, tau_pts_corrected, 1., 1., 1., Mt_tau_met_nominal]}
 
         # for each systematic
         # pass one of the reco selections
         # check the subprocess
         # store distr
 
-        for sys_name, (jet_pts, tau_pts, weight_bSF, weight_PU, weight_top_pt, Mt_tau_met) in systematics.items():
-	    sys_weight = weight * weight_bSF * weight_PU * weight_top_pt
+        for sys_name, (jets, jets_b, tau_pts, weight_bSF, weight_PU, weight_top_pt, Mt_tau_met) in systematics.items():
+            sys_weight = weight * weight_bSF * weight_PU * weight_top_pt
             # pass reco selections
 
             # from channel_distrs
@@ -949,16 +1075,15 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
             # njets > 2 && met_corrected.pt() > 40 && nbjets > 0
             #met_pt = ev.met_corrected.pt()
             large_met = met_pt > 40
-            large_Mt_lep = Mt_lep_met > 40
-	    large_lj = lj_var > 100 # TODO: implement lj_var
-            has_bjets = N_bjets > 0
-            has_3jets = len(jet_pts) > 2
-            has_pre_tau = len(tau_pts) > 0
+            #large_Mt_lep = Mt_lep_met > 40
+            has_bjets = len(jets_b) > 0
+            has_3jets = (len(jets) + len(jets_b)) > 2
+            #has_pre_tau = len(tau_pts) > 0
             has_medium_tau = has_pre_tau and tau_pts[0] > 30 and ev.tau_IDlev[0] > 2
             os_lep_med_tau = has_medium_tau and ev.tau_id[0]*ev.lep_id[0] < 0
             # dilep_mass is not TES corrected
             # it's used only in control regions and shouldn't be a big deal
-            dy_dilep_mass = has_pre_tau and (45 < (ev.lep_p4[0] + ev.tau_p4[0]).mass() < 85)
+            #dy_dilep_mass = has_pre_tau and (45 < (ev.lep_p4[0] + ev.tau_p4[0]).mass() < 85)
 
             pass_single_lep_presel = large_met and has_3jets and has_bjets #and os_lep_med_tau
             pass_single_lep_sel = pass_single_lep_presel and os_lep_med_tau
@@ -972,21 +1097,30 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
 
             passed_channels = []
             if pass_el:
-	        if pass_single_lep_presel: passed_channels.append('el_presel')
-	        if pass_single_lep_sel: passed_channels.append('el_sel')
-	        if pass_single_lep_sel and not large_lj: passed_channels.append('el_lj')
-	        if pass_single_lep_sel and large_lj: passed_channels.append('el_lj_out')
+                if pass_single_lep_presel:
+		    passed_channels.append('el_presel')
+		    # calc lj_var
+		    lj_var = calc_lj_var(jets, jets_b)
+                    large_lj = lj_var > 100 # TODO: implement lj_var
+                if pass_single_lep_sel:
+		    passed_channels.append('el_sel')
+                    if not large_lj: passed_channels.append('el_lj')
+                    if large_lj: passed_channels.append('el_lj_out')
             else:
-	        if pass_single_lep_presel: passed_channels.append('mu_presel')
-	        if pass_single_lep_sel: passed_channels.append('mu_sel')
-	        if pass_single_lep_sel and not large_lj: passed_channels.append('mu_lj')
-	        if pass_single_lep_sel and large_lj: passed_channels.append('mu_lj_out')
+                if pass_single_lep_presel:
+		    passed_channels.append('mu_presel')
+		    lj_var = calc_lj_var(jets, jets_b)
+                    large_lj = lj_var > 100 # TODO: implement lj_var
+                if pass_single_lep_sel:
+		    passed_channels.append('mu_sel')
+                    if not large_lj: passed_channels.append('mu_lj')
+                    if large_lj: passed_channels.append('mu_lj_out')
 
             # now the process variety is restricted to 2 separate channels and TT
             if isTT and pass_el:
-	        proc = proc if proc in tt_el_procs else 'tt_other'
-	    elif isTT and pass_mu:
-	        proc = proc if proc in tt_mu_procs else 'tt_other'
+                proc = proc if proc in tt_el_procs else 'tt_other'
+            elif isTT and pass_mu:
+                proc = proc if proc in tt_mu_procs else 'tt_other'
 
             ## save distrs
             #for chan, proc in chan_subproc_pairs:
