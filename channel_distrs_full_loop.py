@@ -340,7 +340,7 @@ yup:
 -- test tomorrow
 '''
 
-with_bSF = False
+with_bSF = True
 
 if with_bSF:
     logging.info("loading b-tagging SF stuff")
@@ -506,39 +506,39 @@ def calc_lj_var(light_jets, b_jets):
     # light jets close to W
     dist_W = 999
     # closest_vector
-    for j in light_jets:
-        new_dist = abs(j.Mass()- 80)
+    for j, mult in light_jets:
+        new_dist = abs(j.mass() * mult - 80) # DANGER: the LorentzVector is used, .M() is spacial magnitude
         if new_dist < dist_W:
 	    dist_W = new_dist
-	    closest_to_W = j
+	    closest_to_W = j * mult
 
     # pairs of light jets
     for i in range(len(light_jets)):
-      for u in range(len(i)):
-        ji = light_jets[i]
-        ju = light_jets[u]
-	pair = ji + ju
-        new_dist = abs(pair.Mass() - 80)
+      for u in range(i):
+        ji, multi = light_jets[i]
+        ju, multu = light_jets[u]
+	pair = ji * multi + ju * multu
+        new_dist = abs(pair.mass() - 80)
         if new_dist < dist_W:
 	    dist_W = new_dist
 	    closest_to_W = pair
 
     # closest to 173
     dist_t = 999
-    for j in b_jets:
-        pair = j + closest_to_W
-        new_dist = abs(pair.Mass() - 173)
+    for j, mult in b_jets:
+        pair = j * mult + closest_to_W
+        new_dist = abs(pair.mass() - 173)
         if new_dist < dist_t:
 	    dist_t = new_dist
 	    closest_to_t = pair
 
-    return TMath.Sqrt(dist_W*dist_W + dist_t*dist_t), closest_to_W.Mass(), closest_to_t.Mass()
+    return TMath.Sqrt(dist_W*dist_W + dist_t*dist_t), closest_to_W.mass(), closest_to_t.mass()
 
 
-def full_loop(t, dtag, lumi_bcdef, lumi_gh):
-    '''full_loop(t, dtag)
+def full_loop(tree, dtag, lumi_bcdef, lumi_gh, max_events=None):
+    '''full_loop(tree, dtag)
 
-    TTree t
+    TTree tree
     dtag string
     '''
 
@@ -729,10 +729,10 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
             histo.Print()
     '''
 
-    print "N entries:", t.GetEntries()
+    print "N entries:", tree.GetEntries()
     profile = cProfile.Profile()
     profile.enable()
-    for i, ev in enumerate(t):
+    for i, ev in enumerate(tree):
         '''
         HLT_el && abs(leps_ID) == 11 && abs(lep0_p4.eta()) < 2.4 && lep0_dxy <0.01 && lep0_dz<0.02 && njets > 2 && met_corrected.pt() > 40 && nbjets > 0
         '''
@@ -747,6 +747,8 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                 find (gen) subprocess <------! different subprocess def-s for diff channels
                 record distr-s for each
         '''
+
+        if i > max_events: break
 
         # the lepton requirements for all 1-lepton channels:
         # TODO: is there relIso cut now?
@@ -903,7 +905,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
         weight_bSF_jes_up, weight_bSF_jes_down = 1., 1.
 
         for i in xrange(ev.jet_p4.size()):
-            pfid, p4 = ev.jet_PFID[i] ev.jet_p4[i]
+            pfid, p4 = ev.jet_PFID[i], ev.jet_p4[i]
             if pfid < 1 or abs(p4.eta()) > 2.5: continue # Loose PFID and eta
 
             flavId = ev.jet_hadronFlavour[i]
@@ -922,7 +924,8 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
 
             if isMC:
                 factor, up, down = ev.jet_jer_factor[i], ev.jet_jer_factor_up[i], ev.jet_jer_factor_down[i]
-                jes_shift = ev.jet_jes_correction_relShift[i]
+                #jes_shift = ev.jet_jes_correction_relShift[i]
+                jes_shift = ev.jet_jes_uncertainty[i]
                 # 
                 mult = (up/factor)
                 if p4.pt() * mult > 30: # jer up
@@ -1142,7 +1145,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
                 if pass_single_lep_presel:
 		    passed_channels.append('el_presel')
 		    # calc lj_var
-		    lj_var = calc_lj_var(jets, jets_b)
+		    lj_var, w_mass, t_mass = calc_lj_var(jets, jets_b)
                     large_lj = lj_var > 100 # TODO: implement lj_var
                 if pass_single_lep_sel:
 		    passed_channels.append('el_sel')
@@ -1151,7 +1154,7 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
             else:
                 if pass_single_lep_presel:
 		    passed_channels.append('mu_presel')
-		    lj_var = calc_lj_var(jets, jets_b)
+		    lj_var, w_mass, t_mass = calc_lj_var(jets, jets_b)
                     large_lj = lj_var > 100 # TODO: implement lj_var
                 if pass_single_lep_sel:
 		    passed_channels.append('mu_sel')
@@ -1224,16 +1227,19 @@ def full_loop(t, dtag, lumi_bcdef, lumi_gh):
     return control_hs, out_hs
 
 
+
+
+
 def main(argv):
     if '-w' in argv:
-        input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_WJets_madgraph.root", 'wjets'
+        input_filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.7/MC2016_Summer16_WJets_amcatnlo.root', 'wjets'
         dtag = "MC2016_Summer16_WJets_madgraph"
         #init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
         #logging.info("init b SFs with: " + init_bSF_call)
         #gROOT.ProcessLine(init_bSF_call)
 
     else:
-        input_filename, nick = "/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.2_merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
+        input_filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.7/MC2016_Summer16_TTJets_powheg_1.root', 'tt'
         dtag = "MC2016_Summer16_TTJets_powheg"
         #init_bSF_call = 'set_bSF_effs_for_dtag("' + dtag + '");'
         #logging.info("init b SFs with: " + init_bSF_call)
@@ -1243,9 +1249,9 @@ def main(argv):
     logging.info("dtag = " + dtag)
     f = TFile(input_filename)
     #f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
-    t = f.Get('ntupler/reduced_ttree')
-    logging.info("N entries = %s" % t.GetEntries())
-    c_hs, out_hs = full_loop(t, dtag)
+    tree = f.Get('ntupler/reduced_ttree')
+    logging.info("N entries = %s" % tree.GetEntries())
+    c_hs, out_hs = full_loop(tree, dtag, 0, 6175, 1000)
     for name, h in c_hs.items():
         print "%20s %9.5f" % (name, h.GetMean())
 
