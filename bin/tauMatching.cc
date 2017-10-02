@@ -1335,9 +1335,12 @@ for(size_t f=0; f<urls.size();++f)
         	std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >> t_b_p4_s, tb_b_p4_s, t_W_p4_s, tb_W_p4_s;
         	vector<Int_t> t_b_pdgId_s, tb_b_pdgId_s, t_W_pdgId_s, tb_W_pdgId_s;
         	vector<Int_t> t_b_status_s, tb_b_status_s, t_W_status_s, tb_W_status_s;
-        	vector<const reco::Candidate*> t_b_parts, tb_b_parts, t_W_parts, tb_W_parts;
+		vector<const reco::Candidate*> t_b_parts, tb_b_parts, t_W_parts, tb_W_parts;
+        	const reco::Candidate *t_b_part = NULL,   *tb_b_part = NULL, *t_W_part = NULL, *tb_W_part = NULL; // the W and b at the decay vertex
+        	const reco::Candidate *t_tau_part = NULL, *tb_tau_part = NULL; // the W and b at the decay vertex
+		vector<const reco::Candidate*> t_tau_parts, tb_tau_parts;
 
-
+		/*
 		// final states of t/tb b and W:
 		std::vector<Int_t> NT_gen_t_w_final_pdgIds;
 		std::vector<Int_t> NT_gen_t_w_final_statuses;
@@ -1365,6 +1368,7 @@ for(size_t f=0; f<urls.size();++f)
 		ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > NT_gen_tb_w_final_p4(0,0,0,0);
 		//ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > NT_gen_tb_w2_final_p4;
 		ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > NT_gen_tb_b_final_p4(0,0,0,0);
+		*/
 
 		double NT_gen_t_pt, NT_gen_tb_pt;
 		int NT_gen_t_w_decay_id = 0, NT_gen_tb_w_decay_id = 0;
@@ -1396,7 +1400,7 @@ for(size_t f=0; f<urls.size();++f)
 			// tau, vtau 15, 16
 
 			double weight_TopPT = 1;
-        		vector<const reco::Candidate*> t_b_parts, tb_b_parts, t_W1_parts, tb_W1_parts, t_W2_parts, tb_W2_parts;
+        		//vector<const reco::Candidate*> t_b_parts, tb_b_parts, t_W1_parts, tb_W1_parts, t_W2_parts, tb_W2_parts;
 			for(size_t i = 0; i < gen.size(); ++ i)	
 				{
 				const reco::GenParticle & p = gen[i];
@@ -1415,20 +1419,41 @@ for(size_t f=0; f<urls.size();++f)
 					if (W_num < 0) continue;
 					const reco::Candidate * W = p.daughter( W_num );
 					const reco::Candidate * b = p.daughter( 1 - W_num );
-					const reco::Candidate * W_final = find_W_decay(W);
+					const reco::Candidate * W_final = find_part_decay(W);
+					const reco::Candidate * b_final = find_part_decay(b);
+					if (!b_final)
+						{
+						cerr << "NOT FOUND b_final!!!" << endl;
+						exit(101);
+						}
+					if (!W_final)
+						{
+						cerr << "NOT FOUND W_final!!!" << endl;
+						exit(102);
+						}
+
+					const reco::Candidate * W_tau = NULL;
 					int decay_id = 1;
 					// = id of lepton or 1 for quarks
 					if (fabs(W_final->daughter(0)->pdgId()) == 11 || fabs(W_final->daughter(0)->pdgId()) == 13 || fabs(W_final->daughter(0)->pdgId()) == 15)
 						{
 						decay_id = W_final->daughter(0)->pdgId();
 						if (fabs(W_final->daughter(0)->pdgId()) == 15)
+							{
 							decay_id *= simple_tau_decay_id(W_final->daughter(0)); // = 11, 13 for leptons and 20 + 5*(Nch-1) + Npi0 for hadrons
+							// store gen tau
+							W_tau = W_final->daughter(0);
+							}
 						}
 					else if (fabs(W_final->daughter(1)->pdgId()) == 11 || fabs(W_final->daughter(1)->pdgId()) == 13 || fabs(W_final->daughter(1)->pdgId()) == 15)
 						{
 						decay_id = W_final->daughter(1)->pdgId();
 						if (fabs(W_final->daughter(1)->pdgId()) == 15)
+							{
 							decay_id *= simple_tau_decay_id(W_final->daughter(1));
+							// store gen tau
+							W_tau = W_final->daughter(1);
+							}
 						}
 
 					// save stuff, according to top Id, also save top p_T
@@ -1436,28 +1461,15 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						NT_gen_t_pt  = p.pt();
 						NT_gen_t_w_decay_id = decay_id;
-						save_final_states(W_final, NT_gen_t_w_final_p4s, NT_gen_t_w_final_pdgIds, NT_gen_t_w_final_statuses, t_W1_parts);
-						//save_final_states(W_final->daughter(1), NT_gen_t_w2_final_p4s, NT_gen_t_w2_final_pdgIds, NT_gen_t_w2_final_statuses, t_W2_parts);
-						save_final_states(b, NT_gen_t_b_final_p4s, NT_gen_t_b_final_pdgIds, NT_gen_t_b_final_statuses, t_b_parts);
-						for (unsigned int i=0; i<NT_gen_t_w_final_p4s.size(); i++)
+						//
+						t_b_part = b_final;
+						t_W_part = W_final;
+						save_final_cands(W_final, t_W_parts);
+						save_final_cands(b_final, t_b_parts);
+						if (W_tau)
 							{
-							// skip neutrinos
-							if (abs(NT_gen_t_w_final_pdgIds[i]) == 12 || abs(NT_gen_t_w_final_pdgIds[i]) == 14 || abs(NT_gen_t_w_final_pdgIds[i]) == 16) continue;
-							NT_gen_t_w_final_p4 += NT_gen_t_w_final_p4s[i];
-							}
-						/*
-						for (unsigned int i=0; i<NT_gen_t_w2_final_p4s.size(); i++)
-							{
-							// skip neutrinos
-							if (abs(NT_gen_t_w2_final_pdgIds[i]) == 12 || abs(NT_gen_t_w2_final_pdgIds[i]) == 14 || abs(NT_gen_t_w2_final_pdgIds[i]) == 16) continue;
-							NT_gen_t_w2_final_p4 += NT_gen_t_w2_final_p4s[i];
-							}
-						*/
-						for (unsigned int i=0; i<NT_gen_t_b_final_p4s.size(); i++)
-							{
-							// skip neutrinos
-							if (abs(NT_gen_t_b_final_pdgIds[i]) == 12 || abs(NT_gen_t_b_final_pdgIds[i]) == 14 || abs(NT_gen_t_b_final_pdgIds[i]) == 16) continue;
-							NT_gen_t_b_final_p4 += NT_gen_t_b_final_p4s[i];
+							t_tau_part = W_tau;
+							save_final_cands(W_tau, t_tau_parts);
 							}
 						}
 
@@ -1465,28 +1477,15 @@ for(size_t f=0; f<urls.size();++f)
 						{
 						NT_gen_tb_pt = p.pt();
 						NT_gen_tb_w_decay_id = decay_id;
-						save_final_states(W_final, NT_gen_tb_w_final_p4s, NT_gen_tb_w_final_pdgIds, NT_gen_tb_w_final_statuses, tb_W1_parts);
-						//save_final_states(W_final->daughter(1), NT_gen_tb_w2_final_p4s, NT_gen_tb_w2_final_pdgIds, NT_gen_tb_w2_final_statuses, tb_W2_parts);
-						save_final_states(b, NT_gen_tb_b_final_p4s, NT_gen_tb_b_final_pdgIds, NT_gen_tb_b_final_statuses, tb_b_parts);
-						for (unsigned int i=0; i<NT_gen_tb_w_final_p4s.size(); i++)
+						//
+						tb_b_part = b_final;
+						tb_W_part = W_final;
+						save_final_cands(W_final, tb_W_parts);
+						save_final_cands(b_final, tb_b_parts);
+						if (W_tau)
 							{
-							// skip neutrinos
-							if (abs(NT_gen_tb_w_final_pdgIds[i]) == 12 || abs(NT_gen_tb_w_final_pdgIds[i]) == 14 || abs(NT_gen_tb_w_final_pdgIds[i]) == 16) continue;
-							NT_gen_tb_w_final_p4 += NT_gen_tb_w_final_p4s[i];
-							}
-						/*
-						for (unsigned int i=0; i<NT_gen_tb_w2_final_p4s.size(); i++)
-							{
-							// skip neutrinos
-							if (abs(NT_gen_tb_w2_final_pdgIds[i]) == 12 || abs(NT_gen_tb_w2_final_pdgIds[i]) == 14 || abs(NT_gen_tb_w2_final_pdgIds[i]) == 16) continue;
-							NT_gen_tb_w2_final_p4 += NT_gen_tb_w2_final_p4s[i];
-							}
-						*/
-						for (unsigned int i=0; i<NT_gen_tb_b_final_p4s.size(); i++)
-							{
-							// skip neutrinos
-							if (abs(NT_gen_tb_b_final_pdgIds[i]) == 12 || abs(NT_gen_tb_b_final_pdgIds[i]) == 14 || abs(NT_gen_tb_b_final_pdgIds[i]) == 16) continue;
-							NT_gen_tb_b_final_p4 += NT_gen_tb_b_final_p4s[i];
+							tb_tau_part = W_tau;
+							save_final_cands(W_tau, tb_tau_parts);
 							}
 						}
 					}
@@ -1776,6 +1775,7 @@ for(size_t f=0; f<urls.size();++f)
 		// PRINTOUT
 		pat::Tau& ev_tau = selTaus[0];
 
+		/*
 		// kind of "daceyMode" for generated final states
 		// follows the tau decay convention
 		int NT_gen_t_w_final_decayMode = -5;
@@ -1784,353 +1784,172 @@ for(size_t f=0; f<urls.size();++f)
 		int NT_gen_tb_w_final_decayMode = -5;
 		//int NT_gen_tb_w2_final_decayMode = -5;
 		int NT_gen_tb_b_final_decayMode = -5;
+		*/
 
 		//double jet_tau_distance = TMath::Min(minDRtj, reco::deltaR (jet, vis_taus[i]));
+		// GEN PRINTOUT
 
-		// usefull all final states together:
-		vector<LorentzVector> NT_gen_all_final_p4s;
-		vector<Int_t> NT_gen_all_final_pdgId;
-		vector<Int_t> NT_gen_all_final_provenance;
-		for (unsigned int i=0; i<NT_gen_t_w_final_pdgIds.size(); i++)
-			{
-			NT_gen_all_final_pdgId.push_back(NT_gen_t_w_final_pdgIds[i]);
-			NT_gen_all_final_p4s  .push_back(NT_gen_t_w_final_p4s[i]);
-			NT_gen_all_final_provenance.push_back(1);
-			}
-
-		for (unsigned int i=0; i<NT_gen_t_b_final_pdgIds.size(); i++)
-			{
-			NT_gen_all_final_pdgId.push_back(NT_gen_t_b_final_pdgIds[i]);
-			NT_gen_all_final_p4s  .push_back(NT_gen_t_b_final_p4s[i]);
-			NT_gen_all_final_provenance.push_back(2);
-			}
-
-		for (unsigned int i=0; i<NT_gen_tb_w_final_pdgIds.size(); i++)
-			{
-			NT_gen_all_final_pdgId.push_back(NT_gen_tb_w_final_pdgIds[i]);
-			NT_gen_all_final_p4s  .push_back(NT_gen_tb_w_final_p4s[i]);
-			NT_gen_all_final_provenance.push_back(-1);
-			}
-
-		for (unsigned int i=0; i<NT_gen_tb_b_final_pdgIds.size(); i++)
-			{
-			NT_gen_all_final_pdgId.push_back(NT_gen_tb_b_final_pdgIds[i]);
-			NT_gen_all_final_p4s  .push_back(NT_gen_tb_b_final_p4s[i]);
-			NT_gen_all_final_provenance.push_back(-2);
-			}
-
-		// reset sums of p4-s
-		NT_gen_t_w_final_p4 .SetXYZT(0,0,0,0);
-		NT_gen_t_b_final_p4 .SetXYZT(0,0,0,0);
-		NT_gen_tb_w_final_p4.SetXYZT(0,0,0,0);
-		NT_gen_tb_b_final_p4.SetXYZT(0,0,0,0);
-		bool NT_gen_t_w_final_tau_matched  = false;
-		bool NT_gen_t_b_final_tau_matched  = false;
-		bool NT_gen_tb_w_final_tau_matched = false;
-		bool NT_gen_tb_b_final_tau_matched = false;
-
-		for (unsigned int i=0; i<NT_gen_t_w_final_pdgIds.size(); i++)
-			{
-			if (reco::deltaR(NT_gen_t_w_final_p4s[i], ev_tau) > 0.4) continue; // not related to tau final state
-			unsigned int id = abs(NT_gen_t_w_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_t_w_final_decayMode += 1; // photons
-			else NT_gen_t_w_final_decayMode += 5; // assume charged particles
-			NT_gen_t_w_final_p4 += NT_gen_t_w_final_p4s[i];
-			NT_gen_t_w_final_tau_matched = true;
-			}
-		/*
-		for (unsigned int i=0; i<NT_gen_t_w2_final_pdgIds.size(); i++)
-			{
-			unsigned int id = abs(NT_gen_t_w2_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_t_w2_final_decayMode += 1; // photons
-			else NT_gen_t_w2_final_decayMode += 5; // assume charged particles
-			}
-		*/
-		for (unsigned int i=0; i<NT_gen_t_b_final_pdgIds.size(); i++)
-			{
-			if (reco::deltaR(NT_gen_t_b_final_p4s[i], ev_tau) > 0.4) continue; // not related to tau final state
-			unsigned int id = abs(NT_gen_t_b_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_t_b_final_decayMode += 1; // photons
-			else NT_gen_t_b_final_decayMode += 5; // assume charged particles
-			NT_gen_t_b_final_p4 += NT_gen_t_b_final_p4s[i];
-			NT_gen_t_b_final_tau_matched = true;
-			}
-
-
-		for (unsigned int i=0; i<NT_gen_tb_w_final_pdgIds.size(); i++)
-			{
-			if (reco::deltaR(NT_gen_tb_w_final_p4s[i], ev_tau) > 0.4) continue; // not related to tau final state
-			unsigned int id = abs(NT_gen_tb_w_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_tb_w_final_decayMode += 1; // photons
-			else NT_gen_tb_w_final_decayMode += 5; // assume charged particles
-			NT_gen_tb_w_final_p4 += NT_gen_tb_w_final_p4s[i];
-			NT_gen_tb_w_final_tau_matched = true;
-			}
-		/*
-		for (unsigned int i=0; i<NT_gen_tb_w2_final_pdgIds.size(); i++)
-			{
-			unsigned int id = abs(NT_gen_tb_w2_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_tb_w2_final_decayMode += 1; // photons
-			else NT_gen_tb_w2_final_decayMode += 5; // assume charged particles
-			}
-		*/
-		for (unsigned int i=0; i<NT_gen_tb_b_final_pdgIds.size(); i++)
-			{
-			if (reco::deltaR(NT_gen_tb_b_final_p4s[i], ev_tau) > 0.4) continue; // not related to tau final state
-			unsigned int id = abs(NT_gen_tb_b_final_pdgIds[i]);
-			if (id == 12 || id == 14 || id == 16) continue;
-			if (id == 22) NT_gen_tb_b_final_decayMode += 1; // photons
-			else NT_gen_tb_b_final_decayMode += 5; // assume charged particles
-			NT_gen_tb_b_final_p4 += NT_gen_tb_b_final_p4s[i];
-			NT_gen_tb_b_final_tau_matched = true;
-			}
-
-		// now the bunches of gen final states related to tau are saved
-		// with kind of decayMode
-		// -- which decays produce DM10 reco taus?
-
-		// sums of ttbar legs:
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\tt_w\t" << NT_gen_t_w_final_decayMode
-			<< '\t' << NT_gen_t_w_decay_id << '\t' << -999
-			<< '\t' << NT_gen_t_w_final_p4.energy() << '\t' << NT_gen_t_w_final_p4.pt()
-			<< '\t' << NT_gen_t_w_final_p4.eta() << '\t' << NT_gen_t_w_final_p4.phi()
+		// W, b, gen_tau ttbar legs:
+		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+			<< "\tt_w"
+			<< '\t' << t_W_part->energy() << '\t' << t_W_part->pt()
+			<< '\t' << t_W_part->eta()    << '\t' << t_W_part->phi()
 			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 		cout << endl;
-		/*
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttw1\t" << NT_gen_t_w2_final_decayMode
-			<< '\t' << NT_gen_t_w_decay_id << -999
-			<< '\t' << NT_gen_t_w2_final_p4.energy() << '\t' << NT_gen_t_w2_final_p4.pt()
-			<< '\t' << NT_gen_t_w2_final_p4.eta() << '\t' << NT_gen_t_w2_final_p4.phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-		cout << endl;
-		*/
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\tt_b\t" << NT_gen_t_b_final_decayMode
-			<< '\t' << -1 << '\t' << -999
-			<< '\t' << NT_gen_t_b_final_p4.energy() << '\t' << NT_gen_t_b_final_p4.pt()
-			<< '\t' << NT_gen_t_b_final_p4.eta() << '\t' << NT_gen_t_b_final_p4.phi()
+
+		if (t_tau_parts.size() > 0 && t_tau_part)
+			{
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\tt_tau"
+				<< '\t' << t_tau_part->energy() << '\t' << t_tau_part->pt()
+				<< '\t' << t_tau_part->eta()    << '\t' << t_tau_part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			cout << endl;
+			}
+		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+			<< "\tt_b"
+			<< '\t' << t_b_part->energy() << '\t' << t_b_part->pt()
+			<< '\t' << t_b_part->eta()    << '\t' << t_b_part->phi()
 			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 		cout << endl;
 
 
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttb_w\t" << NT_gen_tb_w_final_decayMode
-			<< '\t' << NT_gen_tb_w_decay_id << '\t' << -999
-			<< '\t' << NT_gen_tb_w_final_p4.energy() << '\t' << NT_gen_tb_w_final_p4.pt()
-			<< '\t' << NT_gen_tb_w_final_p4.eta() << '\t' << NT_gen_tb_w_final_p4.phi()
+		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+			<< "\ttb_w"
+			<< '\t' << tb_W_part->energy() << '\t' << tb_W_part->pt()
+			<< '\t' << tb_W_part->eta()    << '\t' << tb_W_part->phi()
 			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 		cout << endl;
-		/*
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttw1\t" << NT_gen_tb_w2_final_decayMode
-			<< '\t' << NT_gen_tb_w_decay_id << -999
-			<< '\t' << NT_gen_tb_w2_final_p4.energy() << '\t' << NT_gen_tb_w2_final_p4.pt()
-			<< '\t' << NT_gen_tb_w2_final_p4.eta() << '\t' << NT_gen_tb_w2_final_p4.phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-		cout << endl;
-		*/
-		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttb_b\t" << NT_gen_tb_b_final_decayMode
-			<< '\t' << -1 << '\t' << -999
-			<< '\t' << NT_gen_tb_b_final_p4.energy() << '\t' << NT_gen_tb_b_final_p4.pt()
-			<< '\t' << NT_gen_tb_b_final_p4.eta() << '\t' << NT_gen_tb_b_final_p4.phi()
+		if (tb_tau_parts.size() > 0 && tb_tau_part)
+			{
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\ttb_tau"
+				<< '\t' << tb_tau_part->energy() << '\t' << tb_tau_part->pt()
+				<< '\t' << tb_tau_part->eta()    << '\t' << tb_tau_part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			cout << endl;
+			}
+		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+			<< "\ttb_b"
+			<< '\t' << tb_b_part->energy() << '\t' << tb_b_part->pt()
+			<< '\t' << tb_b_part->eta()    << '\t' << tb_b_part->phi()
 			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 		cout << endl;
 
-		for (unsigned int i=0; i<NT_gen_t_w_final_pdgIds.size(); i++)
+
+		// gen final products (LEAF CANDS)
+		// TODO: add leaf cand -> track info
+		// vx, vy, vz
+		// longLived
+		// bestTrack
+		// track info
+
+		for (unsigned int i=0; i<t_W_parts.size(); i++)
 			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttw\t" << NT_gen_t_w_final_decayMode
-				<< '\t' << NT_gen_t_w_final_pdgIds[i] << '\t' << NT_gen_t_w_final_statuses[i]
-				<< '\t' << NT_gen_t_w_final_p4s[i].energy() << '\t' << NT_gen_t_w_final_p4s[i].pt()
-				<< '\t' << NT_gen_t_w_final_p4s[i].eta() << '\t' << NT_gen_t_w_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			const reco::Candidate* part = t_W_parts[i];
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\tt_w_prod"
+				<< '\t' << part->energy() << '\t' << part->pt()
+				<< '\t' << part->eta()    << '\t' << part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
-		/*
-		for (unsigned int i=0; i<NT_gen_t_w2_final_pdgIds.size(); i++)
+		for (unsigned int i=0; i<tb_W_parts.size(); i++)
 			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttw2\t" << NT_gen_t_w2_final_decayMode
-				<< '\t' << NT_gen_t_w2_final_pdgIds[i] << '\t' << NT_gen_t_w2_final_statuses[i]
-				<< '\t' << NT_gen_t_w2_final_p4s[i].energy() << '\t' << NT_gen_t_w2_final_p4s[i].pt()
-				<< '\t' << NT_gen_t_w2_final_p4s[i].eta() << '\t' << NT_gen_t_w2_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-			cout << endl;
-			}
-		*/
-		for (unsigned int i=0; i<NT_gen_t_b_final_pdgIds.size(); i++)
-			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttb\t" << NT_gen_t_b_final_decayMode
-				<< '\t' << NT_gen_t_b_final_pdgIds[i] << '\t' << NT_gen_t_b_final_statuses[i]
-				<< '\t' << NT_gen_t_b_final_p4s[i].energy() << '\t' << NT_gen_t_b_final_p4s[i].pt()
-				<< '\t' << NT_gen_t_b_final_p4s[i].eta() << '\t' << NT_gen_t_b_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			const reco::Candidate* part = tb_W_parts[i];
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\ttb_w_prod"
+				<< '\t' << part->energy() << '\t' << part->pt()
+				<< '\t' << part->eta()    << '\t' << part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
-		for (unsigned int i=0; i<NT_gen_tb_w_final_pdgIds.size(); i++)
+		for (unsigned int i=0; i<t_b_parts.size(); i++)
 			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttbw\t" << NT_gen_tb_w_final_decayMode
-				<< '\t' << NT_gen_tb_w_final_pdgIds[i] << '\t' << NT_gen_tb_w_final_statuses[i]
-				<< '\t' << NT_gen_tb_w_final_p4s[i].energy() << '\t' << NT_gen_tb_w_final_p4s[i].pt()
-				<< '\t' << NT_gen_tb_w_final_p4s[i].eta() << '\t' << NT_gen_tb_w_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			const reco::Candidate* part = t_b_parts[i];
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\tt_b_prod"
+				<< '\t' << part->energy() << '\t' << part->pt()
+				<< '\t' << part->eta()    << '\t' << part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
-		/*
-		for (unsigned int i=0; i<NT_gen_tb_w2_final_pdgIds.size(); i++)
+		for (unsigned int i=0; i<tb_b_parts.size(); i++)
 			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttbw2\t" << NT_gen_tb_w2_final_decayMode
-				<< '\t' << NT_gen_tb_w2_final_pdgIds[i] << '\t' << NT_gen_tb_w2_final_statuses[i]
-				<< '\t' << NT_gen_tb_w2_final_p4s[i].energy() << '\t' << NT_gen_tb_w2_final_p4s[i].pt()
-				<< '\t' << NT_gen_tb_w2_final_p4s[i].eta() << '\t' << NT_gen_tb_w2_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-			cout << endl;
-			}
-		*/
-		for (unsigned int i=0; i<NT_gen_tb_b_final_pdgIds.size(); i++)
-			{
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttbb\t" << NT_gen_tb_b_final_decayMode
-				<< '\t' << NT_gen_tb_b_final_pdgIds[i] << '\t' << NT_gen_tb_b_final_statuses[i]
-				<< '\t' << NT_gen_tb_b_final_p4s[i].energy() << '\t' << NT_gen_tb_b_final_p4s[i].pt()
-				<< '\t' << NT_gen_tb_b_final_p4s[i].eta() << '\t' << NT_gen_tb_b_final_p4s[i].phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			const reco::Candidate* part = tb_b_parts[i];
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\ttb_b_prod"
+				<< '\t' << part->energy() << '\t' << part->pt()
+				<< '\t' << part->eta()    << '\t' << part->phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
-		std::vector<double> tracksToBeRemoved; // compared by Pt due to the conflict of comparing const and not const iterators
+		// RECO PRINTOUT
+		//
+
+		// all reco taus
+		// the 0th tau is ev_tau
+		// TODO: add decayMode
+		for (unsigned int i=0; i<selTaus.size(); i++)
+			{
+			pat::Tau& part = selTaus[i];
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\ttau" << i
+				<< '\t' << part.energy() << '\t' << part.pt()
+				<< '\t' << part.eta()    << '\t' << part.phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			cout << endl;
+			}
+
+		// reco taus sigCands
+		//
 		for (unsigned int i=0; i<selTaus.size(); i++)
 			{
 			pat::Tau& tau = selTaus[i];
-
-			//bool matched_to_gen_final_states = false;
-			float min_match_dR = 999;
-			int min_match_pdgId = 0, min_match_provenance = 0;
-			for (unsigned int u=0; u<NT_gen_all_final_p4s.size(); u++)
-				{
-				int id = NT_gen_all_final_pdgId[u];
-				unsigned int aid = abs(id);
-				if (aid == 12 || aid == 14 || aid == 16) continue;
-				float match_dR = reco::deltaR(NT_gen_all_final_p4s[u], tau);
-				if (match_dR < min_match_dR)
-					{
-					min_match_dR = match_dR;
-					min_match_pdgId = id;
-					min_match_provenance = NT_gen_all_final_provenance[u];
-					}
-				}
-
-			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << '\t' << tau.decayMode()
-				<< '\t' << tau.pdgId()
-				<< '\t' << min_match_dR << '\t' << min_match_pdgId << '\t' << min_match_provenance // dR match to gen final states
-				<< '\t' << tau.energy() << '\t' << tau.pt()
-				<< '\t' << tau.eta()    << '\t' << tau.phi();
-			cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-			cout << endl;
-
 			// tracks
 			reco::CandidatePtrVector sigCands = tau.signalChargedHadrCands();
 			for (reco::CandidatePtrVector::const_iterator itr = sigCands.begin(); itr != sigCands.end(); ++itr)
 				{
-
-				// matched general tracks
-				double deR(999.), dR_pvTrack(999.), dR_NotPVTrack(999.); 
-				double checkqual(0);
-				pat::PackedCandidate closestCand;
-				reco::Track closestTrack, closestPVTrack, closestNotPVTrack;
-				int closestTrack_index = -1, index = 0;
-
-				//for(auto iter: pvTracks)
-				for(auto iter: allTracks)
-					{
-					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
-						continue;
-					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < deR)
-						{
-						deR = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
-						checkqual=deR;
-						closestTrack = iter;
-						closestCand = allTracks_cands[index];
-						closestTrack_index = index;
-						}
-					index++;
-					}
-
-				for(auto iter: pvTracks)
-					{
-					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
-						continue;
-					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < dR_pvTrack)
-						{
-						dR_pvTrack = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
-						closestPVTrack = iter;
-						}
-					}
-
-				for(auto iter: notPVTracks)
-					{
-					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
-						continue;
-					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < dR_NotPVTrack)
-						{
-						dR_NotPVTrack = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
-						closestNotPVTrack = iter;
-						}
-					}
-
-				tracksToBeRemoved.push_back(closestTrack.pt());
-
-				float min_match_dR = 999;
-				int min_match_pdgId = 0, min_match_provenance = 0;
-				for (unsigned int u=0; u<NT_gen_all_final_p4s.size(); u++)
-					{
-					int id = NT_gen_all_final_pdgId[u];
-					unsigned int aid = abs(id);
-					if (aid == 12 || aid == 14 || aid == 16) continue;
-					float match_dR = reco::deltaR(NT_gen_all_final_p4s[u], *(*itr));
-					if (match_dR < min_match_dR)
-						{
-						min_match_dR = match_dR;
-						min_match_pdgId = id;
-						min_match_provenance = NT_gen_all_final_provenance[u];
-						}
-					}
-
-				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << "patTrack\t" << -999
-					<< '\t' << (*itr)->charge()
-					<< '\t' << min_match_dR << '\t' << min_match_pdgId << '\t' << min_match_provenance // dR match to gen final states
+				// (*itr)->p4().eta()
+				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+					<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+					<< "\tcand" << i
 					<< '\t' << (*itr)->energy() << '\t' << (*itr)->pt()
-					<< '\t' << (*itr)->eta() //<< '\t' << closestTrack.eta()
-					<< '\t' << (*itr)->phi() //<< '\t' << closestTrack.phi();
-					<< '\t' << deR << '\t' << closestTrack.eta() << '\t' << closestTrack.phi()
-					<< '\t' << dR_pvTrack << '\t' << closestPVTrack.eta() << '\t' << closestPVTrack.phi()
-					<< '\t' << dR_NotPVTrack << '\t' << closestNotPVTrack.eta() << '\t' << closestNotPVTrack.phi()
+					<< '\t' << (*itr)->eta()    << '\t' << (*itr)->phi()
 					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
 				cout << endl;
-
-				auto the_associated_pv_key = closestCand.vertexRef().key();
-				auto the_associated_pv = (*closestCand.vertexRef());
-				auto point_closest_to_pv = closestCand.vertex();
-				auto distance = the_associated_pv.position() - point_closest_to_pv;
-
-				//matchingQuality += checkqual;
-				//transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
-				//cout<<"  closestTrackiter eta  :  "<<   closestTrack.eta() << "   phi   " << closestTrack.phi() << "    pt  "<< closestTrack.pt() <<endl;
-				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) << "\ttau" << i << "gnrTrack\t" << -999
-					<< '\t' << closestTrack.charge() << '\t' << checkqual
-					<< '\t' << closestTrack.p() << '\t' << closestTrack.pt()
-					<< '\t' << closestTrack.eta() << '\t' << closestTrack.phi()
-					<< '\t' << closestCand.eta() << '\t' << closestCand.phi()
-					<< '\t' << the_associated_pv_key << '\t' << closestCand.pvAssociationQuality() << '\t' << closestCand.dxy() << '\t' << closestCand.dxyError() << '\t' << closestCand.dz() << '\t' << closestCand.dzError()
-					<< '\t' << distance.x() << '\t' << distance.y() << '\t' << distance.z()
-					<< '\t' << closestCand.numberOfHits() << '\t' << closestCand.numberOfPixelHits();
-				cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
-				// also interesting parameters:
-				// dxy dz
-				cout << endl;
 				}
-
 			}
+
+		// all reco tracks
+		//for(auto iter: pvTracks)
+		for(auto iter: allTracks)
+			{
+			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
+				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
+				<< "\ttrak"
+				<< '\t' << /*iter.energy()*/ iter.p() << '\t' << iter.pt()
+				<< '\t' << iter.eta()    << '\t' << iter.phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			cout << endl;
+			}
+
+		// TODO add track info:
+		// closest point, impacts, pvAssociation
+		// SV refit
 
 		/*
 		if(debug){

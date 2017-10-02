@@ -461,7 +461,8 @@ for (int i = input_starts + INPUT_DTAGS_START; i<argc; i++)
 		//ratio = lumi * xsec / weight_init; // since 1 dtag can be split now (to fit in eos), weight should be per nick/per xsec actually..
 		// ad-hoc solution for tt, which is roughly split in 5 parts:
 		if (isTT && isNum)
-			weight_init *= 5;
+			weight_init *= 4;
+			//weight_init *= 5;
 		ratio = lumi * xsec / weight_init;
 
 		// add weights for MC

@@ -551,7 +551,7 @@ def full_loop(tree, dtag, lumi_bcdef, lumi_gh, range_min, range_max):
     isMC = 'MC' in dtag
     aMCatNLO = 'amcatnlo' in dtag
     isTT = 'TT' in dtag
-    isSTop = 'SingleT' in dtag or 'tchanel' in dtag or 'schannel' in dtag
+    isSTop = 'SingleT' in dtag or 'tchannel' in dtag or 'schannel' in dtag
     isDY = 'DY' in dtag
     isWJets = 'WJet' in dtag or 'W1Jet' in dtag or 'W2Jet' in dtag or 'W3Jet' in dtag or 'W4Jet' in dtag
     isQCD = 'QCD' in dtag
@@ -710,7 +710,8 @@ def full_loop(tree, dtag, lumi_bcdef, lumi_gh, range_min, range_max):
                 ]
 
     if isTT:
-        systematic_names.append('TOPPT')
+        systematic_names.append('TOPPTUp')
+        systematic_names.append('TOPPTDown')
 
     # channel -- reco selection
     # proc    -- MC gen info, like inclusive tt VS tt->mutau and others,
@@ -1088,9 +1089,10 @@ def full_loop(tree, dtag, lumi_bcdef, lumi_gh, range_min, range_max):
                            'PUDown'    : [jets_nominal,  jets_b_nominal,  has_tau, weight_bSF,          weight_pu_dn, 1, Mt_tau_met_nominal],
                            }
             if isTT:
-                systematics['TOPPT'] = [jets_nominal, jets_b_nominal, has_tau, weight_bSF, weight_pu, weight_top_pt, Mt_tau_met_nominal]
+                systematics['TOPPTUp'] = [jets_nominal, jets_b_nominal, has_tau, weight_bSF, weight_pu, weight_top_pt, Mt_tau_met_nominal]
+                systematics['TOPPTDown'] = [jets_nominal, jets_b_nominal, has_tau, weight_bSF, weight_pu, 1., Mt_tau_met_nominal]
         else:
-            systematics = {'NOMINAL': [jets_nominal, jets_b_nominal, tau_pts_corrected, 1., 1., 1., Mt_tau_met_nominal]}
+            systematics = {'NOMINAL': [jets_nominal, jets_b_nominal, has_tau, 1., 1., 1., Mt_tau_met_nominal]}
 
         # for each systematic
         # pass one of the reco selections
@@ -1152,13 +1154,14 @@ def full_loop(tree, dtag, lumi_bcdef, lumi_gh, range_min, range_max):
             #pass_antiMt_taumutauh             = pass_mu and not dy_dilep_mass and large_Mt_lep and not has_bjets and has_medium_tau
             #pass_antiMt_taumutauh_OS          = pass_mu and not dy_dilep_mass and large_Mt_lep and not has_bjets and os_lep_med_tau
 
+            lj_cut = 50
             passed_channels = []
             if pass_el:
                 if pass_single_lep_presel:
 		    passed_channels.append('el_presel')
 		    # calc lj_var
 		    lj_var, w_mass, t_mass = calc_lj_var(jets, jets_b)
-                    large_lj = lj_var > 100 # TODO: implement lj_var
+                    large_lj = lj_var > lj_cut # TODO: implement lj_var
                 if pass_single_lep_sel:
 		    passed_channels.append('el_sel')
                     if not large_lj: passed_channels.append('el_lj')
@@ -1167,7 +1170,7 @@ def full_loop(tree, dtag, lumi_bcdef, lumi_gh, range_min, range_max):
                 if pass_single_lep_presel:
 		    passed_channels.append('mu_presel')
 		    lj_var, w_mass, t_mass = calc_lj_var(jets, jets_b)
-                    large_lj = lj_var > 100 # TODO: implement lj_var
+                    large_lj = lj_var > lj_cut # TODO: implement lj_var
                 if pass_single_lep_sel:
 		    passed_channels.append('mu_sel')
                     if not large_lj: passed_channels.append('mu_lj')
@@ -1266,9 +1269,10 @@ def main(input_dir, dtag, outdir, range_min, range_max):
     f = TFile(input_filename)
     #f = TFile('outdir/v12.3/merged-sets/MC2016_Summer16_TTJets_powheg.root')
 
-    logging.info("range = %d, %d" % (range_min, range_max))
     tree = f.Get('ntupler/reduced_ttree')
     logging.info("N entries = %s" % tree.GetEntries())
+    if not range_max: range_max = tree.GetEntries()
+    logging.info("range = %d, %d" % (range_min, range_max))
     c_hs, out_hs = full_loop(tree, dtag, 0, 6175, range_min, range_max)
 
     for name, h in c_hs.items():
@@ -1309,10 +1313,10 @@ def main(input_dir, dtag, outdir, range_min, range_max):
         fout.cd()
         out_dir_name = '%s/%s/%s/' % (chan, proc, sys)
         if fout.Get(out_dir_name):
-            logging.debug('found ' + out_dir_name)
+            #logging.debug('found ' + out_dir_name)
             out_dir = fout.Get(out_dir_name)
         else:
-            logging.debug('made  ' + out_dir_name)
+            #logging.debug('made  ' + out_dir_name)
             out_dir_c = fout.Get(chan) if fout.Get(chan) else fout.mkdir(chan)
             out_dir_c.cd()
             out_dir_p = out_dir_c.Get(proc) if out_dir_c.Get(proc) else out_dir_c.mkdir(proc)
@@ -1321,7 +1325,6 @@ def main(input_dir, dtag, outdir, range_min, range_max):
         out_dir.cd()
 
         #out_dir.Print()
-        print '------'
         for histo in histos.values():
             #histo.Print()
             histo.SetDirectory(out_dir)

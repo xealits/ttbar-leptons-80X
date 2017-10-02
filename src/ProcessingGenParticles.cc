@@ -48,6 +48,35 @@ const reco::Candidate* find_W_decay(const reco::Candidate * W) {
 	}
 }
 
+/*
+ * the same, but different name
+ */
+const reco::Candidate* find_part_decay(const reco::Candidate * W) {
+	const reco::Candidate * p = W; // eeh.. how C passes const arguments? are they local to function
+	int d0_id, d1_id; // ids of decay daughters
+	//bool found_decay=false;
+	// follow W, whatever happens to it (who knows! defensive programming here)
+	// until leptonic/quarkonic decay is found
+	// 
+	// assume there can be only W->W transitions inbetween (TODO: to check actually)
+	//while (!found_decay) {
+	while (true) {
+		int n = p->numberOfDaughters();
+		switch(n) {
+		case 0: return p;
+		case 1: // it should be another W->W transition
+			p = p->daughter(0);
+			break; // there should not be no infinite loop here!
+		case 2: // so, it should be the decay
+			//found_decay = true;
+			return p;
+		default: // some decays are simulated in multipoint way (b decay, tau)
+			return p;
+		}
+	}
+}
+
+
 string parse_W_decay(const reco::Candidate * W) {
 	int d0_id = fabs(W->daughter(0)->pdgId());
 	int d1_id = fabs(W->daughter(1)->pdgId());
@@ -145,7 +174,7 @@ void save_final_states(
 {
 if (part->numberOfDaughters() == 0) // it's a final state
 	{
-	// check if it is already saved
+	// check if it is already not saved
 	if (std::find(saved_particles.begin(), saved_particles.end(), part) == saved_particles.end())
 		{
 		// then save it:
@@ -167,6 +196,36 @@ else
 
 // strictly sequencial algorithm
 }
+
+/*
+ * save all no-daughters candidates (leaf candidates)
+ */
+void save_final_cands(
+	const reco::Candidate * part,
+	vector<const reco::Candidate*>& saved_particles)
+
+{
+if (part->numberOfDaughters() == 0) // it's a final state
+	{
+	// check if it is not already saved
+	if (std::find(saved_particles.begin(), saved_particles.end(), part) == saved_particles.end())
+		{
+		// then save it:
+		saved_particles.push_back(part);
+		}
+	}
+else
+	{
+	// loop through daughters
+	for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
+		{
+		const reco::Candidate * daughter = part->daughter(d_i);
+		save_final_cands(daughter, saved_particles);
+		}
+	}
+// strictly sequencial algorithm
+}
+
 
 
 
