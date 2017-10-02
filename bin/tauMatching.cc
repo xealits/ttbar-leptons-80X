@@ -1793,9 +1793,10 @@ for(size_t f=0; f<urls.size();++f)
 		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 			<< "\tt_w"
+			<< '\t' << 24
 			<< '\t' << t_W_part->energy() << '\t' << t_W_part->pt()
 			<< '\t' << t_W_part->eta()    << '\t' << t_W_part->phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 		cout << endl;
 
 		if (t_tau_parts.size() > 0 && t_tau_part)
@@ -1803,43 +1804,48 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\tt_tau"
+				<< '\t' << 15
 				<< '\t' << t_tau_part->energy() << '\t' << t_tau_part->pt()
 				<< '\t' << t_tau_part->eta()    << '\t' << t_tau_part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 			<< "\tt_b"
+			<< '\t' << 5
 			<< '\t' << t_b_part->energy() << '\t' << t_b_part->pt()
 			<< '\t' << t_b_part->eta()    << '\t' << t_b_part->phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 		cout << endl;
 
 
 		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 			<< "\ttb_w"
+			<< '\t' << 24
 			<< '\t' << tb_W_part->energy() << '\t' << tb_W_part->pt()
 			<< '\t' << tb_W_part->eta()    << '\t' << tb_W_part->phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 		cout << endl;
 		if (tb_tau_parts.size() > 0 && tb_tau_part)
 			{
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttb_tau"
+				<< '\t' << 15
 				<< '\t' << tb_tau_part->energy() << '\t' << tb_tau_part->pt()
 				<< '\t' << tb_tau_part->eta()    << '\t' << tb_tau_part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 		cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 			<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 			<< "\ttb_b"
+			<< '\t' << 5
 			<< '\t' << tb_b_part->energy() << '\t' << tb_b_part->pt()
 			<< '\t' << tb_b_part->eta()    << '\t' << tb_b_part->phi()
-			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 		cout << endl;
 
 
@@ -1856,9 +1862,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\tt_w_prod"
+				<< '\t' << part->pdgId()
 				<< '\t' << part->energy() << '\t' << part->pt()
 				<< '\t' << part->eta()    << '\t' << part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 		for (unsigned int i=0; i<tb_W_parts.size(); i++)
@@ -1867,9 +1874,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttb_w_prod"
+				<< '\t' << part->pdgId()
 				<< '\t' << part->energy() << '\t' << part->pt()
 				<< '\t' << part->eta()    << '\t' << part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
@@ -1879,9 +1887,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\tt_b_prod"
+				<< '\t' << part->pdgId()
 				<< '\t' << part->energy() << '\t' << part->pt()
 				<< '\t' << part->eta()    << '\t' << part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 		for (unsigned int i=0; i<tb_b_parts.size(); i++)
@@ -1890,9 +1899,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttb_b_prod"
+				<< '\t' << part->pdgId()
 				<< '\t' << part->energy() << '\t' << part->pt()
 				<< '\t' << part->eta()    << '\t' << part->phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
@@ -1908,9 +1918,10 @@ for(size_t f=0; f<urls.size();++f)
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttau" << i
+				<< '\t' << part.decayMode()
 				<< '\t' << part.energy() << '\t' << part.pt()
 				<< '\t' << part.eta()    << '\t' << part.phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
@@ -1927,23 +1938,28 @@ for(size_t f=0; f<urls.size();++f)
 				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 					<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 					<< "\tcand" << i
+					<< '\t' << (*itr)->longLived()
 					<< '\t' << (*itr)->energy() << '\t' << (*itr)->pt()
 					<< '\t' << (*itr)->eta()    << '\t' << (*itr)->phi()
-					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 				cout << endl;
 				}
 			}
 
 		// all reco tracks
 		//for(auto iter: pvTracks)
-		for(auto iter: allTracks)
+		//for(auto iter: allTracks)
+		for(size_t i=0; i<allTracks_cands.size(); ++i)
 			{
+			pat::PackedCandidate& track_cand = allTracks_cands[i];
+			const reco::Track& track = *track_cand.bestTrack();
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttrak"
-				<< '\t' << /*iter.energy()*/ iter.p() << '\t' << iter.pt()
-				<< '\t' << iter.eta()    << '\t' << iter.phi()
-				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.decayMode();
+				<< '\t' << track_cand.pvAssociationQuality()
+				<< '\t' << /*iter.energy()*/ track.p() << '\t' << track.pt()
+				<< '\t' << track.eta()    << '\t' << track.phi()
+				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
 
