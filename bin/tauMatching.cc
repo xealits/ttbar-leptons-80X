@@ -939,6 +939,7 @@ JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty ((jecDir + 
 // --------------------------------------- lepton efficiencies
 LeptonEfficiencySF lepEff;
 
+/*
 // --------------------------------------- b-tagging 
 // TODO: move all these numbers to where they are applied??
 // btagMedium is used twice in the code
@@ -984,18 +985,18 @@ BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserC
 // and there:
 
 // in *80X
-/*
-The name of the measurements is
+// 
+// The name of the measurements is
+// 
+//   "incl" for light jets,
+//   "mujets" (from QCD methods only) or “comb” (combination of QCD and ttbar methods)
+//     for b and c jets for what concerns the pT/eta dependence for the different WP for CSVv2.
+//     The precision of the “comb” measurement is better than for the “mujets”,
+//     however for precision measurements on top physics done in the 2lepton channel, it is recommended to use the "mujets" one.
+//   "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2,
+//   but only to be used for jets with a pT spectrum similar to that in ttbar.
+//   The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
 
-  "incl" for light jets,
-  "mujets" (from QCD methods only) or “comb” (combination of QCD and ttbar methods)
-    for b and c jets for what concerns the pT/eta dependence for the different WP for CSVv2.
-    The precision of the “comb” measurement is better than for the “mujets”,
-    however for precision measurements on top physics done in the 2lepton channel, it is recommended to use the "mujets" one.
-  "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2,
-  but only to be used for jets with a pT spectrum similar to that in ttbar.
-  The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-*/
 
 // only 1 reader:
 
@@ -1014,19 +1015,18 @@ btagCal.load(btagCalib,              // calibration instance
             BTagEntry::FLAV_UDSG,   // btag flavour
             "incl");                // measurement type
 
-/* usage in 80X:
-double jet_scalefactor    = reader.eval_auto_bounds(
-          "central", 
-          BTagEntry::FLAV_B, 
-          b_jet.eta(), 
-          b_jet.pt()
-      );
-double jet_scalefactor_up = reader.eval_auto_bounds(
-          "up", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
-double jet_scalefactor_do = reader.eval_auto_bounds(
-          "down", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt()); 
+//  usage in 80X:
+// double jet_scalefactor    = reader.eval_auto_bounds(
+//           "central", 
+//           BTagEntry::FLAV_B, 
+//           b_jet.eta(), 
+//           b_jet.pt()
+//       );
+// double jet_scalefactor_up = reader.eval_auto_bounds(
+//           "up", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt());
+// double jet_scalefactor_do = reader.eval_auto_bounds(
+//           "down", BTagEntry::FLAV_B, b_jet.eta(), b_jet.pt()); 
 
-*/
 
 // in 76X
 
@@ -1053,50 +1053,50 @@ double jet_scalefactor_do = reader.eval_auto_bounds(
 //BTagCalibrationReader btagCalLDn(&btagCalib, BTagEntry::OP_MEDIUM, "incl", "down"   );  // sys down
 
 
-/* TODO: CMSSW calibration:
-The twiki https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati says
-
-The name of the measurements is
- * "incl" for light jets,
- * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and 
- * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
- * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
-
-
-// setup calibration readers
-// Before CMSSW_8_0_11 and CMSSW_8_1_0, one reader was needed 
-// for every OperatingPoint/MeasurementType/SysType combination.
-BTagCalibration calib("csvv1", "CSVV1.csv");
-BTagCalibrationReader reader(BTagEntry::OP_LOOSE,  // operating point
-                             "central");           // systematics type
-BTagCalibrationReader reader_up(BTagEntry::OP_LOOSE, "up");  // sys up
-BTagCalibrationReader reader_do(BTagEntry::OP_LOOSE, "down");  // sys down
-
-reader.load(&calib,               // calibration instance
-            BTagEntry::FLAV_B,    // btag flavour
-            "comb")               // measurement type
-// reader_up.load(...)
-// reader_down.load(...)
-
-
-
-// Usage:
-
-float JetPt = b_jet.pt(); bool DoubleUncertainty = false;
-if (JetPt>MaxBJetPt)  { // use MaxLJetPt for  light jets
-  JetPt = MaxBJetPt; 
-  DoubleUncertainty = true;
-}  
-
-// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
-
-if (DoubleUncertainty) {
-   jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
-   jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
-}
+//  TODO: CMSSW calibration:
+// The twiki https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati says
+// 
+// The name of the measurements is
+//  * "incl" for light jets,
+//  * "mujets" for b and c jets for what concerns the pT/eta dependence for the different WP for JP and CSVv2 and 
+//  * "ttbar" for b and c jets for what concerns the pT/eta dependence for the different WP for cMVAv2, but only to be used for jets with a pT spectrum similar to that in ttbar.
+//  * The measurement "iterativefit" provides the SF as a function of the discriminator shape. 
+// 
+// 
+// // setup calibration readers
+// // Before CMSSW_8_0_11 and CMSSW_8_1_0, one reader was needed 
+// // for every OperatingPoint/MeasurementType/SysType combination.
+// BTagCalibration calib("csvv1", "CSVV1.csv");
+// BTagCalibrationReader reader(BTagEntry::OP_LOOSE,  // operating point
+//                              "central");           // systematics type
+// BTagCalibrationReader reader_up(BTagEntry::OP_LOOSE, "up");  // sys up
+// BTagCalibrationReader reader_do(BTagEntry::OP_LOOSE, "down");  // sys down
+// 
+// reader.load(&calib,               // calibration instance
+//             BTagEntry::FLAV_B,    // btag flavour
+//             "comb")               // measurement type
+// // reader_up.load(...)
+// // reader_down.load(...)
+// 
+// 
+// 
+// // Usage:
+// 
+// float JetPt = b_jet.pt(); bool DoubleUncertainty = false;
+// if (JetPt>MaxBJetPt)  { // use MaxLJetPt for  light jets
+//   JetPt = MaxBJetPt; 
+//   DoubleUncertainty = true;
+// }  
+// 
+// // Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
+// double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
+// double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
+// double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, b_jet.eta(), JetPt); 
+// 
+// if (DoubleUncertainty) {
+//    jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+//    jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+// }
 
 */
 
