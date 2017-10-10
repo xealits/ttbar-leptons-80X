@@ -46,6 +46,12 @@
 #include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
 #include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 
+// for tau SV refit
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+
 #include "UserCode/ttbar-leptons-80X/interface/ProcessingGenParticles.h"
 
 //#include "UserCode/llvv_fwk/interface/BTagCalibrationStandalone.h"
@@ -1719,7 +1725,22 @@ for(size_t f=0; f<urls.size();++f)
 		// only events with loose taus
 		if (selTaus.size() < 1) continue;
 
+		pat::Tau& ev_tau = selTaus[0];
 
+
+		//// BEAMSPOT
+		//// needed for SV refit
+		////
+		//reco::BeamSpot beamSpot;
+		//edm::Handle<reco::BeamSpot> beamSpotHandle;
+		//iEvent.getByToken(beamSpot_, beamSpotHandle);
+		//if (beamSpotHandle.isValid()) beamSpot = *beamSpotHandle;
+
+		//// some more feature for tracks
+		//// the python conf load some module TransientTrackBuilder from cmssw package TrackingTools.TransientTrack
+		//// probably the module stores this stuff to the event..
+		//edm::ESHandle<TransientTrackBuilder> transTrackBuilder;
+		//iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", transTrackBuilder);
 
 		// TRACKS? (match sigCands to general tracks and print those too
 		//edm::Handle<edm::View<pat::PackedCandidate>> tracksHandle;
@@ -1771,9 +1792,76 @@ for(size_t f=0; f<urls.size();++f)
 			allTracks_cands.push_back(track_cands[i]);
 			}
 
+		/*
+		// refit SV if ev_tau is DM 10
+		bool fitOk_SV = false;  
+		std::vector<double > tracksToBeRemoved; // compared by Pt due to the conflict of comparing const and not const iterators
+		// if fit ok some tracks have to be removed from PV refit
+		TransientVertex transVtx_SV;
+		double matchingQuality(0);
+		if (ev_tau.decayMode() > 9)
+			{
+			//
+			// 1) unpack things necessary for the fitter, tau candidate tracks, beamSpot & general tracks
+			// 2) match tracks it tau candidates
+			// 3) fit adaptivefitter to the matched tracks
+			// 4) save with "quality score" = sum of dR of the matching
+			///
+
+			// PAT tau tracks
+			reco::CandidatePtrVector sigCands = ev_tau.signalChargedHadrCands();//signalCands();
+
+			// rebuild tau tracks (supposed o be more precise)
+			// match allTracks (not pvTracks) to tau tracks
+			std::vector<reco::TransientTrack> transTracks_tau;  
+
+			for (reco::CandidatePtrVector::const_iterator itr = sigCands.begin(); itr != sigCands.end(); ++itr)
+				{
+				double deR(999.); 
+				double checkqual(0);
+				reco::Track closestTrack;
+
+				//for(auto iter: pvTracks)
+				for(auto iter: allTracks)
+					{
+					if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
+						continue;
+					if( sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2))  < deR)
+						{
+						deR = sqrt(pow(iter.eta() - (*itr)->p4().eta(),2) + pow(iter.phi() - (*itr)->p4().phi(),2));
+						checkqual=deR;
+						closestTrack = iter;
+						}
+					}
+
+				matchingQuality+=checkqual;
+				tracksToBeRemoved.push_back(closestTrack.pt());
+				transTracks_tau.push_back(transTrackBuilder->build(closestTrack));
+				//cout<<"  closestTrackiter eta  :  "<<   closestTrack.eta() << "   phi   " << closestTrack.phi() << "    pt  "<< closestTrack.pt() <<endl;
+				}
+
+			// do the tau SV refit
+			if (transTracks_tau.size() >= 2 )
+				{
+				AdaptiveVertexFitter avf;
+				avf.setWeightThreshold(0.001); 
+				try
+					{
+					transVtx_SV = avf.vertex(transTracks_tau, beamSpot);
+					fitOk_SV = true; 
+					}
+				catch (...)
+					{
+					fitOk_SV = false; 
+					std::cout<<"Vtx fit failed!"<<std::endl;
+					}
+				}
+
+			fitOk_SV = fitOk_SV && transVtx_SV.isValid() && fabs(transVtx_SV.position().x())<1 && fabs(transVtx_SV.position().y())<1;
+			}
+		*/
 
 		// PRINTOUT
-		pat::Tau& ev_tau = selTaus[0];
 
 		/*
 		// kind of "daceyMode" for generated final states
@@ -1796,6 +1884,8 @@ for(size_t f=0; f<urls.size();++f)
 			<< '\t' << 24
 			<< '\t' << t_W_part->energy() << '\t' << t_W_part->pt()
 			<< '\t' << t_W_part->eta()    << '\t' << t_W_part->phi()
+			//const Track *track = t_W_part->bestTrack();
+			//<< '\t' << track->eta() << '\t' << track->phi()
 			<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 		cout << endl;
 
@@ -1952,13 +2042,23 @@ for(size_t f=0; f<urls.size();++f)
 		for(size_t i=0; i<allTracks_cands.size(); ++i)
 			{
 			pat::PackedCandidate& track_cand = allTracks_cands[i];
+			auto the_associated_pv_key = track_cand.vertexRef().key();
+			auto the_associated_pv = (*track_cand.vertexRef());
+			auto closest_point = track_cand.vertex();
+			auto distance = the_associated_pv.position() - closest_point;
+			//
 			const reco::Track& track = *track_cand.bestTrack();
 			cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttrak"
 				<< '\t' << track_cand.pvAssociationQuality()
 				<< '\t' << /*iter.energy()*/ track.p() << '\t' << track.pt()
-				<< '\t' << track.eta()    << '\t' << track.phi()
+				//<< '\t' << 't'
+				<< '\t' << track.eta()    << '\t' << track.phi() // supposedly inner momentum
+				//<< '\t' << track.outerMomentum().eta()    << '\t' << track.outerMomentum().phi() // these are not available in MiniAOD
+				//<< '\t' << track.innerMomentum().eta()    << '\t' << track.innerMomentum().phi()
+				<< '\t' << the_associated_pv_key
+				<< '\t' << distance.x() << '\t' << distance.y() << '\t' << distance.z() << '\t' << distance.R()
 				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}

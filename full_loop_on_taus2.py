@@ -5,6 +5,9 @@ from numpy.linalg import norm
 from sys import argv
 
 
+ttree_name = "ntupler/reduced_ttree"
+ttree_name = "tauMatch/tauMatch_ttree"
+
 gen_match  = '-g' in argv
 gen_match2 = '-g2' in argv
 match_quality = '-m' in argv
@@ -16,7 +19,7 @@ logging.debug("loading ROOT...")
 
 # ROOT is heavy, init it after comline
 import ROOT
-from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas
+from ROOT import TFile, TTree, TH1D, TH2D, gROOT, gSystem, TCanvas, kRed
 from ROOT.TMath import Sqrt
 gROOT.SetBatch(True)
 
@@ -42,6 +45,7 @@ else:
     #filename, nick = "/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.4/merged-sets/MC2016_Summer16_TTJets_powheg.root" , 'tt'
     #filename, nick = '/eos/user/o/otoldaie/ttbar-leptons-80X_data/v12.4_merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
     filename, nick, suff = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg_1.root', 'tt', '1'
+    filename, nick, suff = '~/work/private/16/CMSSW_8_0_26_patch1/src/UserCode/ttbar-leptons-80X/outdir/tauMatch-1/merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt', ''
     #filename, nick = '/afs/cern.ch/user/o/otoldaie/work/private/16/CMSSW_8_0_25/src/UserCode/ttbar-leptons-80X/outdir/v12.6/merged-sets/MC2016_Summer16_TTJets_powheg.root', 'tt'
 
 isTT = 'TT' in filename
@@ -131,7 +135,7 @@ def PFTau_FlightLength_significance(pv,  PVcov, sv, SVcov):
 
 
 in_file = TFile(filename, "read")
-ntuple  = in_file.Get("ntupler/reduced_ttree")
+ntuple  = in_file.Get(ttree_name)
 
 logging.debug("opened file and ntuple")
 
@@ -182,6 +186,7 @@ h_refit_flightLen_lt  = TH1D("refit_flightLen_lt", "", 100, 0, 0.1)
 h_refit_flightLen_lj  = TH1D("refit_flightLen_lj", "", 100, 0, 0.1)
 h_refit_flightSign_lt = TH1D("refit_flightSign_lt", "", 100, 0, 10)
 h_refit_flightSign_lj = TH1D("refit_flightSign_lj", "", 100, 0, 10)
+h_refit_flightSign_lj.SetLineColor(kRed)
 
 h_refit_flightErr    = TH1D("refit_flightErr_%s" % nick, "", 100, 0, 0.02)
 h_refit_flightErr_lt = TH1D("refit_flightErr_lt", "", 100, 0, 0.02)
@@ -190,9 +195,10 @@ h_refit_flightErr_lj = TH1D("refit_flightErr_lj", "", 100, 0, 0.02)
 h_pat_flightLen = TH1D("pat_flightLen_%s" % nick, "", 100, 0, 0.1)
 h_pat_flightLen_lt = TH1D("pat_flightLen_lt", "", 100, 0, 0.1)
 h_pat_flightLen_lj = TH1D("pat_flightLen_lj", "", 100, 0, 0.1)
-h_pat_flightSign = TH1D("pat_flightSign_%s" % nick, "", 100, 0, 50)
-h_pat_flightSign_lt = TH1D("pat_flightSign_lt", "", 100, 0, 50)
-h_pat_flightSign_lj = TH1D("pat_flightSign_lj", "", 100, 0, 50)
+h_pat_flightSign = TH1D("pat_flightSign_%s" % nick, "", 100, 0, 25)
+h_pat_flightSign_lt = TH1D("pat_flightSign_lt", "", 100, 0, 25)
+h_pat_flightSign_lj = TH1D("pat_flightSign_lj", "", 100, 0, 25)
+h_pat_flightSign_lj.SetLineColor(kRed)
 
 h_pat_flightLen_refit_flightLen    = TH2D("pat_flightLen_refit_flightLen_%s" % nick, "", 100, 0, 0.01, 100, 0, 0.01)
 h_pat_flightSign_refit_flightSign  = TH2D("pat_flightSign_refit_flightSign_%s" % nick, "", 100, 0, 10, 100, 0, 10)
@@ -217,15 +223,17 @@ h_refit_bTag_flightSign_lt = TH2D("refit_bTag_flightSign_lt",        "", 100, 0,
 h_refit_bTag_flightSign_lj = TH2D("refit_bTag_flightSign_lj",        "", 100, 0, 10, 100, 0, 1.01)
 #tau_dR_matched_jet
 
-h_refit_flightSign_lt_Btag = TH1D("refit_flightSign_lt_Btag", "", 100, 0, 50)
-h_refit_flightSign_lj_Btag = TH1D("refit_flightSign_lj_Btag", "", 100, 0, 50)
-h_pat_flightSign_lt_Btag   = TH1D("pat_flightSign_lt_Btag",   "", 100, 0, 50)
-h_pat_flightSign_lj_Btag   = TH1D("pat_flightSign_lj_Btag",   "", 100, 0, 50)
+h_refit_flightSign_lt_Btag = TH1D("refit_flightSign_lt_Btag", "", 100, 0, 10)
+h_refit_flightSign_lj_Btag = TH1D("refit_flightSign_lj_Btag", "", 100, 0, 10)
+h_pat_flightSign_lt_Btag   = TH1D("pat_flightSign_lt_Btag",   "", 100, 0, 25)
+h_pat_flightSign_lj_Btag   = TH1D("pat_flightSign_lj_Btag",   "", 100, 0, 25)
+h_pat_flightSign_lj_Btag.SetLineColor(kRed)
 
-h_refit_flightSign_lt_noBtag = TH1D("refit_flightSign_lt_noBtag", "", 100, 0, 50)
-h_refit_flightSign_lj_noBtag = TH1D("refit_flightSign_lj_noBtag", "", 100, 0, 50)
-h_pat_flightSign_lt_noBtag   = TH1D("pat_flightSign_lt_noBtag",   "", 100, 0, 50)
-h_pat_flightSign_lj_noBtag   = TH1D("pat_flightSign_lj_noBtag",   "", 100, 0, 50)
+h_refit_flightSign_lt_noBtag = TH1D("refit_flightSign_lt_noBtag", "", 100, 0, 10)
+h_refit_flightSign_lj_noBtag = TH1D("refit_flightSign_lj_noBtag", "", 100, 0, 10)
+h_pat_flightSign_lt_noBtag   = TH1D("pat_flightSign_lt_noBtag",   "", 100, 0, 25)
+h_pat_flightSign_lj_noBtag   = TH1D("pat_flightSign_lj_noBtag",   "", 100, 0, 25)
+h_pat_flightSign_lj_noBtag.SetLineColor(kRed)
 
 # flightLen vs tau Energy
 h_refit_flightLen_Energy    = TH2D("refit_flightLen_Energy_%s" % nick, "", 10, 0, 0.02, 10, 0, 150)
@@ -257,14 +265,17 @@ logging.debug("set histograms")
 N_events = 1000000 # ntuple.GetEntries()
 n_events = 0
 
+tau_ID_lev = 1 # >3 = Tight
+
 # looping:
 for i, event in enumerate(ntuple):
     if run_test and i > 1: break
     #if not (event.tau_SV_fit_isOk.size() > 0 and event.tau_SV_fit_isOk[0]>0 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
-    if not (event.tau_IDlev[0] > 1 and event.tau_decayMode[0] > 9 and event.tau_refited_index.size() > 0 and event.tau_refited_index[0]>-1 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
+    if not (event.tau_IDlev[0] > tau_ID_lev and event.tau_decayMode[0] > 9 and event.tau_refited_index.size() > 0 and event.tau_refited_index[0]>-1 and event.PV_fit_isOk>0 and (event.tau_SV_fit_matchingQuality[0] < 0.001 or not match_quality)):
         continue
     # check tracks are present:
-    if not (event.tau_SV_fit_track_SS_p4.size() > 0 and event.tau_SV_fit_track_OS1_p4.size() > 0 and event.tau_SV_fit_track_OS2_p4.size() > 0):
+    #if not (event.tau_SV_fit_track_SS_p4.size() > 0 and event.tau_SV_fit_track_OS1_p4.size() > 0 and event.tau_SV_fit_track_OS2_p4.size() > 0):
+    if not (event.tau_SV_fit_track_OS_p4.size() > 0 and event.tau_SV_fit_track_SS1_p4.size() > 0 and event.tau_SV_fit_track_SS2_p4.size() > 0):
         continue
     n_events += 1
     if run_million and n_events > N_events: break
@@ -373,8 +384,10 @@ for i, event in enumerate(ntuple):
         h_refit_flightLen_to_other_PV_large.Fill(flight_len_i)
 
     # masses of tracks
-    mass1 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS1_p4[0]).mass()
-    mass2 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS2_p4[0]).mass()
+    #mass1 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS1_p4[0]).mass()
+    #mass2 = (event.tau_SV_fit_track_SS_p4[0] + event.tau_SV_fit_track_OS2_p4[0]).mass()
+    mass1 = (event.tau_SV_fit_track_OS_p4[0] + event.tau_SV_fit_track_SS1_p4[0]).mass()
+    mass2 = (event.tau_SV_fit_track_OS_p4[0] + event.tau_SV_fit_track_SS2_p4[0]).mass()
 
     h_refit_m1m2.Fill(mass1, mass2)
 
