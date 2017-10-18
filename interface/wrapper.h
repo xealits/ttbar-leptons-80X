@@ -20,3 +20,11 @@ float MTlep_met_pt_recoilcor(float lep_px, float lep_py,
 
 float zPtMass_weight(float genMass, float genPt);
 
+float met_pt_recoilcor_x(float met_px, float met_py,
+	float gen_genPx, float gen_genPy, float gen_visPx, float gen_visPy,
+	int njets);
+
+float met_pt_recoilcor_y(float met_px, float met_py,
+	float gen_genPx, float gen_genPy, float gen_visPx, float gen_visPy,
+	int njets);
+

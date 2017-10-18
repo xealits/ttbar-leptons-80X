@@ -45,6 +45,44 @@ float met_pt_recoilcor(float met_px, float met_py,
 	return sqrt(NT_pfmetcorr_ey*NT_pfmetcorr_ey + NT_pfmetcorr_ex*NT_pfmetcorr_ex);
 	}
 
+float met_pt_recoilcor_x(float met_px, float met_py,
+	float gen_genPx, float gen_genPy, float gen_visPx, float gen_visPy,
+	int njets)
+	{
+	float NT_pfmetcorr_ex, NT_pfmetcorr_ey;
+	recoilPFMetCorrector->CorrectByMeanResolution(
+		met_px, // uncorrected type I pf met px (float)
+		met_py, // uncorrected type I pf met py (float)
+		gen_genPx, // generator Z/W/Higgs px (float)
+		gen_genPy, // generator Z/W/Higgs py (float)
+		gen_visPx, // generator visible Z/W/Higgs px (float)
+		gen_visPy, // generator visible Z/W/Higgs py (float)
+		njets,  // number of jets (hadronic jet multiplicity) (int) <-- they use jets with pt>30... here it's the same, only pt requirement (20), no eta or PF ID
+		NT_pfmetcorr_ex, // corrected type I pf met px (float)
+		NT_pfmetcorr_ey  // corrected type I pf met py (float)
+		);
+	return NT_pfmetcorr_ex;
+	}
+
+float met_pt_recoilcor_y(float met_px, float met_py,
+	float gen_genPx, float gen_genPy, float gen_visPx, float gen_visPy,
+	int njets)
+	{
+	float NT_pfmetcorr_ex, NT_pfmetcorr_ey;
+	recoilPFMetCorrector->CorrectByMeanResolution(
+		met_px, // uncorrected type I pf met px (float)
+		met_py, // uncorrected type I pf met py (float)
+		gen_genPx, // generator Z/W/Higgs px (float)
+		gen_genPy, // generator Z/W/Higgs py (float)
+		gen_visPx, // generator visible Z/W/Higgs px (float)
+		gen_visPy, // generator visible Z/W/Higgs py (float)
+		njets,  // number of jets (hadronic jet multiplicity) (int) <-- they use jets with pt>30... here it's the same, only pt requirement (20), no eta or PF ID
+		NT_pfmetcorr_ex, // corrected type I pf met px (float)
+		NT_pfmetcorr_ey  // corrected type I pf met py (float)
+		);
+	return NT_pfmetcorr_ey;
+	}
+
 
 // Z pt-mass weight
 // zpt_weights_2016.root
