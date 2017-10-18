@@ -86,7 +86,8 @@ float met_pt_recoilcor_y(float met_px, float met_py,
 
 // Z pt-mass weight
 // zpt_weights_2016.root
-TFile* zPtMassWeights_file  = TFile::Open("/UserCode/zpt_weights_2016.root");
+std::string zPtMassWeights_filename = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/zpt_weights_2016.root";
+TFile* zPtMassWeights_file  = TFile::Open(zPtMassWeights_filename.c_str());
 TH2D*  zPtMassWeights_histo = (TH2D*) zPtMassWeights_file->Get("zptmass_histo");
 TH2D*  zPtMassWeights_histo_err = (TH2D*) zPtMassWeights_file->Get("zptmass_histo_err");
 
