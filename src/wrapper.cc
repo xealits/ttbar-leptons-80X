@@ -46,6 +46,18 @@ float met_pt_recoilcor(float met_px, float met_py,
 	}
 
 
+// Z pt-mass weight
+// zpt_weights_2016.root
+TFile* zPtMassWeights_file  = TFile::Open("/UserCode/zpt_weights_2016.root");
+TH2D*  zPtMassWeights_histo = (TH2D*) zPtMassWeights_file->Get("zptmass_histo");
+TH2D*  zPtMassWeights_histo_err = (TH2D*) zPtMassWeights_file->Get("zptmass_histo_err");
+
+float zPtMass_weight(float genMass, float genPt)
+	{
+	return zPtMassWeights_histo->GetBinContent(zPtMassWeights_histo->GetXaxis()->FindBin(genMass), zPtMassWeights_histo->GetYaxis()->FindBin(genPt));
+	}
+
+
 /*
 double transverse_mass_pts(double v1_x, double v1_y, double v2_x, double v2_y)
 	{
