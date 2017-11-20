@@ -2971,10 +2971,10 @@ for(size_t f=0; f<urls.size();++f)
 		LorentzVector elDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton>
 		pat::ElectronCollection selElectrons;
-		unsigned int nVetoE(0);
+		unsigned int nVetoE(0), nVetoE_all(0);
 
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weights_FULL[SYS_NOMINAL], patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
-			kino_cuts_electron_pt, kino_cuts_electron_eta, kino_cuts_electron_veto_pt, kino_cuts_electron_veto_eta, selElectrons, elDiff, nVetoE, false, debug);
+			kino_cuts_electron_pt, kino_cuts_electron_eta, kino_cuts_electron_veto_pt, kino_cuts_electron_veto_eta, selElectrons, elDiff, nVetoE, nVetoE_all, false, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
@@ -3030,7 +3030,7 @@ for(size_t f=0; f<urls.size();++f)
 		LorentzVector muDiff(0., 0., 0., 0.);
 		// std::vector<patUtils::GenericLepton> selLeptons;
 		pat::MuonCollection selMuons;
-		unsigned int nVetoMu(0);
+		unsigned int nVetoMu(0), nVetoMu_all(0);
 		// unsigned int count_idiso_muons = 0;
 		/*
 		 * int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV,            // input
@@ -3041,7 +3041,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *         bool record, bool debug) // more output
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weights_FULL[SYS_NOMINAL], patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
-			kino_cuts_muon_pt, kino_cuts_muon_eta, kino_cuts_muon_veto_pt, kino_cuts_muon_veto_eta, selMuons, muDiff, nVetoMu, false, debug);
+			kino_cuts_muon_pt, kino_cuts_muon_eta, kino_cuts_muon_veto_pt, kino_cuts_muon_veto_eta, selMuons, muDiff, nVetoMu, nVetoMu_all, false, debug);
 
 		if(debug){
 			cout << "processed muons" << endl;

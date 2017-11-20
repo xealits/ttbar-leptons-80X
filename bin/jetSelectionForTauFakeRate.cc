@@ -2265,10 +2265,10 @@ for(size_t f=0; f<urls.size();++f)
 
 		LorentzVector elDiff(0., 0., 0., 0.);
 		pat::ElectronCollection selElectrons;
-		unsigned int nVetoE(0);
+		unsigned int nVetoE(0), nVetoE_all(0);
 
 		processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, patUtils::llvvElecId::Tight, patUtils::llvvElecId::Loose, patUtils::llvvElecIso::Tight, patUtils::llvvElecIso::Loose,
-			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, conf_record_electrons, debug);
+			35., 2.4, 15., 2.5, selElectrons, elDiff, nVetoE, nVetoE_all, conf_record_electrons, debug);
 
 		if(debug){
 			cout << "processed electrons" << endl;
@@ -2277,7 +2277,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
 		pat::MuonCollection selMuons;
-		unsigned int nVetoMu(0);
+		unsigned int nVetoMu(0), nVetoMu_all(0);
 		// unsigned int count_idiso_muons = 0;
 		/*
 		 * int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV,            // input
@@ -2288,7 +2288,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *         bool record, bool debug) // more output
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
-			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, conf_record_muons, debug);
+			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, nVetoMu_all, conf_record_muons, debug);
 
 		if(debug){
 			cout << "processed muons" << endl;

@@ -1323,7 +1323,7 @@ for(size_t f=0; f<urls.size();++f)
 		// ---------------------------------- MUONS SELECTION
 		LorentzVector muDiff(0., 0., 0., 0.);
 		pat::MuonCollection selMuons;
-		unsigned int nVetoMu(0);
+		unsigned int nVetoMu(0), nVetoMu_all(0);
 		// unsigned int count_idiso_muons = 0;
 		/*
 		 * int processMuons_ID_ISO_Kinematics(pat::MuonCollection& muons, reco::Vertex goodPV,            // input
@@ -1334,7 +1334,7 @@ for(size_t f=0; f<urls.size();++f)
 		 *         bool record, bool debug) // more output
 		 */
 		processMuons_ID_ISO_Kinematics(muons, goodPV, weight, patUtils::llvvMuonId::StdTight, patUtils::llvvMuonId::StdLoose, patUtils::llvvMuonIso::Tight, patUtils::llvvMuonIso::Loose,
-			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, false, debug);
+			30., 2.4, 10., 2.5, selMuons, muDiff, nVetoMu, nVetoMu_all, false, debug);
 
 		if(debug)
 			{
