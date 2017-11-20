@@ -4,10 +4,10 @@
 
 
 int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco::Vertex goodPV, double rho, double weight, // input
-	patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                           // config/cuts
+	patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                                       // config/cuts
 	patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
-	pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE,                    // output
+	pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE, unsigned int& nVetoE_all,      // output
 	bool record, bool debug) // more output
 {
 
@@ -137,7 +137,8 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	if (leta > 1.4442 && leta < 1.5660) passVetoKin = false; // Crack veto
 
 
-	if (passKin     && passId     && passIso)
+	//if (passKin     && passId     && passIso)
+	if (passKin && passId) // saving all iso tight leptons for anti-iso QCD region
 		{
 		selElectrons.push_back(electron);
 		if (record)
@@ -146,7 +147,11 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 			fill_1d(string("control_el_selElectrons_phi"), 128, -3.2, 3.2, electron.phi(), weight);
 			}
 		}
-	else if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
+	else
+		{
+		if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
+		if(passVetoKin && passVetoId) nVetoE++;
+		}
 
 	}
 

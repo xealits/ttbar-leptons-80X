@@ -5,11 +5,12 @@
 
 int processMuons_ID_ISO_Kinematics(
 	pat::MuonCollection& muons, reco::Vertex goodPV, double weight, // input
-	patUtils::llvvMuonId::MuonId   mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,             // config/cuts
+	patUtils::llvvMuonId::MuonId   mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,                          // config/cuts
 	patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
-	pat::MuonCollection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu,               // output
+	pat::MuonCollection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu, unsigned int& nVetoMu_all, // output
 	bool record, bool debug) // more output
+
 {
 //LorentzVector muDiff(0., 0., 0., 0.);
 // std::vector<patUtils::GenericLepton> selLeptons;
@@ -99,7 +100,8 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 	if (muon.pt() < veto_pt_cut)   passVetoKin = false;
 	if (leta > veto_eta_cut)       passVetoKin = false;
 
-	if     (passKin     && passId     && passIso)
+	//if     (passKin     && passId     && passIso)
+	if (passKin && passId) // all iso muons for anti-iso QCD region
 		{
 		selMuons.push_back(muon);
 		if (record)
@@ -108,7 +110,11 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 			fill_1d(string("control_mu_selMuons_phi"), 128, -3.2, 3.2, muon.phi(), weight);
 			}
 		}
-	else if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
+	else
+		{
+		if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
+		if(passVetoKin && passVetoId) nVetoMu_all++;
+		}
 
 	// TODO: ------------ ID/Iso scale factors:
 	// https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Muon_reconstruction_identificati
