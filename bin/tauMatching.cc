@@ -1544,10 +1544,11 @@ for(size_t f=0; f<urls.size();++f)
 				break;
 			}
 
-		bool only_tt_lepjets = false;
+		bool only_tt_lepjets = true;
 		if (only_tt_lepjets)
 			{
-			if (mc_decay != string("elqbar") && mc_decay != string("qelbar") && mc_decay != string("qmubar") && mc_decay != string("muqbar")) continue;
+			//if (mc_decay != string("elqbar") && mc_decay != string("qelbar") && mc_decay != string("qmubar") && mc_decay != string("muqbar")) continue;
+			if (mc_decay != string("elq") && mc_decay != string("qel") && mc_decay != string("qmu") && mc_decay != string("muq")) continue;
 			}
 
 
@@ -1719,7 +1720,8 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::TauCollection IDtaus, selTaus;
 		//processTaus_ID    (taus,   weight, tau_decayMode, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
-		processTaus_ID_ISO    (taus,   weight, tau_decayMode, tau_VLoose_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
+		//processTaus_ID_ISO    (taus,   weight, tau_decayMode, tau_VLoose_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
+		processTaus_ID_ISO    (taus,   weight, tau_decayMode, tau_Tight_ID, tau_againstMuon, tau_againstElectron, IDtaus, false, false);
 		processTaus_Kinematics(IDtaus, weight, 20., 2.4, selTaus,      false, false);
 
 		// only events with loose taus
@@ -1727,6 +1729,7 @@ for(size_t f=0; f<urls.size();++f)
 
 		pat::Tau& ev_tau = selTaus[0];
 
+		if (ev_tau.decayMode() < 10) continue;
 
 		//// BEAMSPOT
 		//// needed for SV refit
@@ -2017,6 +2020,10 @@ for(size_t f=0; f<urls.size();++f)
 
 		// reco taus sigCands
 		//
+		// concatenating the gen products used in matching with tau candidates
+		// only b products for now
+		tb_b_parts.insert( tb_b_parts.end(), t_b_parts.begin(), t_b_parts.end() );
+		std::vector<int> used_indexes;
 		for (unsigned int i=0; i<selTaus.size(); i++)
 			{
 			pat::Tau& tau = selTaus[i];
@@ -2024,18 +2031,55 @@ for(size_t f=0; f<urls.size();++f)
 			reco::CandidatePtrVector sigCands = tau.signalChargedHadrCands();
 			for (reco::CandidatePtrVector::const_iterator itr = sigCands.begin(); itr != sigCands.end(); ++itr)
 				{
+				//auto sig_cand = *(*itr);
+				// match tau candidate to gen products
+				// only b-products for now
+				double min_dR_gen = 999.;
+				int min_dR_gen_i = -1;
+				for (unsigned int i=0; i<tb_b_parts.size(); i++)
+					{
+					//if(std::find(tracksToBeRemoved.begin(), tracksToBeRemoved.end(), iter.pt())!=tracksToBeRemoved.end())
+					// if this gen final state was already matched -- skip it
+					if (std::find(used_indexes.begin(), used_indexes.end(), i) != used_indexes.end())
+						continue;
+					const reco::Candidate* part = tb_b_parts[i];
+					unsigned int part_id = abs(part->pdgId());
+					// skip neutrinos
+					if (part_id == 12 || part_id == 14 || part_id == 16)
+						continue;
+					//double dR = reco::deltaR(*part, sig_cand);
+					double dR = reco::deltaR(*part, (*itr)->p4());
+					if (dR<min_dR_gen)
+						{
+						min_dR_gen = dR;
+						min_dR_gen_i = i;
+						}
+					}
+
 				// (*itr)->p4().eta()
 				cout << iev << '\t' << (isTTbarMC ? mc_decay : mc_nick) // << NT_gen_t_w_final_decayMode // no such parameter for now
 					<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 					<< "\tcand" << i
+					<< '\t' << (*itr)->charge()
 					<< '\t' << (*itr)->longLived()
 					<< '\t' << (*itr)->energy() << '\t' << (*itr)->pt()
 					<< '\t' << (*itr)->eta()    << '\t' << (*itr)->phi()
-					<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
+					<< '\t' << min_dR_gen_i << '\t' << min_dR_gen;
+				if (min_dR_gen_i>-1)
+					cout << '\t' << tb_b_parts[min_dR_gen_i]->pdgId() << '\t' << tb_b_parts[min_dR_gen_i]->eta() << '\t' << tb_b_parts[min_dR_gen_i]->phi();
+				else
+					cout << '\t' << 0 << '\t' << 0 << '\t' << 0;
+				cout << '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 				cout << endl;
+
+				// erase the closest gen product
+				//tb_b_parts.erase(tb_b_parts.begin() + i);
+				// this erases wrongly -- the thing crashes on access
+				used_indexes.push_back(min_dR_gen_i);
 				}
 			}
 
+		/*
 		// all reco tracks
 		//for(auto iter: pvTracks)
 		//for(auto iter: allTracks)
@@ -2052,7 +2096,8 @@ for(size_t f=0; f<urls.size();++f)
 				<< '\t' << NT_gen_t_w_decay_id << '\t' << NT_gen_tb_w_decay_id
 				<< "\ttrak"
 				<< '\t' << track_cand.pvAssociationQuality()
-				<< '\t' << /*iter.energy()*/ track.p() << '\t' << track.pt()
+				<< '\t' // << iter.energy()
+				<< track.p() << '\t' << track.pt()
 				//<< '\t' << 't'
 				<< '\t' << track.eta()    << '\t' << track.phi() // supposedly inner momentum
 				//<< '\t' << track.outerMomentum().eta()    << '\t' << track.outerMomentum().phi() // these are not available in MiniAOD
@@ -2062,6 +2107,7 @@ for(size_t f=0; f<urls.size();++f)
 				<< '\t' << ev_tau.eta() << '\t' << ev_tau.phi() << '\t' << ev_tau.tauID(tau_Medium_ID) << '\t' << ev_tau.decayMode();
 			cout << endl;
 			}
+		*/
 
 		// TODO add track info:
 		// closest point, impacts, pvAssociation
