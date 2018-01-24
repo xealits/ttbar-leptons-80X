@@ -20,10 +20,24 @@ back to 69.2 and control on rho distribution
 LSforPath_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26_OR_L1_SingleIsoEG28.json
 Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 
-pileupCalc.py -i ../LSforPath_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26_OR_L1_SingleIsoEG28.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69-2_3-4-2017_Ele27HLTLumies.root
+pileupCalc.py -i ../LSforPath_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26_OR_L1_SingleIsoEG28.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69-2_24-1-2018_Ele27HLTLumies.root &
+
+pileupCalc.py -i ../LSforPath_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26_OR_L1_SingleIsoEG28.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69-2_24-1-2018_Ele27HLTLumies_DOWN-66017.root &
+
+pileupCalc.py -i ../LSforPath_HLT_Ele27_WPTight_Gsf_withLowestSeed_L1_SingleIsoEG26_OR_L1_SingleIsoEG28.json --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69-2_24-1-2018_Ele27HLTLumies_UP.root &
+
+
+
 
 PU shifts by 4.6%:
 
 pileupCalc.py -i ../Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69200-down-66017_3-4-2017_FullJsonLumies.root
 pileupCalc.py -i ../Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69200-up-72383_3-4-2017_FullJsonLumies.root
+
+
+
+
+compare pile-ups for ele json and the golden
+
+pileupCalc.py -i ../Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt  --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100  MyDataPileupHistogram_minbias-69-2_22-1-2018_GoldenCert.root
 
