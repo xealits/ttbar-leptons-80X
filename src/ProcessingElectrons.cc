@@ -96,17 +96,18 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	//    barrel    endcap
 	// d0   0.05      0.10
 	// dz   0.10      0.20
+	bool passStdImpactParameter = false;
 	if (eta <= 1.479) // barrel, newer selection is precise?
 		{
 		passSigma =     sigmaIetaIeta < 0.00998; // Tight WP
 		passSigmaVeto = sigmaIetaIeta < 0.0115;  // Veto WP
-		passStdImpactParameter = electron.dxy() < 0.05 && electron.dz() < 0.1;
+		passStdImpactParameter = electron.gsfTrack()->dxy() < 0.05 && electron.gsfTrack()->dz() < 0.1;
 		}
 	else if (eta > 1.479) // endcap
 		{
 		passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
 		passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
-		passStdImpactParameter = electron.dxy() < 0.1 && electron.dz() < 0.2;
+		passStdImpactParameter = electron.gsfTrack()->dxy() < 0.1 && electron.gsfTrack()->dz() < 0.2;
 		}
 	// Ichecked this sigma cut with EGamma ID page
 	// link is in AN....
@@ -129,7 +130,7 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	passImpactParameterVeto = passImpactParameter;
 
 	// to include into veto counters
-	passStdImpactParameterVeto = passStdImpactParameter;
+	bool passStdImpactParameterVeto = passStdImpactParameter;
 
 	passId     = patUtils::passId(electron, goodPV, el_ID,      patUtils::CutVersion::Moriond17Cut) && passSigma && passImpactParameter;
 	passVetoId = patUtils::passId(electron, goodPV, veto_el_ID, patUtils::CutVersion::Moriond17Cut) && passSigmaVeto && passImpactParameterVeto;
@@ -183,6 +184,29 @@ std::sort(selElectrons.begin(),   selElectrons.end(),   utils::sort_CandidatesBy
 return 0;
 }
 
+// old compatibility call
+int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco::Vertex goodPV, double rho, double weight, // input
+	patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                                       // config/cuts
+	patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
+	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+	// output
+	pat::ElectronCollection& selElectrons, LorentzVector& elDiff,
+	//unsigned int& nVetoE_IsoImp,
+	unsigned int& nVetoE_Iso, unsigned int& nVetoE_all, // all vetos
+	bool record, bool debug) // more output
+
+{
+unsigned int nVetoE_IsoImp = 0;
+ processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, // input
+	el_ID, veto_el_ID,                                       // config/cuts
+	el_ISO, veto_el_ISO,
+	pt_cut, eta_cut, veto_pt_cut, veto_eta_cut,
+	// output
+	selElectrons, elDiff,
+	nVetoE_IsoImp, nVetoE_Iso, nVetoE_all, // all vetos
+	record, debug); // more output
+return 0;
+}
 
 /*
  * loop over all HLT objects, find if anything matches to given lepton

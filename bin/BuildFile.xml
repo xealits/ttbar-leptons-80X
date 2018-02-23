@@ -37,10 +37,10 @@
   <bin name="triggerMatching"  file="triggerMatching.cc"></bin>
 -->
 
-  <bin name="eventSelection"    file="eventSelection.cc"></bin>
-  <bin name="jetToTauFakeRate"  file="jetSelectionForTauFakeRate.cc"></bin>
-  <bin name="ntupleEvents"  file="ntupleEvents.cc"></bin>
-  <bin name="elmuFakeRates"  file="elmuFakeRates.cc"></bin>
+  <bin name="eventSelection"   file="eventSelection.cc"></bin>
+  <bin name="jetToTauFakeRate" file="jetSelectionForTauFakeRate.cc"></bin>
+  <bin name="ntupleEvents"     file="ntupleEvents.cc"></bin>
+  <bin name="elmuFakeRates"    file="elmuFakeRates.cc"></bin>
 
   <bin name="scopeEvents"      file="scopeEvents.cc"></bin>
   <bin name="pilupDistr"       file="pilupDistr.cc"></bin>
