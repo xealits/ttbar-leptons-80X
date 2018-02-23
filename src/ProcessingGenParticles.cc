@@ -198,29 +198,34 @@ else
 }
 
 /*
- * save all no-daughters candidates (leaf candidates)
+ * save all visible no-daughters candidates (leaf candidates)
+ * (no gen neutrinos)
  */
 void save_final_cands(
 	const reco::Candidate * part,
 	vector<const reco::Candidate*>& saved_particles)
 
 {
-if (part->numberOfDaughters() == 0) // it's a final state
+unsigned int pdgId = abs(part->pdgId());
+if (!(pdgId == 12 || pdgId == 14 || pdgId == 16))
 	{
-	// check if it is not already saved
-	if (std::find(saved_particles.begin(), saved_particles.end(), part) == saved_particles.end())
+	if (part->numberOfDaughters() == 0) // it's a final state
 		{
-		// then save it:
-		saved_particles.push_back(part);
+		// check if it is not already saved
+		if (std::find(saved_particles.begin(), saved_particles.end(), part) == saved_particles.end())
+			{
+			// then save it:
+			saved_particles.push_back(part);
+			}
 		}
-	}
-else
-	{
-	// loop through daughters
-	for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
+	else
 		{
-		const reco::Candidate * daughter = part->daughter(d_i);
-		save_final_cands(daughter, saved_particles);
+		// loop through daughters
+		for (int d_i=0; d_i < part->numberOfDaughters(); d_i++)
+			{
+			const reco::Candidate * daughter = part->daughter(d_i);
+			save_final_cands(daughter, saved_particles);
+			}
 		}
 	}
 // strictly sequencial algorithm
