@@ -7,7 +7,9 @@ int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco:
 	patUtils::llvvElecId::ElecId el_ID, patUtils::llvvElecId::ElecId veto_el_ID,                                       // config/cuts
 	patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
-	pat::ElectronCollection& selElectrons, LorentzVector& elDiff, unsigned int& nVetoE, unsigned int& nVetoE_all,      // output
+	// output
+	pat::ElectronCollection& selElectrons, LorentzVector& elDiff,
+	unsigned int& nVetoE_IsoImp, unsigned int& nVetoE_Iso, unsigned int& nVetoE_all, // all vetos
 	bool record, bool debug) // more output
 {
 
@@ -88,17 +90,28 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	// checking sigmaIetaIeta, then photon rejection (hasPixelSeed()) and cross-cleaning with photons
 	float eta = std::abs(electron.superCluster()->position().eta());
 	float sigmaIetaIeta = electron.full5x5_sigmaIetaIeta();
+
+	// std impact parameter -- the one suggested here
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+	//    barrel    endcap
+	// d0   0.05      0.10
+	// dz   0.10      0.20
 	if (eta <= 1.479) // barrel, newer selection is precise?
 		{
 		passSigma =     sigmaIetaIeta < 0.00998; // Tight WP
 		passSigmaVeto = sigmaIetaIeta < 0.0115;  // Veto WP
+		passStdImpactParameter = electron.dxy() < 0.05 && electron.dz() < 0.1;
 		}
 	else if (eta > 1.479) // endcap
 		{
 		passSigma =     sigmaIetaIeta < 0.0292; // Tight WP
 		passSigmaVeto = sigmaIetaIeta < 0.037;  // Veto WP
+		passStdImpactParameter = electron.dxy() < 0.1 && electron.dz() < 0.2;
 		}
-	passImpactParameter = electron.dB() < 0.02;
+	// Ichecked this sigma cut with EGamma ID page
+	// link is in AN....
+
+	//passImpactParameter = electron.dB() < 0.02;
 	// what units is this? in the PAT example on top they say "we use < 0.02cm",
 	// in recommendations for muons it is < 0.2 
 	// and say "The 2 mm cut preserves efficiency for muons from decays of b and c hadrons"
@@ -110,7 +123,13 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	//                  //dz              < 0.10     &&
 	// -- dxy should be the same as dB
 	// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
+	// it is suggested < 0.02 in el ID tables (link in AN...)
+	// to study that I do a rough cut here and store dB, dxy dz to ntuple
+	passImpactParameter = electron.dB() < 0.2;
+	passImpactParameterVeto = passImpactParameter;
 
+	// to include into veto counters
+	passStdImpactParameterVeto = passStdImpactParameter;
 
 	passId     = patUtils::passId(electron, goodPV, el_ID,      patUtils::CutVersion::Moriond17Cut) && passSigma && passImpactParameter;
 	passVetoId = patUtils::passId(electron, goodPV, veto_el_ID, patUtils::CutVersion::Moriond17Cut) && passSigmaVeto && passImpactParameterVeto;
@@ -149,8 +168,9 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 		}
 	else
 		{
-		if(passVetoKin && passVetoId && passVetoIso) nVetoE++;
-		if(passVetoKin && passVetoId) nVetoE++;
+		if(passVetoKin && passVetoId && passVetoIso && passStdImpactParameter) nVetoE_IsoImp++;
+		if(passVetoKin && passVetoId && passVetoIso) nVetoE_Iso++;
+		if(passVetoKin && passVetoId) nVetoE_all++;
 		}
 
 	}

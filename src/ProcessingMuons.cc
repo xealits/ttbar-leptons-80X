@@ -8,14 +8,16 @@ int processMuons_ID_ISO_Kinematics(
 	patUtils::llvvMuonId::MuonId   mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,                          // config/cuts
 	patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
-	pat::MuonCollection& selMuons, LorentzVector& muDiff, unsigned int& nVetoMu, unsigned int& nVetoMu_all, // output
+	// output
+	pat::MuonCollection& selMuons, LorentzVector& muDiff,
+	//unsigned int& nVetoMu_IsoImp, // muons have impact embedded into ID, no need to account for it
+	unsigned int& nVetoMu_Iso, unsigned int& nVetoMu_all, // all the veto counters
 	bool record, bool debug) // more output
 
 {
 //LorentzVector muDiff(0., 0., 0., 0.);
 // std::vector<patUtils::GenericLepton> selLeptons;
 //pat::MuonCollection selMuons;
-//unsigned int nVetoMu(0);
 // unsigned int count_idiso_muons = 0;
 
 for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
@@ -112,7 +114,8 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 		}
 	else
 		{
-		if(passVetoKin && passVetoId && passVetoIso) nVetoMu++;
+		//if(passVetoKin && passVetoId && passVetoIso && passImp) nVetoMu_IsoImp++;
+		if(passVetoKin && passVetoId && passVetoIso) nVetoMu_Iso++;
 		if(passVetoKin && passVetoId) nVetoMu_all++;
 		}
 
