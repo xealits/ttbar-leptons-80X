@@ -9,7 +9,8 @@ int processMuons_ID_ISO_Kinematics(
 	patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
 	// output
-	pat::MuonCollection& selMuons, LorentzVector& muDiff,
+	pat::MuonCollection& selMuons, pat::MuonCollection& selMuons_allIso,
+	LorentzVector& muDiff,
 	//unsigned int& nVetoMu_IsoImp, // muons have impact embedded into ID, no need to account for it
 	unsigned int& nVetoMu_Iso, unsigned int& nVetoMu_all, // all the veto counters
 	bool record, bool debug) // more output
@@ -105,7 +106,9 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 	//if     (passKin     && passId     && passIso)
 	if (passKin && passId) // all iso muons for anti-iso QCD region
 		{
-		selMuons.push_back(muon);
+		selMuons_allIso.push_back(muon);
+		if (passIso)
+			selMuons.push_back(muon);
 		if (record)
 			{
 			fill_2d(string("control_mu_selMuons_pt_eta"), 250, 0., 500., 200, -3., 3., muon.pt(), muon.eta(), weight);
@@ -118,29 +121,6 @@ for(unsigned int count_idiso_muons = 0, n=0; n<muons.size (); ++n)
 		if(passVetoKin && passVetoId && passVetoIso) nVetoMu_Iso++;
 		if(passVetoKin && passVetoId) nVetoMu_all++;
 		}
-
-	// TODO: ------------ ID/Iso scale factors:
-	// https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Muon_reconstruction_identificati
-	// if it is MC and ID tight muon is found -- multiply weight by factor,
-	// corresponding to its' tight scale factor distr
-	// if loose -- loose scale factor
-
-	/* TODO: add ID/Iso and run
-	if (isMC) {
-		if (passId) {
-			// NOTE: scale factors are given for absolute eta
-			weight *= muID_Tight_sf.GetBinContent( muID_Tight_sf.FindBin(leta, muon.pt()) );
-		} else if (passVetoId) {
-			weight *= muID_Loose_sf.GetBinContent( muID_Loose_sf.FindBin(leta, muon.pt()) );
-		}
-		if (passIso) {
-			// NOTE: scale factors are given for absolute eta
-			weight *= muIso_Tight_sf.GetBinContent( muIso_Tight_sf.FindBin(leta, muon.pt()) );
-		} else if (passVetoIso) {
-			weight *= muIso_Loose_sf.GetBinContent( muIso_Loose_sf.FindBin(leta, muon.pt()) );
-		}
-	}
-	*/
 	}
 
 
@@ -150,6 +130,37 @@ std::sort(selMuons.begin(),   selMuons.end(),   utils::sort_CandidatesByPt);
 return 0;
 }
 
+
+
+
+
+// old compatibility call
+
+int processMuons_ID_ISO_Kinematics(
+	pat::MuonCollection& muons, reco::Vertex goodPV, double weight, // input
+	patUtils::llvvMuonId::MuonId   mu_ID, patUtils::llvvMuonId::MuonId veto_mu_ID,                          // config/cuts
+	patUtils::llvvMuonIso::MuonIso mu_ISO, patUtils::llvvMuonIso::MuonIso veto_mu_ISO,
+	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
+	// output
+	pat::MuonCollection& selMuons,
+	LorentzVector& muDiff,
+	//unsigned int& nVetoMu_IsoImp, // muons have impact embedded into ID, no need to account for it
+	unsigned int& nVetoMu_Iso, unsigned int& nVetoMu_all, // all the veto counters
+	bool record, bool debug) // more output
+
+{
+pat::MuonCollection selMuons_allIso;
+int processMuons_ID_ISO_Kinematics(
+	muons, goodPV, weight, // input
+	mu_ID,  veto_mu_ID,                          // config/cuts
+	mu_ISO, veto_mu_ISO,
+	pt_cut, eta_cut, veto_pt_cut, veto_eta_cut,
+	// output
+	selMuons, selMuons_allIso,
+	muDiff,
+	nVetoMu_Iso, nVetoMu_all, // all the veto counters
+	record, debug);
+}
 
 
 /*

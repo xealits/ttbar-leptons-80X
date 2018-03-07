@@ -8,8 +8,9 @@ int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco:
 	patUtils::llvvElecIso::ElecIso el_ISO, patUtils::llvvElecIso::ElecIso veto_el_ISO,
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
 	// output
-	pat::ElectronCollection& selElectrons, LorentzVector& elDiff,
-	unsigned int& nVetoE_IsoImp, unsigned int& nVetoE_Iso, unsigned int& nVetoE_all, // all vetos
+	pat::ElectronCollection& selElectrons, pat::ElectronCollection& selElectrons_allIso,
+	LorentzVector& elDiff,
+	unsigned int& nVetoE_Iso, unsigned int& nVetoE_all, // all vetos
 	bool record, bool debug) // more output
 {
 
@@ -126,13 +127,14 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
 	// it is suggested < 0.02 in el ID tables (link in AN...)
 	// to study that I do a rough cut here and store dB, dxy dz to ntuple
-	passImpactParameter = electron.dB() < 0.2;
-	passImpactParameterVeto = passImpactParameter;
+	//passImpactParameter = electron.dB() < 0.2;
+	passImpactParameter = passStdImpactParameter;
+	passImpactParameterVeto = passImpactParameter; // same as nominal
 
 	// to include into veto counters
 	bool passStdImpactParameterVeto = passStdImpactParameter;
 
-	passId     = patUtils::passId(electron, goodPV, el_ID,      patUtils::CutVersion::Moriond17Cut) && passSigma && passImpactParameter;
+	passId     = patUtils::passId(electron, goodPV, el_ID,      patUtils::CutVersion::Moriond17Cut) && passSigma     && passImpactParameter;
 	passVetoId = patUtils::passId(electron, goodPV, veto_el_ID, patUtils::CutVersion::Moriond17Cut) && passSigmaVeto && passImpactParameterVeto;
 
 	// ------------------------- electron isolation
@@ -160,7 +162,9 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	//if (passKin     && passId     && passIso)
 	if (passKin && passId) // saving all iso tight leptons for anti-iso QCD region
 		{
-		selElectrons.push_back(electron);
+		selElectrons_allIso.push_back(electron);
+		if (passIso)
+			selElectrons.push_back(electron);
 		if (record)
 			{
 			fill_2d(string("control_el_selElectrons_pt_eta"), 250, 0., 500., 200, -3., 3., electron.pt(), electron.eta(), weight);
@@ -169,7 +173,8 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 		}
 	else
 		{
-		if(passVetoKin && passVetoId && passVetoIso && passStdImpactParameter) nVetoE_IsoImp++;
+		// impact is on in IDs by default
+		//if(passVetoKin && passVetoId && passVetoIso && passStdImpactParameter) nVetoE_IsoImp++;
 		if(passVetoKin && passVetoId && passVetoIso) nVetoE_Iso++;
 		if(passVetoKin && passVetoId) nVetoE_all++;
 		}
@@ -191,19 +196,20 @@ int processElectrons_ID_ISO_Kinematics(pat::ElectronCollection& electrons, reco:
 	double pt_cut, double eta_cut, double veto_pt_cut, double veto_eta_cut,
 	// output
 	pat::ElectronCollection& selElectrons, LorentzVector& elDiff,
-	//unsigned int& nVetoE_IsoImp,
 	unsigned int& nVetoE_Iso, unsigned int& nVetoE_all, // all vetos
 	bool record, bool debug) // more output
 
 {
+pat::ElectronCollection selElectrons_allIso;
 unsigned int nVetoE_IsoImp = 0;
  processElectrons_ID_ISO_Kinematics(electrons, goodPV, rho, weight, // input
 	el_ID, veto_el_ID,                                       // config/cuts
 	el_ISO, veto_el_ISO,
 	pt_cut, eta_cut, veto_pt_cut, veto_eta_cut,
 	// output
-	selElectrons, elDiff,
-	nVetoE_IsoImp, nVetoE_Iso, nVetoE_all, // all vetos
+	selElectrons, selElectrons_allIso,
+	elDiff,
+	nVetoE_Iso, nVetoE_all, // all vetos
 	record, debug); // more output
 return 0;
 }
