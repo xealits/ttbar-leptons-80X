@@ -150,7 +150,7 @@ int processMuons_ID_ISO_Kinematics(
 
 {
 pat::MuonCollection selMuons_allIso;
-int processMuons_ID_ISO_Kinematics(
+return processMuons_ID_ISO_Kinematics(
 	muons, goodPV, weight, // input
 	mu_ID,  veto_mu_ID,                          // config/cuts
 	mu_ISO, veto_mu_ISO,
