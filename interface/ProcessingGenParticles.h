@@ -26,6 +26,11 @@ void save_final_cands(const reco::Candidate * part,
 void save_final_cands(const reco::Candidate * part,
 	std::vector<LorentzVector>& saved_particles);
 
+void save_final_cands(const reco::Candidate * part,
+	std::vector<LorentzVector>& saved_particles,
+	vector<int>& provenance_ids,
+	int provenance_id);
+
 
 #endif /* PROCESSINGGENPARTICLES_H */
 
