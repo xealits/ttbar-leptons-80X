@@ -42,8 +42,8 @@ const reco::Candidate* find_W_decay(const reco::Candidate * W) {
 			if (d0_id == 13 || d1_id == 13 ) return string("mu");
 			return string("q"); // FiXME: quite dangerous control-flow!
 			*/
-		default: // and this is just crazy
-			return NULL;
+		default: // probably, it can happen for hadronic W?
+			return W;
 		}
 	}
 }
