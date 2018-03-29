@@ -126,7 +126,8 @@ for(unsigned int count_idiso_electrons = 0, n=0; n<electrons.size (); ++n)
 	// ..will have to test 0.05 and 0.02 if 0.2 doesn't work well..
 	// it is suggested < 0.02 in el ID tables (link in AN...)
 	// to study that I do a rough cut here and store dB, dxy dz to ntuple
-	passImpactParameter = electron.dB() < 0.2;
+	//passImpactParameter = electron.dB() < 0.2;
+	passImpactParameter = passStdImpactParameter;
 	passImpactParameterVeto = passImpactParameter;
 
 	// to include into veto counters
