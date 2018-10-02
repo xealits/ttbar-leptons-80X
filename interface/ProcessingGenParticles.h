@@ -31,6 +31,12 @@ void save_final_cands(const reco::Candidate * part,
 	std::vector<int>& provenance_ids,
 	int provenance_id);
 
+// sumup visible momenta of gen tau products
+void sum_final_cands(
+	const reco::Candidate * part,
+	std::vector<LorentzVector>& saved_particles,
+	LorentzVector& sum_vis);
+
 
 #endif /* PROCESSINGGENPARTICLES_H */
 
